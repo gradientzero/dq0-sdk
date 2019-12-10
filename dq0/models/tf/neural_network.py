@@ -4,7 +4,6 @@
 Basic tensorflow neural network implementation using Keras.
 
 Todo:
-    * Implement load, save, predict, and evaluate
     * Protect keras compile and fit functions
 
 Example:
@@ -18,6 +17,7 @@ Example:
 
         def setup_model():
             # freely deinfe the tf / keras model
+            pass
 
     if __name__ == "__main__":
         myModel = MyAwsomeModel()
@@ -48,7 +48,7 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow_privacy.privacy.optimizers import dp_optimizer
 
-from dq0.models import Model
+from dq0.models.Model import Model
 
 
 class NeuralNetwork(Model):
@@ -62,7 +62,10 @@ class NeuralNetwork(Model):
         self.learning_rate = 0.15
         self.epochs = 10
         self.num_microbatches = 250
+        self.verbose = 0
         self.metrics = ['accuracy', 'mse']
+        self.model = None
+        self.model_path = '.'
         # Range possible: grid search, all combinations inside range
 
     def setup_data(self, **kwargs):
@@ -85,13 +88,12 @@ class NeuralNetwork(Model):
         Args:
             kwargs (:obj:`dict`): dictionary of optional arguments
         """
-        model = keras.Sequential([
+        self.model = keras.Sequential([
             keras.layers.Input(len(kwargs['feature_columns'])),
             keras.layers.Dense(10, activation='tanh'),
             keras.layers.Dense(10, activation='tanh'),
             keras.layers.Dense(2, activation='softmax')]
         )
-        return model
 
     def prepare(self, **kwargs):
         """called before model fit on every run.
@@ -104,31 +106,29 @@ class NeuralNetwork(Model):
         """
         pass
 
-    def fit(self, model, **kwargs):
+    def fit(self, **kwargs):
         """Model fit function.
 
         This method is final. Signature will be checked at runtime!
 
         Args:
-            model (:obj:`keras.models.Model`): Keras model
             kwargs (:obj:`dict`): dictionary of optional arguments.
                 preprocessed data, feature columns
         """
         # TODO: overwrite keras 'compile' and 'fit' at runtime!!!
-        preprocessed_data = kwargs['preprocessed_data']
-        feature_columns = kwargs['feature_columns']
-        target_column = kwargs['target_column']
+        X_train = kwargs['X_train']
+        y_train = kwargs['y_train']
 
         optimizer = dp_optimizer.GradientDescentOptimizer(
             learning_rate=self.learning_rate)
         loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
-        model.compile(optimizer=optimizer, loss=loss, metrics=self.metrics)
-        model.fit(preprocessed_data[feature_columns],
-                  preprocessed_data[target_column],
-                  epochs=self.epochs,
-                  verbose=0)
+        self.model.compile(optimizer=optimizer, loss=loss, metrics=self.metrics)
+        self.model.fit(X_train,
+                       y_train,
+                       epochs=self.epochs,
+                       verbose=self.verbose)
 
-    def fit_dp(self, model, **kwargs):
+    def fit_dp(self, **kwargs):
         """Model fit with differential privacy.
 
         This method is final. Signature will be checked at runtime!
@@ -139,9 +139,13 @@ class NeuralNetwork(Model):
                 preprocessed data, feature columns
         """
         # TODO: overwrite keras 'compile' and 'fit' at runtime!!!
-        preprocessed_data = kwargs['preprocessed_data']
-        feature_columns = kwargs['feature_columns']
-        target_column = kwargs['target_column']
+        X_train = kwargs['X_train']
+        y_train = kwargs['y_train']
+
+        # TODO: make training robust for any number of minibatches -> bug in optimize function
+        num_minibatches = round(X_train.shape[0] / self.num_microbatches)
+        X_train = X_train[:num_minibatches*self.num_microbatches]
+        y_train = y_train[:num_minibatches*self.num_microbatches]
 
         # DPSGD Training
         optimizer = dp_optimizer.DPGradientDescentGaussianOptimizer(
@@ -156,15 +160,15 @@ class NeuralNetwork(Model):
             from_logits=True,
             reduction=tf.compat.v1.losses.Reduction.NONE)
 
-        model.compile(optimizer=optimizer, loss=loss, metrics=self.metrics)
+        self.model.compile(optimizer=optimizer, loss=loss, metrics=self.metrics)
 
-        model.fit(preprocessed_data[feature_columns],
-                  preprocessed_data[target_column],
-                  epochs=10,
-                  verbose=0,
-                  batch_size=250)
+        self.model.fit(X_train,
+                       y_train,
+                       epochs=self.epochs,
+                       verbose=self.verbose,
+                       batch_size=self.num_microbatches)
 
-    def predict(self, **kwargs):
+    def predict(self, x, **kwargs):
         """Model predict function.
 
         Model scoring.
@@ -177,12 +181,10 @@ class NeuralNetwork(Model):
         Returns:
             yhat: numerical matrix containing the predicted responses.
         """
-        pass
+        return self.model.predict(x)
 
-    def evaluate(self, **kwargs):
+    def evaluate(self, x, y, verbose=0, **kwargs):
         """Model predict and evluate.
-
-        TODO: define returned metrics
 
         This method is final. Signature will be checked at runtime!
 
@@ -192,7 +194,12 @@ class NeuralNetwork(Model):
         Returns:
             metrics: to be defined!
         """
-        pass
+        batch_size = self.num_microbatches
+        # TODO: SEE fit_dp: make training robust for any number of minibatches
+        num_minibatches = round(x.shape[0] / self.num_microbatches)
+        x = x[:num_minibatches*self.num_microbatches]
+        y = y[:num_minibatches * self.num_microbatches]
+        return self.model.evaluate(x=x, y=y, batch_size=batch_size, verbose=verbose)
 
     def save(self, name, version):
         """Saves the model.
@@ -205,7 +212,8 @@ class NeuralNetwork(Model):
             name (str): name for the model to use for saving
             version (str): version of the model to use for saving
         """
-        pass
+        self.model.save('{}/{}_{}.h5'.format(self.model_path, name, version),
+                        include_optimizer=False)
 
     def load(self, name, version):
         """Loads the model.
@@ -218,4 +226,6 @@ class NeuralNetwork(Model):
             name (str): name of the model to load
             version (str): version of the model to load
         """
-        pass
+        self.model = tf.keras.models.load_model('{}/{}_{}.h5'.format(self.model_path, name, version),
+                                                compile=False)
+
