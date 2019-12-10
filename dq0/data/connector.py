@@ -26,10 +26,7 @@ Copyright 2019, Gradient Zero
 
 
 class Connector():
-    """Abstract base class for all data connectors available through the SDK.
-
-    Data connector classes provide a list and read method to
-    list available data sources and reads the data into memory.
+    """Data connector. Manages all data sources available through the SDK.
     """
     def __init__(self):
         super().__init__()
