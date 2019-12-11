@@ -22,7 +22,7 @@ with open("requirements.txt") as f:
 
 # Setup
 setup(
-    name="dq0-sdk",
+    name="dq0sdk",
     version=VERSION,
     description="DQ0 SDK",
     author="Gradient Zero",

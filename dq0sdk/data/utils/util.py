@@ -22,7 +22,8 @@ import numpy as np
 import pandas as pd
 
 
-fileConfig('../../logging.conf')
+fileConfig(os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), '../../logging.conf'))
 logger = logging.getLogger('dq0')
 
 
@@ -69,7 +70,14 @@ def _print_dataframe_cols_grouped_by_type(df_dataset):
 
 
 def print_summary_stats(ts, percentiles, s_col):
-    
+    """
+    Prints summary statistics
+
+    Args:
+        ts (df): test dataset to print
+        percentiles: percentiles for df.describe
+        s_col: column title
+    """
     print('\n\nStats for', s_col, 'group: ')
     print('num null values:', ts.isnull().sum())
     print(ts.describe(percentiles=percentiles))
@@ -77,6 +85,13 @@ def print_summary_stats(ts, percentiles, s_col):
 
 
 def pretty_print_strings_list(l_strings, s_list_name=None):
+    """
+    Prints string list
+
+    Args:
+        l_strings (list): list of strings to print
+        s_list_name (str): list title
+    """
     if len(l_strings) > 0:
         _print_feats(l_strings, s_list_name)
     else:
@@ -85,20 +100,38 @@ def pretty_print_strings_list(l_strings, s_list_name=None):
 
 
 def _print_feats(l_column_names, s_title):
-    """Print column names one per line."""
+    """
+    Print column names one per line.
+
+    Args:
+        l_column_names (list): list of column names to print
+        s_title (str): title to print
+    """
     print("\n\t\t".join((['\t' + s_title + ': '] + l_column_names)))
 
 
 def print_full_df(df_dataset):
-    """Print whole dataframe. By default, just reduced output is printed"""
+    """
+    Print whole dataframe. By default, just reduced output is printed
+
+    Args:
+        df_dataset (df): dataframe to print
+    """
     pd.set_option('display.max_rows', len(df_dataset))
     print(df_dataset)
     pd.reset_option('display.max_rows')
 
 
 def missing_values_table(df):
-    """Generate per feature stats about missing values
-    to preview the missing values and the % of missing values in each column
+    """
+    Generate per feature stats about missing values
+    to preview the missing values and the % of missing values in each column.
+
+    Args:
+        df: source dataframe
+
+    Returns:
+        table with missing columns
     """
     mis_val = df.isnull().sum()
     mis_val_percent = 100 * df.isnull().sum() / len(df)
@@ -109,25 +142,52 @@ def missing_values_table(df):
 
 
 def case_insensitive_str_comparison(string1, string2):
-    if string1.lower() == string2.lower():
-        res = True
-    else:
-        res = False
+    """
+    Compare strings case insensitive.
 
-    return res
+    Args:
+        string1 (str): first string
+        string2 (str): second string
+
+    Returns:
+        True if the strings are case insensitive equal
+    """
+    if string1.lower() == string2.lower():
+        return True
+    return False
 
 
 def str_to_bool(s):
+    """
+    Custom cast string to bool
+
+    Args:
+        s (str): The string to convert
+
+    Returns:
+        bool: True or False
+
+    Raises:
+        ValueError: in case of unsuccesful cast.
+    """
     if s.lower() in ("yes", "true", "t", "1"):
         return True
     elif s.lower() in ("no", "false", "f", "0"):
         return False
     else:
-        raise ValueError  # evil ValueError that doesn't tell you what the
-        # wrong value was
+        raise ValueError
 
 
 def string_contains_numeric_value(s):
+    """
+    Returns true if the string is a number.
+
+    Args:
+        s (str): The string to check for numbers.
+
+    Returns:
+        True if the string is convertible to float.
+    """
     try:
         float(s)
         return True
@@ -136,7 +196,17 @@ def string_contains_numeric_value(s):
 
 
 def redirect_stdout_stderr_streams_to_file(log_file):
-    # redirect stdout and stderr to file
+    """
+    Redirect stdout and stderr to file.
+
+    Args:
+        log_file (str): path to log file.
+
+    Returns:
+        log_file_stream: The log file handler
+        orig_stdout: The original std out
+        orig_stderr: The original std err
+    """
     orig_stdout = sys.stdout
     orig_stderr = sys.stderr
 
@@ -148,12 +218,30 @@ def redirect_stdout_stderr_streams_to_file(log_file):
 
 
 def restore_stdout_stderr_streams(file_stream, orig_stdout, orig_stderr):
+    """
+    Reset std err and std out back to original values.
+
+    Args:
+        file_stream (file): log file to close
+        orig_stdout: The original std out
+        orig_stderr: The original std err
+    """
     sys.stdout = orig_stdout
     sys.stderr = orig_stderr
     file_stream.close()
 
 
 def get_fn(file_path):
+    """
+    Returns the filename and extension for the given file path.
+
+    Args:
+        file_path (str): The file path to parse.
+
+    Returns:
+        just_fn (str): The filename
+        ext (str): The file extension
+    """
     base = os.path.basename(file_path)
     just_fn, ext = os.path.splitext(base)
 
@@ -161,12 +249,28 @@ def get_fn(file_path):
 
 
 def empty_folder(path_folder_tbr):
+    """
+    Deletes folder content.
+
+    Args:
+        path_folder_tbr (str): path to the folder to dump.
+    """
     if os.path.exists(path_folder_tbr):
         shutil.rmtree(path_folder_tbr)
     os.makedirs(path_folder_tbr)
 
 
 def move_files(l_path_files, s_dest_folder):
+    """
+    Move files to folder.
+
+    Args:
+        l_path_files (list): List of files to move.
+        s_dest_folder (str): Path of destination directory.
+
+    Returns:
+        list: List of new file paths.
+    """
     l_path_new_files = []
     try:
         for s_path_file in l_path_files:
@@ -188,11 +292,19 @@ def move_files(l_path_files, s_dest_folder):
 
 
 def list_subfloders(path='./', s_prefix=None):
-    #
-    # Subfolder name starts with given s_prefix ('_starting_with_certain_
-    # name_prefix')
-    #
+    """
+    List subfolders.
 
+    Subfolder name starts with given s_prefix ('_starting_with_certain_
+    name_prefix')
+
+    Args:
+        path (str): Path of the parent directory.
+        s_prefix (str, optional): List only those files starting with s_prefix
+
+    Returns:
+        list: List of subdirectories.
+    """
     if s_prefix is None:
         l_sf = [d for d in os.listdir(path) if os.path.isdir(d)]
     else:
@@ -202,7 +314,14 @@ def list_subfloders(path='./', s_prefix=None):
     return l_sf
 
 
-def print_human_readable_elapsed_time_value(elapsed_cpu_time_sec, s_tmp):
+def print_human_readable_elapsed_time_value(elapsed_cpu_time_sec, prefix):
+    """
+    Print elapsed cpu time in human readable format.
+
+    Args:
+        elapsed_cpu_time_sec (int): elapsed time in seconds.
+        prefix (str): A prefix to print.
+    """
     if elapsed_cpu_time_sec >= (60 * 60 * 24):
         elapsed_cpu_time = round(elapsed_cpu_time_sec / (60 * 60 * 24), 2)
         time_measure = 'day'
@@ -232,16 +351,33 @@ def print_human_readable_elapsed_time_value(elapsed_cpu_time_sec, s_tmp):
         time_measure += 's'
 
     if time_measure != 'less than one nanosec':
-        print(s_tmp + ' {:.2f}'.format(elapsed_cpu_time) + ' ' + time_measure)
+        print(prefix + ' {:.2f}'.format(elapsed_cpu_time) + ' ' + time_measure)
     else:
-        print(s_tmp + ' ' + time_measure)
+        print(prefix + ' ' + time_measure)
 
 
 def dump_model(model, path='./data/output', name='model.pickle'):
+    """
+    Dump a model with pickle to file.
+
+    Args:
+        model (obj): The model to dump
+        path (str): directory to save to
+        name (str): filename to save to
+    """
     with open(os.path.join(path, name), 'wb') as f:
         pickle.dump(model, f)
 
 
 def load_model_from_file(path):
+    """
+    Load pickled model from file.
+
+    Args:
+        path (str): Path to pickled model file
+
+    Returns:
+        unpickled model
+    """
     with open(path, 'rb') as file:
         return pickle.load(file)

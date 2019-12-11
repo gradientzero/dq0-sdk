@@ -11,11 +11,13 @@ Copyright 2019, Gradient Zero
 """
 
 import logging
+import os
 from logging.config import fileConfig
 
-from dq0.data.utils import util
+from dq0sdk.data.utils import util
 
-fileConfig('../../logging.conf')
+fileConfig(os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), '../../logging.conf'))
 logger = logging.getLogger('dq0')
 
 

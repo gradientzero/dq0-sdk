@@ -13,7 +13,7 @@ Copyright 2019, Gradient Zero
 
 import os
 
-from dq0.data.source import Source
+from dq0sdk.data.source import Source
 
 import pandas as pd
 

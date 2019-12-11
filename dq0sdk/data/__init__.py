@@ -5,8 +5,8 @@ This package contains the data connector abstract classes and
 implementing subclasses.
 """
 
+from . import adult, csv
 from .source import Source
-from . import csv, adult
 
 __all__ = [
     'Source',

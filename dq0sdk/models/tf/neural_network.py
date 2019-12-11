@@ -44,7 +44,7 @@ Example:
 Copyright 2019, Gradient Zero
 """
 
-from dq0.models.model import Model
+from dq0sdk.models.model import Model
 
 import tensorflow as tf
 from tensorflow import keras
