@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Data Source abstract base class
 
-The source class serves as the base class for all dq0 data sources.
+The source class serves as the base class for all dq0sdk data sources.
 
 Implementing subclasses have to define at least read
 
@@ -13,7 +13,7 @@ Implementing subclasses have to define at least read
 Copyright 2019, Gradient Zero
 """
 
-from dq0.data.source import Source
+from dq0sdk.data.source import Source
 import pandas as pd
 import os
 

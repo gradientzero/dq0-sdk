@@ -4,7 +4,7 @@
 @author: Wolfgang Gross <wg@gradient0.com>
 """
 
-from dq0.data_connector import util
+from dq0sdk.data_connector import util
 
 
 def _handle_missing_data(dataset_df, mode='imputation',

@@ -9,7 +9,7 @@ Attributes:
     sources (list): List of available data sources.
 
 Example:
-    connector = dq0.data.Connector()
+    connector = dq0sdk.data.Connector()
     sources = connector.list()
     data = sources[0].read()
 

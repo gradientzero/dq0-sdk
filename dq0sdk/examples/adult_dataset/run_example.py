@@ -2,13 +2,13 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-import dq0.models.tf.neural_network
-from dq0.data_connector import data_connector
-from dq0.examples.adult_dataset.neural_network import NeuralNetwork_adult
+import dq0sdk.models.tf.neural_network
+from dq0sdk.data_connector import data_connector
+from dq0sdk.examples.adult_dataset.neural_network import NeuralNetwork_adult
 
 if __name__=='__main__':
 
-    path = 'dq0/data/adult/'
+    path = 'dq0sdk/data/adult/'
     dc = data_connector.Data_Connector_Adult()
     tr_dataset_df, test_dataset_df, categorical_features_list, \
                    quantitative_features_list, target_feature = dc.read_data(path)

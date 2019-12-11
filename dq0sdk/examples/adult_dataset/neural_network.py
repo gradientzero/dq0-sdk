@@ -12,11 +12,11 @@ import sklearn.preprocessing
 import pandas as pd
 from tensorflow import keras
 
-from dq0.data_connector import preprocessing
-import dq0
+from dq0sdk.data_connector import preprocessing
+import dq0sdk
 
 
-class NeuralNetwork_adult(dq0.models.tf.neural_network.NeuralNetwork):
+class NeuralNetwork_adult(dq0sdk.models.tf.neural_network.NeuralNetwork):
     def __init__(self, model_path='.'):
         super().__init__()
         self.learning_rate = 0.3

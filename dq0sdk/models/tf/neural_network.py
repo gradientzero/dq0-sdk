@@ -7,7 +7,7 @@ Todo:
     * Protect keras compile and fit functions
 
 Example:
-    class MyAwsomeModel(dq0.models.tf.NeuralNetwork):
+    class MyAwsomeModel(dq0sdk.models.tf.NeuralNetwork):
         def init():
             self.learning_rate = 0.3
 
@@ -48,7 +48,7 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow_privacy.privacy.optimizers import dp_optimizer
 
-from dq0.models.model import Model
+from dq0sdk.models.model import Model
 
 
 class NeuralNetwork(Model):

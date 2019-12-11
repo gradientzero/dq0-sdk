@@ -7,7 +7,7 @@
 import pandas as pd
 import os
 import sklearn
-from dq0.data_connector import preprocessing, util
+from dq0sdk.data_connector import preprocessing, util
 
 
 class Data_Connector_Adult:

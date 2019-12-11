@@ -108,7 +108,7 @@ html_static_path = ['_static']
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'dq0-sdk'
+htmlhelp_basename = 'dq0sdk-sdk'
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -146,7 +146,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'dq0-sdk',
+    (master_doc, 'dq0sdk-sdk',
      'DQ0 SDK Documentation',
      [author], 1)
 ]
@@ -158,11 +158,11 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'dq0-sdk',
+    (master_doc, 'dq0sdk-sdk',
      'DQ0 SDK Documentation',
      author, 'Gradient Zero',
      'DQ0 Software Development Kit',
-     'dq0-sdk'),
+     'dq0sdk-sdk'),
 ]
 
 
