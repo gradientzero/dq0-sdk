@@ -13,8 +13,9 @@ Copyright 2019, Gradient Zero
 
 import os
 
-from dq0.data.source import Source
 from dq0.data.preprocessing import preprocessing
+from dq0.data.source import Source
+from dq0.data.utils import util
 
 import pandas as pd
 
