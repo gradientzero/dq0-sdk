@@ -6,7 +6,9 @@ implementing subclasses.
 """
 
 from . import tf
+from .model import Model
 
 __all__ = [
-    'tf'
+    'tf',
+    'Model'
 ]

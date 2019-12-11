@@ -25,15 +25,36 @@ class Source(ABC):
     """
     def __init__(self):
         super().__init__()
+        self.data = None
+        self.preprocessed_data = None
 
     @abstractmethod
-    def read(self):
+    def read(self, force=False):
         """Read data sources
 
         This function should be used by child classes to read data or return
         a data handler to read streaming data.
 
+        Args:
+            force (bool): True to force re-read of the data.
+
         Returns:
             data read from the data source.
         """
-        pass
+        raise NotImplementedError()
+
+    @abstractmethod
+    def preprocess(self, force=False, **kwargs):
+        """Preprocess the data
+
+        This function should be used by child classes to perform certain
+        preprocessing steps to prepare the data for later use.
+
+        Args:
+            force (bool): True to force re-read of the data.
+            kwargs (:obj:`dict`): dictionary of optional arguments.
+
+        Returns:
+            data read from the data source.
+        """
+        raise NotImplementedError()

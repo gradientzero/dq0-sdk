@@ -7,7 +7,7 @@ Todo:
     * Protect keras compile and fit functions
 
 Example:
-    class MyAwsomeModel(dq0sdk.models.tf.NeuralNetwork):
+    class MyAwsomeModel(dq0.models.tf.NeuralNetwork):
         def init():
             self.learning_rate = 0.3
 
@@ -44,11 +44,12 @@ Example:
 Copyright 2019, Gradient Zero
 """
 
+from dq0.models.model import Model
+
 import tensorflow as tf
 from tensorflow import keras
-from tensorflow_privacy.privacy.optimizers import dp_optimizer
 
-from dq0sdk.models.model import Model
+from tensorflow_privacy.privacy.optimizers import dp_optimizer
 
 
 class NeuralNetwork(Model):
@@ -122,7 +123,9 @@ class NeuralNetwork(Model):
         optimizer = dp_optimizer.GradientDescentOptimizer(
             learning_rate=self.learning_rate)
         loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
-        self.model.compile(optimizer=optimizer, loss=loss, metrics=self.metrics)
+        self.model.compile(optimizer=optimizer,
+                           loss=loss,
+                           metrics=self.metrics)
         self.model.fit(X_train,
                        y_train,
                        epochs=self.epochs,
@@ -142,10 +145,11 @@ class NeuralNetwork(Model):
         X_train = kwargs['X_train']
         y_train = kwargs['y_train']
 
-        # TODO: make training robust for any number of minibatches -> bug in optimize function
+        # TODO: make training robust for any number of
+        # minibatches -> bug in optimize function
         num_minibatches = round(X_train.shape[0] / self.num_microbatches)
-        X_train = X_train[:num_minibatches*self.num_microbatches]
-        y_train = y_train[:num_minibatches*self.num_microbatches]
+        X_train = X_train[:num_minibatches * self.num_microbatches]
+        y_train = y_train[:num_minibatches * self.num_microbatches]
 
         # DPSGD Training
         optimizer = dp_optimizer.DPGradientDescentGaussianOptimizer(
@@ -160,7 +164,9 @@ class NeuralNetwork(Model):
             from_logits=True,
             reduction=tf.compat.v1.losses.Reduction.NONE)
 
-        self.model.compile(optimizer=optimizer, loss=loss, metrics=self.metrics)
+        self.model.compile(optimizer=optimizer,
+                           loss=loss,
+                           metrics=self.metrics)
 
         self.model.fit(X_train,
                        y_train,
@@ -197,9 +203,13 @@ class NeuralNetwork(Model):
         batch_size = self.num_microbatches
         # TODO: SEE fit_dp: make training robust for any number of minibatches
         num_minibatches = round(x.shape[0] / self.num_microbatches)
-        x = x[:num_minibatches*self.num_microbatches]
+        x = x[:num_minibatches * self.num_microbatches]
         y = y[:num_minibatches * self.num_microbatches]
-        return self.model.evaluate(x=x, y=y, batch_size=batch_size, verbose=verbose)
+        return self.model.evaluate(
+            x=x,
+            y=y,
+            batch_size=batch_size,
+            verbose=verbose)
 
     def save(self, name, version):
         """Saves the model.
@@ -226,6 +236,6 @@ class NeuralNetwork(Model):
             name (str): name of the model to load
             version (str): version of the model to load
         """
-        self.model = tf.keras.models.load_model('{}/{}_{}.h5'.format(self.model_path, name, version),
-                                                compile=False)
-
+        self.model = tf.keras.models.load_model(
+            '{}/{}_{}.h5'.format(
+                self.model_path, name, version), compile=False)

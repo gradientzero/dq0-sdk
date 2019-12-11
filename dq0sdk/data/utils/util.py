@@ -1,27 +1,39 @@
-# =============================================================================
-# =                                 Utils                                     =
-# =============================================================================
+# -*- coding: utf-8 -*-
+"""DQ0 Data Utils.
 
+Data util helper functions.
+
+:Authors:
+    Wolfgang Groß <wg@gradient0.com>
+    Jona Boeddinhaus <jb@gradient0.com>
+
+Copyright 2019, Gradient Zero
+"""
+
+import logging
 import os
+import pickle
 import shutil
 import sys
-import configparser
-import random
-import pickle
+from logging.config import fileConfig
 
 import numpy as np
+
 import pandas as pd
 
-#
-# sys.exit("some error message") is a quick way to exit a program when an error
-# occurs. It results in an exit code of 1 and the error message in written
-# in sys.stderr. sys.exit() is equivalent to passing zero,
-# and any other object is printed to sys.stderr.
-#
+
+fileConfig('../../logging.conf')
+logger = logging.getLogger('dq0')
 
 
 def print_dataset_info(df_dataset, s_title):
+    """
+    Prints dataset info.
 
+    Args:
+        df_dataset (df): The dataset to print
+        s_title (str): The title to print
+    """
     print("\n" + s_title + ". Technical info (RAM usage, etc.): ")
     df_dataset.info(memory_usage='deep')
 
@@ -42,7 +54,14 @@ def print_dataset_info(df_dataset, s_title):
 
 
 def _print_dataframe_cols_grouped_by_type(df_dataset):
-    grouped_cols_dict = df_dataset.columns.to_series().groupby(df_dataset.dtypes).groups
+    """
+    Prints dataset columns grouped by type.
+
+    Args:
+        df_dataset (df): The dataset to print
+    """
+    grouped_cols_dict = df_dataset.columns.to_series().\
+        groupby(df_dataset.dtypes).groups
     for key, value in grouped_cols_dict.items():
         print('\t' + str(key) + ':')
         for f in value:
@@ -50,7 +69,7 @@ def _print_dataframe_cols_grouped_by_type(df_dataset):
 
 
 def print_summary_stats(ts, percentiles, s_col):
-
+    
     print('\n\nStats for', s_col, 'group: ')
     print('num null values:', ts.isnull().sum())
     print(ts.describe(percentiles=percentiles))
@@ -58,7 +77,6 @@ def print_summary_stats(ts, percentiles, s_col):
 
 
 def pretty_print_strings_list(l_strings, s_list_name=None):
-
     if len(l_strings) > 0:
         _print_feats(l_strings, s_list_name)
     else:
@@ -67,24 +85,21 @@ def pretty_print_strings_list(l_strings, s_list_name=None):
 
 
 def _print_feats(l_column_names, s_title):
-    # print column names one per line
+    """Print column names one per line."""
     print("\n\t\t".join((['\t' + s_title + ': '] + l_column_names)))
 
 
 def print_full_df(df_dataset):
-    #
-    # Print whole dataframe. By default, just reduced output is printed
-    #
+    """Print whole dataframe. By default, just reduced output is printed"""
     pd.set_option('display.max_rows', len(df_dataset))
     print(df_dataset)
     pd.reset_option('display.max_rows')
 
 
 def missing_values_table(df):
-    #
-    # generate per feature stats about missing values
-    # to preview the missing values and the % of missing values in each column
-    #
+    """Generate per feature stats about missing values
+    to preview the missing values and the % of missing values in each column
+    """
     mis_val = df.isnull().sum()
     mis_val_percent = 100 * df.isnull().sum() / len(df)
     mis_val_table = pd.concat([mis_val, mis_val_percent], axis=1)
@@ -121,7 +136,6 @@ def string_contains_numeric_value(s):
 
 
 def redirect_stdout_stderr_streams_to_file(log_file):
-
     # redirect stdout and stderr to file
     orig_stdout = sys.stdout
     orig_stderr = sys.stderr
@@ -134,7 +148,6 @@ def redirect_stdout_stderr_streams_to_file(log_file):
 
 
 def restore_stdout_stderr_streams(file_stream, orig_stdout, orig_stderr):
-
     sys.stdout = orig_stdout
     sys.stderr = orig_stderr
     file_stream.close()
@@ -154,7 +167,6 @@ def empty_folder(path_folder_tbr):
 
 
 def move_files(l_path_files, s_dest_folder):
-
     l_path_new_files = []
     try:
         for s_path_file in l_path_files:
@@ -171,8 +183,8 @@ def move_files(l_path_files, s_dest_folder):
         return l_path_new_files
 
     except Exception as e:
-        sys.exit('\n\nCannot move file ' + s_path_file + ' into folder ' +
-                 s_dest_folder + '! ', e)
+        sys.exit('\n\nCannot move file ' + s_path_file + ' into folder '
+                 '' + s_dest_folder + '! ', e)
 
 
 def list_subfloders(path='./', s_prefix=None):
@@ -184,14 +196,13 @@ def list_subfloders(path='./', s_prefix=None):
     if s_prefix is None:
         l_sf = [d for d in os.listdir(path) if os.path.isdir(d)]
     else:
-        l_sf = [d for d in os.listdir(path) if os.path.isdir(d) and
-                d.startswith(s_prefix)]
+        l_sf = [d for d in os.listdir(path)
+                if os.path.isdir(d) and d.startswith(s_prefix)]
 
     return l_sf
 
 
 def print_human_readable_elapsed_time_value(elapsed_cpu_time_sec, s_tmp):
-
     if elapsed_cpu_time_sec >= (60 * 60 * 24):
         elapsed_cpu_time = round(elapsed_cpu_time_sec / (60 * 60 * 24), 2)
         time_measure = 'day'

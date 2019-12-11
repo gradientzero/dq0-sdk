@@ -5,8 +5,8 @@ This package contains the tensorflow models subclassing the abstract
 model base class.
 """
 
-from . import neural_network
+from .neural_network import NeuralNetwork
 
 __all__ = [
-    'neural_network'
+    'NeuralNetwork'
 ]
