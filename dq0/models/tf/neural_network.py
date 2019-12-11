@@ -44,11 +44,12 @@ Example:
 Copyright 2019, Gradient Zero
 """
 
+from dq0.models.model import Model
+
 import tensorflow as tf
 from tensorflow import keras
-from tensorflow_privacy.privacy.optimizers import dp_optimizer
 
-from dq0.models import Model
+from tensorflow_privacy.privacy.optimizers import dp_optimizer
 
 
 class NeuralNetwork(Model):

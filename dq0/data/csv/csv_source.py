@@ -13,12 +13,14 @@ Implementing subclasses have to define at least read
 Copyright 2019, Gradient Zero
 """
 
-from dq0.data import Source
-import pandas as pd
 import os
 
+from dq0.data import source
 
-class CSVSource(Source):
+import pandas as pd
+
+
+class CSVSource(source.Source):
     """Data Source for CSV data.
 
     Provides function to read in csv data.

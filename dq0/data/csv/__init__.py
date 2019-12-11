@@ -4,8 +4,8 @@
 This package contains the CSV data source implementation.
 """
 
-from . import csv_source
+from .csv_source import CSVSource
 
 __all__ = [
-    'csv_source'
+    'CSVSource'
 ]

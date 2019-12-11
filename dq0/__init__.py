@@ -4,10 +4,10 @@
 This is the main dq0-sdk package containing everything SDK related
 """
 
-from . import models
 from . import data
+from . import models
 
 __all__ = [
-    'models',
-    'data'
+    'data',
+    'models'
 ]
