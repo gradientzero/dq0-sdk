@@ -13,7 +13,7 @@ Implementing subclasses have to define at least read
 Copyright 2019, Gradient Zero
 """
 
-from dq0.data import Source
+from dq0.data.source import Source
 import pandas as pd
 import os
 

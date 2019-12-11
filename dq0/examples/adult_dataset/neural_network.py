@@ -8,6 +8,7 @@ Neural network model definition
 """
 
 import sklearn
+import sklearn.preprocessing
 import pandas as pd
 from tensorflow import keras
 
