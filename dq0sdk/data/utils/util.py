@@ -8,6 +8,7 @@ Data util helper functions.
     Jona Boeddinhaus <jb@gradient0.com>
 
 Copyright 2019, Gradient Zero
+All rights reserved
 """
 
 import logging

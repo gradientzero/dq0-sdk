@@ -15,7 +15,8 @@ Example:
     Jona Boeddinhaus <jb@gradient0.com>
     Artur Susdorf <as@gradient0.com>
 
-Copyright 2019, gardient zero
+Copyright 2019, Gradient Zero
+All rights reserved
 """
 
 import os

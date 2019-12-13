@@ -10,6 +10,7 @@ Neural network model definition
     Artur Susdorf <as@gradient0.com>
 
 Copyright 2019, Gradient Zero
+All rights reserved
 """
 
 from dq0sdk.data.preprocessing import preprocessing

@@ -11,6 +11,7 @@ Implementing subclasses have to define setup, fit and predict fucntions.
     Artur Susdorf <as@gradient0.com>
 
 Copyright 2019, Gradient Zero
+All rights reserved
 """
 
 from abc import ABC, abstractmethod

@@ -42,6 +42,7 @@ Example:
     Artur Susdorf <as@gradient0.com>
 
 Copyright 2019, Gradient Zero
+All rights reserved
 """
 
 from dq0sdk.models.model import Model
