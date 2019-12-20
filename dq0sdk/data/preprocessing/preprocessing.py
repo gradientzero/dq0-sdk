@@ -8,15 +8,17 @@ Data preprocessing helper functions.
     Jona Boeddinhaus <jb@gradient0.com>
 
 Copyright 2019, Gradient Zero
+All rights reserved
 """
 
 import logging
+import os
 from logging.config import fileConfig
 
 from dq0sdk.data.utils import util
-from os import path
-log_file_path = path.join(path.dirname(path.abspath(__file__)), '../../logging.conf')
-fileConfig(log_file_path)
+
+fileConfig(os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), '../../logging.conf'))
 logger = logging.getLogger('dq0')
 
 

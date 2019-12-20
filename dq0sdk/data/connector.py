@@ -22,6 +22,7 @@ Todo:
     Artur Susdorf <as@gradient0.com>
 
 Copyright 2019, Gradient Zero
+All rights reserved
 """
 
 

@@ -20,9 +20,10 @@ from logging.config import fileConfig
 import numpy as np
 
 import pandas as pd
-from os import path
-log_file_path = path.join(path.dirname(path.abspath(__file__)), '../../logging.conf')
-fileConfig(log_file_path)
+
+
+fileConfig(os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), '../../logging.conf'))
 logger = logging.getLogger('dq0')
 
 

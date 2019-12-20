@@ -6,7 +6,8 @@
     Artur Susdorf <as@gradient0.com>
     Wolfgang Groß <wg@gradient0.com>
 
-Copyright 2019, gardient zero
+Copyright 2019, Gradient Zero
+All rights reserved
 """
 
 from setuptools import find_packages, setup
@@ -22,7 +23,7 @@ with open("requirements.txt") as f:
 
 # Setup
 setup(
-    name="dq0-sdk",
+    name="dq0sdk",
     version=VERSION,
     description="DQ0 SDK",
     author="Gradient Zero",

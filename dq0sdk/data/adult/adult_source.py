@@ -9,6 +9,7 @@ The test set is contained in the subfolder "data"
     Artur Susdorf <as@gradient0.com>
 
 Copyright 2019, Gradient Zero
+All rights reserved
 """
 
 import os
@@ -111,16 +112,17 @@ class AdultSource(Source):
                                       index_col=None,
                                       skipinitialspace=True,
                                       na_values={
-                                        'capital-gain': 99999,
-                                        'capital-loss': 99999,
-                                        'hours-per-week': 99,
-                                        'workclass': '?',
-                                        'native-country': '?',
-                                        'occupation': '?'}
+                                          'capital-gain': 99999,
+                                          'capital-loss': 99999,
+                                          'hours-per-week': 99,
+                                          'workclass': '?',
+                                          'native-country': '?',
+                                          'occupation': '?'}
                                       )
 
-        categorical_features_list = [column for column in dataset_df.columns
-                                     if column != target_feature and dataset_df[column].dtype == 'object']  # noqa: E501
+        categorical_features_list = [
+            col for col in dataset_df.columns
+            if col != target_feature and dataset_df[col].dtype == 'object']
 
         # List difference. Warning: in below operation, set does not preserve
         # the order. If order matters, use, e.g., list comprehension.
