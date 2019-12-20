@@ -9,7 +9,7 @@
 Copyright 2019, gardient zero
 """
 
-from dq0.models.tf import NeuralNetwork
+from dq0sdk.models.tf import NeuralNetwork
 
 
 def test_set_params():

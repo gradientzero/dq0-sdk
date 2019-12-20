@@ -4,7 +4,7 @@
 This package contains general data helper functions.
 """
 
-from .util import util
+from dq0sdk.data.utils import util
 
 __all__ = [
     'util'

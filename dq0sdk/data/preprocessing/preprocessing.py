@@ -13,9 +13,10 @@ Copyright 2019, Gradient Zero
 import logging
 from logging.config import fileConfig
 
-from dq0.data.utils import util
-
-fileConfig('../../logging.conf')
+from dq0sdk.data.utils import util
+from os import path
+log_file_path = path.join(path.dirname(path.abspath(__file__)), '../../logging.conf')
+fileConfig(log_file_path)
 logger = logging.getLogger('dq0')
 
 

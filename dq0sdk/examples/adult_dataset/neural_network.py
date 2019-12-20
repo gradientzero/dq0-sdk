@@ -12,7 +12,7 @@ import sklearn.preprocessing
 import pandas as pd
 from tensorflow import keras
 
-from dq0sdk.data_connector import preprocessing
+from dq0sdk.data.preprocessing import preprocessing
 import dq0sdk
 
 
