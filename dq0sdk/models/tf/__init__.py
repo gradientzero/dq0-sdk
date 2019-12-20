@@ -9,6 +9,6 @@ from .neural_network import NeuralNetwork
 from .tf_hub import TFHub
 
 __all__ = [
-    'NeuralNetwork'
+    'NeuralNetwork',
     'TFHub'
 ]

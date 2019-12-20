@@ -84,6 +84,8 @@ class TFHub(Model):
 
     def setup_model(self, **kwargs):
         """retrieve tensorflow hub model for use in setup_model
+        TODO: work in progress. think about how to make it generic
+
 
         Args:
             kwargs (:obj:`dict`): dictionary of optional arguments
@@ -101,6 +103,7 @@ class TFHub(Model):
 
     def setup_model_transfer(self, **kwargs):
         """retrieve tensorflow hub model for use in setup_model
+        TODO: work in progress. think about how to make it generic
 
         Args:
             kwargs (:obj:`dict`): dictionary of optional arguments
@@ -117,7 +120,7 @@ class TFHub(Model):
                                    arguments=kwargs['arguments'])
         
         self.model=tf.keras.Sequential([hub_layer,
-            layers.Dense(image_data.num_classes, activation='softmax')])
+            keras.layers.Dense(kwargs['num_classes'], activation='softmax')])
 
     def prepare(self, **kwargs):
         """called before model fit on every run.
