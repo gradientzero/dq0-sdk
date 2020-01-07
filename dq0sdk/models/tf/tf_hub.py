@@ -86,25 +86,6 @@ class TFHub(Model):
         """retrieve tensorflow hub model for use in setup_model
         TODO: work in progress. think about how to make it generic
 
-
-        Args:
-            kwargs (:obj:`dict`): dictionary of optional arguments
-            kwargs['trainable'] (bool): True to unfreeze weights, default False
-            kwargs['arguments'] (dict): optionally, a dict with additional keyword arguments passed to the callable. 
-                                        These must be JSON-serializable to save the Keras config of this layer.
-                                        eg dict(batch_norm_momentum=0.997)
-            **kwargs: 'output_shape': A tuple with the (possibly partial) output shape of the callable without 
-                      leading batch size. Other arguments are pass into the Layer constructor.
-        """
-        url = kwargs['tensorflow_hub_url']
-        self.model = hub.KerasLayer(url,
-                                    trainable=kwargs['trainable'],
-                                    arguments=kwargs['arguments'])
-
-    def setup_model_transfer(self, **kwargs):
-        """retrieve tensorflow hub model for use in setup_model
-        TODO: work in progress. think about how to make it generic
-
         Args:
             kwargs (:obj:`dict`): dictionary of optional arguments
             kwargs['trainable'] (bool): True to unfreeze weights, default False
@@ -120,7 +101,7 @@ class TFHub(Model):
                                    arguments=kwargs['arguments'])
         
         self.model=tf.keras.Sequential([hub_layer,
-            keras.layers.Dense(kwargs['num_classes'], activation='softmax')])
+            keras.layers.Dense(kwargs['num_classes'], activation=kwargs['activation_fun'])])
 
     def prepare(self, **kwargs):
         """called before model fit on every run.
