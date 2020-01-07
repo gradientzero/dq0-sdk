@@ -3,25 +3,33 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 import dq0sdk.models.tf.neural_network
-from dq0sdk.data_connector import data_connector
 from dq0sdk.examples.adult_dataset.neural_network import NeuralNetwork_adult
+import os
+
+from dq0sdk.data.adult import AdultSource
+
+
 
 if __name__=='__main__':
 
-    path = 'dq0sdk/data/adult/'
-    dc = data_connector.Data_Connector_Adult()
-    tr_dataset_df, test_dataset_df, categorical_features_list, \
-                   quantitative_features_list, target_feature = dc.read_data(path)
-    X_df, y_ts, num_tr_instances = dc.preprocess_dataset(tr_dataset_df, test_dataset_df,
-                                       categorical_features_list, quantitative_features_list, target_feature,
-                                       approach_for_missing_feature='imputation',  # 'imputation', 'dropping',
-                                       imputation_method_for_cat_feats='unknown',  # 'unknown', 'most_common_cat'
-                                       imputation_method_for_quant_feats='median',  # 'median', 'mean'
-                                       features_to_drop_list=None
-                                      )
+    path = 'dq0sdk/data/adult/data/'
+    path_test = os.path.join(os.path.dirname(
+        os.path.abspath(__file__)), '../../../', path, 'adult.test')
+    path_train = os.path.join(os.path.dirname(
+        os.path.abspath(__file__)), '../../../', path, 'adult.data')
+
+    dc = AdultSource(path_test, path_train)
+    train_data, data = dc.read()
+    X_df, y_ts, num_tr_instances = dc.preprocess(approach_for_missing_feature='imputation',
+                                                 # 'imputation', 'dropping',
+                                                 imputation_method_for_cat_feats='unknown',
+                                                 # 'unknown', 'most_common_cat'
+                                                 imputation_method_for_quant_feats='median',  # 'median', 'mean'
+                                                 features_to_drop_list=None
+                                                 )
 
     model = NeuralNetwork_adult(model_path='notebooks/saved_model/')
-    X_train_df, X_test_df, y_train_ts, y_test_ts = model.setup_data(X_df, y_ts, quantitative_features_list,
+    X_train_df, X_test_df, y_train_ts, y_test_ts = model.setup_data(X_df, y_ts, dc.quantitative_features_list,
                                                                     num_tr_instances)
     model.setup_model()
     model.fit(X_train=X_train_df, y_train=y_train_ts)
