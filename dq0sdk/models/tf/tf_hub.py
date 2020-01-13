@@ -50,6 +50,8 @@ from dq0sdk.models.model import Model
 import tensorflow as tf
 import tensorflow_hub as hub
 from tensorflow import keras
+import numpy as np
+np.random.seed(1)
 
 from tensorflow_privacy.privacy.optimizers import dp_optimizer
 
@@ -60,15 +62,27 @@ class TFHub(Model):
     SDK users can use this class to create and train Keras models or
     subclass this class to define custom neural networks.
     """
-    def __init__(self):
+    def __init__(self, kwargs):
         super().__init__()
-        self.learning_rate = 0.15
-        self.epochs = 10
+        self.tf_url=kwargs['hub_layer_kwargs']['tf_url']
+        self.trainable=kwargs['hub_layer_kwargs']['trainable'] # default False
+        self.optional_hub_layer_kwargs=kwargs['hub_layer_kwargs']['optional']
+        self.keras_layers = kwargs['lst_tf_keras_layers']
+        self.optimizer = kwargs['optimizer']['optimizer']
+        self.loss = kwargs['optimizer']['loss']
+        self.metrics = kwargs['optimizer']['metrics']
+        self.epochs = kwargs['model.fit']['epochs']
+        self.train_generator = kwargs['train_generator']
+        self.development_generator = kwargs['development_generator']
+        self.test_generator = kwargs['test_generator']
+        self.model_path = kwargs['model_path']
+        # stuff to do with dp training
+        self.learning_rate=0.15
         self.num_microbatches = 250
         self.verbose = 0
         self.metrics = ['accuracy', 'mse']
         self.model = None
-        self.model_path = '.'
+        
         # Range possible: grid search, all combinations inside range
 
     def setup_data(self, **kwargs):
@@ -82,10 +96,8 @@ class TFHub(Model):
         """
         pass
 
-    def setup_model(self, **kwargs):
+    def setup_model(self):
         """retrieve tensorflow hub model for use in setup_model
-        TODO: work in progress. think about how to make it generic
-
         Args:
             kwargs (:obj:`dict`): dictionary of optional arguments
             kwargs['trainable'] (bool): True to unfreeze weights, default False
@@ -95,14 +107,18 @@ class TFHub(Model):
             **kwargs: 'output_shape': A tuple with the (possibly partial) output shape of the callable without 
                       leading batch size. Other arguments are pass into the Layer constructor.
         """
-        url = kwargs['tensorflow_hub_url']
-        hub_layer = hub.KerasLayer(url,
-                                   trainable=kwargs['trainable'],
-                                   arguments=kwargs['arguments'])
+        hub_layer = hub.KerasLayer(self.tf_url,
+                                   trainable=self.trainable,
+                                   **self.optional_hub_layer_kwargs)
         
-        self.model=tf.keras.Sequential([hub_layer,
-            keras.layers.Dense(kwargs['num_classes'], activation=kwargs['activation_fun'])])
-
+        self.model=tf.keras.Sequential([hub_layer])
+        # self.model.add(self.keras_layers)
+        self.model.add(tf.keras.layers.Dropout(rate=0.2))
+        self.model.add(tf.keras.layers.Dense(
+                         self.train_generator.num_classes,
+                         activation='softmax',
+                         kernel_regularizer=tf.keras.regularizers.l2(0.0001)))
+        
     def prepare(self, **kwargs):
         """called before model fit on every run.
 
@@ -123,21 +139,21 @@ class TFHub(Model):
             kwargs (:obj:`dict`): dictionary of optional arguments.
                 preprocessed data, feature columns
         """
-        # TODO: overwrite keras 'compile' and 'fit' at runtime!!!
-        X_train = kwargs['X_train']
-        y_train = kwargs['y_train']
 
-        optimizer = dp_optimizer.GradientDescentOptimizer(
-            learning_rate=self.learning_rate)
-        loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
-        self.model.compile(optimizer=optimizer,
-                           loss=loss,
-                           metrics=self.metrics)
-        self.model.fit(X_train,
-                       y_train,
-                       epochs=self.epochs,
-                       verbose=self.verbose)
-
+        self.model.compile(optimizer=tf.keras.optimizers.SGD(lr=0.005, momentum=0.9),
+                           loss=tf.keras.losses.CategoricalCrossentropy(label_smoothing=0.1),
+                           metrics=['accuracy'])
+        
+        steps_per_epoch = self.train_generator.samples // self.train_generator.batch_size
+        validation_steps = self.development_generator.samples // self.development_generator.batch_size
+        print([steps_per_epoch,validation_steps])
+        hist = self.model.fit(
+            self.train_generator,
+            epochs=self.epochs, 
+            steps_per_epoch=steps_per_epoch,
+            validation_data=self.development_generator,
+            validation_steps=validation_steps).history
+        
     def fit_dp(self, **kwargs):
         """Model fit with differential privacy.
 
@@ -196,7 +212,7 @@ class TFHub(Model):
         """
         return self.model.predict(x)
 
-    def evaluate(self, x, y, verbose=0, **kwargs):
+    def evaluate(self, **kwargs):
         """Model predict and evluate.
 
         This method is final. Signature will be checked at runtime!
@@ -207,16 +223,9 @@ class TFHub(Model):
         Returns:
             metrics: to be defined!
         """
-        batch_size = self.num_microbatches
-        # TODO: SEE fit_dp: make training robust for any number of minibatches
-        num_minibatches = round(x.shape[0] / self.num_microbatches)
-        x = x[:num_minibatches * self.num_microbatches]
-        y = y[:num_minibatches * self.num_microbatches]
-        return self.model.evaluate(
-            x=x,
-            y=y,
-            batch_size=batch_size,
-            verbose=verbose)
+        test_steps = self.test_generator.samples // self.test_generator.batch_size
+        evaluation = self.model.evaluate(self.test_generator,steps = test_steps)
+        return evaluation
 
     def save(self, name, version):
         """Saves the model.

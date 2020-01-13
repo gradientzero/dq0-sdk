@@ -1,0 +1,37 @@
+data_preprocessing:
+  train_data_dir: 'dq0sdk/data/google_flowers/flower_photos/train'
+  test_data_dir: 'dq0sdk/data/google_flowers/flower_photos/test'
+  base_datagen: {rescale: !!python/float 0.0039215686, #or 1/255
+                 validation_split: !!python/float 0.2}
+  train_datagen: {}
+  development_datagen: {}
+  test_datagen: {}
+  base_dataflow: {target_size: !!python/tuple [224,224],
+                  batch_size: 32,
+                  interpolation: 'bilinear'}
+  train_dataflow: {subset: 'training',
+                   shuffle: True}
+  development_dataflow: {subset: 'validation',
+                         shuffle: False}
+  test_dataflow: {shuffle: False}
+
+hub_layer_kwargs:
+  tf_url: 'https://tfhub.dev/google/tf2-preview/mobilenet_v2/feature_vector/4'
+  trainable: False
+  optional: {input_shape: !!python/tuple [224,224,3]}
+
+lst_tf_keras_layers:
+  Dense(
+  self.train_generator.num_classes,
+  activation='softmax',
+  kernel_regularizer=tf.keras.regularizers.l2(0.0001))
+
+optimizer:
+  optimizer: tf.keras.optimizers.SGD(lr=0.005, momentum=0.9)
+  loss: tf.keras.losses.CategoricalCrossentropy(label_smoothing=0.1)
+  metrics: ['accuracy']
+
+model.fit:
+  epochs: 1
+
+model_path: './dq0sdk/examples/image_classification'

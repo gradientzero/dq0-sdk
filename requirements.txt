@@ -27,3 +27,5 @@ tensorflow==2.0.0
 tensorflow-estimator==2.0.1
 tensorflow-privacy==0.2.2
 tensorflow_hub==0.7.0
+pyyaml==5.3
+Pillow==7.0.0
