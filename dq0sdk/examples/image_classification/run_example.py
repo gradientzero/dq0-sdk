@@ -1,10 +1,17 @@
 # -*- coding: utf-8 -*-
+"""Instructions to run
+
+data source: https://storage.googleapis.com/download.tensorflow.org/example_images/flower_photos.tgz
+1. download source and unpack to dq0sdk/data/google_flowers/flower_photos
+2. run dq0sdk/data/google_flowers/split_train_test.py
+3. make sure to install updated requirements.txt
+4. should be good to go
+"""
 import os
 import tensorflow as tf
 
 from dq0sdk.util.get_config import get_config
 from dq0sdk.models.tf.tf_hub import TFHub
-
 
 config_path = './dq0sdk/examples/image_classification'
 config = get_config(os.path.join(config_path,'config.yaml'))
@@ -61,5 +68,3 @@ evaluation=im_cls.evaluate()
 
 
 print(evaluation)
-
-    
