@@ -12,14 +12,11 @@ All rights reserved
 """
 
 import logging
-import os
-from logging.config import fileConfig
 
 from dq0sdk.data.utils import util
 
-fileConfig(os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), '../../logging.conf'))
-logger = logging.getLogger('dq0')
+logger = logging.getLogger('logger')
+# TODO: use dq0-core sqlite logger!
 
 
 def _handle_missing_data(dataset_df,
