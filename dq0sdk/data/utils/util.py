@@ -21,8 +21,7 @@ import numpy as np
 import pandas as pd
 
 
-logger = logging.getLogger('logger')
-# TODO: use dq0-core sqlite logger
+logger = logging.getLogger()
 
 
 def print_dataset_info(df_dataset, s_title):

@@ -24,6 +24,8 @@ Todo:
 Copyright 2019, Gradient Zero
 All rights reserved
 """
+import logging
+logger = logging.getLogger()
 
 
 class Connector():
@@ -31,8 +33,7 @@ class Connector():
     """
     def __init__(self):
         super().__init__()
-        self.sources = []
-        self._detect_sources()
+        self.sources = None
 
     def list(self, reload=False):
         """List available data sources
@@ -43,11 +44,13 @@ class Connector():
         Returns:
             List of available data sources
         """
-        if reload:
+        if reload or self.sources is None:
             self._detect_sources()
         return self.sources
 
     def _detect_sources(self):
         """Scan for available data sources.
         """
+        logger.debug('Scanning for new data sources.')
         self.sources = []
+        logger.debug('Found {} available sources'.format(len(self.sources)))

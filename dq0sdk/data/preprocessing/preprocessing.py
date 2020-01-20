@@ -15,8 +15,7 @@ import logging
 
 from dq0sdk.data.utils import util
 
-logger = logging.getLogger('logger')
-# TODO: use dq0-core sqlite logger!
+logger = logging.getLogger()
 
 
 def _handle_missing_data(dataset_df,
