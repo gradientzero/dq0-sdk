@@ -8,34 +8,13 @@ TODO:
     * Complete example doc string 
     
 Example:
-    class MyAwsomeModel(dq0.models.tf.NeuralNetwork):
-        def init():
-            self.learning_rate = 0.3
-
-        def setup_data():
-            # do something
-            pass
-
-        def setup_model():
-            # freely deinfe the tf / keras model
-            pass
-
     if __name__ == "__main__":
-        myModel = MyAwsomeModel()
-        myModel.setup_data()
-        myModel.setup_model()
-        # myModel.fit()
-        myModel.fit_dp()
-        myModel.save()
+        yaml_path = 'your path'
+        yaml_config = YamlConfig(yaml_path)
 
-
-    ./dql-cli deploy-model --model-name
-
-    ./dql-cli evalute-model --model-name
-    return myModel.evalute()
-
-    ./dql-cli model-predict --sdfsd
-    return myModel.predict()
+        model = MyAwesomeModel(yaml_config)
+        model.setup_model()
+        ...
 
 :Authors:
     Craig Lincoln <cl@gradient0.com>
@@ -51,6 +30,11 @@ import tensorflow as tf
 from tensorflow import keras
 
 class YamlConfig():
+    """Yaml parser for tf.keras models
+
+    SDK uses this to create NN models and
+    other paramters, eg, optimizers, loss, model path
+    """
     def __init__(self, 
                  yaml_path, 
                  yaml_dict=None):
@@ -62,15 +46,24 @@ class YamlConfig():
             self.yaml_dict=yaml_dict   
         
     def read_yaml_file(self):
+        """Reads yaml file
+        
+        This function parses a yaml file to self.yaml_dict
+        """
         with open(self.yaml_path, 'r') as yaml_file:
             self.yaml_dict=yaml.load(yaml_file, Loader=yaml.Loader) # turnsout SafeLoader doesnt recognise !!python/tuple
         return self.yaml_dict
 
     def save_yaml(self):
+        """Save yaml dict to a yaml file"""
         with open(self.yaml_path, 'w') as yaml_file:
             yaml_file.write(self.yaml_dict)
 
     def model_from_yaml(self):
+        """Create instance of tf.keras model from yaml
+
+        This function returns a tf.keras model instance
+        """
         self.read_yaml_file()
         model_dict = self.yaml_dict['Model']
         model_dict['class_name'] = 'Sequential'
@@ -82,6 +75,7 @@ class YamlConfig():
         return model
 
     def optimizer_para_from_yaml(self):
+        """Return parameters for dp_optimizer"""
         opt_para = self.yaml_dict['dp_optimizer parametes']
         return opt_para
         
