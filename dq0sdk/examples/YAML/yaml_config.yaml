@@ -1,0 +1,29 @@
+Model:
+  config:
+    layers:
+    - class_name: Dense
+      config:
+        activation: tanh
+        batch_input_shape: !!python/tuple
+        - null
+        - 108
+        trainable: true
+        units: 10
+    - class_name: Dense
+      config:
+        activation: tanh
+        trainable: true
+        units: 10
+    - class_name: Dense
+      config:
+        activation: tanh
+        trainable: true
+        units: 2
+model_path: 'notebooks/saved_model/'
+dp_optimizer parametes:
+  learning_rate: 0.3
+# loss:
+#   keras.losses.SparseCategoricalCrossentropy(from_logits=True)
+
+  
+
