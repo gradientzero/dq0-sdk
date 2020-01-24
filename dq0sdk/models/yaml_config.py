@@ -23,11 +23,15 @@ Example:
 Copyright 2020, Gradient Zero
 All rights reserved
 """
-
+import logging
+import sys
+import os
 import yaml
 
 import tensorflow as tf
 from tensorflow import keras
+
+logger = logging.getLogger()
 
 class YamlConfig():
     """Yaml parser for tf.keras models
@@ -50,8 +54,13 @@ class YamlConfig():
         
         This function parses a yaml file to self.yaml_dict
         """
-        with open(self.yaml_path, 'r') as yaml_file:
-            self.yaml_dict=yaml.load(yaml_file, Loader=yaml.Loader) # turnsout SafeLoader doesnt recognise !!python/tuple
+        try:
+            if not os.path.exists(self.yaml_path):
+                raise FileNotFoundError('File not found!')
+            with open(self.yaml_path, 'r') as yaml_file:
+                self.yaml_dict=yaml.load(yaml_file, Loader=yaml.Loader) # turnsout SafeLoader doesnt recognise !!python/tuple
+        except FileNotFoundError:
+                logger.debug('File not found at {}'.format(self.yaml_path))
         return self.yaml_dict
 
     def save_yaml(self):

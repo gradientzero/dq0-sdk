@@ -27,7 +27,7 @@ if __name__=='__main__':
                                                  features_to_drop_list=None
                                                  )
 
-    yaml_path = 'dq0sdk/examples/YAML/yaml_config.yaml'
+    yaml_path = 'dq0sdk/examples/YAML/yaml_config2.yaml'
     yaml_config = YamlConfig(yaml_path)
     print(yaml_config.yaml_dict)
     model = NeuralNetwork_adult_yaml(yaml_config)
