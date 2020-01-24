@@ -31,7 +31,8 @@ import yaml
 import tensorflow as tf
 from tensorflow import keras
 
-logger = logging.getLogger()
+logging.config.fileConfig('dq0sdk/logging.conf', defaults=None, disable_existing_loggers=True)
+logger = logging.getLogger('root')
 
 class YamlConfig():
     """Yaml parser for tf.keras models
@@ -61,6 +62,7 @@ class YamlConfig():
                 self.yaml_dict=yaml.load(yaml_file, Loader=yaml.Loader) # turnsout SafeLoader doesnt recognise !!python/tuple
         except FileNotFoundError:
                 logger.debug('File not found at {}'.format(self.yaml_path))
+                sys.exit(1)
         return self.yaml_dict
 
     def save_yaml(self):
