@@ -60,15 +60,7 @@ class NeuralNetwork_adult_yaml(dq0sdk.models.tf.neural_network.NeuralNetwork):
 
         optimizer = dp_optimizer.GradientDescentOptimizer(
             **self.dp_optimizer_para)
-        # loss = keras.losses.SparseCategoricalCrossentropy(from_logits=True)
-        loss = keras.losses.get(self.yaml_dict['LOSS']['class_name'])
-        if len(self.yaml_dict['LOSS'].items()):
-            loss_config = loss.get_config()
-            for k,v in self.yaml_dict['LOSS'].items():
-                if k in loss_config.keys():
-                    loss_config[k] = v
-        # print(loss_config)
-        loss = loss.from_config(loss_config)
+        loss = self.yaml_config.loss_from_yaml()
         self.model.compile(optimizer=optimizer,
                            loss=loss,
                            metrics=self.metrics)

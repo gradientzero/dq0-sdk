@@ -78,5 +78,17 @@ class YamlConfig():
         """Return parameters for dp_optimizer"""
         opt_para = self.yaml_dict['dp_optimizer parametes']
         return opt_para
+
+    def loss_from_yaml(self):
+        """returns instance of loss function"""
+        loss = keras.losses.get(self.yaml_dict['LOSS']['class_name'])
+        if len(self.yaml_dict['LOSS'].items()):
+            loss_config = loss.get_config()
+            for k,v in self.yaml_dict['LOSS'].items():
+                if k in loss_config.keys():
+                    loss_config[k] = v
+        # print(loss_config)
+        loss = loss.from_config(loss_config)
+        return loss
         
 
