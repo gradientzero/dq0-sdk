@@ -22,8 +22,12 @@ Model:
 model_path: 'notebooks/saved_model/'
 dp_optimizer parametes:
   learning_rate: 0.3
-# loss:
-#   keras.losses.SparseCategoricalCrossentropy(from_logits=True)
+LOSS:
+  class_name: 'SparseCategoricalCrossentropy'
+  from_logits: True
+METRICS:
+  - 'accuracy'
+  - 'mse'
 
   
 

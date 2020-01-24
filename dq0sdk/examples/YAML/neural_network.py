@@ -27,6 +27,7 @@ class NeuralNetwork_adult_yaml(dq0sdk.models.tf.neural_network.NeuralNetwork):
         self.yaml_dict = yaml_config.yaml_dict
         self.dp_optimizer_para = yaml_config.optimizer_para_from_yaml()
         self.model_path = self.yaml_dict['model_path']
+        self.metrics = self.yaml_dict['METRICS']
 
     def setup_data(self, X_df, y_ts, quantitative_features_list, num_tr_instances):
         # Scale values to the range from 0 to 1; to be precessed by the neural network
@@ -59,8 +60,15 @@ class NeuralNetwork_adult_yaml(dq0sdk.models.tf.neural_network.NeuralNetwork):
 
         optimizer = dp_optimizer.GradientDescentOptimizer(
             **self.dp_optimizer_para)
-        loss = keras.losses.SparseCategoricalCrossentropy(from_logits=True)
-        # loss = self.yaml_dict['loss']
+        # loss = keras.losses.SparseCategoricalCrossentropy(from_logits=True)
+        loss = keras.losses.get(self.yaml_dict['LOSS']['class_name'])
+        if len(self.yaml_dict['LOSS'].items()):
+            loss_config = loss.get_config()
+            for k,v in self.yaml_dict['LOSS'].items():
+                if k in loss_config.keys():
+                    loss_config[k] = v
+        # print(loss_config)
+        loss = loss.from_config(loss_config)
         self.model.compile(optimizer=optimizer,
                            loss=loss,
                            metrics=self.metrics)

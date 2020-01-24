@@ -29,6 +29,7 @@ if __name__=='__main__':
 
     yaml_path = 'dq0sdk/examples/YAML/yaml_config.yaml'
     yaml_config = YamlConfig(yaml_path)
+    print(yaml_config.yaml_dict)
     model = NeuralNetwork_adult_yaml(yaml_config)
     X_train_df, X_test_df, y_train_ts, y_test_ts = model.setup_data(X_df, y_ts, dc.quantitative_features_list,
                                                                     num_tr_instances)
