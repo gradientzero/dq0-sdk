@@ -25,17 +25,18 @@ Copyright 2019, Gradient Zero
 All rights reserved
 """
 import logging
-import os
 logger = logging.getLogger()
 
 
 class Connector():
     """Data connector. Manages all data sources available through the SDK.
+
+    Args:
+        dataconfig: Data source configuration in yaml format.
     """
-    def __init__(self, datadir=None, dataconfig=None):
+    def __init__(self, dataconfig=None):
         super().__init__()
         self.sources = None
-        self.datadir = datadir
         self.dataconfig = dataconfig
 
     def list(self, reload=False):
@@ -57,8 +58,8 @@ class Connector():
         logger.debug('Scanning for new data sources.')
         self.sources = []
 
-        if not os.path.isdir(self.datadir):
-            logger.debug('Data base directory not found. {}'.format(self.datadir))
+        if self.dataconfig is None:
+            logger.debug('Data configuration not found!')
             return
 
         logger.debug('Found {} available sources'.format(len(self.sources)))
