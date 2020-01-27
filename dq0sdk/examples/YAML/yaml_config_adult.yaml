@@ -1,4 +1,4 @@
-Model:
+MODEL:
   config:
     layers:
     - class_name: Dense
@@ -6,7 +6,7 @@ Model:
         activation: tanh
         batch_input_shape: !!python/tuple
         - null
-        - 108
+        - 108 # number of features
         trainable: true
         units: 10
     - class_name: Dense
@@ -19,8 +19,8 @@ Model:
         activation: tanh
         trainable: true
         units: 2
-model_path: 'notebooks/saved_model/'
-dp_optimizer parametes:
+MODEL_PATH: 'notebooks/saved_model/'
+OPTIMIZER:
   learning_rate: 0.3
 LOSS:
   class_name: 'SparseCategoricalCrossentropy'
@@ -28,6 +28,9 @@ LOSS:
 METRICS:
   - 'accuracy'
   - 'mse'
+FIT:
+  epochs: 10
+
 
   
 

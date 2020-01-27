@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from dq0sdk.models.yaml_config import YamlConfig
+from dq0sdk.models.tf.process_yaml_config import YamlConfig
 import dq0sdk.models.tf.neural_network
 from dq0sdk.examples.YAML.neural_network import NeuralNetwork_adult_yaml
 import os
@@ -27,14 +27,12 @@ if __name__=='__main__':
                                                  features_to_drop_list=None
                                                  )
 
-    yaml_path = 'dq0sdk/examples/YAML/yaml_config.yaml'
+    yaml_path = 'dq0sdk/examples/YAML/yaml_config_adult.yaml'
     yaml_config = YamlConfig(yaml_path)
-    print(yaml_config.yaml_dict)
     model = NeuralNetwork_adult_yaml(yaml_config)
     X_train_df, X_test_df, y_train_ts, y_test_ts = model.setup_data(X_df, y_ts, dc.quantitative_features_list,
                                                                     num_tr_instances)
     model.setup_model()
-    print(model.model)
     model.fit(X_train=X_train_df, y_train=y_train_ts)
     # model.fit_dp(X_train=X_train_df, y_train=y_train_ts)
     loss_tr, acc_tr, mse_te = model.evaluate(X_train_df, y_train_ts)

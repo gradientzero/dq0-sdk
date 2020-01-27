@@ -51,10 +51,10 @@ import tensorflow as tf
 import tensorflow_hub as hub
 from tensorflow import keras
 import numpy as np
-np.random.seed(1)
 
 from tensorflow_privacy.privacy.optimizers import dp_optimizer
 
+from dq0sdk.models.tf.custom_objects import custom_objects
 
 class TFHub(Model):
     """Neural Network model implementation.
@@ -62,26 +62,21 @@ class TFHub(Model):
     SDK users can use this class to create and train Keras models or
     subclass this class to define custom neural networks.
     """
-    def __init__(self, kwargs):
+    def __init__(self, yaml_config, custom_objects=custom_objects):
         super().__init__()
-        self.tf_url=kwargs['hub_layer_kwargs']['tf_url']
-        self.trainable=kwargs['hub_layer_kwargs']['trainable'] # default False
-        self.optional_hub_layer_kwargs=kwargs['hub_layer_kwargs']['optional']
-        self.keras_layers = kwargs['lst_tf_keras_layers']
-        self.optimizer = kwargs['optimizer']['optimizer']
-        self.loss = kwargs['optimizer']['loss']
-        self.metrics = kwargs['optimizer']['metrics']
-        self.epochs = kwargs['model.fit']['epochs']
-        self.train_generator = kwargs['train_generator']
-        self.development_generator = kwargs['development_generator']
-        self.test_generator = kwargs['test_generator']
-        self.model_path = kwargs['model_path']
+        self.yaml_config = yaml_config
+        self.yaml_dict = yaml_config.yaml_dict
+        self.dp_optimizer_para = yaml_config.optimizer_para_from_yaml()
+        self.model_path = self.yaml_dict['MODEL_PATH']
+        self.metrics = self.yaml_dict['METRICS']
+        self.epochs = self.yaml_dict['FIT']['epochs']
+        self.custom_objects = custom_objects
+        self.model = None
+        
         # stuff to do with dp training
         self.learning_rate=0.15
         self.num_microbatches = 250
         self.verbose = 0
-        self.metrics = ['accuracy', 'mse']
-        self.model = None
         
         # Range possible: grid search, all combinations inside range
 
@@ -97,28 +92,8 @@ class TFHub(Model):
         pass
 
     def setup_model(self):
-        """retrieve tensorflow hub model for use in setup_model
-        Args:
-            kwargs (:obj:`dict`): dictionary of optional arguments
-            kwargs['trainable'] (bool): True to unfreeze weights, default False
-            kwargs['arguments'] (dict): optionally, a dict with additional keyword arguments passed to the callable. 
-                                        These must be JSON-serializable to save the Keras config of this layer.
-                                        eg dict(batch_norm_momentum=0.997)
-            **kwargs: 'output_shape': A tuple with the (possibly partial) output shape of the callable without 
-                      leading batch size. Other arguments are pass into the Layer constructor.
-        """
-        hub_layer = hub.KerasLayer(self.tf_url,
-                                   trainable=self.trainable,
-                                   **self.optional_hub_layer_kwargs)
-        
-        self.model=tf.keras.Sequential([hub_layer])
-        # self.model.add(self.keras_layers)
-        self.model.add(tf.keras.layers.Dropout(rate=0.2))
-        self.model.add(tf.keras.layers.Dense(
-                         self.train_generator.num_classes,
-                         activation='softmax',
-                         kernel_regularizer=tf.keras.regularizers.l2(0.0001)))
-        
+        self.model = self.yaml_config.model_from_yaml()
+
     def prepare(self, **kwargs):
         """called before model fit on every run.
 
@@ -140,19 +115,17 @@ class TFHub(Model):
                 preprocessed data, feature columns
         """
 
-        self.model.compile(optimizer=tf.keras.optimizers.SGD(lr=0.005, momentum=0.9),
-                           loss=tf.keras.losses.CategoricalCrossentropy(label_smoothing=0.1),
-                           metrics=['accuracy'])
+        optimizer = dp_optimizer.GradientDescentOptimizer(
+            **self.dp_optimizer_para)
+        loss = self.yaml_config.loss_from_yaml()
+        self.model.compile(optimizer=optimizer,
+                           loss=loss,
+                           metrics=self.metrics)
         
-        steps_per_epoch = self.train_generator.samples // self.train_generator.batch_size
-        validation_steps = self.development_generator.samples // self.development_generator.batch_size
-        print([steps_per_epoch,validation_steps])
-        hist = self.model.fit(
-            self.train_generator,
+        self.model.fit(
             epochs=self.epochs, 
-            steps_per_epoch=steps_per_epoch,
-            validation_data=self.development_generator,
-            validation_steps=validation_steps).history
+            **kwargs,
+            )
         
     def fit_dp(self, **kwargs):
         """Model fit with differential privacy.
@@ -223,8 +196,8 @@ class TFHub(Model):
         Returns:
             metrics: to be defined!
         """
-        test_steps = self.test_generator.samples // self.test_generator.batch_size
-        evaluation = self.model.evaluate(self.test_generator,steps = test_steps)
+
+        evaluation = self.model.evaluate(**kwargs)
         return evaluation
 
     def save(self, name, version):
@@ -254,4 +227,14 @@ class TFHub(Model):
         """
         self.model = tf.keras.models.load_model(
             '{}/{}_{}.h5'.format(
-                self.model_path, name, version), compile=False)
+                self.model_path, name, version),
+                custom_objects=self.custom_objects,
+                compile=False)
+
+        optimizer = dp_optimizer.GradientDescentOptimizer(
+            **self.dp_optimizer_para)
+        loss = self.yaml_config.loss_from_yaml()
+        self.model.compile(optimizer=optimizer,
+                           loss=loss,
+                           metrics=self.metrics)
+        

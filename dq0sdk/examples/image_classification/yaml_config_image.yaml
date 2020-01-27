@@ -1,0 +1,54 @@
+PREPROCESSING:
+  train_data_dir: 'dq0sdk/data/google_flowers/flower_photos/train'
+  test_data_dir: 'dq0sdk/data/google_flowers/flower_photos/test'
+  base_datagen: {rescale: !!python/float 0.00392156862745098, #or 1/255
+                 validation_split: !!python/float 0.2}
+  train_datagen: {}
+  development_datagen: {}
+  test_datagen: {}
+  base_dataflow: {target_size: !!python/tuple [224,224],
+                  batch_size: 32,
+                  interpolation: 'bilinear'}
+  train_dataflow: {subset: 'training',
+                   shuffle: True}
+  development_dataflow: {subset: 'validation',
+                         shuffle: False}
+  test_dataflow: {shuffle: False}
+
+MODEL:
+  config:
+    layers:
+    - class_name: KerasLayer
+      config:
+        batch_input_shape: !!python/tuple
+        - null
+        - 224
+        - 224
+        - 3
+        dtype: float32
+        handle: https://tfhub.dev/google/tf2-preview/mobilenet_v2/feature_vector/3
+        name: keras_layer
+        trainable: false
+    - class_name: Dropout
+      config:
+        rate: 0.2
+    - class_name: Dense
+      config:
+        activation: softmax
+        kernel_regularizer:
+          class_name: L1L2
+          config:
+            l1: 0.0
+            l2: 9.999999747378752e-05
+        units: 5
+OPTIMIZER:
+  learning_rate: 0.15
+LOSS:
+  class_name: 'CategoricalCrossentropy'
+  label_smoothing: 0.1
+METRICS:
+  - 'accuracy'
+  - 'mse'
+FIT:
+  epochs: 1
+MODEL_PATH: './dq0sdk/examples/image_classification'

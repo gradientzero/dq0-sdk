@@ -52,6 +52,8 @@ from tensorflow import keras
 
 from tensorflow_privacy.privacy.optimizers import dp_optimizer
 
+from dq0sdk.models.tf.custom_objects import custom_objects
+
 
 class NeuralNetwork(Model):
     """Neural Network model implementation.
@@ -60,7 +62,7 @@ class NeuralNetwork(Model):
     subclass this class to define custom neural networks.
     """
     def __init__(self):
-        super().__init__()
+        super().__init__(custom_objects = custom_objects)
         self.learning_rate = 0.15
         self.epochs = 10
         self.num_microbatches = 250
@@ -68,6 +70,7 @@ class NeuralNetwork(Model):
         self.metrics = ['accuracy', 'mse']
         self.model = None
         self.model_path = '.'
+        self.custom_objects = custom_objects
         # Range possible: grid search, all combinations inside range
 
     def setup_data(self, **kwargs):
@@ -239,4 +242,13 @@ class NeuralNetwork(Model):
         """
         self.model = tf.keras.models.load_model(
             '{}/{}_{}.h5'.format(
-                self.model_path, name, version), compile=False)
+                self.model_path, name, version),
+                custom_objects=self.custom_objects,
+                compile=False)
+
+        optimizer = dp_optimizer.GradientDescentOptimizer(
+            **self.dp_optimizer_para)
+        loss = self.yaml_config.loss_from_yaml()
+        self.model.compile(optimizer=optimizer,
+                           loss=loss,
+                           metrics=self.metrics)

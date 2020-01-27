@@ -26,8 +26,9 @@ class NeuralNetwork_adult_yaml(dq0sdk.models.tf.neural_network.NeuralNetwork):
         self.yaml_config = yaml_config
         self.yaml_dict = yaml_config.yaml_dict
         self.dp_optimizer_para = yaml_config.optimizer_para_from_yaml()
-        self.model_path = self.yaml_dict['model_path']
+        self.model_path = self.yaml_dict['MODEL_PATH']
         self.metrics = self.yaml_dict['METRICS']
+        self.epochs = self.yaml_dict['FIT']['epochs']
 
     def setup_data(self, X_df, y_ts, quantitative_features_list, num_tr_instances):
         # Scale values to the range from 0 to 1; to be precessed by the neural network

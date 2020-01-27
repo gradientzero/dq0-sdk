@@ -32,9 +32,12 @@ import yaml
 
 import tensorflow as tf
 from tensorflow import keras
+import tensorflow_hub as hub
+
+from dq0sdk.models.tf.custom_objects import custom_objects
 
 fileConfig(os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), '../logging.conf'))
+    os.path.dirname(os.path.abspath(__file__)), '../../logging.conf'))
 logger = logging.getLogger('dq0')
 
 class YamlConfig():
@@ -45,9 +48,11 @@ class YamlConfig():
     """
     def __init__(self, 
                  yaml_path, 
-                 yaml_dict=None):
+                 yaml_dict=None,
+                 custom_objects=custom_objects):
         self.yaml_str = None
         self.yaml_path = yaml_path
+        self.custom_objects = custom_objects
         if yaml_dict is None:
             self.read_yaml_file()
         else:
@@ -77,18 +82,22 @@ class YamlConfig():
         This function returns a tf.keras model instance
         """
         self.read_yaml_file()
-        model_dict = self.yaml_dict['Model']
+        model_dict = self.yaml_dict['MODEL']
         model_dict['class_name'] = 'Sequential'
         model_dict['config']['name'] = 'sequential'
         model_str = yaml.dump(model_dict)
         
         # TODO: add control of custom_objects
-        model = tf.keras.models.model_from_yaml(model_str, custom_objects={})
+        try:
+            model = tf.keras.models.model_from_yaml(model_str, custom_objects=self.custom_objects)
+        except Exception as e:
+            logger.error('model_from_yaml: custom_objects is missing an entry {}'.format(e))
+            sys.exit(1)
         return model
 
     def optimizer_para_from_yaml(self):
         """Return parameters for dp_optimizer"""
-        opt_para = self.yaml_dict['dp_optimizer parametes']
+        opt_para = self.yaml_dict['OPTIMIZER']
         return opt_para
 
     def loss_from_yaml(self):
