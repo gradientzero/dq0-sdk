@@ -246,9 +246,3 @@ class NeuralNetwork(Model):
                 custom_objects=self.custom_objects,
                 compile=False)
 
-        optimizer = dp_optimizer.GradientDescentOptimizer(
-            **self.dp_optimizer_para)
-        loss = self.yaml_config.loss_from_yaml()
-        self.model.compile(optimizer=optimizer,
-                           loss=loss,
-                           metrics=self.metrics)
