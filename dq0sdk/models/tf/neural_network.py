@@ -61,8 +61,8 @@ class NeuralNetwork(Model):
     SDK users can use this class to create and train Keras models or
     subclass this class to define custom neural networks.
     """
-    def __init__(self):
-        super().__init__(custom_objects = custom_objects)
+    def __init__(self, custom_objects = custom_objects):
+        super().__init__()
         self.learning_rate = 0.15
         self.epochs = 10
         self.num_microbatches = 250
