@@ -24,6 +24,8 @@ Copyright 2020, Gradient Zero
 All rights reserved
 """
 import logging
+from logging.config import fileConfig
+
 import sys
 import os
 import yaml
@@ -31,8 +33,9 @@ import yaml
 import tensorflow as tf
 from tensorflow import keras
 
-logging.config.fileConfig('dq0sdk/logging.conf', defaults=None, disable_existing_loggers=True)
-logger = logging.getLogger('root')
+fileConfig(os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), '../logging.conf'))
+logger = logging.getLogger('dq0')
 
 class YamlConfig():
     """Yaml parser for tf.keras models
@@ -56,13 +59,11 @@ class YamlConfig():
         This function parses a yaml file to self.yaml_dict
         """
         try:
-            if not os.path.exists(self.yaml_path):
-                raise FileNotFoundError('File not found!')
             with open(self.yaml_path, 'r') as yaml_file:
-                self.yaml_dict=yaml.load(yaml_file, Loader=yaml.Loader) # turnsout SafeLoader doesnt recognise !!python/tuple
-        except FileNotFoundError:
-                logger.debug('File not found at {}'.format(self.yaml_path))
-                sys.exit(1)
+                self.yaml_dict=yaml.load(yaml_file, Loader=yaml.Loader) # turnsout SafeLoader doesnt recognise !!python/tuple    
+        except Exception as e:
+            logger.error('Could not find config at {}! {}'.format(self.yaml_path,e))
+            sys.exit(1)
         return self.yaml_dict
 
     def save_yaml(self):
