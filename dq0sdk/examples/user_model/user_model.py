@@ -12,6 +12,7 @@ Copyright 2020, Gradient Zero
 
 from dq0sdk.models.model import Model
 
+
 class UserModel(Model):
     """Derived from dq0sdk.models.Model class
 
