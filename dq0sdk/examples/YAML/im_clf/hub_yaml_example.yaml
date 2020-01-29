@@ -1,0 +1,49 @@
+backend: tensorflow
+class_name: Sequential
+config:
+  layers:
+  - class_name: KerasLayer
+    config:
+      batch_input_shape: !!python/tuple
+      - null
+      - 224
+      - 224
+      - 3
+      dtype: float32
+      handle: https://tfhub.dev/google/tf2-preview/mobilenet_v2/feature_vector/3
+      name: keras_layer
+      trainable: false
+  - class_name: Dropout
+    config:
+      dtype: float32
+      name: dropout
+      noise_shape: null
+      rate: 0.2
+      seed: null
+      trainable: true
+  - class_name: Dense
+    config:
+      activation: softmax
+      activity_regularizer: null
+      bias_constraint: null
+      bias_initializer:
+        class_name: Zeros
+        config: {}
+      bias_regularizer: null
+      dtype: float32
+      kernel_constraint: null
+      kernel_initializer:
+        class_name: GlorotUniform
+        config:
+          seed: null
+      kernel_regularizer:
+        class_name: L1L2
+        config:
+          l1: 0.0
+          l2: 9.999999747378752e-05
+      name: dense
+      trainable: true
+      units: 2
+      use_bias: true
+  name: sequential
+keras_version: 2.2.4-tf

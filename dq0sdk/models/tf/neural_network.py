@@ -52,8 +52,6 @@ from tensorflow import keras
 
 from tensorflow_privacy.privacy.optimizers import dp_optimizer
 
-from dq0sdk.models.tf.custom_objects import custom_objects
-
 
 class NeuralNetwork(Model):
     """Neural Network model implementation.
@@ -61,7 +59,7 @@ class NeuralNetwork(Model):
     SDK users can use this class to create and train Keras models or
     subclass this class to define custom neural networks.
     """
-    def __init__(self, custom_objects = custom_objects):
+    def __init__(self):
         super().__init__()
         self.learning_rate = 0.15
         self.epochs = 10
@@ -70,7 +68,6 @@ class NeuralNetwork(Model):
         self.metrics = ['accuracy', 'mse']
         self.model = None
         self.model_path = '.'
-        self.custom_objects = custom_objects
         # Range possible: grid search, all combinations inside range
 
     def setup_data(self, **kwargs):
@@ -243,6 +240,5 @@ class NeuralNetwork(Model):
         self.model = tf.keras.models.load_model(
             '{}/{}_{}.h5'.format(
                 self.model_path, name, version),
-                custom_objects=self.custom_objects,
                 compile=False)
 

@@ -10,13 +10,14 @@ data source: https://storage.googleapis.com/download.tensorflow.org/example_imag
 import os
 import tensorflow as tf
 
-from dq0sdk.models.tf.process_yaml_config import YamlConfig
-from dq0sdk.models.tf.tf_hub import TFHub
+from dq0sdk.models.tf.neural_network_yaml import NeuralNetworkYaml
+
+tf.random.set_seed(0)
 
 if __name__=='__main__':
-    yaml_path = 'dq0sdk/examples/image_classification/yaml_config_image.yaml'
-    yaml_config = YamlConfig(yaml_path)
-    yaml_dict = yaml_config.yaml_dict
+    yaml_path = 'dq0sdk/examples/yaml/im_clf/yaml_config_image.yaml'
+    im_clf = NeuralNetworkYaml(yaml_path)
+    yaml_dict = im_clf.yaml_dict
     # print(yaml_dict)
 
     train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(
@@ -52,28 +53,61 @@ if __name__=='__main__':
         **yaml_dict['PREPROCESSING']['base_dataflow'],
         )
 
-    # Create instaqnce of tfhub
-    im_cls = TFHub(yaml_config)
-    im_cls.setup_model()
-    # Fit model
+    # Get number of batches per epoch
     steps_per_epoch = train_generator.samples // train_generator.batch_size
     validation_steps = development_generator.samples // development_generator.batch_size
-    im_cls.fit(x=train_generator,
+    test_steps = test_generator.samples // test_generator.batch_size
+    
+    # Create instance of NNFromYaml
+    # im_clf = NeuralNetworkYaml(yaml_path)
+    im_clf.setup_model()
+    # Fit model
+    im_clf.fit(x=train_generator,
+            steps_per_epoch=steps_per_epoch,
+            validation_data=development_generator,
+            validation_steps=validation_steps,
+            )
+    
+    # evaluate
+    loss_tr, acc_tr, mse_tr = im_clf.evaluate(x=train_generator,steps = steps_per_epoch)
+    loss_te, acc_te, mse_te = im_clf.evaluate(x=test_generator,steps = test_steps)
+    print('Train  Acc: %.2f %%' % (100 * acc_tr))
+    print('Test  Acc: %.2f %%' % (100 * acc_te))
+
+    # Save and load model
+    im_clf.save('mobilenetv3','0.1')
+    im_clf.load('mobilenetv3','0.1')
+    # evaluate
+    print('Model reloaded from file')
+    # loss_tr, acc_tr, mse_tr = im_clf.evaluate(x=train_generator,steps = steps_per_epoch)
+    loss_te, acc_te, mse_te = im_clf.evaluate(x=test_generator,steps = test_steps)
+    # print('Train  Acc: %.2f %%' % (100 * acc_tr))
+    print('Test  Acc: %.2f %%' % (100 * acc_te))
+
+    # DP Version
+    im_clf_dp = NeuralNetworkYaml(yaml_path)
+    im_clf_dp.setup_model()
+    im_clf_dp.fit_dp(x=train_generator,
             steps_per_epoch=steps_per_epoch,
             validation_data=development_generator,
             validation_steps=validation_steps,
             )
     # evaluate
-    test_steps = test_generator.samples // test_generator.batch_size
-    loss_te, acc_te, mse_te = im_cls.evaluate(x=test_generator,steps = test_steps)
-    print('Test  Acc: %.2f %%' % (100 * acc_te))
+    loss_tr, acc_tr, mse_tr = im_clf_dp.evaluate(x=train_generator,steps = steps_per_epoch)
+    loss_te, acc_te, mse_te = im_clf_dp.evaluate(x=test_generator,steps = test_steps)
+    print('Train DP  Acc: %.2f %%' % (100 * acc_tr))
+    print('Test DP  Acc: %.2f %%' % (100 * acc_te))
+
     # Save and load model
-    im_cls.save('mobilenetv3','0.1')
-    im_cls2 = TFHub(yaml_config)
-    im_cls2.load('mobilenetv3','0.1')
+    im_clf.save('mobilenetv3_dp','0.1')
+    im_clf.load('mobilenetv3_dp','0.1')
     # evaluate
     print('Model reloaded from file')
-    test_steps = test_generator.samples // test_generator.batch_size
-    loss_te, acc_te, mse_te = im_cls2.evaluate(x=test_generator,steps = test_steps)
-    print('Test Acc: %.2f %%' % (100 * acc_te))
+    # loss_tr, acc_tr, mse_tr = im_clf_dp.evaluate(x=train_generator,steps = steps_per_epoch)
+    loss_te, acc_te, mse_te = im_clf_dp.evaluate(x=test_generator,steps = test_steps)
+    # print('Train DP  Acc: %.2f %%' % (100 * acc_tr))
+    print('Test DP Acc: %.2f %%' % (100 * acc_te))
 
+    
+    
+    

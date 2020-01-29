@@ -34,11 +34,16 @@ import tensorflow as tf
 from tensorflow import keras
 import tensorflow_hub as hub
 
-from dq0sdk.models.tf.custom_objects import custom_objects
+from tensorflow_privacy.privacy.optimizers import dp_optimizer
 
 fileConfig(os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), '../../logging.conf'))
+    os.path.dirname(os.path.abspath(__file__)), '../logging.conf'))
 logger = logging.getLogger('dq0')
+
+def custom_objects():
+    custom_objects = {'KerasLayer': hub.KerasLayer,
+                      }
+    return custom_objects
 
 class YamlConfig():
     """Yaml parser for tf.keras models
@@ -52,7 +57,6 @@ class YamlConfig():
                  custom_objects=custom_objects):
         self.yaml_str = None
         self.yaml_path = yaml_path
-        self.custom_objects = custom_objects
         if yaml_dict is None:
             self.read_yaml_file()
         else:
@@ -73,43 +77,12 @@ class YamlConfig():
 
     def save_yaml(self):
         """Save yaml dict to a yaml file"""
-        with open(self.yaml_path, 'w') as yaml_file:
-            yaml_file.write(self.yaml_dict)
-
-    def model_from_yaml(self):
-        """Create instance of tf.keras model from yaml
-
-        This function returns a tf.keras model instance
-        """
-        self.read_yaml_file()
-        model_dict = self.yaml_dict['MODEL']
-        model_dict['class_name'] = 'Sequential'
-        model_dict['config']['name'] = 'sequential'
-        model_str = yaml.dump(model_dict)
-        
-        # TODO: add control of custom_objects
         try:
-            model = tf.keras.models.model_from_yaml(model_str, custom_objects=self.custom_objects)
+            with open(self.yaml_path, 'w') as yaml_file:
+                yaml_file.write(self.yaml_dict)
         except Exception as e:
-            logger.error('model_from_yaml: custom_objects is missing an entry {}'.format(e))
-            sys.exit(1)
-        return model
-
-    def optimizer_para_from_yaml(self):
-        """Return parameters for dp_optimizer"""
-        opt_para = self.yaml_dict['OPTIMIZER']
-        return opt_para
-
-    def loss_from_yaml(self):
-        """returns instance of loss function"""
-        loss = keras.losses.get(self.yaml_dict['LOSS']['class_name'])
-        if len(self.yaml_dict['LOSS'].items()):
-            loss_config = loss.get_config()
-            for k,v in self.yaml_dict['LOSS'].items():
-                if k in loss_config.keys():
-                    loss_config[k] = v
-        # print(loss_config)
-        loss = loss.from_config(loss_config)
-        return loss
-        
-
+            logger.error('Cannot write yaml to {}! {}'.format(self.yaml_path,e))
+    
+    def dump_yaml(self, yaml_dict):
+        self.yaml_str = yaml.dump(yaml_dict)
+        return self.yaml_str
