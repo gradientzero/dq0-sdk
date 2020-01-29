@@ -15,16 +15,13 @@ import os
 import pickle
 import shutil
 import sys
-from logging.config import fileConfig
 
 import numpy as np
 
 import pandas as pd
 
 
-fileConfig(os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), '../../logging.conf'))
-logger = logging.getLogger('dq0')
+logger = logging.getLogger()
 
 
 def print_dataset_info(df_dataset, s_title):
@@ -70,7 +67,6 @@ def _print_dataframe_cols_grouped_by_type(df_dataset):
 
 
 def print_summary_stats(ts, percentiles, s_col):
-    
     print('\n\nStats for', s_col, 'group: ')
     print('num null values:', ts.isnull().sum())
     print(ts.describe(percentiles=percentiles))

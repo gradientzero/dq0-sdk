@@ -222,3 +222,11 @@ class AdultSource(Source):
         # print(X_df.head(10))  # debug
 
         return X_df, y_ts, num_tr_instances
+
+    def to_json(self):
+        """Returns a json representation of this data sources information.
+
+        Returns:
+            data source description as json.
+        """
+        return {}
