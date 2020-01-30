@@ -6,9 +6,9 @@ model base class.
 """
 
 from .neural_network import NeuralNetwork
-from .tf_hub import TFHub
+from .neural_network_yaml import NeuralNetworkYaml
 
 __all__ = [
     'NeuralNetwork',
-    'TFHub'
+    'NeuralNetworkYaml'
 ]

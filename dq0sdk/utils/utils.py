@@ -10,9 +10,7 @@ TODO:
 Example:
     if __name__ == "__main__":
         yaml_path = 'your path'
-        yaml_config = YamlConfig(yaml_path)
-
-        model = MyAwesomeModel(yaml_config)
+        model = MyAwesomeModel(yaml_path)
         model.setup_model()
         ...
 
@@ -41,6 +39,9 @@ fileConfig(os.path.join(
 logger = logging.getLogger('dq0')
 
 def custom_objects():
+    """List of custom objects required for model_from_yaml()
+    and model.load(). Is required by NeuralNetworkYaml init()
+    """
     custom_objects = {'KerasLayer': hub.KerasLayer,
                       }
     return custom_objects
@@ -48,8 +49,8 @@ def custom_objects():
 class YamlConfig():
     """Yaml parser for tf.keras models
 
-    SDK uses this to create NN models and
-    other paramters, eg, optimizers, loss, model path
+    Yaml parser class for tf.Keras config files.
+     
     """
     def __init__(self, 
                  yaml_path, 
