@@ -110,3 +110,5 @@ venv.bak/
 
 dq0-sdk/
 flower_photos/
+dq0sdk/data/google_flowers/test
+dq0sdk/data/google_flowers/train
