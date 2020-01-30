@@ -84,12 +84,18 @@ class CSVSource(Source):
             return {}
 
         length = 0
+        mean = ''
+        std = ''
+        stats = ''
         if self.read_allowed:
             try:
                 content = self.read()
                 length = int(content.size)
+                mean = '{}'.format(content.mean())  # index?
+                std = '{}'.format(content.std())
+                stats = 'types: {}'.format(content.dtypes)
             except Exception as e:
-                logger.debug('Could not get size of content. {}'.format(e))
+                logger.debug('Could not get meta info of content. {}'.format(e))
 
         permissions = []
         if self.read_allowed:
@@ -107,5 +113,8 @@ class CSVSource(Source):
             "name": self.name,
             "filepath": self.filepath,
             "length": length,
-            "permissions": permissions
+            "permissions": permissions,
+            "mean": mean,
+            "std": std,
+            "stats": stats
         }
