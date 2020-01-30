@@ -82,6 +82,7 @@ class UserModel(Model):
             kwargs (:obj:`dict`): dictionary of optional arguments.
                 Usually preprocessed data, feature columns etc.
         """
+        pass
 
     def predict(self, x, **kwargs):
         """Model predict function.
