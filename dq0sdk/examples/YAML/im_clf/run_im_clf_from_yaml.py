@@ -4,6 +4,9 @@ Example of transfer learning for image classification
 using a pretrained feature_vector model from
 tensorflow hub, namely, MobileNet stripped of classifier layer.
 
+Note: the download of the data for this example can take several minutes
+but it only does it once
+
 """
 import os
 import tensorflow as tf
@@ -76,15 +79,15 @@ if __name__=='__main__':
     print('Train  Acc: %.2f %%' % (100 * acc_tr))
     print('Test  Acc: %.2f %%' % (100 * acc_te))
 
-    # Save and load model
-    im_clf.save('mobilenetv3','0.1')
-    im_clf.load('mobilenetv3','0.1')
-    # evaluate
-    print('Model reloaded from file')
-    # loss_tr, acc_tr, mse_tr = im_clf.evaluate(x=train_generator,steps = steps_per_epoch)
-    loss_te, acc_te, mse_te = im_clf.evaluate(x=test_generator,steps = test_steps)
-    # print('Train  Acc: %.2f %%' % (100 * acc_tr))
-    print('Test  Acc: %.2f %%' % (100 * acc_te))
+    # # Save and load model
+    # im_clf.save('mobilenetv3','0.1')
+    # im_clf.load('mobilenetv3','0.1')
+    # # evaluate
+    # print('Model reloaded from file')
+    # # loss_tr, acc_tr, mse_tr = im_clf.evaluate(x=train_generator,steps = steps_per_epoch)
+    # loss_te, acc_te, mse_te = im_clf.evaluate(x=test_generator,steps = test_steps)
+    # # print('Train  Acc: %.2f %%' % (100 * acc_tr))
+    # print('Test  Acc: %.2f %%' % (100 * acc_te))
 
     # DP Version
     im_clf_dp = NeuralNetworkYaml(yaml_path)

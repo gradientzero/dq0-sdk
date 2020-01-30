@@ -142,3 +142,15 @@ Run:
 
 $ python dq0sdk/examples/yaml/adult/run_adult_from_yaml.py
 
+
+## Running the image classification example using a yaml config and tf hub
+includes save/load with post evaluation to verify it works
+
+Update/View config file:
+
+dq0sdk/examples/yaml/adult/yaml_config_adult.yaml
+
+Run:
+
+$ python dq0sdk/examples/yaml/adult/run_adult_from_yaml.py
+
