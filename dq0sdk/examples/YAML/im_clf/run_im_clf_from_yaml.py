@@ -1,20 +1,22 @@
 # -*- coding: utf-8 -*-
-"""Instructions to run
+"""
+Example of transfer learning for image classification 
+using a pretrained feature_vector model from
+tensorflow hub, namely, MobileNet stripped of classifier layer.
 
-data source: https://storage.googleapis.com/download.tensorflow.org/example_images/flower_photos.tgz
-1. download source and unpack to dq0sdk/data/google_flowers/flower_photos
-2. run dq0sdk/data/google_flowers/split_train_test.py
-3. make sure to install updated requirements.txt
-4. should be good to go
 """
 import os
 import tensorflow as tf
 
+from dq0sdk.data.google_flowers.get_im_clf_data import get_im_clf_example_data
 from dq0sdk.models.tf.neural_network_yaml import NeuralNetworkYaml
 
 tf.random.set_seed(0)
 
 if __name__=='__main__':
+    # Need to download the data. This can take several minutes depending on your connection speed.
+    get_im_clf_example_data()
+
     yaml_path = 'dq0sdk/examples/yaml/im_clf/yaml_config_image.yaml'
     im_clf = NeuralNetworkYaml(yaml_path)
     yaml_dict = im_clf.yaml_dict

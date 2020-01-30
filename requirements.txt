@@ -22,9 +22,9 @@ numpy==1.17.4
 h5py==2.10.0
 Keras-Applications==1.0.8
 Keras-Preprocessing==1.1.0
-tensorboard==2.0.2
-tensorflow==2.0.0
-tensorflow-estimator==2.0.1
+tensorboard==2.1.0
+tensorflow==2.1.0
+tensorflow-estimator==2.1.0
 tensorflow-privacy==0.2.2
 tensorflow_hub==0.7.0
 pyyaml==5.3

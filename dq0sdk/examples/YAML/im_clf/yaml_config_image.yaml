@@ -1,6 +1,6 @@
 PREPROCESSING:
-  train_data_dir: 'dq0sdk/data/google_flowers/flower_photos/train'
-  test_data_dir: 'dq0sdk/data/google_flowers/flower_photos/test'
+  train_data_dir: 'dq0sdk/data/google_flowers/train'
+  test_data_dir: 'dq0sdk/data/google_flowers/test'
   base_datagen: {rescale: !!python/float 0.00392156862745098, #or 1/255
                  validation_split: !!python/float 0.2}
   train_datagen: {}
