@@ -1,14 +1,15 @@
 import os
-import numpy as np
+# import numpy as np
 import pandas as pd
 import sklearn
 import sklearn.preprocessing
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 from dq0sdk.data.adult import AdultSource
 from dq0sdk.data.preprocessing import preprocessing
 
 from dq0sdk.models.tf.neural_network_yaml import NeuralNetworkYaml
+
 
 class NeuralNetworkYamlAdult(NeuralNetworkYaml):
     def __init__(self, yaml_path):
@@ -29,7 +30,7 @@ class NeuralNetworkYamlAdult(NeuralNetworkYaml):
         return X_train_df, X_test_df, y_train_ts, y_test_ts
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
 
     path = 'dq0sdk/data/adult/data/'
     path_test = os.path.join(os.path.dirname(
