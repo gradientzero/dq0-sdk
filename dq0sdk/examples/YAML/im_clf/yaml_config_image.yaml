@@ -56,4 +56,4 @@ METRICS:
   - 'mse'
 FIT:
   epochs: 1
-MODEL_PATH: '.'
+MODEL_PATH: './dq0sdk/examples/yaml/im_clf'

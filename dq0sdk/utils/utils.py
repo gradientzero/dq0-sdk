@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
 """Process Yaml Config
 
-Process yaml file to instantiate a basic tensorflow 
+Process yaml file to instantiate a basic tensorflow
 neural network implementation using Keras.
 
-TODO:
-    * Complete example doc string 
-    
 Example:
     if __name__ == "__main__":
         yaml_path = 'your path'
@@ -15,8 +12,10 @@ Example:
         ...
 
 :Authors:
+    Wolfgang Groß <wg@gradient0.com>
+    Jona Boeddinhaus <jb@gradient0.com>
+    Artur Susdorf <as@gradient0.com>
     Craig Lincoln <cl@gradient0.com>
-    
 
 Copyright 2020, Gradient Zero
 All rights reserved
@@ -28,15 +27,16 @@ import sys
 import os
 import yaml
 
-import tensorflow as tf
-from tensorflow import keras
+# import tensorflow as tf
+# from tensorflow import keras
 import tensorflow_hub as hub
 
-from tensorflow_privacy.privacy.optimizers import dp_optimizer
+# from tensorflow_privacy.privacy.optimizers import dp_optimizer
 
 fileConfig(os.path.join(
     os.path.dirname(os.path.abspath(__file__)), '../logging.conf'))
 logger = logging.getLogger('dq0')
+
 
 def custom_objects():
     """List of custom objects required for model_from_yaml()
@@ -46,14 +46,14 @@ def custom_objects():
                       }
     return custom_objects
 
+
 class YamlConfig():
     """Yaml parser for tf.keras models
 
     Yaml parser class for tf.Keras config files.
-     
     """
-    def __init__(self, 
-                 yaml_path, 
+    def __init__(self,
+                 yaml_path,
                  yaml_dict=None,
                  custom_objects=custom_objects):
         self.yaml_str = None
@@ -61,18 +61,18 @@ class YamlConfig():
         if yaml_dict is None:
             self.read_yaml_file()
         else:
-            self.yaml_dict=yaml_dict   
-        
+            self.yaml_dict = yaml_dict
+
     def read_yaml_file(self):
         """Reads yaml file
-        
+
         This function parses a yaml file to self.yaml_dict
         """
         try:
             with open(self.yaml_path, 'r') as yaml_file:
-                self.yaml_dict=yaml.load(yaml_file, Loader=yaml.Loader) # turnsout SafeLoader doesnt recognise !!python/tuple    
+                self.yaml_dict = yaml.load(yaml_file, Loader=yaml.Loader)  # turnsout SafeLoader doesnt recognise !!python/tuple
         except Exception as e:
-            logger.error('Could not find config at {}! {}'.format(self.yaml_path,e))
+            logger.error('Could not find config at {}! {}'.format(self.yaml_path, e))
             sys.exit(1)
         return self.yaml_dict
 
@@ -82,8 +82,8 @@ class YamlConfig():
             with open(self.yaml_path, 'w') as yaml_file:
                 yaml_file.write(self.yaml_dict)
         except Exception as e:
-            logger.error('Cannot write yaml to {}! {}'.format(self.yaml_path,e))
-    
+            logger.error('Cannot write yaml to {}! {}'.format(self.yaml_path, e))
+
     def dump_yaml(self, yaml_dict):
         self.yaml_str = yaml.dump(yaml_dict)
         return self.yaml_str

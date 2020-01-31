@@ -40,6 +40,7 @@ Example:
     Wolfgang Groß <wg@gradient0.com>
     Jona Boeddinhaus <jb@gradient0.com>
     Artur Susdorf <as@gradient0.com>
+    Craig Lincoln <cl@gradient0.com>
 
 Copyright 2019, Gradient Zero
 All rights reserved
@@ -54,9 +55,9 @@ import sys
 import logging
 from logging.config import fileConfig
 import tensorflow as tf
-import tensorflow_hub as hub
+# import tensorflow_hub as hub
 from tensorflow import keras
-import numpy as np
+# import numpy as np
 
 from tensorflow_privacy.privacy.optimizers import dp_optimizer
 
@@ -64,6 +65,7 @@ from tensorflow_privacy.privacy.optimizers import dp_optimizer
 fileConfig(os.path.join(
     os.path.dirname(os.path.abspath(__file__)), '../../logging.conf'))
 logger = logging.getLogger('dq0')
+
 
 class NeuralNetworkYaml(Model):
     """Neural Network model implementation.
@@ -85,12 +87,11 @@ class NeuralNetworkYaml(Model):
         self.loss = keras.losses.get(self.yaml_dict['LOSS']['class_name'])
         if len(self.yaml_dict['LOSS'].items()):
             loss_config = self.loss.get_config()
-            for k,v in self.yaml_dict['LOSS'].items():
+            for k, v in self.yaml_dict['LOSS'].items():
                 if k in loss_config.keys():
                     loss_config[k] = v
-        # print(loss_config)
         self.loss = self.loss.from_config(loss_config)
-        
+
     def setup_data(self, **kwargs):
         """Setup data function
 
@@ -104,14 +105,14 @@ class NeuralNetworkYaml(Model):
 
     def setup_model(self):
         """Setup model from yaml MODEL
-        
+
         This function converts the yaml MODEL: config
         to an instance of tf.Keras.Sequential
         """
         model_dict = self.yaml_dict['MODEL']
-        if not 'class_name' in model_dict.keys():
+        if 'class_name' not in model_dict.keys():
             model_dict['class_name'] = 'Sequential'
-        if not 'name' in model_dict['config'].keys():
+        if 'name' not in model_dict['config'].keys():
             model_dict['config']['name'] = 'sequential'
         if 'keras_version' in model_dict.keys():
             del model_dict['keras_version']
@@ -120,7 +121,7 @@ class NeuralNetworkYaml(Model):
         model_str = self.yaml_config.dump_yaml(model_dict)
         try:
             self.model = tf.keras.models.model_from_yaml(model_str,
-            custom_objects=self.custom_objects)
+                                                         custom_objects=self.custom_objects)
         except Exception as e:
             logger.error('model_from_yaml: {}'.format(e))
             sys.exit(1)
@@ -147,7 +148,7 @@ class NeuralNetworkYaml(Model):
                 A TensorFlow tensor, or a list of tensors (in case the model has multiple inputs).
                 A dict mapping input names to the corresponding array/tensors, if the model has named inputs.
                 A tf.data dataset. Should return a tuple of either (inputs, targets) or (inputs, targets, sample_weights).
-                A generator or keras.utils.Sequence returning (inputs, targets) or (inputs, targets, sample weights). 
+                A generator or keras.utils.Sequence returning (inputs, targets) or (inputs, targets, sample weights).
                     A more detailed description of unpacking behavior for iterator types (Dataset, generator, Sequence) is given below.
             kwargs (:obj:`dict`): dictionary of optional arguments.
                 preprocessed data, feature columns
@@ -157,12 +158,12 @@ class NeuralNetworkYaml(Model):
         self.model.compile(optimizer=optimizer,
                            loss=self.loss,
                            metrics=self.metrics)
-        
+
         self.model.fit(
             x=x,
-            epochs=self.epochs, 
+            epochs=self.epochs,
             **kwargs,
-            )
+        )
 
     def fit_dp(self, x, **kwargs):
         """Model fit function.
@@ -180,7 +181,7 @@ class NeuralNetworkYaml(Model):
                 A TensorFlow tensor, or a list of tensors (in case the model has multiple inputs).
                 A dict mapping input names to the corresponding array/tensors, if the model has named inputs.
                 A tf.data dataset. Should return a tuple of either (inputs, targets) or (inputs, targets, sample_weights).
-                A generator or keras.utils.Sequence returning (inputs, targets) or (inputs, targets, sample weights). 
+                A generator or keras.utils.Sequence returning (inputs, targets) or (inputs, targets, sample weights).
                     A more detailed description of unpacking behavior for iterator types (Dataset, generator, Sequence) is given below.
             kwargs (:obj:`dict`): dictionary of optional arguments.
                 Usually preprocessed data, feature columns etc.
@@ -190,13 +191,13 @@ class NeuralNetworkYaml(Model):
         self.model.compile(optimizer=optimizer,
                            loss=self.loss,
                            metrics=self.metrics)
-        
+
         self.model.fit(
             x=x,
             epochs=self.epochs,
             **kwargs,
-            )
-    
+        )
+
     def predict(self, x, **kwargs):
         """Model predict function.
 
@@ -210,7 +211,7 @@ class NeuralNetworkYaml(Model):
                 A TensorFlow tensor, or a list of tensors (in case the model has multiple inputs).
                 A dict mapping input names to the corresponding array/tensors, if the model has named inputs.
                 A tf.data dataset. Should return a tuple of either (inputs, targets) or (inputs, targets, sample_weights).
-                A generator or keras.utils.Sequence returning (inputs, targets) or (inputs, targets, sample weights). 
+                A generator or keras.utils.Sequence returning (inputs, targets) or (inputs, targets, sample weights).
                     A more detailed description of unpacking behavior for iterator types (Dataset, generator, Sequence) is given below.
             kwargs (:obj:`dict`): dictionary of optional arguments.
 
@@ -230,7 +231,7 @@ class NeuralNetworkYaml(Model):
                 A TensorFlow tensor, or a list of tensors (in case the model has multiple inputs).
                 A dict mapping input names to the corresponding array/tensors, if the model has named inputs.
                 A tf.data dataset. Should return a tuple of either (inputs, targets) or (inputs, targets, sample_weights).
-                A generator or keras.utils.Sequence returning (inputs, targets) or (inputs, targets, sample weights). 
+                A generator or keras.utils.Sequence returning (inputs, targets) or (inputs, targets, sample weights).
                     A more detailed description of unpacking behavior for iterator types (Dataset, generator, Sequence) is given below.
             kwargs (:obj:`dict`): dictionary of optional arguments.
 
@@ -254,7 +255,7 @@ class NeuralNetworkYaml(Model):
         self.model.save(
             '{}/{}_{}.h5'.format(
                 self.model_path, name, version),
-                include_optimizer=True)
+            include_optimizer=True)
 
     def load(self, name, version):
         """Loads the model.
@@ -270,8 +271,8 @@ class NeuralNetworkYaml(Model):
         self.model = tf.keras.models.load_model(
             '{}/{}_{}.h5'.format(
                 self.model_path, name, version),
-                custom_objects=self.custom_objects,
-                compile=True)
+            custom_objects=self.custom_objects,
+            compile=True)
 
         if self.model.optimizer is None:
             optimizer = dp_optimizer.DPGradientDescentGaussianOptimizer(
