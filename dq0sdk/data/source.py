@@ -24,7 +24,7 @@ class Source(ABC):
     Data sources classes provide a read method to read the data into memory or
     provide a data reader for the underlying source.
     """
-    def __init__(self, name):
+    def __init__(self, name, input_folder):
         super().__init__()
         self.name = name
         self.data = None
@@ -34,6 +34,7 @@ class Source(ABC):
         self.types_allowed = False
         self.stats_allowed = False
         self.sample_allowed = False
+        self.input_folder = input_folder
 
     @abstractmethod
     def read(self, force=False):

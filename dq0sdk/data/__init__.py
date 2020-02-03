@@ -10,8 +10,12 @@ from .connector import Connector
 from .source import Source
 
 __all__ = [
+    'Connector',
     'Source',
     'csv',
     'adult',
-    'Connector'
+    'census_data',
+    '20_newsgroups',
+    'cifar10',
+    'utils'
 ]
