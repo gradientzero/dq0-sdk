@@ -13,16 +13,18 @@ Copyright 2019, Gradient Zero
 import os
 import pickle
 
-import numpy as np
-import pandas as pd
-
-from sklearn.naive_bayes import GaussianNB, MultinomialNB
-from sklearn import metrics
 import diffprivlib.models as dp
 
-from dq0sdk.models.model import Model
-from dq0sdk.data.utils import util
 from dq0sdk.data.utils import plotting
+from dq0sdk.data.utils import util
+from dq0sdk.models.model import Model
+
+import numpy as np
+
+import pandas as pd
+
+from sklearn import metrics
+from sklearn.naive_bayes import GaussianNB, MultinomialNB
 
 
 class NaiveBayesianModel(Model):

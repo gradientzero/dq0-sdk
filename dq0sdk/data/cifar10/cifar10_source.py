@@ -9,12 +9,14 @@ Adult dataset loading
 Copyright 2019, Gradient Zero
 """
 
-import numpy as np
-from matplotlib import pyplot as plt
-import tensorflow as tf
-
-from dq0sdk.data.source import Source
 from dq0sdk.data.preprocessing import preprocessing
+from dq0sdk.data.source import Source
+
+from matplotlib import pyplot as plt
+
+import numpy as np
+
+import tensorflow as tf
 
 
 class CIFAR10Source(Source):

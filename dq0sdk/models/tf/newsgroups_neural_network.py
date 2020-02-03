@@ -18,25 +18,27 @@ Copyright 2019, Gradient Zero
 
 import warnings
 
+from dq0sdk.data.utils import plotting
+from dq0sdk.data.utils import util
+from dq0sdk.models.model import Model
+
 import numpy as np
+
 import pandas as pd
+
 from sklearn import metrics
-# from sklearn.preprocessing import LabelBinarizer
 from sklearn.preprocessing import LabelEncoder
 
 import tensorflow as tf  # no GPU support for Mac. In any case,
 # NVIDIA GPU card with CUDA is required.
 # from tensorflow import keras
+
 from tensorflow_privacy.privacy.optimizers import dp_optimizer
 
-from dq0sdk.models.model import Model
-from dq0sdk.data.utils import util
-from dq0sdk.data.utils import plotting
 
-
-class NeuralNetwork(Model):
+class NewsgroupsNeuralNetwork(Model):
     """
-    Neural Network model implementation
+    Newsgroups Neural Network model implementation
 
     SDK users instantiate this class to create and train Keras models or
     subclass this class to define custom neural networks.

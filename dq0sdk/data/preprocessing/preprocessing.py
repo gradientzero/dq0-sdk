@@ -13,10 +13,10 @@ Copyright 2019, Gradient Zero
 import sys
 from time import time
 
+from dq0sdk.data.utils import util
+
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_selection import SelectKBest, chi2, mutual_info_classif
-
-from dq0sdk.data.utils import util
 
 
 def handle_missing_data(dataset_df, mode='imputation',

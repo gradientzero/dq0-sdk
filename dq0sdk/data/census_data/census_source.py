@@ -8,14 +8,14 @@ Adult dataset loading
 Copyright 2019, Gradient Zero
 """
 
-import pandas as pd
-
-from dq0sdk.data.source import Source
 from dq0sdk.data.preprocessing import preprocessing
+from dq0sdk.data.source import Source
 from dq0sdk.data.utils import util
 
+import pandas as pd
 
-class AdultSource(Source):
+
+class CensusSource(Source):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

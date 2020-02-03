@@ -4,8 +4,8 @@
 This package contains the adult dataset data source implementation.
 """
 
-from .census_source import AdultSource
+from .census_source import CensusSource
 
 __all__ = [
-    'AdultSource'
+    'CensusSource'
 ]

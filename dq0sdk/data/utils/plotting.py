@@ -4,12 +4,16 @@
 @author: Paolo Campigotto
 """
 
+from matplotlib import pyplot as plt
+
 import numpy as np
+
 import pandas as pd
+
+import seaborn as sns
+
 from sklearn import metrics, tree
 from sklearn.utils.multiclass import unique_labels
-from matplotlib import pyplot as plt
-import seaborn as sns
 
 
 def plot_confusion_matrix_for_scikit_classifier(
