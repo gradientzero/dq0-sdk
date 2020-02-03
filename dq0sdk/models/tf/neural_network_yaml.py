@@ -46,25 +46,19 @@ Copyright 2019, Gradient Zero
 All rights reserved
 """
 
-from dq0sdk.models.model import Model
-from dq0sdk.utils.utils import custom_objects
-from dq0sdk.utils.utils import YamlConfig
-
-import os
-import sys
 import logging
-from logging.config import fileConfig
+import sys
+
+from dq0sdk.models.model import Model
+from dq0sdk.utils.utils import YamlConfig
+from dq0sdk.utils.utils import custom_objects
+
 import tensorflow as tf
-# import tensorflow_hub as hub
 from tensorflow import keras
-# import numpy as np
 
 from tensorflow_privacy.privacy.optimizers import dp_optimizer
 
-
-fileConfig(os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), '../../logging.conf'))
-logger = logging.getLogger('dq0')
+logger = logging.getLogger()
 
 
 class NeuralNetworkYaml(Model):
