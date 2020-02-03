@@ -26,7 +26,7 @@ MODEL:
         - 224
         - 3
         dtype: float32
-        handle: https://tfhub.dev/google/tf2-preview/mobilenet_v2/feature_vector/3
+        handle: https://tfhub.dev/google/imagenet/mobilenet_v2_100_224/feature_vector/4
         name: keras_layer
         trainable: false
     - class_name: Dropout
