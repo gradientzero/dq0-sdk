@@ -108,6 +108,8 @@ class NaiveBayesianModel(Model):
         accuracy_score = metrics.accuracy_score(y_train_ts, y_pred)
         print('\nModel accuracy on training data:', round(accuracy_score, 2))
 
+        return accuracy_score
+
     def fit_dp(self, **kwargs):
         """Model fit function.
 

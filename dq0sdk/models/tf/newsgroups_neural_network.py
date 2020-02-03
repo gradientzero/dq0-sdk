@@ -291,6 +291,8 @@ class NewsgroupsNeuralNetwork(Model):
         accuracy_score = metrics.accuracy_score(y_train_np_a, y_pred_np_a)
         print('\nModel accuracy on training data:', round(accuracy_score, 2))
 
+        return accuracy_score
+
     def _get_train_data_from_kwargs(self, kwargs):
 
         if 'X_train_np_a' in kwargs:

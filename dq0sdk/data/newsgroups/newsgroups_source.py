@@ -22,7 +22,7 @@ from sklearn.datasets import fetch_20newsgroups
 class NewsgroupsSource(Source):
 
     def __init__(self, **kwargs):
-        super().__init__(name='20_Newsgroups', **kwargs)
+        super().__init__(name='Newsgroups', **kwargs)
 
     def _get_train_and_test_dataset(self):
         #
@@ -68,7 +68,7 @@ class NewsgroupsSource(Source):
         test_data = fetch_20newsgroups(**params_dict)
 
         # print('Data fetched')
-        print('Loaded dataset "' + self.dataset_name + '" ')
+        print('Loaded dataset "' + self.name + '" ')
         print('%d training documents' % len(tr_data.filenames))
         print('%d test documents' % len(test_data.filenames))
         print('%d different classes of documents' % len(
@@ -132,7 +132,6 @@ class NewsgroupsSource(Source):
             quantitative_features_list, target_feature
 
     def read(self, force=False):
-        # def get_preprocessed_X_y_train_and_X_y_test(self):
 
         tr_dataset_df, test_dataset_df, categorical_features_list, \
             quantitative_features_list, target_feature = \
@@ -147,6 +146,10 @@ class NewsgroupsSource(Source):
         y_test_ts = test_dataset_df[target_feature]
 
         return X_train_df, X_test_df, y_train_ts, y_test_ts, target_feature
+
+    def get_preprocessed_X_y_train_and_X_y_test(self):
+        # for backward compatibility
+        return self.read()
 
     def preprocess(self, force=False, **kwargs):
         """Preprocess the data

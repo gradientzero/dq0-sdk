@@ -10,7 +10,7 @@ target-model parameters:
   # "GaussianNB"
   # "MultinomialNB"
   # "MLNN"
-  target_model_type: MultinomialNB
+  target_model_type: MLNN
 
 
 robustness-test parameters:
