@@ -107,3 +107,8 @@ venv.bak/
 .DS_Store
 *.ipynb_checkpoints/
 .idea
+
+dq0-sdk/
+flower_photos/
+dq0sdk/data/google_flowers/test
+dq0sdk/data/google_flowers/train

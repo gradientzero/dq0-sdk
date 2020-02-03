@@ -37,7 +37,7 @@ class AdultSource(Source):
         skiprows (int, optional): Number of rows to skip.
     """
     def __init__(self, filepath_test, filepath_train, skiprows=1):
-        super().__init__()
+        super().__init__(name=None)
         self.train_data = None  # test data in self.data
         self.filepath_test = filepath_test
         self.filepath_train = filepath_train

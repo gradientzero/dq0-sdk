@@ -2,6 +2,7 @@ docutils==0.15.2
 absl-py==0.8.1
 alabaster==0.7.12
 flake8==3.7.9
+flake8-import-order==0.18.1
 Sphinx==2.2.2
 sphinxcontrib-applehelp==1.0.1
 sphinxcontrib-devhelp==1.0.1
@@ -22,7 +23,10 @@ numpy==1.17.4
 h5py==2.10.0
 Keras-Applications==1.0.8
 Keras-Preprocessing==1.1.0
-tensorboard==2.0.2
-tensorflow==2.0.0
-tensorflow-estimator==2.0.1
+tensorboard==2.1.0
+tensorflow==2.1.0
+tensorflow-estimator==2.1.0
 tensorflow-privacy==0.2.2
+tensorflow_hub==0.7.0
+pyyaml==5.3
+Pillow==7.0.0
