@@ -9,10 +9,10 @@ but it only does it once
 
 """
 # import os
-import tensorflow as tf
-
 from dq0sdk.data.google_flowers.get_im_clf_data import get_im_clf_example_data
 from dq0sdk.models.tf.neural_network_yaml import NeuralNetworkYaml
+
+import tensorflow as tf
 
 tf.random.set_seed(0)
 

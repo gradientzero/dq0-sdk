@@ -21,15 +21,13 @@ Copyright 2020, Gradient Zero
 All rights reserved
 """
 import logging
+import os
+import sys
 from logging.config import fileConfig
 
-import sys
-import os
-import yaml
-
-# import tensorflow as tf
-# from tensorflow import keras
 import tensorflow_hub as hub
+
+import yaml
 
 # from tensorflow_privacy.privacy.optimizers import dp_optimizer
 
