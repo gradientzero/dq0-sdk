@@ -37,7 +37,7 @@ class AdultSource(Source):
         skiprows (int, optional): Number of rows to skip.
     """
     def __init__(self, filepath_test, filepath_train, skiprows=1):
-        super().__init__(name=None)
+        super().__init__(name=None, input_folder=None)
         self.train_data = None  # test data in self.data
         self.filepath_test = filepath_test
         self.filepath_train = filepath_train
@@ -162,7 +162,7 @@ class AdultSource(Source):
         if not force and self.preprocessed_data is not None:
             return self.preprocessed_data
 
-        tr_dataset_df = preprocessing._handle_missing_data(
+        tr_dataset_df = preprocessing.handle_missing_data(
             self.train_data,
             mode=approach_for_missing_feature,
             imputation_method_for_cat_feats=imputation_method_for_cat_feats,
@@ -170,7 +170,7 @@ class AdultSource(Source):
             categorical_features_list=self.categorical_features_list,
             quantitative_features_list=self.quantitative_features_list)
 
-        test_dataset_df = preprocessing._handle_missing_data(
+        test_dataset_df = preprocessing.handle_missing_data(
             self.data,
             mode=approach_for_missing_feature,
             imputation_method_for_cat_feats=imputation_method_for_cat_feats,
