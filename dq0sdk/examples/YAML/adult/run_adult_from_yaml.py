@@ -1,14 +1,13 @@
 import os
-# import numpy as np
-import pandas as pd
-import sklearn
-import sklearn.preprocessing
-# import matplotlib.pyplot as plt
 
 from dq0sdk.data.adult import AdultSource
 from dq0sdk.data.preprocessing import preprocessing
-
 from dq0sdk.models.tf.neural_network_yaml import NeuralNetworkYaml
+
+import pandas as pd
+
+import sklearn
+import sklearn.preprocessing
 
 
 class NeuralNetworkYamlAdult(NeuralNetworkYaml):

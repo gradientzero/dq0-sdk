@@ -1,8 +1,11 @@
 import os
-import numpy as np
-from random import sample
-import tensorflow as tf
 import tarfile
+from random import sample
+
+import numpy as np
+
+
+import tensorflow as tf
 
 np.random.seed(1)
 

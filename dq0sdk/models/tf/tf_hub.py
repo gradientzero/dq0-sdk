@@ -51,10 +51,11 @@ import sys
 from logging.config import fileConfig
 
 from dq0sdk.models.model import Model
+from dq0sdk.models.tf.tf_hub_models import hub_models_dict
 from dq0sdk.utils.utils import YamlConfig
 from dq0sdk.utils.utils import custom_objects
 
-import tensorflow as tf
+# import tensorflow as tf
 # import tensorflow_hub as hub
 from tensorflow import keras
 # import numpy as np
@@ -67,20 +68,22 @@ fileConfig(os.path.join(
 logger = logging.getLogger('dq0')
 
 
-class NeuralNetworkYaml(Model):
+class TFHub(Model):
     """Neural Network model implementation.
 
     SDK users can use this class to create and train Keras models or
     subclass this class to define custom neural networks.
     """
-    def __init__(self, yaml_path=None, custom_objects=custom_objects()):
+    def __init__(self, tf_hub_url=None, n_classes=None, custom_objects=custom_objects(), hub_models_dict=hub_models_dict):
         super().__init__()
+        yaml_path = hub_models_dict[tf_hub_url]
         self.yaml_config = YamlConfig(yaml_path)
         self.yaml_dict = self.yaml_config.yaml_dict
         self.model_path = self.yaml_dict['MODEL_PATH']
         self.metrics = self.yaml_dict['METRICS']
         self.epochs = self.yaml_dict['FIT']['epochs']
         self.custom_objects = custom_objects
+        self.n_classes = n_classes
         self.model = None
 
         # Define loss
@@ -118,13 +121,21 @@ class NeuralNetworkYaml(Model):
             del model_dict['keras_version']
         if 'backend' in model_dict.keys():
             del model_dict['backend']
+        model_dict['config']['layers'][-1]['config']['units'] = self.n_classes
+
         model_str = self.yaml_config.dump_yaml(model_dict)
         try:
-            self.model = tf.keras.models.model_from_yaml(model_str,
-                                                         custom_objects=self.custom_objects)
+            self.model = keras.models.model_from_yaml(model_str,
+                                                      custom_objects=self.custom_objects)
         except Exception as e:
             logger.error('model_from_yaml: {}'.format(e))
             sys.exit(1)
+
+        optimizer = dp_optimizer.DPGradientDescentGaussianOptimizer(
+            **self.yaml_dict['DP_OPTIMIZER'])
+        self.model.compile(optimizer=optimizer,
+                           loss=self.loss,
+                           metrics=self.metrics)
 
     def prepare(self, **kwargs):
         """called before model fit on every run.
@@ -153,7 +164,7 @@ class NeuralNetworkYaml(Model):
             kwargs (:obj:`dict`): dictionary of optional arguments.
                 preprocessed data, feature columns
         """
-        optimizer = tf.keras.optimizers.SGD(
+        optimizer = keras.optimizers.SGD(
             **self.yaml_dict['OPTIMIZER'])
         self.model.compile(optimizer=optimizer,
                            loss=self.loss,
@@ -268,7 +279,7 @@ class NeuralNetworkYaml(Model):
             name (str): name of the model to load
             version (str): version of the model to load
         """
-        self.model = tf.keras.models.load_model(
+        self.model = keras.models.load_model(
             '{}/{}_{}.h5'.format(
                 self.model_path, name, version),
             custom_objects=self.custom_objects,
