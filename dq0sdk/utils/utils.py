@@ -21,9 +21,7 @@ Copyright 2020, Gradient Zero
 All rights reserved
 """
 import logging
-import os
 import sys
-from logging.config import fileConfig
 
 import tensorflow_hub as hub
 
@@ -31,9 +29,7 @@ import yaml
 
 # from tensorflow_privacy.privacy.optimizers import dp_optimizer
 
-fileConfig(os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), '../logging.conf'))
-logger = logging.getLogger('dq0')
+logger = logging.getLogger()
 
 
 def custom_objects():
