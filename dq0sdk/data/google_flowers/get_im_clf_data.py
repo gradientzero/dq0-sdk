@@ -4,8 +4,8 @@ from random import sample
 
 import numpy as np
 
-
 import tensorflow as tf
+
 
 np.random.seed(1)
 
