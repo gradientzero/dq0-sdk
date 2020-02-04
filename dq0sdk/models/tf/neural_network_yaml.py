@@ -53,6 +53,9 @@ from logging.config import fileConfig
 import logging
 import sys
 
+import logging
+import sys
+
 from dq0sdk.models.model import Model
 from dq0sdk.utils.utils import YamlConfig
 from dq0sdk.utils.utils import custom_objects
