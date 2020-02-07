@@ -90,6 +90,15 @@ class NewsgroupsNeuralNetwork(Model):
         self.epochs = 50  # 50 in ML-leaks paper
         self.verbose = 2
         self.metrics = ['accuracy']
+        self.regularization_param = 1e-3
+        self.regularizer_dict = {
+            'kernel_regularizer': tf.keras.regularizers.l2(
+                self.regularization_param)  # ,
+            # 'activity_regularizer': tf.keras.regularizers.l2(
+            #    self.regularization_param),
+            # 'bias_regularizer': tf.keras.regularizers.l2(
+            #    self.regularization_param)
+        }
         # TODO: grid search over parameters space
 
         # network topology. TODO: make it parametric!
@@ -99,7 +108,7 @@ class NewsgroupsNeuralNetwork(Model):
             network_type = self._model_type
         if util.case_insensitive_str_comparison(network_type, 'cnn'):
             print('Setting up a multilayer convolution neural network...')
-            self._model = self._get_cnn_model(None, kwargs['num_classes'])
+            self._model = self._get_cnn_model(kwargs['num_classes'])
         elif util.case_insensitive_str_comparison(network_type, 'mlnn'):
             print('Setting up a multilayer neural network...')
             self._model = self._get_mlnn_model(kwargs['num_features'], kwargs[
@@ -117,8 +126,11 @@ class NewsgroupsNeuralNetwork(Model):
             model = tf.keras.Sequential([
                 tf.keras.layers.Input(n_in),
                 tf.keras.layers.Dense(num_units_hidden_layer,
-                                      activation='tanh'),
-                tf.keras.layers.Dense(n_out, activation='softmax')]
+                                      activation='tanh',
+                                      **self.regularizer_dict
+                                      ),
+                tf.keras.layers.Dense(n_out, activation='softmax')
+            ]
             )
         else:
             model = tf.keras.Sequential([
@@ -146,7 +158,7 @@ class NewsgroupsNeuralNetwork(Model):
         model.summary()
         return model
 
-    def _get_cnn_model(self, n_in, n_out, which_model='tf_tutorial'):
+    def _get_cnn_model(self, n_out, which_model='ml-leaks_paper'):
 
         if util.case_insensitive_str_comparison(which_model, 'ml-leaks_paper'):
 
@@ -155,15 +167,16 @@ class NewsgroupsNeuralNetwork(Model):
             model = tf.keras.Sequential()
             # create the convolutional base
             model.add(tf.keras.layers.Conv2D(32, (5, 5), activation='relu',
-                      nput_shape=(32, 32, 3)))
+                      input_shape=(32, 32, 3), **self.regularizer_dict))
             model.add(tf.keras.layers.MaxPooling2D((2, 2)))
-            model.add(tf.keras.layers.Conv2D(64, (5, 5), activation='relu'))
+            model.add(tf.keras.layers.Conv2D(32, (5, 5), activation='relu',
+                                             **self.regularizer_dict))
             model.add(tf.keras.layers.MaxPooling2D((2, 2)))
-            model.add(tf.keras.layers.Conv2D(64, (3, 3), activation='relu'))
 
-            # add Dense layers on top
+            # add dense layers on top
             model.add(tf.keras.layers.Flatten())
-            model.add(tf.keras.layers.Dense(64, activation='relu'))
+            model.add(tf.keras.layers.Dense(128, activation='tanh',
+                                            **self.regularizer_dict))
             model.add(tf.keras.layers.Dense(n_out, activation='softmax'))
 
         elif util.case_insensitive_str_comparison(which_model, 'tf_tutorial'):
@@ -179,7 +192,7 @@ class NewsgroupsNeuralNetwork(Model):
             model.add(tf.keras.layers.MaxPooling2D((2, 2)))
             model.add(tf.keras.layers.Conv2D(64, (3, 3), activation='relu'))
 
-            # add Dense layers on top
+            # add dense layers on top
             model.add(tf.keras.layers.Flatten())
             model.add(tf.keras.layers.Dense(64, activation='relu'))
             model.add(tf.keras.layers.Dense(n_out, activation='softmax'))
@@ -371,10 +384,11 @@ class NewsgroupsNeuralNetwork(Model):
         print('\toptimization algorithm:', optimizer if isinstance(
             optimizer, str) else optimizer.get_config()['name'])
         print('\tepochs:', self.epochs)
-        print('\tlearning_rate:', self.learning_rate)
+        print('\tlearning rate:', self.learning_rate)
+        print('\tregularization parameter: ', self.regularization_param)
         print('\tmetric: ', ', '.join(self.metrics))
         if 'batch_size' in additional_fit_params_dict:
-            print('\tbatch_size:', additional_fit_params_dict['batch_size'])
+            print('\tbatch size:', additional_fit_params_dict['batch_size'])
 
     def fit_dp(self, **kwargs):
         """Model fit function.
