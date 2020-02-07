@@ -68,6 +68,10 @@ class NeuralNetwork(Model):
         self.metrics = ['accuracy', 'mse']
         self.model = None
         self.model_path = '.'
+        self.X_train = None
+        self.X_test = None
+        self.y_train = None
+        self.y_test = None
         # Range possible: grid search, all combinations inside range
 
     def setup_data(self, **kwargs):
@@ -118,8 +122,8 @@ class NeuralNetwork(Model):
                 preprocessed data, feature columns
         """
         # TODO: overwrite keras 'compile' and 'fit' at runtime!!!
-        X_train = kwargs['X_train']
-        y_train = kwargs['y_train']
+        X_train = self.X_train
+        y_train = self.y_train
 
         optimizer = dp_optimizer.GradientDescentOptimizer(
             learning_rate=self.learning_rate)
@@ -143,8 +147,8 @@ class NeuralNetwork(Model):
                 preprocessed data, feature columns
         """
         # TODO: overwrite keras 'compile' and 'fit' at runtime!!!
-        X_train = kwargs['X_train']
-        y_train = kwargs['y_train']
+        X_train = self.X_train
+        y_train = self.y_train
 
         # TODO: make training robust for any number of
         # minibatches -> bug in optimize function
@@ -190,17 +194,22 @@ class NeuralNetwork(Model):
         """
         return self.model.predict(x)
 
-    def evaluate(self, x, y, verbose=0, **kwargs):
+    def evaluate(self, test_data=True, verbose=0, **kwargs):
         """Model predict and evluate.
 
         This method is final. Signature will be checked at runtime!
 
         Args:
+            test_data (bool): False to use train data instead of test
+                Default is True.
+            verbose (int): Verbose level, Default is 0
             kwargs (:obj:`dict`): dictionary of optional arguments.
 
         Returns:
             metrics: to be defined!
         """
+        x = self.X_test if test_data else self.X_train
+        y = self.y_test if test_data else self.y_train
         batch_size = self.num_microbatches
         # TODO: SEE fit_dp: make training robust for any number of minibatches
         num_minibatches = round(x.shape[0] / self.num_microbatches)
@@ -212,18 +221,14 @@ class NeuralNetwork(Model):
             batch_size=batch_size,
             verbose=verbose)
 
-    def save(self, name, version):
+    def save(self):
         """Saves the model.
 
         Save the model in binary format on local storage.
 
         This method is final. Signature will be checked at runtime!
-
-        Args:
-            name (str): name for the model to use for saving
-            version (str): version of the model to use for saving
         """
-        self.model.save('{}/{}_{}.h5'.format(self.model_path, name, version),
+        self.model.save('{}/{}.h5'.format(self.model_path, self.uuid),
                         include_optimizer=False)
 
     def load(self, name, version):
@@ -232,12 +237,8 @@ class NeuralNetwork(Model):
         Load the model from local storage.
 
         This method is final. Signature will be checked at runtime!
-
-        Args:
-            name (str): name of the model to load
-            version (str): version of the model to load
         """
         self.model = tf.keras.models.load_model(
-            '{}/{}_{}.h5'.format(
-                self.model_path, name, version),
+            '{}/{}.h5'.format(
+                self.model_path, self.uuid),
             compile=False)

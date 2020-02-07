@@ -235,36 +235,28 @@ class NeuralNetworkYaml(Model):
         evaluation = self.model.evaluate(x, **kwargs)
         return evaluation
 
-    def save(self, name, version):
+    def save(self):
         """Saves the model.
 
         Save the model in binary format on local storage.
 
         This method is final. Signature will be checked at runtime!
-
-        Args:
-            name (str): name for the model to use for saving
-            version (str): version of the model to use for saving
         """
         self.model.save(
-            '{}/{}_{}.h5'.format(
-                self.model_path, name, version),
+            '{}/{}.h5'.format(
+                self.model_path, self.uuid),
             include_optimizer=True)
 
-    def load(self, name, version):
+    def load(self):
         """Loads the model.
 
         Load the model from local storage.
 
         This method is final. Signature will be checked at runtime!
-
-        Args:
-            name (str): name of the model to load
-            version (str): version of the model to load
         """
         self.model = tf.keras.models.load_model(
-            '{}/{}_{}.h5'.format(
-                self.model_path, name, version),
+            '{}/{}.h5'.format(
+                self.model_path, self.uuid),
             custom_objects=self.custom_objects,
             compile=True)
 
