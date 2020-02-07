@@ -87,7 +87,7 @@ class NewsgroupsNeuralNetwork(Model):
         # TODO: below parameters set in Yaml file to be parsed by this
         # function
         self.learning_rate = 0.001  # 0.15
-        self.epochs = 10  # 50 in ML-leaks paper
+        self.epochs = 50  # 50 in ML-leaks paper
         self.verbose = 2
         self.metrics = ['accuracy']
         # TODO: grid search over parameters space
@@ -295,27 +295,23 @@ class NewsgroupsNeuralNetwork(Model):
 
     def _get_train_data_from_kwargs(self, kwargs):
 
-        if 'X_train_np_a' in kwargs:
-            X_train_np_a = kwargs['X_train_np_a']
-        elif 'X_train_df' in kwargs:
-            X_train_np_a = kwargs['X_train_df'].values
-        else:
-            if isinstance(kwargs['X_train'], pd.DataFrame):
-                X_train_np_a = kwargs['X_train'].values
-            else:
-                X_train_np_a = kwargs['X_train']
+        X_train = kwargs['X_train']
+        y_train = kwargs['y_train']
 
-        if 'y_train_np_a' in kwargs:
-            y_train_np_a = kwargs['y_train_np_a']
-        elif 'y_train_ts' in kwargs:
-            y_train_np_a = kwargs['y_train_ts'].values
+        if isinstance(X_train, pd.DataFrame):
+            X_train = X_train.values
         else:
-            if isinstance(kwargs['y_train'], pd.Series):
-                y_train_np_a = kwargs['y_train'].values
-            else:
-                y_train_np_a = kwargs['y_train']
+            assert isinstance(X_train, np.ndarray)
 
-        return X_train_np_a, y_train_np_a
+        if isinstance(y_train, pd.Series):
+            y_train = y_train.values
+        else:
+            assert isinstance(y_train, np.ndarray)
+            if y_train.ndim == 2:
+                # make non-dimensional array
+                y_train = np.ravel(y_train)
+
+        return X_train, y_train
 
     def _define_training_parameters(self):
         """
@@ -534,6 +530,9 @@ class NewsgroupsNeuralNetwork(Model):
             y_test_np_a = y_test.values
         else:
             y_test_np_a = y_test
+            if y_test_np_a.ndim == 2:
+                # make 1-dimensional array
+                y_test_np_a = np.ravel(y_test_np_a)
 
         y_pred_np_a = self.predict(X_test_np_a)
 
@@ -547,6 +546,14 @@ class NewsgroupsNeuralNetwork(Model):
         accuracy_score = metrics.accuracy_score(y_test_np_a, y_pred_np_a)
         print('\nModel accuracy on test data:', round(accuracy_score, 2))
         print('\n', metrics.classification_report(y_test_np_a, y_pred_np_a))
+
+        print('\nNormalized confusion matrix:')
+        cm_df, _ = plotting.compute_confusion_matrix(
+            y_test_np_a, y_pred_np_a, normalize='true'
+        )
+        print(cm_df)
+        # By default, labels that appear at least once in y_test or
+        # y_pred_np_a are used in sorted order in the confusion matrix.
 
         if enable_plots:
             plotting.plot_confusion_matrix(
