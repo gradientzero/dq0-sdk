@@ -16,16 +16,20 @@ from dq0sdk.examples.adult_dataset.neural_network import NeuralNetwork_adult
 if __name__ == '__main__':
     # data paths.
     path = 'dq0sdk/data/adult/data/'
-    path_test = os.path.join(os.path.dirname(
-        os.path.abspath(__file__)), '../../../', path, 'adult.test')
     path_train = os.path.join(os.path.dirname(
         os.path.abspath(__file__)), '../../../', path, 'adult.data')
+    path_test = os.path.join(os.path.dirname(
+        os.path.abspath(__file__)), '../../../', path, 'adult.test')
+
+    # DataSources expect only one path parameter,
+    # so concatenate the paths in split them inside.
+    paths = '{};{}'.format(path_train, path_test)
 
     # init data sourcd
-    dc = AdultSource(path_test, path_train)
+    dc = AdultSource(paths)
 
     # create model
-    model = NeuralNetwork_adult(model_path='notebooks/saved_model/')
+    model = NeuralNetwork_adult('notebooks/saved_model/')
 
     # attach data source
     model.attach_data_source(dc)

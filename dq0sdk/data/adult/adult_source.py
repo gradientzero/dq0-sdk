@@ -30,18 +30,20 @@ class AdultSource(Source):
         categorical_features_list (list): List of category features
         quantitative_features_list (list): List of quantitative features
         target_feature (str): The target feature (column name)
+        filepath_train (str): Absolute path to the adult train dataset file.
+        filepath_test (str): Absolute path to the adult test dataset file.
+        skiprows (int, optional): Number of rows to skip.
 
     Args:
-        filepath_test (str): Absolute path to the adult test dataset file.
-        filepath_train (str): Absolute path to the adult train dataset file.
-        skiprows (int, optional): Number of rows to skip.
+        paths (str): One or more paths (';' separated) for train and test
     """
-    def __init__(self, filepath_test, filepath_train, skiprows=1):
+    def __init__(self, paths):
         super().__init__()
         self.train_data = None  # test data in self.data
-        self.filepath_test = filepath_test
-        self.filepath_train = filepath_train
-        self.skiprows = skiprows
+        path_parts = paths.split(';')
+        self.filepath_train = path_parts[0] if len(path_parts) > 0 else ''
+        self.filepath_test = path_parts[1] if len(path_parts) > 1 else ''
+        self.skiprows = 1
         self.categorical_features_list = None
         self.quantitative_features_list = None
         self.target_feature = None
