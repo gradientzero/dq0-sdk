@@ -14,14 +14,14 @@ All rights reserved
 
 import os
 
+from dq0sdk.data.csv import CSVSource
 from dq0sdk.data.preprocessing import preprocessing
-from dq0sdk.data.source import Source
 from dq0sdk.data.utils import util
 
 import pandas as pd
 
 
-class AdultSource(Source):
+class AdultSource(CSVSource):
     """Data Source for the Adult dataset.
 
     Provides function to read and preprocess the adult dataset.
@@ -38,7 +38,7 @@ class AdultSource(Source):
         paths (str): One or more paths (';' separated) for train and test
     """
     def __init__(self, paths):
-        super().__init__()
+        super().__init__(paths)
         self.train_data = None  # test data in self.data
         path_parts = paths.split(';')
         self.filepath_train = path_parts[0] if len(path_parts) > 0 else ''
@@ -224,11 +224,3 @@ class AdultSource(Source):
         # print(X_df.head(10))  # debug
 
         return X_df, y_ts, num_tr_instances
-
-    def to_json(self):
-        """Returns a json representation of this data sources information.
-
-        Returns:
-            data source description as json.
-        """
-        return {}
