@@ -18,9 +18,12 @@ class UserModel(Model):
 
     Model classes provide a setup method as well as the fit and predict
     ML model functions.
+
+    Args:
+        model_path (str): Path to the model save destination.
     """
-    def __init__(self):
-        super().__init__()
+    def __init__(self, model_path):
+        super().__init__(model_path)
 
     def setup_data(self, **kwargs):
         """Setup data function

@@ -66,9 +66,12 @@ class NeuralNetworkYaml(Model):
 
     SDK users can use this class to create and train Keras models or
     subclass this class to define custom neural networks.
+
+    Args:
+        model_path (str): Path to the model save destination.
     """
-    def __init__(self, yaml_path=None, custom_objects=custom_objects()):
-        super().__init__()
+    def __init__(self, model_path=None, yaml_path=None, custom_objects=custom_objects()):
+        super().__init__(model_path)
         self.yaml_config = YamlConfig(yaml_path)
         self.yaml_dict = self.yaml_config.yaml_dict
         self.model_path = self.yaml_dict['MODEL_PATH']

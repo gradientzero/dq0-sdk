@@ -26,12 +26,15 @@ class Model(ABC):
 
     Model classes provide a setup method as well as the fit and predict
     ML model functions.
+
+    Args:
+        model_path (str): Path to the model save destination.
     """
-    def __init__(self):
+    def __init__(self, model_path):
         super().__init__()
         # data source, model path and uuid will be set at runtime
         self.data_sources = {}
-        self.model_path = None
+        self.model_path = model_path
         self.uuid = uuid.uuid1()
 
     def attach_data_source(self, data_source):

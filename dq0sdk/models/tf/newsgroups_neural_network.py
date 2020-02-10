@@ -42,11 +42,12 @@ class NewsgroupsNeuralNetwork(Model):
 
     SDK users instantiate this class to create and train Keras models or
     subclass this class to define custom neural networks.
+
+    Args:
+        model_path (str): Path to the model save destination.
     """
-
-    def __init__(self, **kwargs):
-
-        super().__init__()
+    def __init__(self, model_path, **kwargs):
+        super().__init__(model_path)
 
         if 'saved_model_folder' in kwargs:
             self._saved_model_folder = kwargs['saved_model_folder']

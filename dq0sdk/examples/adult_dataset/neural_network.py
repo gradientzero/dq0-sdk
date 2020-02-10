@@ -23,11 +23,10 @@ logger = logging.getLogger()
 
 
 class NeuralNetwork_adult(dq0sdk.models.tf.neural_network.NeuralNetwork):
-    def __init__(self, model_path='.'):
-        super().__init__()
+    def __init__(self, model_path):
+        super().__init__(model_path)
         self.learning_rate = 0.3
         self.input_dim = None
-        self.model_path = model_path
 
     def setup_data(self):
         # load data
