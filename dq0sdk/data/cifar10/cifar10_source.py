@@ -15,6 +15,7 @@ from dq0sdk.data.source import Source
 from matplotlib import pyplot as plt
 
 import numpy as np
+
 import pandas as pd
 
 import tensorflow as tf

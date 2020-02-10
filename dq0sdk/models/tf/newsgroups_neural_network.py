@@ -577,26 +577,20 @@ class NewsgroupsNeuralNetwork(Model):
 
         return accuracy_score
 
-    def save(self, name, version='1.0'):
+    def save(self):
         """
         Save the model in binary format on local storage
 
         This method is final. Signature will be checked at runtime!
-        Args:
-            name (str): name for the model to use for saving
-            version (str): version of the model to use for saving
         """
-        self._model.save('{}/{}_{}.h5'.format(self._saved_model_folder, name,
-                         version), include_optimizer=False)
+        self._model.save('{}/{}.h5'.format(self.model_path,
+                         self.uuid), include_optimizer=False)
 
-    def load(self, name, version='1.0'):
+    def load(self):
         """
         Load the model from local storage
 
         This method is final. Signature will be checked at runtime!
-        Args:
-            name (str): name of the model to load
-            version (str): version of the model to load
         """
-        self._model = tf.keras.models.load_model('{}/{}_{}.h5'.format(
-            self._saved_model_folder, name, version), compile=False)
+        self._model = tf.keras.models.load_model('{}/{}.h5'.format(
+            self.model_path, self.uuid), compile=False)

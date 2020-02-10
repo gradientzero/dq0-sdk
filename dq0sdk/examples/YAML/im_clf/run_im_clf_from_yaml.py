@@ -7,7 +7,10 @@ tensorflow hub, namely, MobileNet stripped of classifier layer.
 Note: the download of the data for this example can take several minutes
 but it only does it once
 
+@author: Craig Lincoln <cl@gradient0.com>
 """
+import logging
+
 # import os
 from dq0sdk.data.google_flowers.get_im_clf_data import get_im_clf_example_data
 from dq0sdk.models.tf.neural_network_yaml import NeuralNetworkYaml
@@ -15,6 +18,9 @@ from dq0sdk.models.tf.neural_network_yaml import NeuralNetworkYaml
 import tensorflow as tf
 
 tf.random.set_seed(0)
+
+logger = logging.getLogger()
+
 
 if __name__ == '__main__':
     # Need to download the data. This can take several minutes depending on your connection speed.

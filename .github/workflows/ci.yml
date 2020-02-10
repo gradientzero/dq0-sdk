@@ -29,11 +29,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Generate dummy log file to avoid pytest errors. Should be solved later
-      run: |
-        mkdir logs
-        echo "" >> logs/dq0-sdk.log
-
     - name: Run pytest
       run: |
         pip install pytest

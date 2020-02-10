@@ -14,8 +14,9 @@ from dq0sdk.data.preprocessing import preprocessing
 from dq0sdk.data.source import Source
 from dq0sdk.data.utils import util
 
-import pandas as pd
 import numpy as np
+
+import pandas as pd
 
 from sklearn.datasets import fetch_20newsgroups
 

@@ -10,6 +10,7 @@
 Copyright 2019, Gradient Zero
 """
 
+import logging
 import os
 import pickle
 
@@ -26,11 +27,15 @@ import pandas as pd
 from sklearn import metrics
 from sklearn.naive_bayes import GaussianNB, MultinomialNB
 
+logger = logging.getLogger()
+
 
 class NaiveBayesianModel(Model):
+    """Naive Bayesian model implementation.
 
+    Simple model representing a bayesian classifier.
+    """
     def __init__(self, **kwargs):
-
         super().__init__()
 
         if 'saved_model_folder' in kwargs:
@@ -74,8 +79,22 @@ class NaiveBayesianModel(Model):
             self._classifier.set_params(alpha=alpha)
 
     def setup_data(self, **kwargs):
-        # to inherit from abstract base class
-        pass
+        """load train data."""
+        if len(self.data_sources) < 1:
+            logger.error('No data source found')
+            return
+        source = next(iter(self.data_sources.values()))
+        train_data, data = source.read()
+        X_df, y_ts, num_tr_instances = source.preprocess(
+            approach_for_missing_feature='imputation',
+            # 'imputation', 'dropping',
+            imputation_method_for_cat_feats='unknown',
+            # 'unknown', 'most_common_cat'
+            imputation_method_for_quant_feats='median',  # 'median', 'mean'
+            features_to_drop_list=None
+        )
+        self.X_train = X_df
+        self.y_train = y_ts
 
     def setup_model(self, **kwargs):
         # to inherit from abstract base class
@@ -90,7 +109,13 @@ class NaiveBayesianModel(Model):
         Model fit function: it learns a model from training data
         """
 
-        X_train, y_train = self._get_train_data_from_kwargs(kwargs)
+        X_train = self.X_train
+        y_train = self.y_train
+
+        if isinstance(y_train, np.ndarray):
+            if y_train.ndim == 2:
+                # make 1-dimensional array
+                y_train = np.ravel(y_train)
 
         print('\n\n-------------------- ' + self._classifier_type + ' '
               'classifier learning ---------------------')
@@ -108,18 +133,6 @@ class NaiveBayesianModel(Model):
         print('\nModel accuracy on training data:', round(accuracy_score, 2))
 
         return accuracy_score
-
-    def _get_train_data_from_kwargs(self, kwargs):
-
-        X_train = kwargs['X_train']
-        y_train = kwargs['y_train']
-
-        if isinstance(y_train, np.ndarray):
-            if y_train.ndim == 2:
-                # make 1-dimensional array
-                y_train = np.ravel(y_train)
-
-        return X_train, y_train
 
     def fit_dp(self, **kwargs):
         """Model fit function.
@@ -266,32 +279,18 @@ class NaiveBayesianModel(Model):
 
         return accuracy_score
 
-    def save(self, name='model', version=None):
+    def save(self):
         """Saves the model in binary format on local storage.
-
-        Args:
-            name (str): name for the model to use for saving
-            version (str): version of the model to use for saving
         """
-
-        if version is not None:
-            name += '_v' + str(version)
-        name += '.pickle'
+        name = '{}.pickle'.format(self.uuid)
 
         with open(os.path.join(self._saved_model_folder, name), 'wb') as f:
             pickle.dump(self._classifier, f)
 
-    def load(self, name, version):
+    def load(self):
         """Loads the model from local storage.
-
-        Args:
-            name (str): name of the model to load
-            version (str): version of the model to load
         """
-
-        if version is not None:
-            name += '_v' + str(version)
-        name += '.pickle'
+        name = '{}.pickle'.format(self.uuid)
 
         with open(os.path.join(self._saved_model_folder, name), 'rb') as file:
             self._classifier = pickle.load(file)
