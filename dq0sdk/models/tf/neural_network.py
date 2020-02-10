@@ -49,6 +49,7 @@ from dq0sdk.models.model import Model
 
 import tensorflow as tf
 from tensorflow import keras
+import numpy as np
 
 from tensorflow_privacy.privacy.optimizers import dp_optimizer
 
@@ -59,7 +60,7 @@ class NeuralNetwork(Model):
     SDK users can use this class to create and train Keras models or
     subclass this class to define custom neural networks.
     """
-    def __init__(self):
+    def __init__(self, **kwargs):
         super().__init__()
         self.learning_rate = 0.15
         self.epochs = 10
@@ -68,6 +69,16 @@ class NeuralNetwork(Model):
         self.metrics = ['accuracy', 'mse']
         self.model = None
         self.model_path = '.'
+        self.outdim = 2
+        if 'DP_enabled' in kwargs:
+            self.DP_enabled = kwargs['DP_enabled']
+        else:
+            self.DP_enabled = False
+
+        if 'epsilon' in kwargs:
+            self.epsilon = kwargs['epsilon']
+        else:
+            self.epsilon = False
         # Range possible: grid search, all combinations inside range
 
     def setup_data(self, **kwargs):
@@ -94,7 +105,7 @@ class NeuralNetwork(Model):
             keras.layers.Input(len(kwargs['feature_columns'])),
             keras.layers.Dense(10, activation='tanh'),
             keras.layers.Dense(10, activation='tanh'),
-            keras.layers.Dense(2, activation='softmax')]
+            keras.layers.Dense(self.outdim, activation='softmax')]
         )
 
     def prepare(self, **kwargs):
@@ -123,12 +134,16 @@ class NeuralNetwork(Model):
 
         optimizer = dp_optimizer.GradientDescentOptimizer(
             learning_rate=self.learning_rate)
-        loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
+        if y_train.shape[1] == 1:
+            loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
+        else:
+            loss = tf.keras.losses.CategoricalCrossentropy(from_logits=True)
         self.model.compile(optimizer=optimizer,
                            loss=loss,
                            metrics=self.metrics)
         self.model.fit(X_train,
                        y_train,
+                       batch_size=self.batch_size,
                        epochs=self.epochs,
                        verbose=self.verbose)
 
@@ -161,9 +176,13 @@ class NeuralNetwork(Model):
 
         # Compute vector of per-example loss rather than
         # its mean over a minibatch.
-        loss = tf.keras.losses.SparseCategoricalCrossentropy(
-            from_logits=True,
-            reduction=tf.compat.v1.losses.Reduction.NONE)
+        if y_train.shape[1] == 1:
+            loss = tf.keras.losses.SparseCategoricalCrossentropy(
+                from_logits=True,
+                reduction=tf.compat.v1.losses.Reduction.NONE)
+        else:
+            loss = tf.keras.losses.CategoricalCrossentropy(from_logits=True,
+                                                           reduction=tf.compat.v1.losses.Reduction.NONE)
 
         self.model.compile(optimizer=optimizer,
                            loss=loss,
@@ -186,9 +205,29 @@ class NeuralNetwork(Model):
             kwargs (:obj:`dict`): dictionary of optional arguments.
 
         Returns:
+            yhat: numerical matrix containing the predicted responses classes.
+        """
+        return self.model.predict(x).argmax(axis=1)
+
+    def predict_proba(self, x, **kwargs):
+        """Model predict function.
+
+        Model scoring.
+
+        This method is final. Signature will be checked at runtime!
+
+        Args:
+            kwargs (:obj:`dict`): dictionary of optional arguments.
+
+        Returns:
             yhat: numerical matrix containing the predicted responses.
         """
         return self.model.predict(x)
+
+    def get_classes(self):
+        """Returns the out put dimension as the known classes"""
+        return np.array(range(self.outdim))
+
 
     def evaluate(self, x, y, verbose=0, **kwargs):
         """Model predict and evluate.
