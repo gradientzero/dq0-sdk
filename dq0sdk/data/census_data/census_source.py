@@ -12,13 +12,15 @@ from dq0sdk.data.preprocessing import preprocessing
 from dq0sdk.data.source import Source
 from dq0sdk.data.utils import util
 
+import numpy as np
+
 import pandas as pd
 
 
 class CensusSource(Source):
 
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+        super().__init__(name='census_data', **kwargs)
 
     def read(self):
 
@@ -290,14 +292,48 @@ class CensusSource(Source):
 
         return X_train_df, X_test_df, y_train_ts, y_test_ts
 
-    def save_preprocessed_tr_and_te_datasets(self, X_train_df, X_test_df,
-                                             y_train_ts, y_test_ts,
+    def save_preprocessed_tr_and_te_datasets(self, X_train, X_test,
+                                             y_train, y_test,
                                              working_folder):
+        """
 
-        pd.concat([X_train_df, y_train_ts], axis=1).to_csv(
-            working_folder + 'preprocessed_training_data.csv', index=False)
-        pd.concat([X_test_df, y_test_ts], axis=1).to_csv(
-            working_folder + 'preprocessed_test_data.csv', index=False)
+        :param X_train: Pandas Dataframe or numpy array
+        :param X_test:  Pandas Dataframe or numpy array
+        :param y_train: Pandas Series or numpy (also non-dimensional) array
+        :param y_test: Pandas Series or numpy (also non-dimensional) array
+        :param working_folder: str with file path
+        :return:
+        """
+
+        if isinstance(X_train, pd.DataFrame):
+
+            pd.concat([X_train, y_train], axis=1).to_csv(
+                working_folder + 'preprocessed_training_data.csv', index=False)
+            pd.concat([X_test, y_test], axis=1).to_csv(
+                working_folder + 'preprocessed_test_data.csv', index=False)
+
+        elif isinstance(X_train, np.ndarray):
+
+            if y_train.ndim < 2:
+                # transform one-dimensional array into column vector via
+                # newaxis
+                y_train = y_train[:, np.newaxis]
+                y_test = y_test[:, np.newaxis]
+
+            if X_train.ndim <= 2:
+                np.savetxt(working_folder + 'preprocessed_training_X.csv',
+                           X_train, delimiter=',')
+                np.savetxt(working_folder + 'preprocessed_test_X.csv',
+                           X_test, delimiter=',')
+            else:
+                np.save(working_folder + 'preprocessed_training_X.npy',
+                        X_train)
+                np.save(working_folder + 'preprocessed_test_X.npy', X_test)
+
+            np.savetxt(working_folder + 'preprocessed_training_y.csv',
+                       y_train, delimiter=',')
+            np.savetxt(working_folder + 'preprocessed_test_y.csv',
+                       y_test, delimiter=',')
 
     def to_json(self):
         """Returns a json representation of this data sources information.

@@ -109,23 +109,30 @@ class NaiveBayesianModel(Model):
         Model fit function: it learns a model from training data
         """
 
-        X_train_df = self.X_train
-        y_train_ts = self.y_train
+        X_train = self.X_train
+        y_train = self.y_train
+
+        if isinstance(y_train, np.ndarray):
+            if y_train.ndim == 2:
+                # make 1-dimensional array
+                y_train = np.ravel(y_train)
 
         print('\n\n-------------------- ' + self._classifier_type + ' '
               'classifier learning ---------------------')
         if self.DP_enabled:
             print('DP epsilon set to', self.DP_epsilon)
         print('\nPercentage freq. of target labels in train dataset:')
-        print(y_train_ts.value_counts(normalize=True) * 100)
+        util.estimate_freq_of_labels(y_train)
 
-        self._classifier.fit(X_train_df, y_train_ts)
+        self._classifier.fit(X_train, y_train)
 
         print('\nLearned a ' + self._classifier_type + ' model. ')
-        y_pred = self._classifier.predict(X_train_df)
+        y_pred = self._classifier.predict(X_train)
 
-        accuracy_score = metrics.accuracy_score(y_train_ts, y_pred)
+        accuracy_score = metrics.accuracy_score(y_train, y_pred)
         print('\nModel accuracy on training data:', round(accuracy_score, 2))
+
+        return accuracy_score
 
     def fit_dp(self, **kwargs):
         """Model fit function.
@@ -216,14 +223,14 @@ class NaiveBayesianModel(Model):
 
         return probs_np_a, class_names
 
-    def evaluate(self, X_test_df, y_test_ts, output_folder,
+    def evaluate(self, X_test, y_test, output_folder,
                  enable_plots=False,
                  classifier_description=''
                  ):
         """
         Test learnt classifier over a test set
-        :param X_test_df: test instances
-        :param y_test_ts: learning signal
+        :param X_test: test instances. pandas.DataFrame or numpy.ndarray
+        :param y_test: learning signal. pandas.Series or numpy.ndarray
         :param output_folder:
         :param enable_plots: flag to generate a jpg file with the confusion
                              matrix
@@ -235,28 +242,35 @@ class NaiveBayesianModel(Model):
         print('\n\n--------------------- Testing learnt classifier '
               '---------------------')
 
-        y_pred_np_a = self._classifier.predict(X_test_df)
+        if isinstance(y_test, np.ndarray):
+            if y_test.ndim == 2:
+                # Make 1-dimensional arrays
+                y_test = np.ravel(y_test)
+
+        y_pred_np_a = self._classifier.predict(X_test)
 
         print(
             '\nPercentage freq. of target labels in test dataset (baseline '
             'for classification performance):')
-        print(y_test_ts.value_counts(normalize=True) * 100)
+        util.estimate_freq_of_labels(y_test)
 
-        accuracy_score = metrics.accuracy_score(y_test_ts, y_pred_np_a)
+        accuracy_score = metrics.accuracy_score(y_test, y_pred_np_a)
         print('\nModel accuracy on test data:', round(accuracy_score, 2))
-        print('\n', metrics.classification_report(y_test_ts, y_pred_np_a))
+        print('\n', metrics.classification_report(y_test, y_pred_np_a))
 
-        # print('\nConfusion matrix:')
-        # print(metrics.confusion_matrix(y_test_ts, y_pred_np_a))
-        #
-        # By default, labels that appear at least once in y_test_ts or
+        print('\nNormalized confusion matrix:')
+        cm_df, _ = plotting.compute_confusion_matrix(
+            y_test, y_pred_np_a, normalize='true'
+        )
+        print(cm_df)
+        # By default, labels that appear at least once in y_test or
         # y_pred_np_a are used in sorted order in the confusion matrix.
 
         if enable_plots:
             plotting.plot_confusion_matrix_for_scikit_classifier(
                 self._classifier,
-                X_test_df.values,
-                y_test_ts.values,
+                X_test.values if isinstance(X_test, pd.DataFrame) else X_test,
+                y_test.values if isinstance(y_test, pd.Series) else y_test,
                 class_names=None,
                 xticks_rotation='horizontal',
                 part_of_fn_describing_matrix=classifier_description,

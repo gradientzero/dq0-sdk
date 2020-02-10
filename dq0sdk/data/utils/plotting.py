@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 """
@@ -99,7 +100,14 @@ def plot_confusion_matrix(y_true, y_pred, output_folder,
 
         fig, ax = plt.subplots()
         # cmap='Greens'
-        sns.heatmap(cm, ax=ax, annot=True, cbar=True, fmt=fmt, cmap=cmap)
+        if len(labels_list) > 10:
+            annot_kws = {'size': 6}  # reduce font size to avoid cluttering
+            xticks_rotation = '45'  # must be a string due to below call of
+            # "lower()"
+        else:
+            annot_kws = None
+        sns.heatmap(cm, ax=ax, annot=True, cbar=True, fmt=fmt, cmap=cmap,
+                    annot_kws=annot_kws)
         # annot=True to annotate cells
         # cbar=True to show vertical bar acting as a color legend
         # annot_kws = {"size": 16})# font size
@@ -117,8 +125,8 @@ def plot_confusion_matrix(y_true, y_pred, output_folder,
 
         # rotate the tick labels and set their alignment
         if xticks_rotation.lower() != 'horizontal'.lower():
-            plt.setp(ax.get_xticklabels(), rotation=45, ha="right",
-                     rotation_mode="anchor")
+            for c_ax in [ax.get_xticklabels(), ax.get_yticklabels()]:
+                plt.setp(c_ax, rotation=45, ha="right", rotation_mode="anchor")
 
         fig.tight_layout()
 
@@ -191,3 +199,17 @@ def plot_decision_tree(dec_tree, folder):
     plt.savefig(file_path, bbox_inches='tight', dpi=200)
     plt.close(fig)
     print('\nLearned decision-tree attack-model saved in file ' + file_path)
+
+
+def _debug_cm_plot():
+
+    import random
+
+    num_preds = 50000
+    l1 = [random.randint(0, 20) for i in range(num_preds)]
+    l2 = [random.randint(0, 20) for i in range(num_preds)]
+    plot_confusion_matrix(l1, l2, './')
+
+
+if __name__ == '__main__':
+    _debug_cm_plot()
