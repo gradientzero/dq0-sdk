@@ -28,6 +28,7 @@ class Source(ABC):
     def __init__(self, input_folder=None):
         super().__init__()
         self.uuid = uuid.uuid1()  # UUID for this data source. Will be set at runtime.
+        self.name = ''
         self.data = None
         self.preprocessed_data = None
         self.read_allowed = False
