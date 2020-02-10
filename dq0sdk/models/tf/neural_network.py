@@ -278,4 +278,5 @@ class NeuralNetwork(Model):
         """
         self.model = tf.keras.models.load_model(
             '{}/{}_{}.h5'.format(
-                self.model_path, name, version), compile=False)
+                self.model_path, name, version),
+            compile=False)

@@ -45,3 +45,6 @@ Install in setup tools development mode:
 pip install -e git+https://github.com/gradientzero/dq0-sdk.git
 
 Production / binary installation TBD
+
+## Usage
+for a detailed description of how to setup, train and test and new mode see [dq0sdk/examples/yaml/readme.md](dq0sdk/examples/yaml/readme.md)

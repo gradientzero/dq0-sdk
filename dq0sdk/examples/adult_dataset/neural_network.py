@@ -7,13 +7,15 @@ Neural network model definition
 @author: Wolfgang Gross <wg@gradient0.com>
 """
 
+import dq0sdk
+from dq0sdk.data.preprocessing import preprocessing
+
+import pandas as pd
+
 import sklearn
 import sklearn.preprocessing
-import pandas as pd
-from tensorflow import keras
 
-from dq0sdk.data.preprocessing import preprocessing
-import dq0sdk
+from tensorflow import keras
 
 
 class NeuralNetwork_adult(dq0sdk.models.tf.neural_network.NeuralNetwork):
@@ -42,4 +44,3 @@ class NeuralNetwork_adult(dq0sdk.models.tf.neural_network.NeuralNetwork):
             keras.layers.Dense(10, activation='tanh'),
             keras.layers.Dense(10, activation='tanh'),
             keras.layers.Dense(2, activation='softmax')])
-

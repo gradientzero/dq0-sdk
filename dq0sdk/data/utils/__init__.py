@@ -4,8 +4,7 @@
 This package contains general data helper functions.
 """
 
-from dq0sdk.data.utils import util
-
 __all__ = [
     'util'
+    'plotting'
 ]

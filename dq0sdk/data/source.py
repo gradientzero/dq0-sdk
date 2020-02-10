@@ -24,10 +24,17 @@ class Source(ABC):
     Data sources classes provide a read method to read the data into memory or
     provide a data reader for the underlying source.
     """
-    def __init__(self):
+    def __init__(self, name, input_folder=None):
         super().__init__()
+        self.name = name
         self.data = None
         self.preprocessed_data = None
+        self.read_allowed = False
+        self.meta_allowed = False
+        self.types_allowed = False
+        self.stats_allowed = False
+        self.sample_allowed = False
+        self.input_folder = input_folder
 
     @abstractmethod
     def read(self, force=False):
@@ -57,5 +64,14 @@ class Source(ABC):
 
         Returns:
             data read from the data source.
+        """
+        raise NotImplementedError()
+
+    @abstractmethod
+    def to_json(self):
+        """Returns a json representation of this data sources information.
+
+        Returns:
+            data source description as json.
         """
         raise NotImplementedError()

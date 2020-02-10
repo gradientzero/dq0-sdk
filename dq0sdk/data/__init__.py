@@ -6,10 +6,16 @@ implementing subclasses.
 """
 
 from . import adult, csv
+from .connector import Connector
 from .source import Source
 
 __all__ = [
+    'Connector',
     'Source',
     'csv',
-    'adult'
+    'adult',
+    'census_data',
+    '20_newsgroups',
+    'cifar10',
+    'utils'
 ]
