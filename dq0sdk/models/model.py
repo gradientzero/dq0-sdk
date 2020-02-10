@@ -14,7 +14,11 @@ Copyright 2019, Gradient Zero
 All rights reserved
 """
 
+import logging
+import uuid
 from abc import ABC, abstractmethod
+
+logger = logging.getLogger()
 
 
 class Model(ABC):
@@ -25,6 +29,25 @@ class Model(ABC):
     """
     def __init__(self):
         super().__init__()
+        # data source, model path and uuid will be set at runtime
+        self.data_sources = {}
+        self.model_path = None
+        self.uuid = uuid.uuid1()
+
+    def attach_data_source(self, data_source):
+        """Add a data source to the model.
+
+        This function needs to be called at least once. All data
+        operations will use one of the attached data sources.
+
+        Args:
+            data_source (:obj:`dq0sdk.data.Source`): The new data source to add
+        """
+        if data_source.uuid in self.data_sources.keys():
+            logger.debug('Data source with uuid {} already attached.'.
+                         format(data_source.uuid))
+            return
+        self.data_sources[data_source.uuid] = data_source
 
     @abstractmethod
     def setup_data(self, **kwargs):
@@ -83,7 +106,6 @@ class Model(ABC):
         Implementing child classes will perform model fitting here.
 
         This is the differential private training version.
-        TODO: discuss if we need both fit and fit_dp
 
         The implemented child class version will be final (non-derivable).
 
@@ -126,31 +148,23 @@ class Model(ABC):
         pass
 
     @abstractmethod
-    def save(self, name, version):
+    def save(self):
         """Saves the model.
 
         Implementing child classes should use this function to save the
         model in binary format on local storage.
 
         The implemented child class version will be final (non-derivable).
-
-        Args:
-            name (str): name for the model to use for saving
-            version (str): version of the model to use for saving
         """
         pass
 
     @abstractmethod
-    def load(self, name, version):
+    def load(self):
         """Loads the model.
 
         Implementing child classes should use this function to load the
         model from local storage.
 
         The implemented child class version will be final (non-derivable).
-
-        Args:
-            name (str): name of the model to load
-            version (str): version of the model to load
         """
         pass
