@@ -81,20 +81,16 @@ class NeuralNetworkYaml(Model):
         super().__init__(model_path)
         self.yaml_config = YamlConfig(yaml_path)
         self.yaml_dict = self.yaml_config.yaml_dict
-        self.model_path = self.yaml_dict['MODEL_PATH']
+        self.model = None
+        self.model_path = model_path
+        self.custom_objects = custom_objects
+        self.n_classes = None
+        
+        self.optimizer = self.yaml_dict['OPTIMIZER']['optimizer'](**self.yaml_dict['OPTIMIZER']['kwargs'])
+        self.dp_optimizer = self.yaml_dict['DP_OPTIMIZER']['optimizer'](**self.yaml_dict['DP_OPTIMIZER']['kwargs'])
+        self.loss = self.yaml_dict['LOSS']['loss'](**self.yaml_dict['LOSS']['kwargs'])
         self.metrics = self.yaml_dict['METRICS']
         self.epochs = self.yaml_dict['FIT']['epochs']
-        self.custom_objects = custom_objects
-        self.model = None
-
-        # Define loss
-        self.loss = keras.losses.get(self.yaml_dict['LOSS']['class_name'])
-        if len(self.yaml_dict['LOSS'].items()):
-            loss_config = self.loss.get_config()
-            for k, v in self.yaml_dict['LOSS'].items():
-                if k in loss_config.keys():
-                    loss_config[k] = v
-        self.loss = self.loss.from_config(loss_config)
 
     def setup_data(self, **kwargs):
         """Setup data function
@@ -141,7 +137,7 @@ class NeuralNetworkYaml(Model):
         """
         pass
 
-    def fit(self, x, **kwargs):
+    def fit(self):
         """Model fit function.
 
         This method is final. Signature will be checked at runtime!
@@ -157,19 +153,17 @@ class NeuralNetworkYaml(Model):
             kwargs (:obj:`dict`): dictionary of optional arguments.
                 preprocessed data, feature columns
         """
-        optimizer = tf.keras.optimizers.SGD(
-            **self.yaml_dict['OPTIMIZER'])
-        self.model.compile(optimizer=optimizer,
+        x = None
+
+        self.model.compile(optimizer=self.optimizer,
                            loss=self.loss,
                            metrics=self.metrics)
 
         self.model.fit(
             x=x,
-            epochs=self.epochs,
-            **kwargs,
-        )
+            epochs=self.epochs)
 
-    def fit_dp(self, x, **kwargs):
+    def fit_dp(self):
         """Model fit function.
 
         Implementing child classes will perform model fitting here.
@@ -190,19 +184,17 @@ class NeuralNetworkYaml(Model):
             kwargs (:obj:`dict`): dictionary of optional arguments.
                 Usually preprocessed data, feature columns etc.
         """
-        optimizer = dp_optimizer.DPGradientDescentGaussianOptimizer(
-            **self.yaml_dict['DP_OPTIMIZER'])
-        self.model.compile(optimizer=optimizer,
+        x = None
+
+        self.model.compile(optimizer=self.dp_optimizer,
                            loss=self.loss,
                            metrics=self.metrics)
 
         self.model.fit(
             x=x,
-            epochs=self.epochs,
-            **kwargs,
-        )
+            epochs=self.epochs)
 
-    def predict(self, x, **kwargs):
+    def predict(self, x):
         """Model predict function.
 
         Model scoring.
@@ -217,33 +209,43 @@ class NeuralNetworkYaml(Model):
                 A tf.data dataset. Should return a tuple of either (inputs, targets) or (inputs, targets, sample_weights).
                 A generator or keras.utils.Sequence returning (inputs, targets) or (inputs, targets, sample weights).
                     A more detailed description of unpacking behavior for iterator types (Dataset, generator, Sequence) is given below.
-            kwargs (:obj:`dict`): dictionary of optional arguments.
 
         Returns:
             yhat: numerical matrix containing the predicted responses.
+
+        TODO:
+            add option to include class labels
         """
         return self.model.predict(x)
 
-    def evaluate(self, x, **kwargs):
+    def evaluate(self):
         """Model predict and evluate.
 
         This method is final. Signature will be checked at runtime!
 
-        Args:
-            x: Input data. It could be:
-                A Numpy array (or array-like), or a list of arrays (in case the model has multiple inputs).
-                A TensorFlow tensor, or a list of tensors (in case the model has multiple inputs).
-                A dict mapping input names to the corresponding array/tensors, if the model has named inputs.
-                A tf.data dataset. Should return a tuple of either (inputs, targets) or (inputs, targets, sample_weights).
-                A generator or keras.utils.Sequence returning (inputs, targets) or (inputs, targets, sample weights).
-                    A more detailed description of unpacking behavior for iterator types (Dataset, generator, Sequence) is given below.
-            kwargs (:obj:`dict`): dictionary of optional arguments.
-
         Returns:
             metrics: to be defined!
+
+        TODO:
+            get test from data sources
         """
-        evaluation = self.model.evaluate(x, **kwargs)
+        x = None
+
+        evaluation = self.model.evaluate(x)
         return evaluation
+
+    def run_all(self):
+        """Runs experiment
+        
+        Does all the setup data, model, fit and evaluate
+
+        TODO:
+            get train, validation and test
+        """
+        self.setup_data()
+        self.setup_model()
+        self.fit_dp()
+        self.evaluate()
 
     def save(self):
         """Saves the model.
@@ -251,10 +253,13 @@ class NeuralNetworkYaml(Model):
         Save the model in binary format on local storage.
 
         This method is final. Signature will be checked at runtime!
+
+        Args:
+            name (str): name for the model to use for saving
+            version (str): version of the model to use for saving
         """
         self.model.save(
-            '{}/{}.h5'.format(
-                self.model_path, self.uuid),
+            self.model_path,
             include_optimizer=True)
 
     def load(self):
@@ -263,16 +268,18 @@ class NeuralNetworkYaml(Model):
         Load the model from local storage.
 
         This method is final. Signature will be checked at runtime!
+
+        Args:
+            name (str): name of the model to load
+            version (str): version of the model to load
         """
-        self.model = tf.keras.models.load_model(
-            '{}/{}.h5'.format(
-                self.model_path, self.uuid),
+        self.model = keras.models.load_model(
+            self.model_path,
             custom_objects=self.custom_objects,
             compile=True)
 
         if self.model.optimizer is None:
-            optimizer = dp_optimizer.DPGradientDescentGaussianOptimizer(
-                **self.yaml_dict['DP_OPTIMIZER'])
-            self.model.compile(optimizer=optimizer,
+            self.model.compile(optimizer=self.dp_optimizer,
                                loss=self.loss,
                                metrics=self.metrics)
+

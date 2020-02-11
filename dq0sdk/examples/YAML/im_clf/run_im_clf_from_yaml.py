@@ -12,7 +12,7 @@ but it only does it once
 import logging
 
 # import os
-from dq0sdk.data.google_flowers.get_im_clf_data import get_im_clf_example_data
+from dq0sdk.data.google_flowers.flower_source import FlowerSource
 from dq0sdk.models.tf.neural_network_yaml import NeuralNetworkYaml
 
 import tensorflow as tf
@@ -23,9 +23,18 @@ logger = logging.getLogger()
 
 
 if __name__ == '__main__':
-    # Need to download the data. This can take several minutes depending on your connection speed.
-    get_im_clf_example_data()
+    # data paths.
+    path = 'dq0sdk/data/google_flowers/'
+    path_train = os.path.join(os.getcwd(), path, 'train')
+    path_test = os.path.join(os.getcwd(), path, 'test')
 
+    # DataSources expect only one path parameter,
+    # so concatenate the paths in split them inside.
+    paths = '{};{}'.format(path_train, path_test)
+    
+    # init data source
+    dc = FlowerSource(paths)
+    
     yaml_path = 'dq0sdk/examples/yaml/im_clf/yaml_config_image.yaml'
     im_clf = NeuralNetworkYaml(yaml_path)
     yaml_dict = im_clf.yaml_dict

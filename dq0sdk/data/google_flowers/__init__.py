@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-# """DQ0 SDK Data Sources Adult dataset package.
+"""DQ0 SDK Data Sources Adult dataset package.
 
-# This package contains the TensorFlow flowers dataset data source implementation.
-# """
+This package contains the TensorFlow flowers dataset data source implementation.
+"""
 
-# from .flowers_source import FlowersSource
+from .flower_source import FlowerSource
 
-# __all__ = [
-#     'FlowersSource'
-# ]
+__all__ = [
+    'FlowerSource'
+]

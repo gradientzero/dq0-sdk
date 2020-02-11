@@ -84,9 +84,7 @@ class TFHubImageClassification(TFHub):
         if epochs:
             self.epochs = epochs
 
-        optimizer = keras.optimizers.SGD(
-            **self.yaml_dict['OPTIMIZER'])
-        self.model.compile(optimizer=optimizer,
+        self.model.compile(optimizer=self.optimizer,
                            loss=self.loss,
                            metrics=self.metrics)
 
@@ -95,8 +93,7 @@ class TFHubImageClassification(TFHub):
             steps_per_epoch=self.steps_per_epoch,
             validation_data=self.development_generator,
             validation_steps=self.validation_steps,
-            epochs=self.epochs,
-        )
+            epochs=self.epochs,)
 
     def fit_dp(self, epochs=None):
         """Model fit function.
@@ -114,9 +111,7 @@ class TFHubImageClassification(TFHub):
         if epochs:
             self.epochs = epochs
 
-        optimizer = dp_optimizer.DPGradientDescentGaussianOptimizer(
-            **self.yaml_dict['DP_OPTIMIZER'])
-        self.model.compile(optimizer=optimizer,
+        self.model.compile(optimizer=self.dp_optimizer,
                            loss=self.loss,
                            metrics=self.metrics)
 
@@ -125,8 +120,7 @@ class TFHubImageClassification(TFHub):
             steps_per_epoch=self.steps_per_epoch,
             validation_data=self.development_generator,
             validation_steps=self.validation_steps,
-            epochs=self.epochs,
-        )
+            epochs=self.epochs,)
 
     def evaluate(self):
         """Model predict and evluate.

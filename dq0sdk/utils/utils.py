@@ -27,8 +27,6 @@ import tensorflow_hub as hub
 
 import yaml
 
-# from tensorflow_privacy.privacy.optimizers import dp_optimizer
-
 logger = logging.getLogger()
 
 

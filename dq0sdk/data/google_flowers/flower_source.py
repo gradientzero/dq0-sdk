@@ -58,6 +58,9 @@ class FlowerSource(Source):
         except Exception as e:
             logger.error('Problem with paths: {}'.format(e))
             sys.exit(1)
+
+        if not os.path.exists(self.path_train):
+            self.read()
         
     def read(self):
         """Read data sources

@@ -72,21 +72,17 @@ class TFHub(Model):
         yaml_path = hub_models_dict[tf_hub_url]
         self.yaml_config = YamlConfig(yaml_path)
         self.yaml_dict = self.yaml_config.yaml_dict
+        self.model = None
         self.model_path = model_path
-        self.metrics = self.yaml_dict['METRICS']
-        self.epochs = self.yaml_dict['FIT']['epochs']
         self.custom_objects = custom_objects
         self.n_classes = None
-        self.model = None
-
-        # Define loss
-        self.loss = keras.losses.get(self.yaml_dict['LOSS']['class_name'])
-        if len(self.yaml_dict['LOSS'].items()):
-            loss_config = self.loss.get_config()
-            for k, v in self.yaml_dict['LOSS'].items():
-                if k in loss_config.keys():
-                    loss_config[k] = v
-        self.loss = self.loss.from_config(loss_config)
+        
+        self.optimizer = self.yaml_dict['OPTIMIZER']['optimizer'](**self.yaml_dict['OPTIMIZER']['kwargs'])
+        self.dp_optimizer = self.yaml_dict['DP_OPTIMIZER']['optimizer'](**self.yaml_dict['DP_OPTIMIZER']['kwargs'])
+        self.loss = self.yaml_dict['LOSS']['loss'](**self.yaml_dict['LOSS']['kwargs'])
+        self.metrics = self.yaml_dict['METRICS']
+        self.epochs = self.yaml_dict['FIT']['epochs']
+        
 
     def setup_data(self):
         """Setup data function
@@ -129,12 +125,6 @@ class TFHub(Model):
             logger.error('model_from_yaml: {}'.format(e))
             sys.exit(1)
 
-        optimizer = dp_optimizer.DPGradientDescentGaussianOptimizer(
-            **self.yaml_dict['DP_OPTIMIZER'])
-        self.model.compile(optimizer=optimizer,
-                           loss=self.loss,
-                           metrics=self.metrics)
-
     def prepare(self, **kwargs):
         """called before model fit on every run.
 
@@ -156,9 +146,7 @@ class TFHub(Model):
         """
         x = None
 
-        optimizer = keras.optimizers.SGD(
-            **self.yaml_dict['OPTIMIZER'])
-        self.model.compile(optimizer=optimizer,
+        self.model.compile(optimizer=self.optimizer,
                            loss=self.loss,
                            metrics=self.metrics)
 
@@ -180,9 +168,7 @@ class TFHub(Model):
         """
         x = None
 
-        optimizer = dp_optimizer.DPGradientDescentGaussianOptimizer(
-            **self.yaml_dict['DP_OPTIMIZER'])
-        self.model.compile(optimizer=optimizer,
+        self.model.compile(optimizer=self.dp_optimizer,
                            loss=self.loss,
                            metrics=self.metrics)
 
@@ -244,7 +230,6 @@ class TFHub(Model):
         self.fit_dp()
         self.evaluate()
 
-    
     def save(self):
         """Saves the model.
 
@@ -277,8 +262,7 @@ class TFHub(Model):
             compile=True)
 
         if self.model.optimizer is None:
-            optimizer = dp_optimizer.DPGradientDescentGaussianOptimizer(
-                **self.yaml_dict['DP_OPTIMIZER'])
-            self.model.compile(optimizer=optimizer,
+            self.model.compile(optimizer=self.dp_optimizer,
                                loss=self.loss,
                                metrics=self.metrics)
+

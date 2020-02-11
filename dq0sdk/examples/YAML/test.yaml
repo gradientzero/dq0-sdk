@@ -1,0 +1,7 @@
+DP_OPTIMIZER:
+  optimizer: !!python/name:tensorflow_privacy.privacy.optimizers.dp_optimizer.DPGradientDescentGaussianOptimizer
+  kwargs:
+    learning_rate: 0.15
+    noise_multiplier: 10
+    l2_norm_clip: 1.5
+    num_microbatches: 1
