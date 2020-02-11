@@ -48,7 +48,6 @@ All rights reserved
 import logging
 import os
 import sys
-from logging.config import fileConfig
 
 from dq0sdk.models.model import Model
 from dq0sdk.models.tf.tf_hub_models import hub_models_dict
@@ -59,10 +58,7 @@ from tensorflow import keras
 
 from tensorflow_privacy.privacy.optimizers import dp_optimizer
 
-
-fileConfig(os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), '../../logging.conf'))
-logger = logging.getLogger('dq0')
+logger = logging.getLogger()
 
 
 class TFHub(Model):
@@ -71,16 +67,16 @@ class TFHub(Model):
     SDK users can use this class to create and train Keras models or
     subclass this class to define custom neural networks.
     """
-    def __init__(self, tf_hub_url=None, n_classes=None, custom_objects=custom_objects(), hub_models_dict=hub_models_dict):
-        super().__init__()
+    def __init__(self, model_path=None, tf_hub_url=None, custom_objects=custom_objects(), hub_models_dict=hub_models_dict):
+        super().__init__(model_path)
         yaml_path = hub_models_dict[tf_hub_url]
         self.yaml_config = YamlConfig(yaml_path)
         self.yaml_dict = self.yaml_config.yaml_dict
-        self.model_path = self.yaml_dict['MODEL_PATH']
+        self.model_path = model_path
         self.metrics = self.yaml_dict['METRICS']
         self.epochs = self.yaml_dict['FIT']['epochs']
         self.custom_objects = custom_objects
-        self.n_classes = n_classes
+        self.n_classes = None
         self.model = None
 
         # Define loss
@@ -92,14 +88,12 @@ class TFHub(Model):
                     loss_config[k] = v
         self.loss = self.loss.from_config(loss_config)
 
-    def setup_data(self, **kwargs):
+    def setup_data(self):
         """Setup data function
 
         This function can be used by child classes to prepare data or perform
         other tasks that dont need to be repeated for every training run.
 
-        Args:
-            kwargs (:obj:`dict`): dictionary of optional arguments
         """
         pass
 
@@ -118,9 +112,16 @@ class TFHub(Model):
             del model_dict['keras_version']
         if 'backend' in model_dict.keys():
             del model_dict['backend']
+        try:
+            self.n_classes = list(self.data_sources.values())[0].n_classes
+        except Exception as e:
+            logger.error('Problem extracting n_classes from data sources: {}'.format(e))
+            sys.exit(1)
+            
         model_dict['config']['layers'][-1]['config']['units'] = self.n_classes
 
         model_str = self.yaml_config.dump_yaml(model_dict)
+        
         try:
             self.model = keras.models.model_from_yaml(model_str,
                                                       custom_objects=self.custom_objects)
@@ -145,22 +146,16 @@ class TFHub(Model):
         """
         pass
 
-    def fit(self, x, **kwargs):
+    def fit(self):
         """Model fit function.
 
         This method is final. Signature will be checked at runtime!
 
-        Args:
-            x: Input data. It could be:
-                A Numpy array (or array-like), or a list of arrays (in case the model has multiple inputs).
-                A TensorFlow tensor, or a list of tensors (in case the model has multiple inputs).
-                A dict mapping input names to the corresponding array/tensors, if the model has named inputs.
-                A tf.data dataset. Should return a tuple of either (inputs, targets) or (inputs, targets, sample_weights).
-                A generator or keras.utils.Sequence returning (inputs, targets) or (inputs, targets, sample weights).
-                    A more detailed description of unpacking behavior for iterator types (Dataset, generator, Sequence) is given below.
-            kwargs (:obj:`dict`): dictionary of optional arguments.
-                preprocessed data, feature columns
+        TODO:
+            train and validate need to be gotten from datasource
         """
+        x = None
+
         optimizer = keras.optimizers.SGD(
             **self.yaml_dict['OPTIMIZER'])
         self.model.compile(optimizer=optimizer,
@@ -169,31 +164,22 @@ class TFHub(Model):
 
         self.model.fit(
             x=x,
-            epochs=self.epochs,
-            **kwargs,
-        )
+            epochs=self.epochs)
 
-    def fit_dp(self, x, **kwargs):
+    def fit_dp(self):
         """Model fit function.
 
         Implementing child classes will perform model fitting here.
 
         This is the differential private training version.
-        TODO: discuss if we need both fit and fit_dp
+        TODO: 
+            discuss if we need both fit and fit_dp
+            get train and validate from datasource
 
         The implemented child class version will be final (non-derivable).
-
-        Args:
-            x: Input data. It could be:
-                A Numpy array (or array-like), or a list of arrays (in case the model has multiple inputs).
-                A TensorFlow tensor, or a list of tensors (in case the model has multiple inputs).
-                A dict mapping input names to the corresponding array/tensors, if the model has named inputs.
-                A tf.data dataset. Should return a tuple of either (inputs, targets) or (inputs, targets, sample_weights).
-                A generator or keras.utils.Sequence returning (inputs, targets) or (inputs, targets, sample weights).
-                    A more detailed description of unpacking behavior for iterator types (Dataset, generator, Sequence) is given below.
-            kwargs (:obj:`dict`): dictionary of optional arguments.
-                Usually preprocessed data, feature columns etc.
         """
+        x = None
+
         optimizer = dp_optimizer.DPGradientDescentGaussianOptimizer(
             **self.yaml_dict['DP_OPTIMIZER'])
         self.model.compile(optimizer=optimizer,
@@ -203,10 +189,9 @@ class TFHub(Model):
         self.model.fit(
             x=x,
             epochs=self.epochs,
-            **kwargs,
         )
 
-    def predict(self, x, **kwargs):
+    def predict(self, x):
         """Model predict function.
 
         Model scoring.
@@ -221,35 +206,46 @@ class TFHub(Model):
                 A tf.data dataset. Should return a tuple of either (inputs, targets) or (inputs, targets, sample_weights).
                 A generator or keras.utils.Sequence returning (inputs, targets) or (inputs, targets, sample weights).
                     A more detailed description of unpacking behavior for iterator types (Dataset, generator, Sequence) is given below.
-            kwargs (:obj:`dict`): dictionary of optional arguments.
 
         Returns:
             yhat: numerical matrix containing the predicted responses.
+
+        TODO:
+            add option to include class labels
         """
         return self.model.predict(x)
 
-    def evaluate(self, x, **kwargs):
+    def evaluate(self):
         """Model predict and evluate.
 
         This method is final. Signature will be checked at runtime!
 
-        Args:
-            x: Input data. It could be:
-                A Numpy array (or array-like), or a list of arrays (in case the model has multiple inputs).
-                A TensorFlow tensor, or a list of tensors (in case the model has multiple inputs).
-                A dict mapping input names to the corresponding array/tensors, if the model has named inputs.
-                A tf.data dataset. Should return a tuple of either (inputs, targets) or (inputs, targets, sample_weights).
-                A generator or keras.utils.Sequence returning (inputs, targets) or (inputs, targets, sample weights).
-                    A more detailed description of unpacking behavior for iterator types (Dataset, generator, Sequence) is given below.
-            kwargs (:obj:`dict`): dictionary of optional arguments.
-
         Returns:
             metrics: to be defined!
+
+        TODO:
+            get test from data sources
         """
-        evaluation = self.model.evaluate(x, **kwargs)
+        x = None
+
+        evaluation = self.model.evaluate(x)
         return evaluation
 
-    def save(self, name, version):
+    def run_all(self):
+        """Runs experiment
+        
+        Does all the setup data, model, fit and evaluate
+
+        TODO:
+            get train, validation and test
+        """
+        self.setup_data()
+        self.setup_model()
+        self.fit_dp()
+        self.evaluate()
+
+    
+    def save(self):
         """Saves the model.
 
         Save the model in binary format on local storage.
@@ -261,11 +257,10 @@ class TFHub(Model):
             version (str): version of the model to use for saving
         """
         self.model.save(
-            '{}/{}_{}.h5'.format(
-                self.model_path, name, version),
+            self.model_path,
             include_optimizer=True)
 
-    def load(self, name, version):
+    def load(self):
         """Loads the model.
 
         Load the model from local storage.
@@ -277,8 +272,7 @@ class TFHub(Model):
             version (str): version of the model to load
         """
         self.model = keras.models.load_model(
-            '{}/{}_{}.h5'.format(
-                self.model_path, name, version),
+            self.model_path,
             custom_objects=self.custom_objects,
             compile=True)
 

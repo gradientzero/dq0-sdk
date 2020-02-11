@@ -20,7 +20,6 @@ import os
 import sys
 import tarfile
 from random import sample
-from logging.config import fileConfig
 
 from dq0sdk.data.source import Source
 
@@ -28,9 +27,7 @@ import numpy as np
 
 import tensorflow as tf
 
-fileConfig(os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), '../../logging.conf'))
-logger = logging.getLogger('dq0')
+logger = logging.getLogger()
 
 root_dir = os.getcwd()
 
@@ -45,7 +42,7 @@ class FlowerSource(Source):
     provide a data reader for the underlying source.
     """
     def __init__(self, paths):
-        super().__init__(name=None, input_folder=None)
+        super().__init__(input_folder=None)
         self.data = None
         self.preprocessed_data = None
         self.read_allowed = False

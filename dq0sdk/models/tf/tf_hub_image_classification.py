@@ -9,8 +9,8 @@ from tensorflow_privacy.privacy.optimizers import dp_optimizer
 
 
 class TFHubImageClassification(TFHub):
-    def __init__(self, tf_hub_url):
-        super().__init__(tf_hub_url)
+    def __init__(self, model_path=None, tf_hub_url=None):
+        super().__init__(model_path, tf_hub_url)
         yaml_path = hub_models_dict[tf_hub_url]
         self.yaml_config = YamlConfig(yaml_path)
         self.yaml_dict = self.yaml_config.yaml_dict
@@ -20,20 +20,25 @@ class TFHubImageClassification(TFHub):
         self.development_generator = None
         self.steps_per_epoch = None
         self.validation_steps = None
+        self.test_generator = None
+        self.test_steps = None
 
-    def setup_data(self, augmentation=False, **kwargs):
+    def setup_data(self, augmentation=False):
         """Setup data function
 
         This function can be used by child classes to prepare data or perform
         other tasks that dont need to be repeated for every training run.
 
         Args:
-            kwargs (:obj:`dict`): dictionary of optional arguments
+            augmentation (bool): applies image augmenttion to training data
         """
+        self.path_train = list(self.data_sources.values())[0].path_train
+        self.path_test = list(self.data_sources.values())[0].path_test
+
         development_datagen = keras.preprocessing.image.ImageDataGenerator(
             **self.preprocessing['datagen_kwargs'],)
         development_generator = development_datagen.flow_from_directory(
-            self.preprocessing['train_data_dir'],
+            self.path_train,
             **self.preprocessing['development_dataflow'],
             **self.preprocessing['dataflow_kwargs'],)
 
@@ -44,14 +49,14 @@ class TFHubImageClassification(TFHub):
         else:
             train_datagen = development_datagen
         train_generator = train_datagen.flow_from_directory(
-            self.preprocessing['train_data_dir'],
+            self.path_train,
             **self.preprocessing['train_dataflow'],
             **self.preprocessing['dataflow_kwargs'])
 
         test_datagen = keras.preprocessing.image.ImageDataGenerator(
             **self.preprocessing['datagen_kwargs'],)
         test_generator = test_datagen.flow_from_directory(
-            self.preprocessing['test_data_dir'],
+            self.path_test,
             **self.preprocessing['test_dataflow'],
             **self.preprocessing['dataflow_kwargs'],)
 
@@ -63,20 +68,18 @@ class TFHubImageClassification(TFHub):
         self.n_classes = train_generator.num_classes
         self.train_generator = train_generator
         self.development_generator = development_generator
+        self.test_generator = test_generator
         self.steps_per_epoch = steps_per_epoch
         self.validation_steps = validation_steps
+        self.test_steps = test_steps
 
-        return test_generator, test_steps
-
-    def fit(self, epochs=None, **kwargs):
+    def fit(self, epochs=None):
         """Model fit function.
 
         This method is final. Signature will be checked at runtime!
 
         Args:
             epochs (int): number of epochs, default = from config
-            kwargs (:obj:`dict`): dictionary of optional arguments.
-                preprocessed data, feature columns
         """
         if epochs:
             self.epochs = epochs
@@ -93,10 +96,9 @@ class TFHubImageClassification(TFHub):
             validation_data=self.development_generator,
             validation_steps=self.validation_steps,
             epochs=self.epochs,
-            **kwargs,
         )
 
-    def fit_dp(self, epochs=None, **kwargs):
+    def fit_dp(self, epochs=None):
         """Model fit function.
 
         Implementing child classes will perform model fitting here.
@@ -108,8 +110,6 @@ class TFHubImageClassification(TFHub):
 
         Args:
             epochs (int): number of epochs, default = from config
-            kwargs (:obj:`dict`): dictionary of optional arguments.
-                Usually preprocessed data, feature columns etc.
         """
         if epochs:
             self.epochs = epochs
@@ -126,5 +126,38 @@ class TFHubImageClassification(TFHub):
             validation_data=self.development_generator,
             validation_steps=self.validation_steps,
             epochs=self.epochs,
-            **kwargs,
         )
+
+    def evaluate(self):
+        """Model predict and evluate.
+
+        This method is final. Signature will be checked at runtime!
+
+        Returns:
+            metrics: to be defined!
+
+        """
+        evaluation = self.model.evaluate(x = self.test_generator,
+                                         steps = self.test_steps)
+        return evaluation
+
+    def run_all(self, augmentation=False, epochs=None):
+        """Runs experiment
+        
+        Does all the setup data, model, fit and evaluate
+
+        """
+        # setup data
+        self.setup_data(augmentation=augmentation)
+
+        # setup model
+        self.setup_model()
+
+        # fit
+        self.fit_dp(epochs=epochs)
+
+        # evaluate
+        loss_te, acc_te, mse_te = self.evaluate()
+        print('Test  Acc: %.2f %%' % (100 * acc_te))
+
+    

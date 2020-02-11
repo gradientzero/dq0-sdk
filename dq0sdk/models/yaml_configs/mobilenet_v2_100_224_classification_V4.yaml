@@ -1,6 +1,4 @@
 PREPROCESSING:
-  train_data_dir: 'dq0sdk/data/google_flowers/train'
-  test_data_dir: 'dq0sdk/data/google_flowers/test'
   datagen_kwargs: {rescale: !!python/float 0.00392156862745098, #or 1/255
                    validation_split: !!python/float 0.2}
   train_datagen: {rotation_range: 40,
@@ -29,7 +27,7 @@ MODEL:
         - 224
         - 3
         dtype: float32
-        handle: https://tfhub.dev/google/imagenet/mobilenet_v2_100_224/classification/3
+        handle: 'https://tfhub.dev/google/imagenet/mobilenet_v2_100_224/feature_vector/3'
         name: keras_layer
         trainable: false
     - class_name: Dropout
@@ -59,4 +57,3 @@ METRICS:
   - 'mse'
 FIT:
   epochs: 1
-MODEL_PATH: './dq0sdk/examples/tf_hub'
