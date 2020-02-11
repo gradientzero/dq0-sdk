@@ -22,7 +22,7 @@ if __name__ == '__main__':
     yaml_path = 'dq0sdk/examples/yaml/im_clf/yaml_config_image.yaml'
     im_clf = NeuralNetworkYaml(yaml_path)
     yaml_dict = im_clf.yaml_dict
-    # print(yaml_dict)
+    print(yaml_dict)
 
     train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(
         **yaml_dict['PREPROCESSING']['base_datagen'],

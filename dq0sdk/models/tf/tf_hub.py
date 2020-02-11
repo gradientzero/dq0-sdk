@@ -55,10 +55,7 @@ from dq0sdk.models.tf.tf_hub_models import hub_models_dict
 from dq0sdk.utils.utils import YamlConfig
 from dq0sdk.utils.utils import custom_objects
 
-# import tensorflow as tf
-# import tensorflow_hub as hub
 from tensorflow import keras
-# import numpy as np
 
 from tensorflow_privacy.privacy.optimizers import dp_optimizer
 
