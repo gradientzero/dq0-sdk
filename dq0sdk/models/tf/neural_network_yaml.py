@@ -73,9 +73,12 @@ class NeuralNetworkYaml(Model):
 
     SDK users can use this class to create and train Keras models or
     subclass this class to define custom neural networks.
+
+    Args:
+        model_path (str): Path to the model save destination.
     """
-    def __init__(self, yaml_path=None, custom_objects=custom_objects()):
-        super().__init__()
+    def __init__(self, model_path=None, yaml_path=None, custom_objects=custom_objects()):
+        super().__init__(model_path)
         self.yaml_config = YamlConfig(yaml_path)
         self.yaml_dict = self.yaml_config.yaml_dict
         self.model_path = self.yaml_dict['MODEL_PATH']
@@ -242,36 +245,28 @@ class NeuralNetworkYaml(Model):
         evaluation = self.model.evaluate(x, **kwargs)
         return evaluation
 
-    def save(self, name, version):
+    def save(self):
         """Saves the model.
 
         Save the model in binary format on local storage.
 
         This method is final. Signature will be checked at runtime!
-
-        Args:
-            name (str): name for the model to use for saving
-            version (str): version of the model to use for saving
         """
         self.model.save(
-            '{}/{}_{}.h5'.format(
-                self.model_path, name, version),
+            '{}/{}.h5'.format(
+                self.model_path, self.uuid),
             include_optimizer=True)
 
-    def load(self, name, version):
+    def load(self):
         """Loads the model.
 
         Load the model from local storage.
 
         This method is final. Signature will be checked at runtime!
-
-        Args:
-            name (str): name of the model to load
-            version (str): version of the model to load
         """
         self.model = tf.keras.models.load_model(
-            '{}/{}_{}.h5'.format(
-                self.model_path, name, version),
+            '{}/{}.h5'.format(
+                self.model_path, self.uuid),
             custom_objects=self.custom_objects,
             compile=True)
 

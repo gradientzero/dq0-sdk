@@ -73,6 +73,7 @@ class Connector():
         sample_allowed_globally = 'sample' in self.dataconfig['settings']['allowed_actions']
 
         for source in self.dataconfig['sources']:
+            name = source['name']
             read_allowed = read_allowed_globally
             meta_allowed = meta_allowed_globally
             types_allowed = types_allowed_globally
@@ -86,7 +87,8 @@ class Connector():
                 sample_allowed = 'read' in source['settings']['allowed_actions']
 
             if source['type'] == 'csv':
-                csv = CSVSource(source['name'], os.path.join(self.dataconfig['settings']['csv_base_dir'], source['path']))
+                csv = CSVSource(os.path.join(self.dataconfig['settings']['csv_base_dir'], source['path']))
+                csv.name = name
                 csv.read_allowed = read_allowed
                 csv.meta_allowed = meta_allowed
                 csv.types_allowed = types_allowed

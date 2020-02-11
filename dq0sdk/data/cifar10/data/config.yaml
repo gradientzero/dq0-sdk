@@ -6,11 +6,8 @@ demo parameters:
 
 
 target-model parameters:
-  # target model to be used (case insensitive):
-  # "GaussianNB"
-  # "MultinomialNB"
-  # "MLNN"
-  target_model_type: MLNN
+  # target model to be used (case insensitive): "CNN"
+  target_model_type: CNN
 
 
 robustness-test parameters:

@@ -10,6 +10,7 @@
 Copyright 2019, Gradient Zero
 """
 
+import logging
 import os
 import pickle
 
@@ -26,11 +27,15 @@ import pandas as pd
 from sklearn import metrics
 from sklearn.naive_bayes import GaussianNB, MultinomialNB
 
+logger = logging.getLogger()
+
 
 class NaiveBayesianModel(Model):
+    """Naive Bayesian model implementation.
 
+    Simple model representing a bayesian classifier.
+    """
     def __init__(self, **kwargs):
-
         super().__init__()
 
         if 'saved_model_folder' in kwargs:
@@ -74,8 +79,22 @@ class NaiveBayesianModel(Model):
             self._classifier.set_params(alpha=alpha)
 
     def setup_data(self, **kwargs):
-        # to inherit from abstract base class
-        pass
+        """load train data."""
+        if len(self.data_sources) < 1:
+            logger.error('No data source found')
+            return
+        source = next(iter(self.data_sources.values()))
+        train_data, data = source.read()
+        X_df, y_ts, num_tr_instances = source.preprocess(
+            approach_for_missing_feature='imputation',
+            # 'imputation', 'dropping',
+            imputation_method_for_cat_feats='unknown',
+            # 'unknown', 'most_common_cat'
+            imputation_method_for_quant_feats='median',  # 'median', 'mean'
+            features_to_drop_list=None
+        )
+        self.X_train = X_df
+        self.y_train = y_ts
 
     def setup_model(self, **kwargs):
         # to inherit from abstract base class
@@ -90,23 +109,30 @@ class NaiveBayesianModel(Model):
         Model fit function: it learns a model from training data
         """
 
-        X_train_df = kwargs['X_train_df']
-        y_train_ts = kwargs['y_train_ts']
+        X_train = self.X_train
+        y_train = self.y_train
+
+        if isinstance(y_train, np.ndarray):
+            if y_train.ndim == 2:
+                # make 1-dimensional array
+                y_train = np.ravel(y_train)
 
         print('\n\n-------------------- ' + self._classifier_type + ' '
               'classifier learning ---------------------')
         if self.DP_enabled:
             print('DP epsilon set to', self.DP_epsilon)
         print('\nPercentage freq. of target labels in train dataset:')
-        print(y_train_ts.value_counts(normalize=True) * 100)
+        util.estimate_freq_of_labels(y_train)
 
-        self._classifier.fit(X_train_df, y_train_ts)
+        self._classifier.fit(X_train, y_train)
 
         print('\nLearned a ' + self._classifier_type + ' model. ')
-        y_pred = self._classifier.predict(X_train_df)
+        y_pred = self._classifier.predict(X_train)
 
-        accuracy_score = metrics.accuracy_score(y_train_ts, y_pred)
+        accuracy_score = metrics.accuracy_score(y_train, y_pred)
         print('\nModel accuracy on training data:', round(accuracy_score, 2))
+
+        return accuracy_score
 
     def fit_dp(self, **kwargs):
         """Model fit function.
@@ -197,14 +223,14 @@ class NaiveBayesianModel(Model):
 
         return probs_np_a, class_names
 
-    def evaluate(self, X_test_df, y_test_ts, output_folder,
+    def evaluate(self, X_test, y_test, output_folder,
                  enable_plots=False,
                  classifier_description=''
                  ):
         """
         Test learnt classifier over a test set
-        :param X_test_df: test instances
-        :param y_test_ts: learning signal
+        :param X_test: test instances. pandas.DataFrame or numpy.ndarray
+        :param y_test: learning signal. pandas.Series or numpy.ndarray
         :param output_folder:
         :param enable_plots: flag to generate a jpg file with the confusion
                              matrix
@@ -216,28 +242,35 @@ class NaiveBayesianModel(Model):
         print('\n\n--------------------- Testing learnt classifier '
               '---------------------')
 
-        y_pred_np_a = self._classifier.predict(X_test_df)
+        if isinstance(y_test, np.ndarray):
+            if y_test.ndim == 2:
+                # Make 1-dimensional arrays
+                y_test = np.ravel(y_test)
+
+        y_pred_np_a = self._classifier.predict(X_test)
 
         print(
             '\nPercentage freq. of target labels in test dataset (baseline '
             'for classification performance):')
-        print(y_test_ts.value_counts(normalize=True) * 100)
+        util.estimate_freq_of_labels(y_test)
 
-        accuracy_score = metrics.accuracy_score(y_test_ts, y_pred_np_a)
+        accuracy_score = metrics.accuracy_score(y_test, y_pred_np_a)
         print('\nModel accuracy on test data:', round(accuracy_score, 2))
-        print('\n', metrics.classification_report(y_test_ts, y_pred_np_a))
+        print('\n', metrics.classification_report(y_test, y_pred_np_a))
 
-        # print('\nConfusion matrix:')
-        # print(metrics.confusion_matrix(y_test_ts, y_pred_np_a))
-        #
-        # By default, labels that appear at least once in y_test_ts or
+        print('\nNormalized confusion matrix:')
+        cm_df, _ = plotting.compute_confusion_matrix(
+            y_test, y_pred_np_a, normalize='true'
+        )
+        print(cm_df)
+        # By default, labels that appear at least once in y_test or
         # y_pred_np_a are used in sorted order in the confusion matrix.
 
         if enable_plots:
             plotting.plot_confusion_matrix_for_scikit_classifier(
                 self._classifier,
-                X_test_df.values,
-                y_test_ts.values,
+                X_test.values if isinstance(X_test, pd.DataFrame) else X_test,
+                y_test.values if isinstance(y_test, pd.Series) else y_test,
                 class_names=None,
                 xticks_rotation='horizontal',
                 part_of_fn_describing_matrix=classifier_description,
@@ -246,32 +279,18 @@ class NaiveBayesianModel(Model):
 
         return accuracy_score
 
-    def save(self, name='model', version=None):
+    def save(self):
         """Saves the model in binary format on local storage.
-
-        Args:
-            name (str): name for the model to use for saving
-            version (str): version of the model to use for saving
         """
-
-        if version is not None:
-            name += '_v' + str(version)
-        name += '.pickle'
+        name = '{}.pickle'.format(self.uuid)
 
         with open(os.path.join(self._saved_model_folder, name), 'wb') as f:
             pickle.dump(self._classifier, f)
 
-    def load(self, name, version):
+    def load(self):
         """Loads the model from local storage.
-
-        Args:
-            name (str): name of the model to load
-            version (str): version of the model to load
         """
-
-        if version is not None:
-            name += '_v' + str(version)
-        name += '.pickle'
+        name = '{}.pickle'.format(self.uuid)
 
         with open(os.path.join(self._saved_model_folder, name), 'rb') as file:
             self._classifier = pickle.load(file)

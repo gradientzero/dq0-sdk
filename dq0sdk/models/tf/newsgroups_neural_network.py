@@ -42,11 +42,12 @@ class NewsgroupsNeuralNetwork(Model):
 
     SDK users instantiate this class to create and train Keras models or
     subclass this class to define custom neural networks.
+
+    Args:
+        model_path (str): Path to the model save destination.
     """
-
-    def __init__(self, **kwargs):
-
-        super().__init__()
+    def __init__(self, model_path, **kwargs):
+        super().__init__(model_path)
 
         if 'saved_model_folder' in kwargs:
             self._saved_model_folder = kwargs['saved_model_folder']
@@ -87,9 +88,18 @@ class NewsgroupsNeuralNetwork(Model):
         # TODO: below parameters set in Yaml file to be parsed by this
         # function
         self.learning_rate = 0.001  # 0.15
-        self.epochs = 10  # 50 in ML-leaks paper
+        self.epochs = 50  # 50 in ML-leaks paper
         self.verbose = 2
         self.metrics = ['accuracy']
+        self.regularization_param = 1e-3
+        self.regularizer_dict = {
+            'kernel_regularizer': tf.keras.regularizers.l2(
+                self.regularization_param)  # ,
+            # 'activity_regularizer': tf.keras.regularizers.l2(
+            #    self.regularization_param),
+            # 'bias_regularizer': tf.keras.regularizers.l2(
+            #    self.regularization_param)
+        }
         # TODO: grid search over parameters space
 
         # network topology. TODO: make it parametric!
@@ -99,7 +109,7 @@ class NewsgroupsNeuralNetwork(Model):
             network_type = self._model_type
         if util.case_insensitive_str_comparison(network_type, 'cnn'):
             print('Setting up a multilayer convolution neural network...')
-            self._model = self._get_cnn_model(None, kwargs['num_classes'])
+            self._model = self._get_cnn_model(kwargs['num_classes'])
         elif util.case_insensitive_str_comparison(network_type, 'mlnn'):
             print('Setting up a multilayer neural network...')
             self._model = self._get_mlnn_model(kwargs['num_features'], kwargs[
@@ -117,8 +127,11 @@ class NewsgroupsNeuralNetwork(Model):
             model = tf.keras.Sequential([
                 tf.keras.layers.Input(n_in),
                 tf.keras.layers.Dense(num_units_hidden_layer,
-                                      activation='tanh'),
-                tf.keras.layers.Dense(n_out, activation='softmax')]
+                                      activation='tanh',
+                                      **self.regularizer_dict
+                                      ),
+                tf.keras.layers.Dense(n_out, activation='softmax')
+            ]
             )
         else:
             model = tf.keras.Sequential([
@@ -146,7 +159,7 @@ class NewsgroupsNeuralNetwork(Model):
         model.summary()
         return model
 
-    def _get_cnn_model(self, n_in, n_out, which_model='tf_tutorial'):
+    def _get_cnn_model(self, n_out, which_model='ml-leaks_paper'):
 
         if util.case_insensitive_str_comparison(which_model, 'ml-leaks_paper'):
 
@@ -155,15 +168,16 @@ class NewsgroupsNeuralNetwork(Model):
             model = tf.keras.Sequential()
             # create the convolutional base
             model.add(tf.keras.layers.Conv2D(32, (5, 5), activation='relu',
-                      nput_shape=(32, 32, 3)))
+                      input_shape=(32, 32, 3), **self.regularizer_dict))
             model.add(tf.keras.layers.MaxPooling2D((2, 2)))
-            model.add(tf.keras.layers.Conv2D(64, (5, 5), activation='relu'))
+            model.add(tf.keras.layers.Conv2D(32, (5, 5), activation='relu',
+                                             **self.regularizer_dict))
             model.add(tf.keras.layers.MaxPooling2D((2, 2)))
-            model.add(tf.keras.layers.Conv2D(64, (3, 3), activation='relu'))
 
-            # add Dense layers on top
+            # add dense layers on top
             model.add(tf.keras.layers.Flatten())
-            model.add(tf.keras.layers.Dense(64, activation='relu'))
+            model.add(tf.keras.layers.Dense(128, activation='tanh',
+                                            **self.regularizer_dict))
             model.add(tf.keras.layers.Dense(n_out, activation='softmax'))
 
         elif util.case_insensitive_str_comparison(which_model, 'tf_tutorial'):
@@ -179,7 +193,7 @@ class NewsgroupsNeuralNetwork(Model):
             model.add(tf.keras.layers.MaxPooling2D((2, 2)))
             model.add(tf.keras.layers.Conv2D(64, (3, 3), activation='relu'))
 
-            # add Dense layers on top
+            # add dense layers on top
             model.add(tf.keras.layers.Flatten())
             model.add(tf.keras.layers.Dense(64, activation='relu'))
             model.add(tf.keras.layers.Dense(n_out, activation='softmax'))
@@ -291,29 +305,27 @@ class NewsgroupsNeuralNetwork(Model):
         accuracy_score = metrics.accuracy_score(y_train_np_a, y_pred_np_a)
         print('\nModel accuracy on training data:', round(accuracy_score, 2))
 
+        return accuracy_score
+
     def _get_train_data_from_kwargs(self, kwargs):
 
-        if 'X_train_np_a' in kwargs:
-            X_train_np_a = kwargs['X_train_np_a']
-        elif 'X_train_df' in kwargs:
-            X_train_np_a = kwargs['X_train_df'].values
-        else:
-            if isinstance(kwargs['X_train'], pd.DataFrame):
-                X_train_np_a = kwargs['X_train'].values
-            else:
-                X_train_np_a = kwargs['X_train']
+        X_train = kwargs['X_train']
+        y_train = kwargs['y_train']
 
-        if 'y_train_np_a' in kwargs:
-            y_train_np_a = kwargs['y_train_np_a']
-        elif 'y_train_ts' in kwargs:
-            y_train_np_a = kwargs['y_train_ts'].values
+        if isinstance(X_train, pd.DataFrame):
+            X_train = X_train.values
         else:
-            if isinstance(kwargs['y_train'], pd.Series):
-                y_train_np_a = kwargs['y_train'].values
-            else:
-                y_train_np_a = kwargs['y_train']
+            assert isinstance(X_train, np.ndarray)
 
-        return X_train_np_a, y_train_np_a
+        if isinstance(y_train, pd.Series):
+            y_train = y_train.values
+        else:
+            assert isinstance(y_train, np.ndarray)
+            if y_train.ndim == 2:
+                # make non-dimensional array
+                y_train = np.ravel(y_train)
+
+        return X_train, y_train
 
     def _define_training_parameters(self):
         """
@@ -373,10 +385,11 @@ class NewsgroupsNeuralNetwork(Model):
         print('\toptimization algorithm:', optimizer if isinstance(
             optimizer, str) else optimizer.get_config()['name'])
         print('\tepochs:', self.epochs)
-        print('\tlearning_rate:', self.learning_rate)
+        print('\tlearning rate:', self.learning_rate)
+        print('\tregularization parameter: ', self.regularization_param)
         print('\tmetric: ', ', '.join(self.metrics))
         if 'batch_size' in additional_fit_params_dict:
-            print('\tbatch_size:', additional_fit_params_dict['batch_size'])
+            print('\tbatch size:', additional_fit_params_dict['batch_size'])
 
     def fit_dp(self, **kwargs):
         """Model fit function.
@@ -532,6 +545,9 @@ class NewsgroupsNeuralNetwork(Model):
             y_test_np_a = y_test.values
         else:
             y_test_np_a = y_test
+            if y_test_np_a.ndim == 2:
+                # make 1-dimensional array
+                y_test_np_a = np.ravel(y_test_np_a)
 
         y_pred_np_a = self.predict(X_test_np_a)
 
@@ -546,6 +562,14 @@ class NewsgroupsNeuralNetwork(Model):
         print('\nModel accuracy on test data:', round(accuracy_score, 2))
         print('\n', metrics.classification_report(y_test_np_a, y_pred_np_a))
 
+        print('\nNormalized confusion matrix:')
+        cm_df, _ = plotting.compute_confusion_matrix(
+            y_test_np_a, y_pred_np_a, normalize='true'
+        )
+        print(cm_df)
+        # By default, labels that appear at least once in y_test or
+        # y_pred_np_a are used in sorted order in the confusion matrix.
+
         if enable_plots:
             plotting.plot_confusion_matrix(
                 y_test_np_a, y_pred_np_a, output_folder,
@@ -554,26 +578,20 @@ class NewsgroupsNeuralNetwork(Model):
 
         return accuracy_score
 
-    def save(self, name, version='1.0'):
+    def save(self):
         """
         Save the model in binary format on local storage
 
         This method is final. Signature will be checked at runtime!
-        Args:
-            name (str): name for the model to use for saving
-            version (str): version of the model to use for saving
         """
-        self._model.save('{}/{}_{}.h5'.format(self._saved_model_folder, name,
-                         version), include_optimizer=False)
+        self._model.save('{}/{}.h5'.format(self.model_path,
+                         self.uuid), include_optimizer=False)
 
-    def load(self, name, version='1.0'):
+    def load(self):
         """
         Load the model from local storage
 
         This method is final. Signature will be checked at runtime!
-        Args:
-            name (str): name of the model to load
-            version (str): version of the model to load
         """
-        self._model = tf.keras.models.load_model('{}/{}_{}.h5'.format(
-            self._saved_model_folder, name, version), compile=False)
+        self._model = tf.keras.models.load_model('{}/{}.h5'.format(
+            self.model_path, self.uuid), compile=False)

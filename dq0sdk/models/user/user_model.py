@@ -10,7 +10,11 @@ Copyright 2020, Gradient Zero
     Artur Susdorf <as@gradient0.com>
 """
 
+import logging
+
 from dq0sdk.models.model import Model
+
+logger = logging.getLogger()
 
 
 class UserModel(Model):
@@ -18,9 +22,12 @@ class UserModel(Model):
 
     Model classes provide a setup method as well as the fit and predict
     ML model functions.
+
+    Args:
+        model_path (str): Path to the model save destination.
     """
-    def __init__(self):
-        super().__init__()
+    def __init__(self, model_path):
+        super().__init__(model_path)
 
     def setup_data(self, **kwargs):
         """Setup data function
@@ -31,7 +38,12 @@ class UserModel(Model):
         Args:
             kwargs (:obj:`dict`): dictionary of optional arguments
         """
-        pass
+        # load data
+        if len(self.data_sources) < 1:
+            logger.error('No data source found')
+            return
+        source = next(iter(self.data_sources.values()))
+        self.data = source.read()
 
     def setup_model(self, **kwargs):
         """Setup model function
