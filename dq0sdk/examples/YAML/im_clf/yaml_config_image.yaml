@@ -48,7 +48,7 @@ MODEL:
             l1: 0.0
             l2: 9.999999747378752e-05
         units: 5
-PTIMIZER:
+OPTIMIZER:
   optimizer: !!python/name:tensorflow.keras.optimizers.SGD
   kwargs:
     learning_rate: 0.15

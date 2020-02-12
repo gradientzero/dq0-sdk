@@ -12,7 +12,7 @@ but it only does it once
 import os
 
 from dq0sdk.data.google_flowers.flower_source import FlowerSource
-from dq0sdk.models.tf.tf_hub_image_classification import TFHubImageClassification
+from dq0sdk.models.tf.neural_network_tfhub_image_classification import NeuralNetworkTFHubImageClassification
 
 
 if __name__ == '__main__':
@@ -38,7 +38,7 @@ if __name__ == '__main__':
     dc = FlowerSource(paths)
 
     # init model
-    im_clf = TFHubImageClassification('notebooks/saved_model/', tf_hub_url)
+    im_clf = NeuralNetworkTFHubImageClassification('notebooks/saved_model/', tf_hub_url)
     
     # attache data source to model
     im_clf.attach_data_source(dc)
