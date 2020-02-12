@@ -25,12 +25,12 @@ if __name__ == '__main__':
     # DataSources expect only one path parameter,
     # so concatenate the paths in split them inside.
     paths = '{};{}'.format(path_train, path_test)
-    
+
     # tensorflowhub model
-    tf_hub_url = 'https://tfhub.dev/google/imagenet/mobilenet_v2_100_224/classification/4' # These are actually version 3 because i keep gettgin a model not stored error
+    tf_hub_url = 'https://tfhub.dev/google/imagenet/mobilenet_v2_100_224/classification/4'  # These are actually version 3 because of model not stored error
     # tf_hub_url = 'https://tfhub.dev/google/imagenet/resnet_v2_50/feature_vector/4'
-    
-    # model path 
+
+    # model path
     model_path = 'notebooks/saved_model/model_name.h5'
 
     # CODE
@@ -39,10 +39,9 @@ if __name__ == '__main__':
 
     # init model
     im_clf = NeuralNetworkTFHubImageClassification('notebooks/saved_model/', tf_hub_url)
-    
+
     # attache data source to model
     im_clf.attach_data_source(dc)
 
-    # run setup data, setup model, fit and evaluate 
+    # run setup data, setup model, fit and evaluate
     im_clf.run_all(augmentation=True, epochs=2)
-

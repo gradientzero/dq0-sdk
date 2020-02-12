@@ -50,7 +50,7 @@ class FlowerSource(Source):
         self.types_allowed = False
         self.stats_allowed = False
         self.sample_allowed = False
-        
+
         self.n_classes = 5
 
         try:
@@ -61,7 +61,7 @@ class FlowerSource(Source):
 
         if not os.path.exists(self.path_train):
             self.read()
-        
+
     def read(self):
         """Read data sources
 
@@ -88,7 +88,6 @@ class FlowerSource(Source):
                         for f in files_to_move:
                             os.rename(os.path.join(origin_dir_subdir, f), os.path.join(dest_dir_subdir, f))
 
-
         tar_file = os.path.join(root_dir, 'dq0sdk/data/google_flowers/flower_photos.tgz')
 
         if not os.path.isfile(tar_file):
@@ -111,7 +110,7 @@ class FlowerSource(Source):
 
             # Move subset to test
             _move_files(self.path_train, self.path_test, test=True)
-    
+
     def preprocess(self):
         """Preprocess the data
 
@@ -134,4 +133,3 @@ class FlowerSource(Source):
             data source description as json.
         """
         raise NotImplementedError()
-

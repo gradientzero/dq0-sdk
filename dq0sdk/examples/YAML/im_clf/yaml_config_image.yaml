@@ -13,7 +13,7 @@ PREPROCESSING:
     target_size: !!python/tuple [224,224]
     batch_size: 32
     interpolation: 'bilinear'
-  train_dataflow: 
+  train_dataflow:
     subset: 'training'
     shuffle: True
   development_dataflow: 

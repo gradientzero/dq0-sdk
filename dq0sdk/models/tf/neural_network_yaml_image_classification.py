@@ -8,7 +8,7 @@ Todo:
     * Protect keras compile and fit functions
 
 Example:
-    
+
 
 :Authors:
     Wolfgang Groß <wg@gradient0.com>
@@ -21,7 +21,7 @@ All rights reserved
 
 
 import logging
-import os
+# import os
 import sys
 
 from dq0sdk.models.model import Model
@@ -30,7 +30,7 @@ from dq0sdk.utils.utils import custom_objects
 
 from tensorflow import keras
 
-from tensorflow_privacy.privacy.optimizers import dp_optimizer
+# from tensorflow_privacy.privacy.optimizers import dp_optimizer
 
 logger = logging.getLogger()
 
@@ -40,7 +40,7 @@ class NeuralNetworkYamlImageClassification(Model):
         super().__init__(model_path)
         self.yaml_config = YamlConfig(yaml_path)
         self.yaml_dict = self.yaml_config.yaml_dict
-        
+
         self.preprocessing = self.yaml_dict['PREPROCESSING']
         self.train_generator = None
         self.development_generator = None
@@ -52,7 +52,7 @@ class NeuralNetworkYamlImageClassification(Model):
         self.model = None
         self.model_path = model_path
         self.custom_objects = custom_objects
-        
+
         self.optimizer = self.yaml_dict['OPTIMIZER']['optimizer'](**self.yaml_dict['OPTIMIZER']['kwargs'])
         self.dp_optimizer = self.yaml_dict['DP_OPTIMIZER']['optimizer'](**self.yaml_dict['DP_OPTIMIZER']['kwargs'])
         self.loss = self.yaml_dict['LOSS']['loss'](**self.yaml_dict['LOSS']['kwargs'])
@@ -60,7 +60,7 @@ class NeuralNetworkYamlImageClassification(Model):
         self.epochs = self.yaml_dict['FIT']['epochs']
 
         self.test_data = True
-        
+
     def setup_data(self, augmentation=False):
         """Setup data function
 
@@ -131,18 +131,18 @@ class NeuralNetworkYamlImageClassification(Model):
         except Exception as e:
             logger.error('Problem extracting n_classes from data sources: {}'.format(e))
             sys.exit(1)
-            
+
         model_dict['config']['layers'][-1]['config']['units'] = self.n_classes
 
         model_str = self.yaml_config.dump_yaml(model_dict)
-        
+
         try:
             self.model = keras.models.model_from_yaml(model_str,
                                                       custom_objects=self.custom_objects)
         except Exception as e:
             logger.error('model_from_yaml: {}'.format(e))
             sys.exit(1)
-            
+
     def prepare(self, **kwargs):
         """called before model fit on every run.
 
@@ -237,16 +237,16 @@ class NeuralNetworkYamlImageClassification(Model):
 
         """
         if self.test_data:
-            evaluation = self.model.evaluate(x = self.test_generator,
-                                            steps = self.test_steps)
+            evaluation = self.model.evaluate(x=self.test_generator,
+                                             steps=self.test_steps)
         else:
-            evaluation = self.model.evaluate(x = self.train_generator,
-                                            steps = self.steps_per_epoch)
+            evaluation = self.model.evaluate(x=self.train_generator,
+                                             steps=self.steps_per_epoch)
         return evaluation
 
     def run_all(self, augmentation=False, epochs=None):
         """Runs experiment
-        
+
         Does all the setup data, model, fit and evaluate
 
         """
@@ -304,4 +304,3 @@ class NeuralNetworkYamlImageClassification(Model):
             self.model.compile(optimizer=self.dp_optimizer,
                                loss=self.loss,
                                metrics=self.metrics)
-    

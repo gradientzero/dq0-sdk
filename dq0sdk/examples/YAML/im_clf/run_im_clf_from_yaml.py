@@ -10,8 +10,8 @@ but it only does it once
 @author: Craig Lincoln <cl@gradient0.com>
 """
 import logging
-
 import os
+
 from dq0sdk.data.google_flowers.flower_source import FlowerSource
 from dq0sdk.models.tf.neural_network_yaml_image_classification import NeuralNetworkYamlImageClassification
 
@@ -31,7 +31,7 @@ if __name__ == '__main__':
     # DataSources expect only one path parameter,
     # so concatenate the paths in split them inside.
     paths = '{};{}'.format(path_train, path_test)
-    
+
     # init data source
     dc = FlowerSource(paths)
 
