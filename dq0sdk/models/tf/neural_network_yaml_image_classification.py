@@ -279,7 +279,8 @@ class NeuralNetworkYamlImageClassification(Model):
             version (str): version of the model to use for saving
         """
         self.model.save(
-            self.model_path,
+            '{}/{}.h5'.format(
+                self.model_path, self.uuid),
             include_optimizer=True)
 
     def load(self):
@@ -294,7 +295,8 @@ class NeuralNetworkYamlImageClassification(Model):
             version (str): version of the model to load
         """
         self.model = keras.models.load_model(
-            self.model_path,
+            '{}/{}.h5'.format(
+                self.model_path, self.uuid),
             custom_objects=self.custom_objects,
             compile=True)
 
