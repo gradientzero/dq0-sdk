@@ -59,7 +59,7 @@ class FlowerSource(Source):
             logger.error('Problem with paths: {}'.format(e))
             sys.exit(1)
 
-        if not os.path.exists(self.path_train):
+        if not ((os.path.exists(self.path_train)) | (os.path.exists(self.path_test))):
             self.read()
 
     def read(self):
@@ -97,8 +97,9 @@ class FlowerSource(Source):
                 extract=False)
 
         tar_dir = tar_file.split('.tgz')[0]
-        if not os.path.exists(tar_dir):
-            os.mkdir(tar_dir)
+        if not ((os.path.exists(self.path_train)) | (os.path.exists(self.path_test))):
+            if not os.path.exists(tar_dir):
+                os.mkdir(tar_dir)
             os.mkdir(self.path_train)
             os.mkdir(self.path_test)
 

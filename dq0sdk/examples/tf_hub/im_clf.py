@@ -44,4 +44,5 @@ if __name__ == '__main__':
     im_clf.attach_data_source(dc)
 
     # run setup data, setup model, fit and evaluate
-    im_clf.run_all(augmentation=True, epochs=2)
+    im_clf.dp_epochs = 2
+    im_clf.run_all(augment=True)

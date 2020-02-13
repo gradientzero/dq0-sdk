@@ -10,19 +10,11 @@ Copyright 2019, Gradient Zero
 All rights reserved
 """
 
-
 import logging
-# import os
-# import sys
 
 from dq0sdk.models.tf.neural_network_yaml_image_classification import NeuralNetworkYamlImageClassification
 from dq0sdk.models.yaml_configs.tf_hub_models import hub_models_dict
-# from dq0sdk.utils.utils import YamlConfig
 from dq0sdk.utils.utils import custom_objects
-
-# from tensorflow import keras
-
-# from tensorflow_privacy.privacy.optimizers import dp_optimizer
 
 logger = logging.getLogger()
 
