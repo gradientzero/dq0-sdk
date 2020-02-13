@@ -72,6 +72,7 @@ class NeuralNetworkYamlAdult(NeuralNetworkYaml):
         self.graph_dict['config']['layers'][0]['config']['batch_input_shape'] = (None, self.X_train.shape[1])
         self.graph_dict['config']['layers'][-1]['config']['units'] = self.y_train.nunique()
 
+
 if __name__ == '__main__':
     # data paths.
     path = 'dq0sdk/data/adult/data/'

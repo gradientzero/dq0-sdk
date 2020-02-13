@@ -20,9 +20,7 @@ All rights reserved
 """
 
 import logging
-import os
 
-from dq0sdk.data.google_flowers.flower_source import FlowerSource
 from dq0sdk.models.tf.neural_network_yaml import NeuralNetworkYaml
 
 from tensorflow import keras

@@ -20,8 +20,6 @@ All rights reserved
 """
 
 import logging
-# import os
-import yaml
 import sys
 
 from dq0sdk.models.model import Model
@@ -46,8 +44,8 @@ class NeuralNetworkYaml(Model):
         else:
             try:
                 self.model_path = self.yaml_dict['MODEL_PATH']
-            except:
-                raise ValueError('model_path cannot be None type')
+            except Exception as e:
+                print('model path cannot be None type: {}'.format(e))
         self.model = None
         self.custom_objects = custom_objects
         try:
@@ -65,13 +63,13 @@ class NeuralNetworkYaml(Model):
 
         try:
             self.fit_kwargs = self.yaml_dict['FIT']['kwargs']
-        except:
+        except Exception:
             self.fit_kwargs = {}
         try:
             self.fit_dp_kwargs = self.yaml_dict['FIT_DP']['kwargs']
-        except:
+        except Exception:
             self.fit_dp_kwargs = {}
-        
+
         self.X_train = None
         self.y_train = None
         self.X_test = None
@@ -136,13 +134,13 @@ class NeuralNetworkYaml(Model):
                 A TensorFlow tensor, or a list of tensors (in case the model has multiple inputs).
                 A dict mapping input names to the corresponding array/tensors, if the model has named inputs.
                 A tf.data dataset. Should return a tuple of either (inputs, targets) or (inputs, targets, sample_weights).
-                A generator or keras.utils.Sequence returning (inputs, targets) or (inputs, targets, sample weights). 
+                A generator or keras.utils.Sequence returning (inputs, targets) or (inputs, targets, sample weights).
                 A more detailed description of unpacking behavior for iterator types (Dataset, generator, Sequence) is given below.
                 See https://www.tensorflow.org/api_docs/python/tf/keras/Model#evaluate
-            self.y_train: Target data. 
-                Like the input data x, it could be either Numpy array(s) or TensorFlow tensor(s). 
-                It should be consistent with x (you cannot have Numpy inputs and tensor targets, or inversely). 
-                If x is a dataset, generator, or keras.utils.Sequence instance, y should not be 
+            self.y_train: Target data.
+                Like the input data x, it could be either Numpy array(s) or TensorFlow tensor(s).
+                It should be consistent with x (you cannot have Numpy inputs and tensor targets, or inversely).
+                If x is a dataset, generator, or keras.utils.Sequence instance, y should not be
                 specified (since targets will be obtained from x).
         """
         self.model.compile(optimizer=self.optimizer,
@@ -153,8 +151,7 @@ class NeuralNetworkYaml(Model):
             self.X_train,
             self.y_train,
             epochs=self.epochs,
-            **self.fit_kwargs,
-            )
+            **self.fit_kwargs,)
 
     def fit_dp(self):
         """Model fit function.
@@ -172,13 +169,13 @@ class NeuralNetworkYaml(Model):
                 A TensorFlow tensor, or a list of tensors (in case the model has multiple inputs).
                 A dict mapping input names to the corresponding array/tensors, if the model has named inputs.
                 A tf.data dataset. Should return a tuple of either (inputs, targets) or (inputs, targets, sample_weights).
-                A generator or keras.utils.Sequence returning (inputs, targets) or (inputs, targets, sample weights). 
+                A generator or keras.utils.Sequence returning (inputs, targets) or (inputs, targets, sample weights).
                 A more detailed description of unpacking behavior for iterator types (Dataset, generator, Sequence) is given below.
                 See https://www.tensorflow.org/api_docs/python/tf/keras/Model#evaluate
-            self.y_train: Target data. 
-                Like the input data x, it could be either Numpy array(s) or TensorFlow tensor(s). 
-                It should be consistent with x (you cannot have Numpy inputs and tensor targets, or inversely). 
-                If x is a dataset, generator, or keras.utils.Sequence instance, y should not be 
+            self.y_train: Target data.
+                Like the input data x, it could be either Numpy array(s) or TensorFlow tensor(s).
+                It should be consistent with x (you cannot have Numpy inputs and tensor targets, or inversely).
+                If x is a dataset, generator, or keras.utils.Sequence instance, y should not be
                 specified (since targets will be obtained from x).
         """
         self.model.compile(optimizer=self.dp_optimizer,
@@ -189,8 +186,7 @@ class NeuralNetworkYaml(Model):
             self.X_train,
             self.y_train,
             epochs=self.dp_epochs,
-            **self.fit_kwargs,
-            )
+            **self.fit_kwargs,)
 
     def predict(self, x):
         """Model predict function.
@@ -216,7 +212,7 @@ class NeuralNetworkYaml(Model):
         """
         return self.model.predict(x)
 
-    def evaluate(self,test_data=True):
+    def evaluate(self, test_data=True):
         """Model predict and evluate.
 
         This method is final. Signature will be checked at runtime!
@@ -227,15 +223,15 @@ class NeuralNetworkYaml(Model):
                 A TensorFlow tensor, or a list of tensors (in case the model has multiple inputs).
                 A dict mapping input names to the corresponding array/tensors, if the model has named inputs.
                 A tf.data dataset. Should return a tuple of either (inputs, targets) or (inputs, targets, sample_weights).
-                A generator or keras.utils.Sequence returning (inputs, targets) or (inputs, targets, sample weights). 
+                A generator or keras.utils.Sequence returning (inputs, targets) or (inputs, targets, sample weights).
                 A more detailed description of unpacking behavior for iterator types (Dataset, generator, Sequence) is given below.
                 See https://www.tensorflow.org/api_docs/python/tf/keras/Model#evaluate
-            self.y_train/self.y_test: Target data. 
-                Like the input data x, it could be either Numpy array(s) or TensorFlow tensor(s). 
-                It should be consistent with x (you cannot have Numpy inputs and tensor targets, or inversely). 
-                If x is a dataset, generator, or keras.utils.Sequence instance, y should not be 
+            self.y_train/self.y_test: Target data.
+                Like the input data x, it could be either Numpy array(s) or TensorFlow tensor(s).
+                It should be consistent with x (you cannot have Numpy inputs and tensor targets, or inversely).
+                If x is a dataset, generator, or keras.utils.Sequence instance, y should not be
                 specified (since targets will be obtained from x).
-        
+
         Returns:
             metrics: to be defined!
 
@@ -275,14 +271,14 @@ class NeuralNetworkYaml(Model):
             if i == 0:
                 print('Train loss: {}'.format(metric))
             else:
-                print('Train {}: {}'.format(self.metrics[i-1], metric))
+                print('Train {}: {}'.format(self.metrics[i - 1], metric))
 
         evaluation = self.evaluate()
         for i, metric in enumerate(evaluation):
             if i == 0:
                 print('Test loss: {}'.format(metric))
             else:
-                print('Test {}: {}'.format(self.metrics[i-1], metric))
+                print('Test {}: {}'.format(self.metrics[i - 1], metric))
 
     def save(self):
         """Saves the model.
