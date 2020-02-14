@@ -25,8 +25,6 @@ import sys
 
 from dq0sdk.utils.managed_classes import custom_objects
 
-import tensorflow_hub as hub
-
 import yaml
 
 logger = logging.getLogger()

@@ -12,7 +12,6 @@ All rights reserved
 
 import logging
 import sys
-import os
 
 from dq0sdk.models.tf.neural_network_yaml import NeuralNetworkYaml
 from dq0sdk.models.yaml_configs.tf_hub_models import hub_models_dict
@@ -27,13 +26,13 @@ class TFHub(NeuralNetworkYaml):
         yaml_path = hub_models_dict[tf_hub_url]['yaml_path']
         super().__init__(model_path, yaml_path)
         self.task = hub_models_dict[tf_hub_url]['task']
-        
+
         try:
             self.preprocessing = self.yaml_dict['PREPROCESSING']
         except Exception as e:
             logger.error('PREPROCESSING is missinng in yaml: {}'.format(e))
             sys.exit(1)
-        
+
     def setup_data(self, augment=False):
         """Setup Predefined data
 

@@ -23,10 +23,10 @@ import logging
 import sys
 
 from dq0sdk.models.model import Model
-from dq0sdk.utils.utils import YamlConfig
 from dq0sdk.utils.managed_classes import custom_objects
-from dq0sdk.utils.managed_classes import optimizers
 from dq0sdk.utils.managed_classes import losses
+from dq0sdk.utils.managed_classes import optimizers
+from dq0sdk.utils.utils import YamlConfig
 
 from tensorflow import keras
 
@@ -41,14 +41,7 @@ class NeuralNetworkYaml(Model):
         self.yaml_config = YamlConfig(yaml_path)
         self.yaml_dict = self.yaml_config.yaml_dict
 
-        if model_path:
-            self.model_path = model_path
-        else:
-            try:
-                self.model_path = self.yaml_dict['MODEL_PATH']
-            except Exception as e:
-                logger.error('model path cannot be None type: {}'.format(e))
-                sys.exit(1)
+        self.model_path = model_path
         self.model = None
         self.custom_objects = custom_objects
         try:
@@ -63,7 +56,7 @@ class NeuralNetworkYaml(Model):
         except Exception as e:
             logger.error('YAML config is missing key {}'.format(e))
             sys.exit(1)
-        
+
         try:
             self.optimizer = optimizers[self.optimizer_dict['optimizer']](**self.optimizer_dict['kwargs'])
             self.dp_optimizer = optimizers[self.dp_optimizer_dict['optimizer']](**self.dp_optimizer_dict['kwargs'])

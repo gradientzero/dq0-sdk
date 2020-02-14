@@ -10,7 +10,7 @@ import tensorflow_privacy
 
 custom_objects = {
     'KerasLayer': hub.KerasLayer,
-    }
+}
 
 optimizers = {
     'Adagrad': tensorflow.keras.optimizers.Adagrad,
@@ -22,7 +22,7 @@ optimizers = {
     'DPAdagradGaussianOptimizer': tensorflow_privacy.privacy.optimizers.dp_optimizer.DPAdagradGaussianOptimizer,
     'DPAdamGaussianOptimizer': tensorflow_privacy.privacy.optimizers.dp_optimizer.DPAdamGaussianOptimizer,
     'DPGradientDescentGaussianOptimizer': tensorflow_privacy.privacy.optimizers.dp_optimizer.DPGradientDescentGaussianOptimizer,
-    }
+}
 
 losses = {
     'BinaryCrossentropy': tensorflow.keras.losses.BinaryCrossentropy,
