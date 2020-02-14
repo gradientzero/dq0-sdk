@@ -24,7 +24,9 @@ import sys
 
 from dq0sdk.models.model import Model
 from dq0sdk.utils.utils import YamlConfig
-from dq0sdk.utils.utils import custom_objects
+from dq0sdk.utils.managed_classes import custom_objects
+from dq0sdk.utils.managed_classes import optimizers
+from dq0sdk.utils.managed_classes import losses
 
 from tensorflow import keras
 
@@ -34,7 +36,7 @@ logger = logging.getLogger()
 
 
 class NeuralNetworkYaml(Model):
-    def __init__(self, model_path=None, yaml_path=None, custom_objects=custom_objects()):
+    def __init__(self, model_path=None, yaml_path=None):
         super().__init__(model_path)
         self.yaml_config = YamlConfig(yaml_path)
         self.yaml_dict = self.yaml_config.yaml_dict
@@ -45,21 +47,30 @@ class NeuralNetworkYaml(Model):
             try:
                 self.model_path = self.yaml_dict['MODEL_PATH']
             except Exception as e:
-                print('model path cannot be None type: {}'.format(e))
+                logger.error('model path cannot be None type: {}'.format(e))
+                sys.exit(1)
         self.model = None
         self.custom_objects = custom_objects
         try:
             self.graph_dict = self.yaml_dict['MODEL']['GRAPH']
-
-            self.optimizer = self.yaml_dict['MODEL']['OPTIMIZER']['optimizer'](**self.yaml_dict['MODEL']['OPTIMIZER']['kwargs'])
-            self.dp_optimizer = self.yaml_dict['MODEL']['DP_OPTIMIZER']['optimizer'](**self.yaml_dict['MODEL']['DP_OPTIMIZER']['kwargs'])
-            self.loss = self.yaml_dict['MODEL']['LOSS']['loss'](**self.yaml_dict['MODEL']['LOSS']['kwargs'])
+            self.optimizer_dict = self.yaml_dict['MODEL']['OPTIMIZER']
+            self.dp_optimizer_dict = self.yaml_dict['MODEL']['DP_OPTIMIZER']
+            self.loss_dict = self.yaml_dict['MODEL']['LOSS']
             self.metrics = self.yaml_dict['MODEL']['METRICS']
 
             self.epochs = self.yaml_dict['FIT']['epochs']
             self.dp_epochs = self.yaml_dict['FIT_DP']['epochs']
         except Exception as e:
-            ValueError('YAML config is missing key {}'.format(e))
+            logger.error('YAML config is missing key {}'.format(e))
+            sys.exit(1)
+        
+        try:
+            self.optimizer = optimizers[self.optimizer_dict['optimizer']](**self.optimizer_dict['kwargs'])
+            self.dp_optimizer = optimizers[self.dp_optimizer_dict['optimizer']](**self.dp_optimizer_dict['kwargs'])
+            self.loss = losses[self.loss_dict['loss']](**self.loss_dict['kwargs'])
+        except Exception as e:
+            logger.error('optimizer or loss is not in managed list or specified in yaml {}'.format(e))
+            sys.exit(1)
 
         try:
             self.fit_kwargs = self.yaml_dict['FIT']['kwargs']

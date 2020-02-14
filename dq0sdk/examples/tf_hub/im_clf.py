@@ -12,7 +12,7 @@ but it only does it once
 import os
 
 from dq0sdk.data.google_flowers.flower_source import FlowerSource
-from dq0sdk.models.tf.neural_network_tfhub_image_classification import NeuralNetworkTFHubImageClassification
+from dq0sdk.models.tf.tf_hub import TFHub
 
 
 if __name__ == '__main__':
@@ -27,7 +27,8 @@ if __name__ == '__main__':
     paths = '{};{}'.format(path_train, path_test)
 
     # tensorflowhub model
-    tf_hub_url = 'https://tfhub.dev/google/imagenet/mobilenet_v2_100_224/classification/4'  # These are actually version 3 because of model not stored error
+    tf_hub_url = 'https://tfhub.dev/google/imagenet/mobilenet_v2_100_96/feature_vector/4'
+    # tf_hub_url = 'https://tfhub.dev/google/imagenet/mobilenet_v2_100_224/feature_vector/4'  # These are actually version 3 because of model not stored error
     # tf_hub_url = 'https://tfhub.dev/google/imagenet/resnet_v2_50/feature_vector/4'
 
     # model path
@@ -38,7 +39,7 @@ if __name__ == '__main__':
     dc = FlowerSource(paths)
 
     # init model
-    im_clf = NeuralNetworkTFHubImageClassification('notebooks/saved_model/', tf_hub_url)
+    im_clf = TFHub('notebooks/saved_model/', tf_hub_url)
 
     # attache data source to model
     im_clf.attach_data_source(dc)
