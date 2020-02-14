@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Yaml model example.
+Yaml model adult data example.
+
+Example of how to use setup data.
+
+NOTES:
+    - yaml has hard coded input/output size.
+      Here it is overwritten by setup_data
 
 @author: Craig Lincoln <cl@gradient0.com>
 """
@@ -22,11 +28,10 @@ logger = logging.getLogger()
 
 
 class NeuralNetworkYamlAdult(NeuralNetworkYaml):
-    def __init__(self, yaml_path):
-        super().__init__(yaml_path)
-        self.input_dim = None
+    def __init__(self, model_path, yaml_path):
+        super().__init__(model_path, yaml_path)
 
-    def setup_data(self, X_df, y_ts, quantitative_features_list, num_tr_instances):
+    def setup_data(self):
         # load data
         if len(self.data_sources) < 1:
             logger.error('No data source found')
@@ -44,21 +49,28 @@ class NeuralNetworkYamlAdult(NeuralNetworkYaml):
             imputation_method_for_quant_feats='median',  # 'median', 'mean'
             features_to_drop_list=None
         )
-
-        # Scale values to the range from 0 to 1; to be precessed by the neural network
-        X_df[quantitative_features_list] = sklearn.preprocessing.minmax_scale(X_df[quantitative_features_list])
+        # Scale values to the range from 0 to 1
+        # to be precessed by the neural network
+        X_df[source.quantitative_features_list] =\
+            sklearn.preprocessing.minmax_scale(
+                X_df[source.quantitative_features_list])
 
         le = sklearn.preprocessing.LabelEncoder()
         y_bin_nb = le.fit_transform(y_ts)  # test to label
         y_bin = pd.Series(index=y_ts.index, data=y_bin_nb)
 
-        X_train_df, X_test_df, y_train_ts, y_test_ts = preprocessing.train_test_split(X_df, y_bin, num_tr_instances)
-        self.input_dim = X_train_df.shape[1]
+        X_train_df, X_test_df, y_train_ts, y_test_ts =\
+            preprocessing.train_test_split(X_df, y_bin, num_tr_instances)
 
+        # set data member variables
         self.X_train = X_train_df
         self.X_test = X_test_df
         self.y_train = y_train_ts
         self.y_test = y_test_ts
+
+        # set input/oupt size
+        self.graph_dict['config']['layers'][0]['config']['batch_input_shape'] = (None, self.X_train.shape[1])
+        self.graph_dict['config']['layers'][-1]['config']['units'] = self.y_train.nunique()
 
 
 if __name__ == '__main__':
@@ -68,13 +80,15 @@ if __name__ == '__main__':
         os.path.abspath(__file__)), '../../../../', path, 'adult.test')
     path_train = os.path.join(os.path.dirname(
         os.path.abspath(__file__)), '../../../../', path, 'adult.data')
+    paths = '{};{}'.format(path_train, path_test)
 
     # create data source
-    dc = AdultSource(path_test, path_train)
+    dc = AdultSource(paths)
 
     # create model
-    yaml_path = 'dq0sdk/examples/yaml/adult/yaml_config_adult.yaml'
-    model = NeuralNetworkYamlAdult(yaml_path=yaml_path)
+    yaml_path = 'dq0sdk/examples/yaml/adult/adult_yaml.yaml'
+    model_path = 'dq0sdk/examples/yaml/adult'
+    model = NeuralNetworkYamlAdult(model_path, yaml_path)
 
     # attach data source
     model.attach_data_source(dc)

@@ -10,111 +10,104 @@ but it only does it once
 @author: Craig Lincoln <cl@gradient0.com>
 """
 import logging
+import os
 
-# import os
-from dq0sdk.data.google_flowers.get_im_clf_data import get_im_clf_example_data
+from dq0sdk.data.google_flowers.flower_source import FlowerSource
 from dq0sdk.models.tf.neural_network_yaml import NeuralNetworkYaml
 
 import tensorflow as tf
+from tensorflow import keras
 
 tf.random.set_seed(0)
 
 logger = logging.getLogger()
 
 
+class NeuralNetworkYamlFlowers(NeuralNetworkYaml):
+    def __init__(self, model_path, yaml_path):
+        super().__init__(model_path, yaml_path)
+        self.preprocessing = self.yaml_dict['PREPROCESSING']
+
+    def setup_data(self, augment=False):
+        self.path_train = next(iter(self.data_sources.values())).path_train
+        self.path_test = next(iter(self.data_sources.values())).path_test
+
+        development_datagen = keras.preprocessing.image.ImageDataGenerator(
+            **self.preprocessing['datagen_kwargs'],)
+        development_generator = development_datagen.flow_from_directory(
+            self.path_train,
+            **self.preprocessing['development_dataflow'],
+            **self.preprocessing['dataflow_kwargs'],)
+
+        if augment:
+            train_datagen = keras.preprocessing.image.ImageDataGenerator(
+                **self.preprocessing['datagen_kwargs'],
+                **self.preprocessing['train_datagen'],)
+        else:
+            train_datagen = development_datagen
+        train_generator = train_datagen.flow_from_directory(
+            self.path_train,
+            **self.preprocessing['train_dataflow'],
+            **self.preprocessing['dataflow_kwargs'])
+
+        test_datagen = keras.preprocessing.image.ImageDataGenerator(
+            **self.preprocessing['datagen_kwargs'],)
+        test_generator = test_datagen.flow_from_directory(
+            self.path_test,
+            **self.preprocessing['test_dataflow'],
+            **self.preprocessing['dataflow_kwargs'],)
+
+        # Get number of batches per epoch
+        steps_per_epoch = train_generator.samples // train_generator.batch_size
+        validation_steps = development_generator.samples // development_generator.batch_size
+        test_steps = test_generator.samples // test_generator.batch_size
+
+        self.n_classes = train_generator.num_classes
+        self.X_train = train_generator
+        self.X_validate = development_generator
+        self.X_test = test_generator
+
+        self.fit_kwargs = dict(
+            steps_per_epoch=steps_per_epoch,
+            validation_data=development_generator,
+            validation_steps=validation_steps)
+        self.eval_train_kwargs = dict(steps=steps_per_epoch)
+        self.eval_test_kwargs = dict(steps=test_steps)
+
+        # set input/oupt size
+        self.graph_dict['config']['layers'][-1]['config']['units'] = self.n_classes
+
+
 if __name__ == '__main__':
-    # Need to download the data. This can take several minutes depending on your connection speed.
-    get_im_clf_example_data()
+    # data paths.
+    path = 'dq0sdk/data/google_flowers/'
+    path_train = os.path.join(os.getcwd(), path, 'train')
+    path_test = os.path.join(os.getcwd(), path, 'test')
+
+    # DataSources expect only one path parameter,
+    # so concatenate the paths in split them inside.
+    paths = '{};{}'.format(path_train, path_test)
+
+    # init data source
+    dc = FlowerSource(paths)
 
     yaml_path = 'dq0sdk/examples/yaml/im_clf/yaml_config_image.yaml'
-    im_clf = NeuralNetworkYaml(yaml_path)
-    yaml_dict = im_clf.yaml_dict
-    # print(yaml_dict)
+    model_path = 'dq0sdk/examples/yaml/im_clf'
 
-    train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(
-        **yaml_dict['PREPROCESSING']['base_datagen'],
-        # **yaml_dict['PREPROCESSING']['train_datagen'],
-    )
+    # Create model and train
+    im_clf = NeuralNetworkYamlFlowers(model_path, yaml_path)
+    im_clf.attach_data_source(dc)
+    im_clf.run_all()
 
-    development_datagen = tf.keras.preprocessing.image.ImageDataGenerator(
-        **yaml_dict['PREPROCESSING']['base_datagen'],
-        # **yaml_dict['PREPROCESSING']['development_datagen'],
-    )
+    # save model
+    im_clf.save()
+    im_clf.load()
 
-    test_datagen = tf.keras.preprocessing.image.ImageDataGenerator(
-        **yaml_dict['PREPROCESSING']['base_datagen'],
-        # **yaml_dict['PREPROCESSING']['test_datagen'],
-    )
-
-    train_generator = train_datagen.flow_from_directory(
-        yaml_dict['PREPROCESSING']['train_data_dir'],
-        **yaml_dict['PREPROCESSING']['train_dataflow'],
-        **yaml_dict['PREPROCESSING']['base_dataflow']
-    )
-
-    development_generator = development_datagen.flow_from_directory(
-        yaml_dict['PREPROCESSING']['train_data_dir'],
-        **yaml_dict['PREPROCESSING']['development_dataflow'],
-        **yaml_dict['PREPROCESSING']['base_dataflow'],
-    )
-
-    test_generator = test_datagen.flow_from_directory(
-        yaml_dict['PREPROCESSING']['test_data_dir'],
-        **yaml_dict['PREPROCESSING']['test_dataflow'],
-        **yaml_dict['PREPROCESSING']['base_dataflow'],
-    )
-
-    # Get number of batches per epoch
-    steps_per_epoch = train_generator.samples // train_generator.batch_size
-    validation_steps = development_generator.samples // development_generator.batch_size
-    test_steps = test_generator.samples // test_generator.batch_size
-
-    # Create instance of NNFromYaml
-    # im_clf = NeuralNetworkYaml(yaml_path)
-    im_clf.setup_model()
-    # Fit model
-    im_clf.fit(x=train_generator,
-               steps_per_epoch=steps_per_epoch,
-               validation_data=development_generator,
-               validation_steps=validation_steps,
-               )
-
-    # evaluate
-    loss_tr, acc_tr, mse_tr = im_clf.evaluate(x=train_generator, steps=steps_per_epoch)
-    loss_te, acc_te, mse_te = im_clf.evaluate(x=test_generator, steps=test_steps)
+    loss_tr, acc_tr, mse_tr = im_clf.evaluate(test_data=False)
+    loss_te, acc_te, mse_te = im_clf.evaluate()
     print('Train  Acc: %.2f %%' % (100 * acc_tr))
     print('Test  Acc: %.2f %%' % (100 * acc_te))
 
-    # # Save and load model
-    # im_clf.save('mobilenetv3','0.1')
-    # im_clf.load('mobilenetv3','0.1')
-    # # evaluate
-    # print('Model reloaded from file')
-    # # loss_tr, acc_tr, mse_tr = im_clf.evaluate(x=train_generator,steps = steps_per_epoch)
-    # loss_te, acc_te, mse_te = im_clf.evaluate(x=test_generator,steps = test_steps)
-    # # print('Train  Acc: %.2f %%' % (100 * acc_tr))
-    # print('Test  Acc: %.2f %%' % (100 * acc_te))
-
-    # DP Version
-    im_clf_dp = NeuralNetworkYaml(yaml_path)
-    im_clf_dp.setup_model()
-    im_clf_dp.fit_dp(x=train_generator,
-                     steps_per_epoch=steps_per_epoch,
-                     validation_data=development_generator,
-                     validation_steps=validation_steps,
-                     )
-    # evaluate
-    loss_tr, acc_tr, mse_tr = im_clf_dp.evaluate(x=train_generator, steps=steps_per_epoch)
-    loss_te, acc_te, mse_te = im_clf_dp.evaluate(x=test_generator, steps=test_steps)
-    print('Train DP  Acc: %.2f %%' % (100 * acc_tr))
-    print('Test DP  Acc: %.2f %%' % (100 * acc_te))
-
-    # Save and load model
-    im_clf.save('mobilenetv3_dp', '0.1')
-    im_clf.load('mobilenetv3_dp', '0.1')
-    # evaluate
-    print('Model reloaded from file')
-    # loss_tr, acc_tr, mse_tr = im_clf_dp.evaluate(x=train_generator,steps = steps_per_epoch)
-    loss_te, acc_te, mse_te = im_clf_dp.evaluate(x=test_generator, steps=test_steps)
-    # print('Train DP  Acc: %.2f %%' % (100 * acc_tr))
-    print('Test DP Acc: %.2f %%' % (100 * acc_te))
+    # predict
+    pred = im_clf.predict(im_clf.X_test)
+    print(pred)
