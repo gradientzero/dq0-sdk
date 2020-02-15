@@ -57,12 +57,11 @@ class UserSource(Source):
         This function should be used by child classes to perform certain
         preprocessing steps to prepare the data for later use.
 
+        Preprocessed data should be stored in self.data
+
         Args:
             force (bool): True to force re-read of the data.
             kwargs (:obj:`dict`): dictionary of optional arguments.
-
-        Returns:
-            preprocessed data
         """
         pass
 
