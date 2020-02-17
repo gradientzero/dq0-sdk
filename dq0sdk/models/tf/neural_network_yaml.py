@@ -284,36 +284,32 @@ class NeuralNetworkYaml(Model):
             else:
                 print('Test {}: {}'.format(self.metrics[i - 1], metric))
 
-    def save(self):
+    def save(self, name='model', version=1):
         """Saves the model.
 
         Save the model in binary format on local storage.
 
-        This method is final. Signature will be checked at runtime!
-
         Args:
-            name (str): name for the model to use for saving
-            version (str): version of the model to use for saving
+            name (str): The name of the model
+            version (int): The version of the model
         """
         self.model.save(
-            '{}/{}.h5'.format(
-                self.model_path, self.uuid),
+            '{}/{}/{}.h5'.format(
+                self.model_path, version, name),
             include_optimizer=True)
 
-    def load(self):
+    def load(self, name='model', version=1):
         """Loads the model.
 
         Load the model from local storage.
 
-        This method is final. Signature will be checked at runtime!
-
         Args:
-            name (str): name of the model to load
-            version (str): version of the model to load
+            name (str): The name of the model
+            version (int): The version of the model
         """
         self.model = keras.models.load_model(
-            '{}/{}.h5'.format(
-                self.model_path, self.uuid),
+            '{}/{}/{}.h5'.format(
+                self.model_path, version, name),
             custom_objects=self.custom_objects,
             compile=True)
 

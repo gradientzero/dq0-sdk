@@ -12,12 +12,12 @@ Copyright 2020, Gradient Zero
 
 import logging
 
-from dq0sdk.models.model import Model
+from dq0sdk.models.tf import NeuralNetwork
 
 logger = logging.getLogger()
 
 
-class UserModel(Model):
+class UserModel(NeuralNetwork):
     """Derived from dq0sdk.models.Model class
 
     Model classes provide a setup method as well as the fit and predict
@@ -109,7 +109,7 @@ class UserModel(Model):
         Returns:
             yhat: numerical matrix containing the predicted responses.
         """
-        pass
+        return self.model.predict(x)
 
     def evaluate(self, x, y, verbose=0, **kwargs):
         """Model predict and evluate.
@@ -123,33 +123,5 @@ class UserModel(Model):
 
         Returns:
             metrics: to be defined!
-        """
-        pass
-
-    def save(self, name, version):
-        """Saves the model.
-
-        Implementing child classes should use this function to save the
-        model in binary format on local storage.
-
-        The implemented child class version will be final (non-derivable).
-
-        Args:
-            name (str): name for the model to use for saving
-            version (str): version of the model to use for saving
-        """
-        pass
-
-    def load(self, name, version):
-        """Loads the model.
-
-        Implementing child classes should use this function to load the
-        model from local storage.
-
-        The implemented child class version will be final (non-derivable).
-
-        Args:
-            name (str): name of the model to load
-            version (str): version of the model to load
         """
         pass

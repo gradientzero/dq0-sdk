@@ -220,14 +220,16 @@ class NeuralNetwork(Model):
             batch_size=batch_size,
             verbose=verbose)
 
-    def save(self):
+    def save(self, name, version):
         """Saves the model.
 
         Save the model in binary format on local storage.
 
-        This method is final. Signature will be checked at runtime!
+        Args:
+            name (str): The name of the model
+            version (int): The version of the model
         """
-        self.model.save('{}/{}.h5'.format(self.model_path, self.uuid),
+        self.model.save('{}/{}/{}.h5'.format(self.model_path, version, name),
                         include_optimizer=False)
 
     def load(self, name, version):
@@ -235,9 +237,11 @@ class NeuralNetwork(Model):
 
         Load the model from local storage.
 
-        This method is final. Signature will be checked at runtime!
+        Args:
+            name (str): The name of the model
+            version (int): The version of the model
         """
         self.model = tf.keras.models.load_model(
-            '{}/{}.h5'.format(
-                self.model_path, self.uuid),
+            '{}/{}/{}.h5'.format(
+                self.model_path, version, name),
             compile=False)
