@@ -38,6 +38,7 @@ logger = logging.getLogger()
 class NeuralNetworkYaml(Model):
     def __init__(self, model_path=None, yaml_path=None):
         super().__init__(model_path)
+        self.model_type = 'keras'
         self.yaml_config = YamlConfig(yaml_path)
         self.yaml_dict = self.yaml_config.yaml_dict
 
