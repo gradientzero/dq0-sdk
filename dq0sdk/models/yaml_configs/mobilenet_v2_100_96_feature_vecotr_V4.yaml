@@ -10,10 +10,10 @@ PREPROCESSING:
     shear_range: 0.2
     zoom_range: 0.2
   dataflow_kwargs: 
-    target_size: !!python/tuple [224,224]
+    target_size: !!python/tuple [96,96]
     batch_size: 32
     interpolation: 'bilinear'
-  train_dataflow:
+  train_dataflow: 
     subset: 'training'
     shuffle: True
   development_dataflow: 
@@ -30,11 +30,11 @@ MODEL:
         config:
           batch_input_shape: !!python/tuple
           - null
-          - 224
-          - 224
+          - 96
+          - 96
           - 3
           dtype: float32
-          handle: https://tfhub.dev/google/imagenet/mobilenet_v2_100_224/feature_vector/3
+          handle: 'https://tfhub.dev/google/imagenet/mobilenet_v2_100_96/feature_vector/4'
           name: keras_layer
           trainable: false
       - class_name: Dropout
@@ -48,7 +48,7 @@ MODEL:
             config:
               l1: 0.0
               l2: 9.999999747378752e-05
-          units: 5
+          units: null
   OPTIMIZER:
     optimizer: SGD
     kwargs:

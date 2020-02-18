@@ -23,22 +23,11 @@ All rights reserved
 import logging
 import sys
 
-import tensorflow_hub as hub
+from dq0sdk.utils.managed_classes import custom_objects
 
 import yaml
 
-# from tensorflow_privacy.privacy.optimizers import dp_optimizer
-
 logger = logging.getLogger()
-
-
-def custom_objects():
-    """List of custom objects required for model_from_yaml()
-    and model.load(). Is required by NeuralNetworkYaml init()
-    """
-    custom_objects = {'KerasLayer': hub.KerasLayer,
-                      }
-    return custom_objects
 
 
 class YamlConfig():

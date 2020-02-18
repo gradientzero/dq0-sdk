@@ -14,6 +14,7 @@ Copyright 2019, Gradient Zero
 All rights reserved
 """
 
+import uuid
 from abc import ABC, abstractmethod
 
 
@@ -24,9 +25,10 @@ class Source(ABC):
     Data sources classes provide a read method to read the data into memory or
     provide a data reader for the underlying source.
     """
-    def __init__(self, name, input_folder=None):
+    def __init__(self, input_folder=None):
         super().__init__()
-        self.name = name
+        self.uuid = uuid.uuid1()  # UUID for this data source. Will be set at runtime.
+        self.name = ''
         self.data = None
         self.preprocessed_data = None
         self.read_allowed = False

@@ -209,11 +209,23 @@ def missing_values_table(df):
 
 
 def case_insensitive_str_comparison(string1, string2):
+    """
 
-    if string1.lower() == string2.lower():
-        res = True
-    else:
-        res = False
+    :param string1: string
+    :param string2: string or list of strings
+    :return:
+    """
+
+    if isinstance(string2, str):
+        if string1.lower() == string2.lower():
+            res = True
+        else:
+            res = False
+    elif isinstance(string2, list):
+        if string1.lower() in [x.lower() for x in string2]:
+            res = True
+        else:
+            res = False
 
     return res
 
@@ -364,3 +376,14 @@ def get_percentage_freq_of_values(x_np_a):
     freqs = ((counts.astype('float32') / sum(counts)) * 100.0)
 
     return dict(zip(vals, freqs))
+
+
+def estimate_freq_of_labels(y):
+
+    if isinstance(y, pd.Series):
+        print(y.value_counts(normalize=True) * 100)
+    else:
+        assert isinstance(y, np.ndarray)
+        # print(pd.Series(y).value_counts(normalize=True) * 100)
+        print('Value     percentage freq.')
+        pretty_print_dict(get_percentage_freq_of_values(y))

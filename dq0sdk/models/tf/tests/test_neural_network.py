@@ -14,6 +14,6 @@ from dq0sdk.models.tf import NeuralNetwork
 
 
 def test_set_params():
-    neural_network = NeuralNetwork()
+    neural_network = NeuralNetwork('')
     neural_network.learning_rate = 0.3
     assert neural_network.learning_rate == 0.3

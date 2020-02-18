@@ -9,40 +9,40 @@ We are using [PyYaml](https://pyyaml.org/wiki/PyYAMLDocumentation)
 1. Create a yaml config file:
 ```yaml
 MODEL:
-  config:
-    layers:
-    - class_name: Dense
-      config:
-        activation: tanh
-        batch_input_shape: !!python/tuple
-        - null
-        - 108 # number of features
-        trainable: true
-        units: 10
-    - class_name: Dense
-      config:
-        activation: tanh
-        trainable: true
-        units: 10
-    - class_name: Dense
-      config:
-        activation: tanh
-        trainable: true
-        units: 2 # number of classes
-MODEL_PATH: notebooks/saved_model/
-OPTIMIZER:
-  learning_rate: 0.3
-DP_OPTIMIZER:
-  learning_rate: 0.3
-  noise_multiplier: 1.3
-  l2_norm_clip: 1.5
-  num_microbatches: 1
-LOSS:
-  class_name: SparseCategoricalCrossentropy
-  from_logits: True
-METRICS:
-  - accuracy
-  - mse
+  GRAPH:
+    config:
+      layers:
+      - class_name: Dense
+        config:
+          activation: tanh
+          batch_input_shape: !!python/tuple
+          - null
+          - 108 # number of features
+          trainable: true
+          units: 10
+      - class_name: Dense
+        config:
+          activation: tanh
+          trainable: true
+          units: 10
+      - class_name: Dense
+        config:
+          activation: tanh
+          trainable: true
+          units: 2 # number of classes
+  OPTIMIZER:
+    learning_rate: 0.3
+  DP_OPTIMIZER:
+    learning_rate: 0.3
+    noise_multiplier: 1.3
+    l2_norm_clip: 1.5
+    num_microbatches: 1
+  LOSS:
+    class_name: SparseCategoricalCrossentropy
+    from_logits: True
+  METRICS:
+    - accuracy
+    - mse
 FIT:
   epochs: 10
 ```
@@ -68,36 +68,43 @@ if __name__ == "__main__":
 The yaml config schema is:
 ```yaml
 MODEL:
-  config:
-    layers:
-    - class_name: <tf Layers class> # input layer
-      config:
-        <layer parameters>: val
-        batch_input_shape: !!python/tuple
-        - null
-        - <input shape dim 0>
-        - ...
-        - <input shape dim n>
-    - class_name: <tf Layers class> # output layer
-      config:
-        <layer parameters>: val
-        units: 2 # number of classes
-MODEL_PATH: path
-OPTIMIZER:
-  <tf SGD para>: val
-DP_OPTIMIZER:
-  <tf privacy para 1>: val
-  ...
-  <tf privacy para n>: val
-LOSS:
-  class_name: <losses class name>
-  <optional loss para 1>: val
-  ...
-  <optional loss para n>: val
-METRICS:
-  - list item 1
-  - ...
-  - list item n
+  GRAPH:
+    config:
+      layers:
+      - class_name: <tf Layers class> # input layer
+        config:
+          <layer parameters>: val
+          batch_input_shape: !!python/tuple
+          - null
+          - <input shape dim 0>
+          - ...
+          - <input shape dim n>
+      - class_name: <tf Layers class> # output layer
+        config:
+          <layer parameters>: val
+          units: int # number of classes
+  OPTIMIZER:
+    optimizer: <class name>
+    kwargs:
+      learning_rate: float
+      ...: val
+  DP_OPTIMIZER:
+    optimizer: <class name>
+    kwargs: 
+      learning_trate: float
+      noise_multiplier: float
+      l2_norm_clip: float
+      ...: val
+  LOSS:
+    loss: <losses class name>
+    kwargs:
+      <optional loss para 1>: val
+      ...
+      <optional loss para n>: val
+  METRICS:
+    - list item 1
+    - ...
+    - list item n
 FIT:
   epochs: int
 ```
@@ -109,19 +116,20 @@ where,
 Layers can include a [tensorflow hub](https://www.tensorflow.org/hub) model:
 ```yaml
 MODEL:
-  config:
-    layers:
-    - class_name: KerasLayer
-      config:
-        batch_input_shape: !!python/tuple
-        - null
-        - 224
-        - 224
-        - 3
-        dtype: float32
-        handle: https://tfhub.dev/google/tf2-preview/mobilenet_v2/feature_vector/3
-        name: keras_layer
-        trainable: false
+  GRAPH:
+    config:
+      layers:
+      - class_name: KerasLayer
+        config:
+          batch_input_shape: !!python/tuple
+          - null
+          - 224
+          - 224
+          - 3
+          dtype: float32
+          handle: https://tfhub.dev/google/tf2-preview/mobilenet_v2/feature_vector/3
+          name: keras_layer
+          trainable: false
 ```
 
 TIPP! If you have an existing model you can simply generate the model config using:
@@ -154,3 +162,8 @@ Run:
 
 $ python dq0sdk/examples/yaml/adult/run_adult_from_yaml.py
 
+## Preconfigured tf_hub models
+
+Run:
+
+$ python dq0sdk/examples/tf_hub/im_clf.py

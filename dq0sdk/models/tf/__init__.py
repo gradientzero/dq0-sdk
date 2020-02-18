@@ -7,8 +7,12 @@ model base class.
 
 from .neural_network import NeuralNetwork
 from .neural_network_yaml import NeuralNetworkYaml
+from .newsgroups_neural_network import NewsgroupsNeuralNetwork
+from .tf_hub import TFHub
 
 __all__ = [
     'NeuralNetwork',
-    'NeuralNetworkYaml'
+    'NeuralNetworkYaml',
+    'TFHub',
+    'NewsgroupsNeuralNetwork',
 ]

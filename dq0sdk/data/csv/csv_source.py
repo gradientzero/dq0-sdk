@@ -30,8 +30,8 @@ class CSVSource(Source):
     Args:
         filepath (str): Absolute path to the CSV file.
     """
-    def __init__(self, name, filepath):
-        super().__init__(name)
+    def __init__(self, filepath):
+        super().__init__()
         self.filepath = filepath
 
     def read(self, force=False):
@@ -111,6 +111,7 @@ class CSVSource(Source):
 
         return {
             "name": self.name,
+            "type": 'csv',
             "filepath": self.filepath,
             "length": length,
             "permissions": permissions,

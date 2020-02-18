@@ -49,7 +49,6 @@ from dq0sdk.models.model import Model
 
 import tensorflow as tf
 from tensorflow import keras
-import numpy as np
 
 from tensorflow_privacy.privacy.optimizers import dp_optimizer
 
@@ -60,25 +59,18 @@ class NeuralNetwork(Model):
     SDK users can use this class to create and train Keras models or
     subclass this class to define custom neural networks.
     """
-    def __init__(self, **kwargs):
-        super().__init__()
+    def __init__(self, model_path):
+        super().__init__(model_path)
         self.learning_rate = 0.15
         self.epochs = 10
         self.num_microbatches = 250
         self.verbose = 0
         self.metrics = ['accuracy', 'mse']
         self.model = None
-        self.model_path = '.'
-        self.outdim = 2
-        if 'DP_enabled' in kwargs:
-            self.DP_enabled = kwargs['DP_enabled']
-        else:
-            self.DP_enabled = False
-
-        if 'epsilon' in kwargs:
-            self.epsilon = kwargs['epsilon']
-        else:
-            self.epsilon = False
+        self.X_train = None
+        self.X_test = None
+        self.y_train = None
+        self.y_test = None
         # Range possible: grid search, all combinations inside range
 
     def setup_data(self, **kwargs):
@@ -105,7 +97,7 @@ class NeuralNetwork(Model):
             keras.layers.Input(len(kwargs['feature_columns'])),
             keras.layers.Dense(10, activation='tanh'),
             keras.layers.Dense(10, activation='tanh'),
-            keras.layers.Dense(self.outdim, activation='softmax')]
+            keras.layers.Dense(2, activation='softmax')]
         )
 
     def prepare(self, **kwargs):
@@ -129,21 +121,17 @@ class NeuralNetwork(Model):
                 preprocessed data, feature columns
         """
         # TODO: overwrite keras 'compile' and 'fit' at runtime!!!
-        X_train = kwargs['X_train']
-        y_train = kwargs['y_train']
+        X_train = self.X_train
+        y_train = self.y_train
 
         optimizer = dp_optimizer.GradientDescentOptimizer(
             learning_rate=self.learning_rate)
-        if y_train.shape[1] == 1:
-            loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
-        else:
-            loss = tf.keras.losses.CategoricalCrossentropy(from_logits=True)
+        loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
         self.model.compile(optimizer=optimizer,
                            loss=loss,
                            metrics=self.metrics)
         self.model.fit(X_train,
                        y_train,
-                       batch_size=self.batch_size,
                        epochs=self.epochs,
                        verbose=self.verbose)
 
@@ -158,8 +146,8 @@ class NeuralNetwork(Model):
                 preprocessed data, feature columns
         """
         # TODO: overwrite keras 'compile' and 'fit' at runtime!!!
-        X_train = kwargs['X_train']
-        y_train = kwargs['y_train']
+        X_train = self.X_train
+        y_train = self.y_train
 
         # TODO: make training robust for any number of
         # minibatches -> bug in optimize function
@@ -176,13 +164,9 @@ class NeuralNetwork(Model):
 
         # Compute vector of per-example loss rather than
         # its mean over a minibatch.
-        if y_train.shape[1] == 1:
-            loss = tf.keras.losses.SparseCategoricalCrossentropy(
-                from_logits=True,
-                reduction=tf.compat.v1.losses.Reduction.NONE)
-        else:
-            loss = tf.keras.losses.CategoricalCrossentropy(from_logits=True,
-                                                           reduction=tf.compat.v1.losses.Reduction.NONE)
+        loss = tf.keras.losses.SparseCategoricalCrossentropy(
+            from_logits=True,
+            reduction=tf.compat.v1.losses.Reduction.NONE)
 
         self.model.compile(optimizer=optimizer,
                            loss=loss,
@@ -205,41 +189,26 @@ class NeuralNetwork(Model):
             kwargs (:obj:`dict`): dictionary of optional arguments.
 
         Returns:
-            yhat: numerical matrix containing the predicted responses classes.
-        """
-        return self.model.predict(x).argmax(axis=1)
-
-    def predict_proba(self, x, **kwargs):
-        """Model predict function.
-
-        Model scoring.
-
-        This method is final. Signature will be checked at runtime!
-
-        Args:
-            kwargs (:obj:`dict`): dictionary of optional arguments.
-
-        Returns:
             yhat: numerical matrix containing the predicted responses.
         """
         return self.model.predict(x)
 
-    def get_classes(self):
-        """Returns the out put dimension as the known classes"""
-        return np.array(range(self.outdim))
-
-
-    def evaluate(self, x, y, verbose=0, **kwargs):
+    def evaluate(self, test_data=True, verbose=0, **kwargs):
         """Model predict and evluate.
 
         This method is final. Signature will be checked at runtime!
 
         Args:
+            test_data (bool): False to use train data instead of test
+                Default is True.
+            verbose (int): Verbose level, Default is 0
             kwargs (:obj:`dict`): dictionary of optional arguments.
 
         Returns:
             metrics: to be defined!
         """
+        x = self.X_test if test_data else self.X_train
+        y = self.y_test if test_data else self.y_train
         batch_size = self.num_microbatches
         # TODO: SEE fit_dp: make training robust for any number of minibatches
         num_minibatches = round(x.shape[0] / self.num_microbatches)
@@ -256,13 +225,11 @@ class NeuralNetwork(Model):
 
         Save the model in binary format on local storage.
 
-        This method is final. Signature will be checked at runtime!
-
         Args:
-            name (str): name for the model to use for saving
-            version (str): version of the model to use for saving
+            name (str): The name of the model
+            version (int): The version of the model
         """
-        self.model.save('{}/{}_{}.h5'.format(self.model_path, name, version),
+        self.model.save('{}/{}/{}.h5'.format(self.model_path, version, name),
                         include_optimizer=False)
 
     def load(self, name, version):
@@ -270,13 +237,11 @@ class NeuralNetwork(Model):
 
         Load the model from local storage.
 
-        This method is final. Signature will be checked at runtime!
-
         Args:
-            name (str): name of the model to load
-            version (str): version of the model to load
+            name (str): The name of the model
+            version (int): The version of the model
         """
         self.model = tf.keras.models.load_model(
-            '{}/{}_{}.h5'.format(
-                self.model_path, name, version),
+            '{}/{}/{}.h5'.format(
+                self.model_path, version, name),
             compile=False)
