@@ -23,18 +23,8 @@ Example:
         myModel = MyAwsomeModel()
         myModel.setup_data()
         myModel.setup_model()
-        # myModel.fit()
-        myModel.fit_dp()
+        myModel.fit()
         myModel.save()
-
-
-    ./dql-cli deploy-model --model-name
-
-    ./dql-cli evalute-model --model-name
-    return myModel.evalute()
-
-    ./dql-cli model-predict --sdfsd
-    return myModel.predict()
 
 :Authors:
     Wolfgang Groß <wg@gradient0.com>
@@ -50,8 +40,6 @@ from dq0sdk.models.model import Model
 import tensorflow as tf
 from tensorflow import keras
 
-from tensorflow_privacy.privacy.optimizers import dp_optimizer
-
 
 class NeuralNetwork(Model):
     """Neural Network model implementation.
@@ -61,6 +49,7 @@ class NeuralNetwork(Model):
     """
     def __init__(self, model_path):
         super().__init__(model_path)
+        self.model_type = 'keras'
         self.learning_rate = 0.15
         self.epochs = 10
         self.num_microbatches = 250
@@ -100,83 +89,22 @@ class NeuralNetwork(Model):
             keras.layers.Dense(2, activation='softmax')]
         )
 
-    def prepare(self, **kwargs):
-        """called before model fit on every run.
-
-        Implementing child classes can use this method to prepare
-        data for model training (preprocess data).
-
-        Args:
-            kwargs (:obj:`dict`): dictionary of optional arguments
-        """
-        pass
-
     def fit(self, **kwargs):
         """Model fit function.
-
-        This method is final. Signature will be checked at runtime!
 
         Args:
             kwargs (:obj:`dict`): dictionary of optional arguments.
                 preprocessed data, feature columns
         """
-        # TODO: overwrite keras 'compile' and 'fit' at runtime!!!
-        X_train = self.X_train
-        y_train = self.y_train
-
-        optimizer = dp_optimizer.GradientDescentOptimizer(
-            learning_rate=self.learning_rate)
+        optimizer = tf.keras.optimizers.SGD(learning_rate=self.learning_rate)
         loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
         self.model.compile(optimizer=optimizer,
                            loss=loss,
                            metrics=self.metrics)
-        self.model.fit(X_train,
-                       y_train,
+        self.model.fit(self.X_train,
+                       self.y_train,
                        epochs=self.epochs,
                        verbose=self.verbose)
-
-    def fit_dp(self, **kwargs):
-        """Model fit with differential privacy.
-
-        This method is final. Signature will be checked at runtime!
-
-        Args:
-            model (:obj:`keras.models.Model`): Keras model
-            kwargs (:obj:`dict`): dictionary of optional arguments.
-                preprocessed data, feature columns
-        """
-        # TODO: overwrite keras 'compile' and 'fit' at runtime!!!
-        X_train = self.X_train
-        y_train = self.y_train
-
-        # TODO: make training robust for any number of
-        # minibatches -> bug in optimize function
-        num_minibatches = round(X_train.shape[0] / self.num_microbatches)
-        X_train = X_train[:num_minibatches * self.num_microbatches]
-        y_train = y_train[:num_minibatches * self.num_microbatches]
-
-        # DPSGD Training
-        optimizer = dp_optimizer.DPGradientDescentGaussianOptimizer(
-            l2_norm_clip=1.0,
-            noise_multiplier=1.1,
-            num_microbatches=self.num_microbatches,
-            learning_rate=self.learning_rate)
-
-        # Compute vector of per-example loss rather than
-        # its mean over a minibatch.
-        loss = tf.keras.losses.SparseCategoricalCrossentropy(
-            from_logits=True,
-            reduction=tf.compat.v1.losses.Reduction.NONE)
-
-        self.model.compile(optimizer=optimizer,
-                           loss=loss,
-                           metrics=self.metrics)
-
-        self.model.fit(X_train,
-                       y_train,
-                       epochs=self.epochs,
-                       verbose=self.verbose,
-                       batch_size=self.num_microbatches)
 
     def predict(self, x, **kwargs):
         """Model predict function.

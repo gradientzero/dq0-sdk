@@ -48,6 +48,7 @@ class NewsgroupsNeuralNetwork(Model):
     """
     def __init__(self, model_path, **kwargs):
         super().__init__(model_path)
+        self.model_type = 'keras'
 
         if 'saved_model_folder' in kwargs:
             self._saved_model_folder = kwargs['saved_model_folder']
