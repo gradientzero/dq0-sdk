@@ -36,6 +36,7 @@ class Model(ABC):
         self.data_sources = {}
         self.model_path = model_path
         self.uuid = uuid.uuid1()
+        self.model_type = ''
 
     def attach_data_source(self, data_source):
         """Add a data source to the model.
@@ -73,80 +74,6 @@ class Model(ABC):
 
         Args:
             kwargs (:obj:`dict`): dictionary of optional arguments
-        """
-        pass
-
-    @abstractmethod
-    def prepare(self, **kwargs):
-        """called before model fit on every run.
-
-        Implementing child classes can use this method to prepare
-        data for model training (preprocess data).
-
-        Args:
-            kwargs (:obj:`dict`): dictionary of optional arguments
-        """
-        pass
-
-    @abstractmethod
-    def fit(self, **kwargs):
-        """Model fit function.
-
-        Implementing child classes will perform model fitting here.
-
-        The implemented child class version will be final (non-derivable).
-
-        Args:
-            kwargs (:obj:`dict`): dictionary of optional arguments.
-                Usually preprocessed data, feature columns etc.
-        """
-        pass
-
-    @abstractmethod
-    def fit_dp(self, **kwargs):
-        """Model fit function.
-
-        Implementing child classes will perform model fitting here.
-
-        This is the differential private training version.
-
-        The implemented child class version will be final (non-derivable).
-
-        Args:
-            kwargs (:obj:`dict`): dictionary of optional arguments.
-                Usually preprocessed data, feature columns etc.
-        """
-        pass
-
-    @abstractmethod
-    def predict(self, **kwargs):
-        """Model predict function.
-
-        Implementing child classes will perform model scoring here.
-
-        The implemented child class version will be final (non-derivable).
-
-        Args:
-            kwargs (:obj:`dict`): dictionary of optional arguments.
-
-        Returns:
-            yhat: numerical matrix containing the predicted responses.
-        """
-        pass
-
-    @abstractmethod
-    def evaluate(self, **kwargs):
-        """Model predict and evluate.
-
-        TODO: define returned metrics
-
-        The implemented child class version will be final (non-derivable).
-
-        Args:
-            kwargs (:obj:`dict`): dictionary of optional arguments.
-
-        Returns:
-            metrics: to be defined!
         """
         pass
 
