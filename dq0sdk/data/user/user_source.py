@@ -8,12 +8,7 @@ UserSource class that is to be used as the custom data source implementation.
 This template class derives from Source. Actual implementations should derive
 from child classes like CSVSource.
 
-:Authors:
-    Jona Boeddinhaus <jb@gradient0.com>
-    Wolfgang Groß <wg@gradient0.com>
-    Artur Susdorf <as@gradient0.com>
-
-Copyright 2019, Gradient Zero
+Copyright 2020, Gradient Zero
 All rights reserved
 """
 
@@ -51,7 +46,7 @@ class UserSource(Source):
         """
         pass
 
-    def preprocess(self, force=False, **kwargs):
+    def preprocess(self, force=False):
         """Preprocess the data
 
         This function should be used by child classes to perform certain
@@ -61,7 +56,6 @@ class UserSource(Source):
 
         Args:
             force (bool): True to force re-read of the data.
-            kwargs (:obj:`dict`): dictionary of optional arguments.
         """
         pass
 
