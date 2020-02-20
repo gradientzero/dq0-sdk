@@ -4,54 +4,47 @@
 User Model template
 
 Copyright 2020, Gradient Zero
-:Authors:
-    Wolfgang Groß <wg@gradient0.com>
-    Jona Boeddinhaus <jb@gradient0.com>
-    Artur Susdorf <as@gradient0.com>
+All rights reserved
 """
 
 import logging
 
-from dq0sdk.models.tf import NeuralNetwork
+from dq0sdk.models.model import Model
 
 logger = logging.getLogger()
 
 
-class UserModel(NeuralNetwork):
+class UserModel(Model):
     """Derived from dq0sdk.models.Model class
 
-    Model classes provide a setup method as well as the fit and predict
-    ML model functions.
+    Model classes provide a setup method for data and model
+    definitions.
 
     Args:
-        model_path (str): Path to the model save destination.
+            model_path (str): Path to the model save destination.
     """
     def __init__(self, model_path):
         super().__init__(model_path)
 
-    def setup_data(self, **kwargs):
+    def setup_data(self):
         """Setup data function
 
-        This function can be used by child classes to prepare data or perform
-        other tasks that dont need to be repeated for every training run.
-
-        Args:
-            kwargs (:obj:`dict`): dictionary of optional arguments
+        This function can be used to prepare data or perform
+        other tasks for the training run.
         """
         # load data
         if len(self.data_sources) < 1:
             logger.error('No data source found')
             return
         source = next(iter(self.data_sources.values()))
-        self.data = source.read()
+        self.train_data, self.data = source.read()
 
-    def setup_model(self, **kwargs):
+        # preprocess data
+        self.X_test, self.y_test, num_instances = source.preprocess()
+
+    def setup_model(self):
         """Setup model function
 
-        Implementing child classes can use this method to define the
-        model.
-
-        Args:
-            kwargs (:obj:`dict`): dictionary of optional arguments
+        Define the model here.
         """
         pass
