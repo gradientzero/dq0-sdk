@@ -7,6 +7,7 @@ This source call provides access to CSV data as pandas dataframes.
     Jona Boeddinhaus <jb@gradient0.com>
     Wolfgang Groß <wg@gradient0.com>
     Artur Susdorf <as@gradient0.com>
+    Craig Lincoln <cl@gradient0.com>
 
 Copyright 2019, Gradient Zero
 All rights reserved
@@ -16,6 +17,7 @@ import logging
 import os
 
 from dq0sdk.data.source import Source
+from dq0sdk.data.utils.dp_methods import _dp_stats
 
 import pandas as pd
 
@@ -74,7 +76,7 @@ class CSVSource(Source):
         self.preprocessed_data = self.data
         return self.preprocessed_data
 
-    def to_json(self):
+    def to_json(self, epsilon):
         """Returns a json representation of this data sources information.
 
         Returns:
@@ -86,13 +88,16 @@ class CSVSource(Source):
         length = 0
         mean = ''
         std = ''
+        hist = ''
         stats = ''
         if self.read_allowed:
             try:
                 content = self.read()
+                dp_mean, dp_std, dp_hist = _dp_stats(content, epsilon)
                 length = int(content.size)
-                mean = '{}'.format(content.mean())  # index?
-                std = '{}'.format(content.std())
+                mean = '{}'.format(dp_mean)
+                std = '{}'.format(dp_std)
+                hist = '{}'.format(dp_hist)
                 stats = 'types: {}'.format(content.dtypes)
             except Exception as e:
                 logger.debug('Could not get meta info of content. {}'.format(e))
@@ -117,5 +122,6 @@ class CSVSource(Source):
             "permissions": permissions,
             "mean": mean,
             "std": std,
+            'hist': hist,
             "stats": stats
         }
