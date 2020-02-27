@@ -93,11 +93,12 @@ class CSVSource(Source):
         std = ''
         hist = ''
         types = ''
+        content = None
         if self.read_allowed:
             try:
                 content = self.read()
             except Exception as e:
-                logger.warn('Could not read content. {}'.format(e))
+                logger.fatal('Could not read content. {}'.format(e))
 
         if self.stats_allowed and content is not None:
             try:

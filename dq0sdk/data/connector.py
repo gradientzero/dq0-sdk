@@ -38,10 +38,11 @@ class Connector():
     Args:
         dataconfig: Data source configuration in yaml format.
     """
-    def __init__(self, dataconfig=None):
+    def __init__(self, dataconfig=None, working_dir=None):
         super().__init__()
         self.sources = None
         self.dataconfig = dataconfig
+        self.working_dir = working_dir if working_dir is not None else ''
 
     def list(self, reload=False):
         """List available data sources
@@ -87,7 +88,7 @@ class Connector():
                 sample_allowed = 'read' in source['settings']['allowed_actions']
 
             if source['type'] == 'csv':
-                csv = CSVSource(os.path.join(self.dataconfig['settings']['csv_base_dir'], source['path']))
+                csv = CSVSource(os.path.join(self.working_dir, self.dataconfig['settings']['csv_base_dir'], source['path']))
                 csv.name = name
                 csv.read_allowed = read_allowed
                 csv.meta_allowed = meta_allowed
