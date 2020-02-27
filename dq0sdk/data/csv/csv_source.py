@@ -7,6 +7,7 @@ This source call provides access to CSV data as pandas dataframes.
     Jona Boeddinhaus <jb@gradient0.com>
     Wolfgang Groß <wg@gradient0.com>
     Artur Susdorf <as@gradient0.com>
+    Craig Lincoln <cl@gradient0.com>
 
 Copyright 2019, Gradient Zero
 All rights reserved
@@ -16,6 +17,7 @@ import logging
 import os
 
 from dq0sdk.data.source import Source
+from dq0sdk.data.utils.dp_methods import _dp_stats
 
 import pandas as pd
 
@@ -74,8 +76,11 @@ class CSVSource(Source):
         self.preprocessed_data = self.data
         return self.preprocessed_data
 
-    def to_json(self):
+    def to_json(self, epsilon=0.1):  # noqa: C901
         """Returns a json representation of this data sources information.
+
+        Args:
+            epsilon (float): Differential Privacy epsilon value
 
         Returns:
             data source description as json.
@@ -86,16 +91,29 @@ class CSVSource(Source):
         length = 0
         mean = ''
         std = ''
-        stats = ''
+        hist = ''
+        types = ''
         if self.read_allowed:
             try:
                 content = self.read()
-                length = int(content.size)
-                mean = '{}'.format(content.mean())  # index?
-                std = '{}'.format(content.std())
-                stats = 'types: {}'.format(content.dtypes)
             except Exception as e:
-                logger.debug('Could not get meta info of content. {}'.format(e))
+                logger.warn('Could not read content. {}'.format(e))
+
+        if self.stats_allowed and content is not None:
+            try:
+                dp_mean, dp_std, dp_hist = _dp_stats(content, epsilon)
+                length = int(content.size)
+                mean = '{}'.format(dp_mean)
+                std = '{}'.format(dp_std)
+                hist = '{}'.format(dp_hist)
+            except Exception as e:
+                logger.warn('Could not get stats for content. {}'.format(e))
+
+        if self.types_allowed and content is not None:
+            try:
+                types = '{}'.format(content.dtypes)
+            except Exception as e:
+                logger.warn('Could not get types for content. {}'.format(e))
 
         permissions = []
         if self.read_allowed:
@@ -117,5 +135,6 @@ class CSVSource(Source):
             "permissions": permissions,
             "mean": mean,
             "std": std,
-            "stats": stats
+            'hist': hist,
+            "types": types
         }
