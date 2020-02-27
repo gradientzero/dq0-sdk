@@ -76,8 +76,11 @@ class CSVSource(Source):
         self.preprocessed_data = self.data
         return self.preprocessed_data
 
-    def to_json(self, epsilon):
+    def to_json(self, epsilon=0.1):  # noqa: C901
         """Returns a json representation of this data sources information.
+
+        Args:
+            epsilon (float): Differential Privacy epsilon value
 
         Returns:
             data source description as json.
@@ -89,18 +92,28 @@ class CSVSource(Source):
         mean = ''
         std = ''
         hist = ''
-        stats = ''
+        types = ''
         if self.read_allowed:
             try:
                 content = self.read()
+            except Exception as e:
+                logger.warn('Could not read content. {}'.format(e))
+
+        if self.stats_allowed and content is not None:
+            try:
                 dp_mean, dp_std, dp_hist = _dp_stats(content, epsilon)
                 length = int(content.size)
                 mean = '{}'.format(dp_mean)
                 std = '{}'.format(dp_std)
                 hist = '{}'.format(dp_hist)
-                stats = 'types: {}'.format(content.dtypes)
             except Exception as e:
-                logger.debug('Could not get meta info of content. {}'.format(e))
+                logger.warn('Could not get stats for content. {}'.format(e))
+
+        if self.types_allowed and content is not None:
+            try:
+                types = '{}'.format(content.dtypes)
+            except Exception as e:
+                logger.warn('Could not get types for content. {}'.format(e))
 
         permissions = []
         if self.read_allowed:
@@ -123,5 +136,5 @@ class CSVSource(Source):
             "mean": mean,
             "std": std,
             'hist': hist,
-            "stats": stats
+            "types": types
         }

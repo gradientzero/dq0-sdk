@@ -2,7 +2,7 @@
 
 Needed to instantiate these classes in NeuralNetworkYaml
 
-TODO: check how the none Gaussian optimizers work. 
+TODO: check how the none Gaussian optimizers work.
 For now we just stick to Gaussian versions.
 """
 import tensorflow
