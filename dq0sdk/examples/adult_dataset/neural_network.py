@@ -12,7 +12,6 @@ import logging
 import dq0sdk
 from dq0sdk.data.preprocessing import preprocessing
 
-import numpy as np
 import pandas as pd
 
 import sklearn
@@ -36,11 +35,10 @@ class NeuralNetwork_adult(dq0sdk.models.tf.neural_network.NeuralNetwork):
             return
         source = next(iter(self.data_sources.values()))
 
-        source.read()
+        train_data, data = source.read()
 
         # preprocess data
         X_df, y_ts, num_tr_instances = source.preprocess(
-            train_split=0.66,
             approach_for_missing_feature='imputation',
             # 'imputation', 'dropping',
             imputation_method_for_cat_feats='unknown',
@@ -67,8 +65,6 @@ class NeuralNetwork_adult(dq0sdk.models.tf.neural_network.NeuralNetwork):
         self.X_test = X_test_df
         self.y_train = y_train_ts
         self.y_test = y_test_ts
-
-        np.save('dq0sdk/data/adult/data/X_test.npy', self.X_test.to_numpy())
 
     def setup_model(self):
         self.model = keras.Sequential([
