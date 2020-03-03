@@ -35,14 +35,14 @@ class AdultSource(CSVSource):
         skiprows (int, optional): Number of rows to skip.
 
     Args:
-        paths (str): One or more paths (';' separated) for train and test
+        path (str): single path to csv
     """
-    def __init__(self, paths):
-        super().__init__(paths)
-        self.train_data = None  # test data in self.data
-        path_parts = paths.split(';')
-        self.filepath_train = path_parts[0] if len(path_parts) > 0 else ''
-        self.filepath_test = path_parts[1] if len(path_parts) > 1 else ''
+    def __init__(self, path):
+        super().__init__(path)
+        self.data = None  # test data in self.data
+        # path_parts = paths.split(';')
+        # self.filepath_train = path_parts[0] if len(path_parts) > 0 else ''
+        # self.filepath_test = path_parts[1] if len(path_parts) > 1 else ''
         self.skiprows = 1
         self.categorical_features_list = None
         self.quantitative_features_list = None
@@ -61,17 +61,13 @@ class AdultSource(CSVSource):
             IOError: if directory was not found
         """
         if not force and self.data is not None:
-            return self.train_data, self.data
+            return self.data
 
-        path = self.filepath_train
+        path = self.filepath
         if not os.path.exists(path) or not os.path.isfile(path):
-            raise IOError('Could not find the adult train data.'
+            raise IOError('Could not read csv data.'
                           'File not found {}'.format(path))
-        path = self.filepath_test
-        if not os.path.exists(path) or not os.path.isfile(path):
-            raise IOError('Could not find the adult test data.'
-                          'File not found {}'.format(path))
-
+        
         column_names_list = [
             'age',
             'workclass',
@@ -92,7 +88,7 @@ class AdultSource(CSVSource):
 
         target_feature = 'income'
 
-        dataset_df = pd.read_csv(self.filepath_train,
+        dataset_df = pd.read_csv(self.filepath,
                                  names=column_names_list,
                                  sep=',',
                                  skiprows=self.skiprows,
@@ -107,21 +103,6 @@ class AdultSource(CSVSource):
                                      'occupation': '?'}
                                  )
 
-        dataset_df_test = pd.read_csv(self.filepath_test,
-                                      names=column_names_list,
-                                      sep=',',
-                                      skiprows=self.skiprows,
-                                      index_col=None,
-                                      skipinitialspace=True,
-                                      na_values={
-                                          'capital-gain': 99999,
-                                          'capital-loss': 99999,
-                                          'hours-per-week': 99,
-                                          'workclass': '?',
-                                          'native-country': '?',
-                                          'occupation': '?'}
-                                      )
-
         categorical_features_list = [
             col for col in dataset_df.columns
             if col != target_feature and dataset_df[col].dtype == 'object']
@@ -132,16 +113,16 @@ class AdultSource(CSVSource):
             list(set(column_names_list) - set(categorical_features_list) - set(
                 [target_feature]))
 
-        self.data = dataset_df_test
-        self.train_data = dataset_df
+        self.data = dataset_df
         self.categorical_features_list = categorical_features_list
         self.quantitative_features_list = quantitative_features_list
         self.target_feature = target_feature
 
-        return self.train_data, self.data
+        return self.data
 
     def preprocess(self,
                    force=False,
+                   train_split=0.66,
                    approach_for_missing_feature='imputation',
                    imputation_method_for_cat_feats='unknown',
                    imputation_method_for_quant_feats='median',
@@ -163,9 +144,15 @@ class AdultSource(CSVSource):
         """
         if not force and self.preprocessed_data is not None:
             return self.preprocessed_data
+        
+        num_tr_instances = int(self.data.shape[0] * train_split)
+        X_train_df, X_test_df, y_train_ts, y_test_ts = preprocessing.train_test_split(
+            self.data.drop(self.target_feature, axis=1),
+            self.data[self.target_feature],
+            num_tr_instances)
 
         tr_dataset_df = preprocessing.handle_missing_data(
-            self.train_data,
+            pd.concat([X_train_df, y_train_ts], axis=1, ignore_index=False),
             mode=approach_for_missing_feature,
             imputation_method_for_cat_feats=imputation_method_for_cat_feats,
             imputation_method_for_quant_feats=imputation_method_for_quant_feats,  # noqa: E501
@@ -173,15 +160,15 @@ class AdultSource(CSVSource):
             quantitative_features_list=self.quantitative_features_list)
 
         test_dataset_df = preprocessing.handle_missing_data(
-            self.data,
+            pd.concat([X_test_df, y_test_ts], axis=1, ignore_index=False),
             mode=approach_for_missing_feature,
             imputation_method_for_cat_feats=imputation_method_for_cat_feats,
             imputation_method_for_quant_feats=imputation_method_for_quant_feats,  # noqa: E501
             categorical_features_list=self.categorical_features_list,
             quantitative_features_list=self.quantitative_features_list)
 
-        num_tr_instances, _ = self.train_data.shape
-        num_test_instances, _ = self.data.shape
+        num_tr_instances, _ = tr_dataset_df.shape
+        num_test_instances, _ = test_dataset_df.shape
 
         X_train_df = tr_dataset_df.drop(self.target_feature, axis=1)
         X_test_df = test_dataset_df.drop(self.target_feature, axis=1)
