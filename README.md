@@ -46,5 +46,11 @@ pip install -e git+https://github.com/gradientzero/dq0-sdk.git
 
 Production / binary installation TBD
 
+## Create wheel package
+```bash
+python setup.py sdist bdist_wheel
+```
+it will create at least two files in "dist".
+
 ## Usage
 for a detailed description of how to setup, train and test and new mode see [dq0sdk/examples/yaml/readme.md](dq0sdk/examples/yaml/readme.md)
