@@ -9,7 +9,6 @@ import os
 from dq0sdk.examples.demo.data.user_source import UserSource
 from dq0sdk.examples.demo.model.user_model import UserModel
 
-import numpy as np
 
 if __name__ == '__main__':
     path = 'data/adult_whole_processed.csv'
@@ -26,7 +25,7 @@ if __name__ == '__main__':
 
     # prepare data
     model.setup_data()
-    
+
     # setup model
     model.setup_model()
 

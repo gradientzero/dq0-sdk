@@ -26,7 +26,7 @@ if __name__ == '__main__':
 
     # prepare data
     model.setup_data()
-    
+
     pathout = 'data/X_demo_predict.npy'
     pathout = os.path.join(os.path.dirname(
         os.path.abspath(__file__)), pathout)

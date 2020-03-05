@@ -9,10 +9,6 @@ Neural network model definition
 
 import logging
 
-import dq0sdk
-
-import pandas as pd
-
 from dq0sdk.models.tf.neural_network import NeuralNetwork
 
 from sklearn.model_selection import train_test_split
