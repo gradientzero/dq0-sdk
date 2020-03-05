@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Make predict set as npy array for demo
+Make dataset for predict as npy array for demo
 """
 
 import os

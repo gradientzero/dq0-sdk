@@ -1,10 +1,30 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Adult dataset example.
+Adult dataset example for cli.
 Neural network model definition
 
-@author: Wolfgang Gross <wg@gradient0.com>
+Example:
+    ./dq0 model create demo
+    cd demo
+    copy user_source.py to demo/data
+    copy user_model.py to demo/model
+    ../dq0 data list
+    ../dq0 model attach --id <dataset id or uuid>
+    ../dq0 model deploy
+    ../dq0 model train
+    ../dq0 model state
+    ../dq0 model predict --input-path </path/to/numpy.npy>
+    ../dq0 model state
+
+:Authors:
+    Jona Boeddinhaus <jb@gradient0.com>
+    Wolfgang Groß <wg@gradient0.com>
+    Artur Susdorf <as@gradient0.com>
+    Craig Lincoln <cl@gradient0.com>
+
+Copyright 2019, Gradient Zero
+All rights reserved
 """
 
 import logging

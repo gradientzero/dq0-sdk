@@ -1,7 +1,20 @@
 # -*- coding: utf-8 -*-
-"""Data Source for dq0 demo files.
+"""
+Adult dataset example for cli.
+data source example
 
-This source call provides access to CSV data as pandas dataframes.
+Example:
+    ./dq0 model create demo
+    cd demo
+    copy user_source.py to demo/data
+    copy user_model.py to demo/model
+    ../dq0 data list
+    ../dq0 model attach --id <dataset id or uuid>
+    ../dq0 model deploy
+    ../dq0 model train
+    ../dq0 model state
+    ../dq0 model predict --input-path </path/to/numpy.npy>
+    ../dq0 model state
 
 :Authors:
     Jona Boeddinhaus <jb@gradient0.com>
