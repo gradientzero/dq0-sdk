@@ -20,7 +20,7 @@ import pandas as pd
 class CensusSource(Source):
 
     def __init__(self, **kwargs):
-        super().__init__(name='census_data', **kwargs)
+        super().__init__(**kwargs)
 
     def read(self):
 

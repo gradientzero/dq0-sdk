@@ -16,6 +16,7 @@ Todo:
 Copyright 2019, Gradient Zero
 """
 
+import os
 import warnings
 
 from dq0sdk.data.utils import plotting
@@ -50,10 +51,10 @@ class NewsgroupsNeuralNetwork(Model):
         super().__init__(model_path)
         self.model_type = 'keras'
 
-        if 'saved_model_folder' in kwargs:
-            self._saved_model_folder = kwargs['saved_model_folder']
-        else:
-            self._saved_model_folder = './data/output'
+        # if 'saved_model_folder' in kwargs:
+        #    self._saved_model_folder = kwargs['saved_model_folder']
+        # else:
+        #    self._saved_model_folder = './data/output'
         self._model_type = kwargs['model_type']
 
         if 'DP_enabled' in kwargs:
@@ -587,8 +588,12 @@ class NewsgroupsNeuralNetwork(Model):
             name (str): The name of the model
             version (int): The version of the model
         """
-        self._model.save('{}/{}/{}.h5'.format(self.model_path,
-                         version, name), include_optimizer=False)
+
+        path_to_file = '{}/{}/{}.h5'.format(self.model_path, version, name)
+        # recursive directory creation function (if already exists, nothing
+        # happens)
+        os.makedirs(os.path.dirname(path_to_file), exist_ok=True)
+        self._model.save(path_to_file, include_optimizer=False)
 
     def load(self, name='model', version=1):
         """

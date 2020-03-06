@@ -13,6 +13,7 @@ Copyright 2019, Gradient Zero
 import logging
 import os
 import pickle
+import warnings
 
 import diffprivlib.models as dp
 
@@ -35,13 +36,13 @@ class NaiveBayesianModel(Model):
 
     Simple model representing a bayesian classifier.
     """
-    def __init__(self, **kwargs):
-        super().__init__()
+    def __init__(self, model_path, **kwargs):
+        super().__init__(model_path)
 
-        if 'saved_model_folder' in kwargs:
-            self._saved_model_folder = kwargs['saved_model_folder']
-        else:
-            self._saved_model_folder = './data/output'
+        # if 'saved_model_folder' in kwargs:
+        #     self._saved_model_folder = kwargs['saved_model_folder']
+        # else:
+        #     self._saved_model_folder = './data/output'
         self._classifier_type = kwargs['classifier_type']
 
         if 'DP_enabled' in kwargs:
@@ -85,6 +86,9 @@ class NaiveBayesianModel(Model):
             return
         source = next(iter(self.data_sources.values()))
         train_data, data = source.read()
+        #
+        # WARNING: train_data, data above are not used below.
+        #
         X_df, y_ts, num_tr_instances = source.preprocess(
             approach_for_missing_feature='imputation',
             # 'imputation', 'dropping',
@@ -109,8 +113,22 @@ class NaiveBayesianModel(Model):
         Model fit function: it learns a model from training data
         """
 
-        X_train = self.X_train
-        y_train = self.y_train
+        deprecated_data_passing = True
+
+        if deprecated_data_passing:
+            warnings.warn(
+                '\n\nWhen merging with DQ0 demo, method fit() will not '
+                'accept X_train and y_train in input. Method '
+                'setup_data() will be called as a preliminary '
+                'step for training the model.\n\n',
+                FutureWarning)
+
+            X_train = kwargs['X_train']
+            y_train = kwargs['y_train']
+
+        else:
+            X_train = self.X_train
+            y_train = self.y_train
 
         if isinstance(y_train, np.ndarray):
             if y_train.ndim == 2:

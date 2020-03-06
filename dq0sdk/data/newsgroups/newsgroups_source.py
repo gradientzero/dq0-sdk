@@ -24,7 +24,7 @@ from sklearn.datasets import fetch_20newsgroups
 class NewsgroupsSource(Source):
 
     def __init__(self, **kwargs):
-        super().__init__(name='Newsgroups', **kwargs)
+        super().__init__(**kwargs)
 
     def _get_train_and_test_dataset(self):
         #
@@ -70,7 +70,7 @@ class NewsgroupsSource(Source):
         test_data = fetch_20newsgroups(**params_dict)
 
         # print('Data fetched')
-        print('Loaded dataset "' + self.name + '" ')
+        print('Loaded "20_Newsgroups" dataset')
         print('%d training documents' % len(tr_data.filenames))
         print('%d test documents' % len(test_data.filenames))
         print('%d different classes of documents' % len(

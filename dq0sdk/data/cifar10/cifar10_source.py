@@ -24,7 +24,7 @@ import tensorflow as tf
 class CIFAR10Source(Source):
 
     def __init__(self, **kwargs):
-        super().__init__(name='CIFAR10', **kwargs)
+        super().__init__(**kwargs)
         self.class_names = ['airplane', 'automobile', 'bird', 'cat', 'deer',
                             'dog', 'frog', 'horse', 'ship', 'truck']
 
