@@ -1,6 +1,14 @@
 """Managed classes of custom_objects, Optimizers and Losses
 
-Needed to instantiate these classes in NeuralNetworkYaml
+Needed to:
+    - instantiate these classes in NeuralNetworkYaml
+    - substitute non-dp optimizer for dp version in core
+
+WARNING: for continuous integration this file should be copied
+from core to the sdk after any edits.
+
+TODO: check how the none Gaussian optimizers work.
+For now we just stick to Gaussian versions.
 """
 import tensorflow
 
@@ -22,6 +30,15 @@ optimizers = {
     'DPAdagradGaussianOptimizer': tensorflow_privacy.privacy.optimizers.dp_optimizer.DPAdagradGaussianOptimizer,
     'DPAdamGaussianOptimizer': tensorflow_privacy.privacy.optimizers.dp_optimizer.DPAdamGaussianOptimizer,
     'DPGradientDescentGaussianOptimizer': tensorflow_privacy.privacy.optimizers.dp_optimizer.DPGradientDescentGaussianOptimizer,
+}
+
+dp_optimizer_alias = {
+    'Adagrad': 'DPAdagradGaussianOptimizer',
+    'Adam': 'DPAdamGaussianOptimizer',
+    'SGD': 'DPGradientDescentGaussianOptimizer',
+    'DPAdagradGaussianOptimizer': 'DPAdagradGaussianOptimizer',
+    'DPAdamGaussianOptimizer': 'DPAdamGaussianOptimizer',
+    'DPGradientDescentGaussianOptimizer': 'DPGradientDescentGaussianOptimizer',
 }
 
 losses = {
