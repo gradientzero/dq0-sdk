@@ -14,6 +14,9 @@ Copyright 2019, Gradient Zero
 All rights reserved
 """
 
+import numpy as np
+import pandas as pd
+
 import uuid
 from abc import ABC, abstractmethod
 

@@ -13,7 +13,6 @@ Copyright 2019, Gradient Zero
 import logging
 import os
 import pickle
-import warnings
 
 import diffprivlib.models as dp
 
@@ -80,7 +79,10 @@ class NaiveBayesianModel(Model):
             self._classifier.set_params(alpha=alpha)
 
     def setup_data(self, **kwargs):
-        """load train data."""
+        """
+        load train data.
+        """
+
         if len(self.data_sources) < 1:
             logger.error('No data source found')
             return
@@ -113,22 +115,8 @@ class NaiveBayesianModel(Model):
         Model fit function: it learns a model from training data
         """
 
-        deprecated_data_passing = True
-
-        if deprecated_data_passing:
-            warnings.warn(
-                '\n\nWhen merging with DQ0 demo, method fit() will not '
-                'accept X_train and y_train in input. Method '
-                'setup_data() will be called as a preliminary '
-                'step for training the model.\n\n',
-                FutureWarning)
-
-            X_train = kwargs['X_train']
-            y_train = kwargs['y_train']
-
-        else:
-            X_train = self.X_train
-            y_train = self.y_train
+        X_train = kwargs['X_train']
+        y_train = kwargs['y_train']
 
         if isinstance(y_train, np.ndarray):
             if y_train.ndim == 2:
@@ -151,24 +139,6 @@ class NaiveBayesianModel(Model):
         print('\nModel accuracy on training data:', round(accuracy_score, 2))
 
         return accuracy_score
-
-    def fit_dp(self, **kwargs):
-        """Model fit function.
-
-        Implementing child classes will perform model fitting here.
-
-        This is the differential private training version.
-        TODO: discuss if we need both fit and fit_dp
-
-        The implemented child class version will be final (non-derivable).
-
-        Args:
-            kwargs (:obj:`dict`): dictionary of optional arguments.
-                Usually preprocessed data, feature columns etc.
-        """
-        raise RuntimeError('to fit a model with dp, crate an instance '
-                           'of this class enabling DP and call the fit method')
-        pass
 
     def get_classes(self):
         """

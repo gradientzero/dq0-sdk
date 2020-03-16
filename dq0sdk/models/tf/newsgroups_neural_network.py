@@ -393,24 +393,6 @@ class NewsgroupsNeuralNetwork(Model):
         if 'batch_size' in additional_fit_params_dict:
             print('\tbatch size:', additional_fit_params_dict['batch_size'])
 
-    def fit_dp(self, **kwargs):
-        """Model fit function.
-
-        Implementing child classes will perform model fitting here.
-
-        This is the differential private training version.
-        TODO: discuss if we need both fit and fit_dp
-
-        The implemented child class version will be final (non-derivable).
-
-        Args:
-            kwargs (:obj:`dict`): dictionary of optional arguments.
-                Usually preprocessed data, feature columns etc.
-        """
-        raise RuntimeError('to fit a model with dp, crate an instance '
-                           'of this class enabling DP and call the fit method')
-        pass
-
     def get_classes(self):
         """
         Just a wrapper for sklearn attribute classes_

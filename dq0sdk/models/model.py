@@ -78,6 +78,16 @@ class Model(ABC):
         pass
 
     @abstractmethod
+    def fit(self, **kwargs):
+        """
+
+        Train model on a dataset passed as input.
+
+        Args:
+            kwargs (:obj:`dict`): dictionary of optional arguments
+        """
+
+    @abstractmethod
     def save(self):
         """Saves the model.
 

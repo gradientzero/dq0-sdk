@@ -27,12 +27,13 @@ class NewsgroupsSource(Source):
         super().__init__(**kwargs)
 
     def _get_train_and_test_dataset(self):
-        #
-        # '20_Newsgroups' is a corpus of labeled documents. We extract features
-        #  by counting word occurrences (Tfidf). However, since the dictionary
-        #  of words is quite big, the code allow to keep only the most
-        #  discriminative words for the classification task.
-        #
+        """
+        '20_Newsgroups' is a corpus of labeled documents. We extract features
+        by counting word occurrences (Tfidf). However, since the dictionary
+        of words is quite big, the code allow to keep only the most
+        discriminative words for the classification task.
+        :return: traing and test
+        """
 
         # print('Fetching "20 newsgroups" dataset from remote repository')
         to_be_removed = ('headers', 'footers', 'quotes')
@@ -139,17 +140,24 @@ class NewsgroupsSource(Source):
             quantitative_features_list, target_feature = \
             self._get_train_and_test_dataset()
 
-        util.print_dataset_info(tr_dataset_df, 'Raw training dataset')
-        util.print_dataset_info(test_dataset_df, 'Raw test dataset')
+        # util.print_dataset_info(tr_dataset_df, 'Raw training dataset')
+        # util.print_dataset_info(test_dataset_df, 'Raw test dataset')
 
         X_train_df = tr_dataset_df.drop([target_feature], axis=1)
         X_test_df = test_dataset_df.drop([target_feature], axis=1)
         y_train_ts = tr_dataset_df[target_feature]
         y_test_ts = test_dataset_df[target_feature]
 
-        return X_train_df, X_test_df, y_train_ts, y_test_ts, target_feature
+        # concatenate training and test datasets
+        assert isinstance(X_train_df, pd.DataFrame)
+        X_df = X_train_df.append(X_test_df)
+        y_ts = y_train_ts.append(y_test_ts)
 
-    def get_preprocessed_X_y_train_and_X_y_test(self):
+        util.print_dataset_info(X_df, 'Raw dataset')
+
+        return X_df, y_ts, target_feature
+
+    def get_preprocessed_X_y(self):
         # for backward compatibility
         return self.read()
 
@@ -167,49 +175,6 @@ class NewsgroupsSource(Source):
             data read from the data source.
         """
         raise NotImplementedError()
-
-    def save_preprocessed_tr_and_te_datasets(self, X_train, X_test,
-                                             y_train, y_test,
-                                             working_folder):
-        """
-
-        :param X_train: Pandas Dataframe or numpy array
-        :param X_test:  Pandas Dataframe or numpy array
-        :param y_train: Pandas Series or numpy (also non-dimensional) array
-        :param y_test: Pandas Series or numpy (also non-dimensional) array
-        :param working_folder: str with file path
-        :return:
-        """
-
-        if isinstance(X_train, pd.DataFrame):
-
-            pd.concat([X_train, y_train], axis=1).to_csv(
-                working_folder + 'preprocessed_training_data.csv', index=False)
-            pd.concat([X_test, y_test], axis=1).to_csv(
-                working_folder + 'preprocessed_test_data.csv', index=False)
-
-        elif isinstance(X_train, np.ndarray):
-
-            if y_train.ndim < 2:
-                # transform one-dimensional array into column vector via
-                # newaxis
-                y_train = y_train[:, np.newaxis]
-                y_test = y_test[:, np.newaxis]
-
-            if X_train.ndim <= 2:
-                np.savetxt(working_folder + 'preprocessed_training_X.csv',
-                           X_train, delimiter=',')
-                np.savetxt(working_folder + 'preprocessed_test_X.csv',
-                           X_test, delimiter=',')
-            else:
-                np.save(working_folder + 'preprocessed_training_X.npy',
-                        X_train)
-                np.save(working_folder + 'preprocessed_test_X.npy', X_test)
-
-            np.savetxt(working_folder + 'preprocessed_training_y.csv',
-                       y_train, delimiter=',')
-            np.savetxt(working_folder + 'preprocessed_test_y.csv',
-                       y_test, delimiter=',')
 
     def to_json(self):
         """Returns a json representation of this data sources information.
