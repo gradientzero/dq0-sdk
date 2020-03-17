@@ -272,7 +272,7 @@ class NaiveBayesianModel(Model):
         """
         name = '{}.pickle'.format(self.uuid)
 
-        with open(os.path.join(self._saved_model_folder, name), 'wb') as f:
+        with open(os.path.join(self.model_path, name), 'wb') as f:
             pickle.dump(self._classifier, f)
 
     def load(self):
@@ -280,5 +280,5 @@ class NaiveBayesianModel(Model):
         """
         name = '{}.pickle'.format(self.uuid)
 
-        with open(os.path.join(self._saved_model_folder, name), 'rb') as file:
+        with open(os.path.join(self.model_path, name), 'rb') as file:
             self._classifier = pickle.load(file)

@@ -172,7 +172,7 @@ class CensusSource(Source):
                 features_to_drop_list=None  # ['fnlwgt', 'education-num']
             )
 
-        return X_train_df, X_test_df, y_train_ts, y_test_ts, target_feature
+        return X_train_df, X_test_df, y_train_ts, y_test_ts
 
     def _keep_selected_quantitative_features_only(self, dataset_df,
                                                   target_feature):

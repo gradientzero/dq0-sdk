@@ -155,11 +155,7 @@ class NewsgroupsSource(Source):
 
         util.print_dataset_info(X_df, 'Raw dataset')
 
-        return X_df, y_ts, target_feature
-
-    def get_preprocessed_X_y(self):
-        # for backward compatibility
-        return self.read()
+        return X_df, y_ts
 
     def preprocess(self, force=False, **kwargs):
         """Preprocess the data
@@ -174,7 +170,9 @@ class NewsgroupsSource(Source):
         Returns:
             data read from the data source.
         """
-        raise NotImplementedError()
+        X = kwargs['X']
+
+        return X
 
     def to_json(self):
         """Returns a json representation of this data sources information.

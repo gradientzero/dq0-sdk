@@ -55,7 +55,7 @@ class NewsgroupsNeuralNetwork(Model):
         #    self._saved_model_folder = kwargs['saved_model_folder']
         # else:
         #    self._saved_model_folder = './data/output'
-        self._model_type = kwargs['model_type']
+        self._classifier_type = kwargs['classifier_type']
 
         if 'DP_enabled' in kwargs:
             self.DP_enabled = kwargs['DP_enabled']
@@ -63,7 +63,7 @@ class NewsgroupsNeuralNetwork(Model):
             self.DP_enabled = False
 
         if self.DP_enabled:
-            self._model_type = 'DP-' + self._model_type
+            self._classifier_type = 'DP-' + self._classifier_type
             self.DP_epsilon = kwargs['DP_epsilon']
 
         self._label_encoder = None
@@ -105,10 +105,10 @@ class NewsgroupsNeuralNetwork(Model):
         # TODO: grid search over parameters space
 
         # network topology. TODO: make it parametric!
-        if self._model_type.startswith('DP-'):
-            network_type = self._model_type[3:]
+        if self._classifier_type.startswith('DP-'):
+            network_type = self._classifier_type[3:]
         else:
-            network_type = self._model_type
+            network_type = self._classifier_type
         if util.case_insensitive_str_comparison(network_type, 'cnn'):
             print('Setting up a multilayer convolution neural network...')
             self._model = self._get_cnn_model(kwargs['num_classes'])
@@ -271,7 +271,7 @@ class NewsgroupsNeuralNetwork(Model):
 
         y_train_encoded_np_a = self.prepare(y_train_np_a)
 
-        print('\n\n-------------------- ' + self._model_type + ' classifier '
+        print('\n\n-------------------- ' + self._classifier_type + ' classifier '
               'learning ---------------------')
         if self.DP_enabled:
             print('DP epsilon set to', self.DP_epsilon)
@@ -300,7 +300,7 @@ class NewsgroupsNeuralNetwork(Model):
                         verbose=self.verbose,
                         **additional_fit_params_dict)
 
-        print('\nLearned a ' + self._model_type + ' model. ')
+        print('\nLearned a ' + self._classifier_type + ' model. ')
 
         # test on training set
         y_pred_np_a = self.predict(X_train_np_a)

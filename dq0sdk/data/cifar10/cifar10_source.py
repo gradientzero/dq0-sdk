@@ -101,9 +101,7 @@ class CIFAR10Source(Source):
         X_np_a, y_np_a, = self.read(num_instances_to_load, num_images_to_plot)
         X_np_a = self.preprocess(X=X_np_a)
 
-        target_feature = None  # for compatibility with Pandas DataFrame case
-
-        return X_np_a, y_np_a, target_feature
+        return X_np_a, y_np_a
 
     def preprocess(self, force=False, **kwargs):
 
