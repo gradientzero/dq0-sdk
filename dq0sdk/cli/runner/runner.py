@@ -58,12 +58,12 @@ class Runner(ABC):
 
     def _get_state(self, route, id):
         """Gets the current state of the running model or data experiment."""
-        response = self.project.get(route, id=id)
-        if response['error'] != "":
+        response = self.project.client.get(route, id=id)
+        if 'error' in response and response['error'] != "":
             print(response['error'])
             return None
-        print(response['result'])
-        self.state.update(response['result'])
+        print(response['message'])
+        self.state.update(response['message'])
         return self.state
 
     def get_results(self):
@@ -79,11 +79,11 @@ class Runner(ABC):
 
     def _cancel(self, route, id):
         """Cancels the experiment run. Model or data."""
-        response = self.project.post(route, id=id)
-        if response['error'] != "":
+        response = self.project.client.post(route, id=id)
+        if 'error' in response and response['error'] != "":
             print(response['error'])
             return None
-        print(response['result'])
+        print(response['message'])
 
     def wait_for_completion(self, verbose=False):
         """Loops until the state reflects the end of the run.

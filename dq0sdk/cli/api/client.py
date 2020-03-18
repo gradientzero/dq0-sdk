@@ -7,6 +7,8 @@ Copyright 2020, Gradient Zero
 All rights reserved
 """
 
+import json
+
 import requests
 
 
@@ -32,9 +34,9 @@ class Client:
     """
     def __init__(self, host='localhost', port=9000):
         self.api = 'http://localhost:9000/api/'
-        self.set_connection(host, port)
+        self.set_connection(host, port, False)
 
-    def set_connection(self, host='localhost', port=9000):
+    def set_connection(self, host='localhost', port=9000, verbose=True):
         """Updates the connection string for the API communication.
 
         Args:
@@ -52,7 +54,9 @@ class Client:
             host = 'http://{}'.format(host)
 
         self.api = '{}:{}/api/'.format(host, port)
-        print('New connection string: {}'.format(self.api))
+
+        if verbose:
+            print('New connection string: {}'.format(self.api))
 
     def get(self, route, id=None, data=None):
         """Make an HTTP GET request.
@@ -87,5 +91,6 @@ class Client:
         """
         if id is not None:
             route = route.replace(':id', id)
-        response = requests.post('{}{}'.format(self.api, route), data=data)
+        header = {"content-type": "application/json"}
+        response = requests.post('{}{}'.format(self.api, route), data=json.dumps(data), headers=header)
         return response.json()

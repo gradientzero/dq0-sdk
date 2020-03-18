@@ -53,9 +53,14 @@ class Model:
         It calls the CLI command `model predict` and returns
         a Runner instance to watch to job
         """
-        response = self.project.client.post(routes.model.predict, id=self.project.model_uuid)
-        if response['error'] != "":
+        response = self.project._deploy()
+        if 'error' in response and response['error'] != "":
             print(response['error'])
             return None
-        print(response['result'])
+
+        response = self.project.client.post(routes.model.predict, id=self.project.model_uuid)
+        if 'error' in response and response['error'] != "":
+            print(response['error'])
+            return None
+        print(response['message'])
         return ModelRunner(self.project)

@@ -69,10 +69,10 @@ class Project:
         with open('.meta') as f:
             meta = json.load(f)
 
-        project = Project(name=meta.name, create=False)
-        project.model_uuid = meta.ID
-        project.data_source_uuid = meta.data_source_uuid
-        project.version = meta.version
+        project = Project(name=meta['name'], create=False)
+        project.model_uuid = meta['id']
+        project.data_source_uuid = meta['data_source_uuid']
+        project.version = meta['version']
 
         return project
 
@@ -85,15 +85,18 @@ class Project:
         Args:
             name (str): The name of the new project
         """
-        response = self.client.post(routes.project.create)
-        if response['error'] != "":
+        response = self.client.post(routes.project.create, data={'name': name})
+        if 'error' in response and response['error'] != "":
             print(response['error'])
             return
-        print(response['result'])
+        print(response['message'])
 
         with open('{}/.meta'.format(name)) as f:
             meta = json.load(f)
-        self.model_uuid = meta.ID
+        self.model_uuid = meta['id']
+
+        # change the working directory to the new project
+        os.chdir(name)
 
     def info(self):
         """Info returns information about the project.
@@ -110,20 +113,38 @@ class Project:
         """
         return Model(project=self)
 
-    def attach_data_source(self, data_source):
+    def get_available_data_sources(self):
+        """Returns a list of available data sources.
+
+        The returned UUIDs can be used for the attach_data_source method.
+        """
+        response = self.client.get(routes.data.list)
+        if 'error' in response and response['error'] != "":
+            print(response['error'])
+            return None
+        return response['results']
+
+    def attach_data_source(self, data_source_uuid):
         """Attaches a new data source to the project.
 
         Args:
-            data_source (:obj:`dq0sdk.data.Source`) The new source to attach
+            data_source (str) The UUID of the new source to attach
         """
         response = self.client.post(
             routes.data.attach,
             id=self.model_uuid,
-            data={'data_source_uuid': data_source.uuid})
-        if response['error'] != "":
+            data={'data_source_uuid': data_source_uuid})
+        if 'error' in response and response['error'] != "":
             print(response['error'])
             return
-        print(response['result'])
+        print(response['message'])
+
+    def _deploy(self):
+        """Deploys the project to DQ0
+
+        This is called before every train, predict, or preprocess call.
+        """
+        return self.client.post(routes.project.deploy, id=self.model_uuid)
 
     def set_connection(self, host='localhost', port=9000):
         """Updates the connection string for the API communication.

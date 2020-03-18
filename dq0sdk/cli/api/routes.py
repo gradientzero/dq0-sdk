@@ -25,10 +25,11 @@ _routes = {
         'state': ''
     },
     'data': {
-        '_base': 'data/:id/',
-        'preprocess': 'preprocess/',
-        'attach': 'attach/',
-        'state': ''
+        '_base': 'data/',
+        'list': '',
+        'preprocess': ':id/preprocess/',
+        'attach': ':id/attach/',
+        'state': ':id/'
     }
 }
 
