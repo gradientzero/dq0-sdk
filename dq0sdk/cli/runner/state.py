@@ -22,4 +22,9 @@ class State:
 
     def update(self, new_state):
         """Updates the state representation"""
-        pass
+        self.message = new_state
+        try:
+            new_state.lower().index('state: finished')
+            self.finished = True
+        except ValueError:
+            pass

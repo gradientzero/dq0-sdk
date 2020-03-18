@@ -13,6 +13,7 @@ Copyright 2020, Gradient Zero
 All rights reserved
 """
 
+from dq0sdk.cli.api import routes
 from dq0sdk.cli.runner import ModelRunner
 
 
@@ -52,5 +53,9 @@ class Model:
         It calls the CLI command `model predict` and returns
         a Runner instance to watch to job
         """
-        # TODO: call predict
+        response = self.project.client.post(routes.model.predict, id=self.project.model_uuid)
+        if response['error'] != "":
+            print(response['error'])
+            return None
+        print(response['result'])
         return ModelRunner(self.project)

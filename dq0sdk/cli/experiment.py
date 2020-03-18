@@ -52,7 +52,11 @@ class Experiment:
         It calls the CLI command `model train` and returns
         a Runner instance to watch to job
         """
-        self.project.request(routes.model.train)
+        response = self.project.client.post(routes.model.train, id=self.project.model_uuid)
+        if response['error'] != "":
+            print(response['error'])
+            return None
+        print(response['result'])
         return ModelRunner(self.project)
 
     def preprocess(self):
@@ -61,5 +65,9 @@ class Experiment:
         It calls the CLI command `data preprocess` and returns
         a Runner instance to watch to job
         """
-        self.project.request(routes.data.preprocess)
+        response = self.project.post(routes.data.preprocess, id=self.project.data_source_uuid)
+        if response['error'] != "":
+            print(response['error'])
+            return None
+        print(response['result'])
         return DataRunner(self.project)

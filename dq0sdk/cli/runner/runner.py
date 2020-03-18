@@ -11,13 +11,16 @@ Runner wraps the following CLI commands:
     * dq0 model state
     * dq0 model cancel
     * dq0 data state
-    * dq0 data state cancel
+    * dq0 data cancel
 
 Copyright 2020, Gradient Zero
 All rights reserved
 """
 
+import time
 from abc import ABC, abstractmethod
+
+from dq0sdk.cli.runner import State
 
 
 class Runner(ABC):
@@ -46,24 +49,55 @@ class Runner(ABC):
         if project is None:
             raise ValueError('You need to provide a valid project instance')
         self.project = project
-        # self.state = State()
+        self.state = State()
 
     @abstractmethod
     def get_state(self):
         """Gets the current state of the running model or data experiment."""
         pass
 
-    @abstractmethod
+    def _get_state(self, route, id):
+        """Gets the current state of the running model or data experiment."""
+        response = self.project.get(route, id=id)
+        if response['error'] != "":
+            print(response['error'])
+            return None
+        print(response['result'])
+        self.state.update(response['result'])
+        return self.state
+
     def get_results(self):
         """Gets the results of the running model or data experiment."""
-        pass
+        if self.state.finished:
+            return self.state.message
+        return ''
 
     @abstractmethod
     def cancel(self, force=False):
         """Cancels the experiment run"""
         pass
 
-    def wait_for_completion(self):
-        """Loops until the state reflects the end of the run."""
-        # while not self.state.finished
-        pass
+    def _cancel(self, route, id):
+        """Cancels the experiment run. Model or data."""
+        response = self.project.post(route, id=id)
+        if response['error'] != "":
+            print(response['error'])
+            return None
+        print(response['result'])
+
+    def wait_for_completion(self, verbose=False):
+        """Loops until the state reflects the end of the run.
+
+        This function is blocking in single-threaded contexts.
+        """
+        if verbose:
+            print('Waiting for job to complete...')
+        while not self.state.finished:
+            time.sleep(3.0)
+            # refetch model or data job state
+            self.get_state()
+            if verbose:
+                print(self.state.message)
+        if verbose:
+            print('Job completed.')
+            print(self.state.message)

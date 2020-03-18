@@ -17,8 +17,10 @@ Copyright 2020, Gradient Zero
 All rights reserved
 """
 
+import json
 import os
 
+from dq0sdk.cli import Model
 from dq0sdk.cli.api import Client, routes
 
 
@@ -41,15 +43,15 @@ class Project:
         self.name = name
         self.model_uuid = ''
         self.data_source_uuid = ''
-
-        if create:
-            # create project
-            # TODO: call API, set uuid
-            pass
+        self.version = '1'
 
         # create API client instance
         self.client = Client()
 
+        if create:
+            self._create_new(name)
+
+    @staticmethod
     def load():
         """Load loads an existing project.
 
@@ -64,9 +66,34 @@ class Project:
             raise FileNotFoundError('Could not find .meta project file'
                                     'in current directory')
 
-        meta = {}  # TODO
-        project = Project(name=meta.UUID, create=False)
+        with open('.meta') as f:
+            meta = json.load(f)
+
+        project = Project(name=meta.name, create=False)
+        project.model_uuid = meta.ID
+        project.data_source_uuid = meta.data_source_uuid
+        project.version = meta.version
+
         return project
+
+    def _create_new(self, name):
+        """Creates a new project.
+
+        First, calls the API to creat a new project with the given name.
+        Then sets the UUID property read from the new .meta file.
+
+        Args:
+            name (str): The name of the new project
+        """
+        response = self.client.post(routes.project.create)
+        if response['error'] != "":
+            print(response['error'])
+            return
+        print(response['result'])
+
+        with open('{}/.meta'.format(name)) as f:
+            meta = json.load(f)
+        self.model_uuid = meta.ID
 
     def info(self):
         """Info returns information about the project.
@@ -74,7 +101,14 @@ class Project:
         It calls the CLI command `project info` and returns
         the results as JSON.
         """
-        return self.client.request(routes.project.info)
+        return self.client.get(routes.project.info, id=self.model_uuid)
+
+    def get_latest_model(self):
+        """Returns the currently active model of this project.
+
+        Current implementation returns the project as is. Model management TBD.
+        """
+        return Model(project=self)
 
     def attach_data_source(self, data_source):
         """Attaches a new data source to the project.
@@ -82,25 +116,14 @@ class Project:
         Args:
             data_source (:obj:`dq0sdk.data.Source`) The new source to attach
         """
-        pass
-
-    def request(self, route, data=None):
-        """Wrapper for CLI HTTP request.
-
-        Shortcup for calling project.client.request(...)
-
-        Returns the response as JSON.
-        Throws an error on failure.
-
-        Args:
-            route (str): The API route to request.
-            data (optional, dict): POST data to pass.
-        """
-        if data is None:
-            data = {}
-        data['model_uuid'] = self.model_uuid
-        data['data_source_uuid'] = self.data_source_uuid
-        return self.client.request(route, data)
+        response = self.client.post(
+            routes.data.attach,
+            id=self.model_uuid,
+            data={'data_source_uuid': data_source.uuid})
+        if response['error'] != "":
+            print(response['error'])
+            return
+        print(response['result'])
 
     def set_connection(self, host='localhost', port=9000):
         """Updates the connection string for the API communication.

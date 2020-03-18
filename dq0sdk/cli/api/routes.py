@@ -13,17 +13,22 @@ from types import SimpleNamespace
 
 _routes = {
     'project': {
-        'base': 'projects/',
-        'info': ''
+        '_base': 'projects/',
+        'create': '',
+        'info': ':id/',
+        'deploy': ':id/deploy/'
     },
     'model': {
-        'base': 'models/',
+        '_base': 'models/:id/',
         'train': 'train/',
-        'predict': 'predict/'
+        'predict': 'predict/',
+        'state': ''
     },
     'data': {
-        'base': 'data/',
-        'preprocess': 'preprocess/'
+        '_base': 'data/:id/',
+        'preprocess': 'preprocess/',
+        'attach': 'attach/',
+        'state': ''
     }
 }
 
@@ -33,8 +38,8 @@ def build_routes():
     for route, subroutes in _routes.items():
         for path, value in subroutes.items():
             s = {}
-            if value != 'base':
-                s[path] = '{}{}'.format(_routes[route]['base'], value)
+            if value != '_base':
+                s[path] = '{}{}'.format(_routes[route]['_base'], value)
         r[route] = SimpleNamespace(**s)
     return r
 

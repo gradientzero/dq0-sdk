@@ -54,8 +54,26 @@ class Client:
         self.api = '{}:{}/api/'.format(host, port)
         print('New connection string: {}'.format(self.api))
 
-    def request(self, route, data=None):
-        """Make an HTTP request.
+    def get(self, route, id=None, data=None):
+        """Make an HTTP GET request.
+
+        Calles the DQ0 CLI API with a GET request on the given route.
+
+        Returns the response as JSON.
+        Throws an error on failure.
+
+        Args:
+            route (str): The API route to request.
+            id (str): If set this value will replace route's ':id' placeholder
+            data (optional, dict): GET data to pass.
+        """
+        if id is not None:
+            route = route.replace(':id', id)
+        response = requests.get('{}{}'.format(self.api, route), data=data)
+        return response.json()
+
+    def post(self, route, id=None, data=None):
+        """Make an HTTP POST request.
 
         Calles the DQ0 CLI API with a POST request on the given route.
 
@@ -64,7 +82,10 @@ class Client:
 
         Args:
             route (str): The API route to request.
+            id (str): If set this value will replace route's ':id' placeholder
             data (optional, dict): POST data to pass.
         """
+        if id is not None:
+            route = route.replace(':id', id)
         response = requests.post('{}{}'.format(self.api, route), data=data)
         return response.json()

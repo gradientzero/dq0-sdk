@@ -15,6 +15,7 @@ Copyright 2020, Gradient Zero
 All rights reserved
 """
 
+from dq0sdk.cli.api import routes
 from dq0sdk.cli.runner import Runner
 
 
@@ -44,13 +45,9 @@ class ModelRunner(Runner):
         super().__init__(project)
 
     def get_state(self):
-        """Gets the current state of the running model or data experiment."""
-        pass
-
-    def get_results(self):
-        """Gets the results of the running model or data experiment."""
-        pass
+        """Gets the current state of the running model experiment."""
+        return super()._get_state(routes.model.state, self.project.model_uuid)
 
     def cancel(self, force=False):
         """Cancels the experiment run"""
-        pass
+        return super()._cancel(routes.model.cancel, self.project.model_uuid)
