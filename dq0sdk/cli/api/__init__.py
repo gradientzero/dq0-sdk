@@ -5,8 +5,8 @@ This package comprises the communication classes to interact
 with the DQ0 CLI API.
 """
 
-from . import runner
+from .client import Client
 
 __all__ = [
-    'runner'
+    'Client'
 ]

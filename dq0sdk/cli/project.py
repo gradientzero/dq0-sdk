@@ -19,6 +19,8 @@ All rights reserved
 
 import os
 
+from dq0sdk.cli.api import Client
+
 
 class Project:
     """A user project
@@ -42,6 +44,9 @@ class Project:
             # create project
             # TODO: call API
             pass
+
+        # create API client instance
+        self.client = Client()
 
     def load():
         """Load loads an existing project.
@@ -68,3 +73,14 @@ class Project:
         the results as JSON.
         """
         pass
+
+    def set_connection(self, host='localhost', port=9000):
+        """Updates the connection string for the API communication.
+
+        Passes the updated info to the API handler.
+
+        Args:
+            host (str): The host of the DQ0 CLI API Server
+            port (int): The port of the DQ0 CLI API Server
+        """
+        self.client.set_connection(host=host, port=port)
