@@ -54,17 +54,17 @@ class Client:
         self.api = '{}:{}/api/'.format(host, port)
         print('New connection string: {}'.format(self.api))
 
-    def request(self, route, data):
+    def request(self, route, data=None):
         """Make an HTTP request.
 
         Calles the DQ0 CLI API with a POST request on the given route.
 
-        Returns the response as JSON. Throws an error on failure.
+        Returns the response as JSON.
+        Throws an error on failure.
 
         Args:
             route (str): The API route to request.
-            data (dict): POST data to pass.
+            data (optional, dict): POST data to pass.
         """
         response = requests.post('{}{}'.format(self.api, route), data=data)
-        # TODO: error handling?
         return response.json()

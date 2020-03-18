@@ -14,6 +14,7 @@ Copyright 2020, Gradient Zero
 All rights reserved
 """
 
+from dq0sdk.cli.api import routes
 from dq0sdk.cli.runner import DataRunner, ModelRunner
 
 
@@ -51,7 +52,7 @@ class Experiment:
         It calls the CLI command `model train` and returns
         a Runner instance to watch to job
         """
-        # TODO: call train
+        self.project.request(routes.model.train)
         return ModelRunner(self.project)
 
     def preprocess(self):
@@ -60,5 +61,5 @@ class Experiment:
         It calls the CLI command `data preprocess` and returns
         a Runner instance to watch to job
         """
-        # TODO: call preprocess
+        self.project.request(routes.data.preprocess)
         return DataRunner(self.project)

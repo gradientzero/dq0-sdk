@@ -19,7 +19,7 @@ All rights reserved
 
 import os
 
-from dq0sdk.cli.api import Client
+from dq0sdk.cli.api import Client, routes
 
 
 class Project:
@@ -39,10 +39,12 @@ class Project:
         if name is None:
             raise ValueError('You need to set the "name" argument')
         self.name = name
+        self.model_uuid = ''
+        self.data_source_uuid = ''
 
         if create:
             # create project
-            # TODO: call API
+            # TODO: call API, set uuid
             pass
 
         # create API client instance
@@ -72,7 +74,33 @@ class Project:
         It calls the CLI command `project info` and returns
         the results as JSON.
         """
+        return self.client.request(routes.project.info)
+
+    def attach_data_source(self, data_source):
+        """Attaches a new data source to the project.
+
+        Args:
+            data_source (:obj:`dq0sdk.data.Source`) The new source to attach
+        """
         pass
+
+    def request(self, route, data=None):
+        """Wrapper for CLI HTTP request.
+
+        Shortcup for calling project.client.request(...)
+
+        Returns the response as JSON.
+        Throws an error on failure.
+
+        Args:
+            route (str): The API route to request.
+            data (optional, dict): POST data to pass.
+        """
+        if data is None:
+            data = {}
+        data['model_uuid'] = self.model_uuid
+        data['data_source_uuid'] = self.data_source_uuid
+        return self.client.request(route, data)
 
     def set_connection(self, host='localhost', port=9000):
         """Updates the connection string for the API communication.
