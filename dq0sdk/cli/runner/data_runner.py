@@ -16,7 +16,7 @@ All rights reserved
 """
 
 from dq0sdk.cli.api import routes
-from dq0sdk.cli.runner import Runner
+from dq0sdk.cli.runner.runner import Runner
 
 
 class DataRunner(Runner):

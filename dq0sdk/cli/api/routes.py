@@ -36,9 +36,9 @@ _routes = {
 def build_routes():
     r = {}
     for route, subroutes in _routes.items():
+        s = {}
         for path, value in subroutes.items():
-            s = {}
-            if value != '_base':
+            if path != '_base':
                 s[path] = '{}{}'.format(_routes[route]['_base'], value)
         r[route] = SimpleNamespace(**s)
     return r

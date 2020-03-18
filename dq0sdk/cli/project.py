@@ -63,7 +63,7 @@ class Project:
         """
         # check if .meta file exists in current directory
         if not os.path.isfile('.meta'):
-            raise FileNotFoundError('Could not find .meta project file'
+            raise FileNotFoundError('Could not find .meta project file '
                                     'in current directory')
 
         with open('.meta') as f:

@@ -8,12 +8,10 @@ DQ0 CLI API.
 from .experiment import Experiment
 from .model import Model
 from .project import Project
-from .state import State
 
 
 __all__ = [
     'Experiment',
     'Model',
-    'Project',
-    'State'
+    'Project'
 ]

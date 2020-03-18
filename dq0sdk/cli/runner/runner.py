@@ -20,7 +20,7 @@ All rights reserved
 import time
 from abc import ABC, abstractmethod
 
-from dq0sdk.cli.runner import State
+from dq0sdk.cli.runner.state import State
 
 
 class Runner(ABC):
