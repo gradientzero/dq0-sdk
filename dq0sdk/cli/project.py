@@ -156,10 +156,10 @@ class Project:
         """
         self.client.set_connection(host=host, port=port)
 
-    def set_code(self, setup_data=None, setup_model=None, parent_class_name=None):  # noqa: C901
-        """Sets the user defined model and data functions.
+    def set_model_code(self, setup_data=None, setup_model=None, parent_class_name=None):  # noqa: C901
+        """Sets the user defined setup_model and setup_data functions.
 
-        Saves the function code to user_model.py and user_source.py
+        Saves the function code to user_model.py
 
         Args:
             setup_data (func): user defined setup_data function
@@ -248,6 +248,23 @@ class Project:
                 raise DQ0SDKError('Function to replace not found in user_model.py')
             return new_lines
 
+        def _replace_parent_class(lines, parent_class_name):
+            new_lines = []
+            for line in lines:
+                try:
+                    index = line.index('from dq0sdk.models')
+                    if index == 0:
+                        line = 'from dq0sdk.models.tf.neural_network import NeuralNetwork\n'
+                except ValueError:
+                    pass
+                try:
+                    line.index('class UserModel(')
+                    line = 'class UserModel(NeuralNetwork):\n'
+                except ValueError:
+                    pass
+                new_lines.append(line)
+            return new_lines
+
         # replace in user_model.py
         with open('models/user_model.py', 'r') as f:
             lines = f.readlines()
@@ -255,5 +272,10 @@ class Project:
             lines = _replace_function(lines, setup_data_code)
         if setup_model_code is not None:
             lines = _replace_function(lines, setup_model_code)
+        if parent_class_name is not None:
+            if parent_class_name != 'NeuralNetwork':
+                raise DQ0SDKError('Current version only allows "NeuralNetwork"'
+                                  ' as parent_class_name!')
+            lines = _replace_parent_class(lines, parent_class_name)
         with open('models/user_model.py', 'w') as f:
             f.writelines(lines)
