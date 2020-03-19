@@ -15,6 +15,7 @@ All rights reserved
 
 from dq0sdk.cli.api import routes
 from dq0sdk.cli.runner import ModelRunner
+from dq0sdk.errors import DQ0SDKError
 
 
 class Model:
@@ -55,12 +56,10 @@ class Model:
         """
         response = self.project._deploy()
         if 'error' in response and response['error'] != "":
-            print(response['error'])
-            return None
+            raise DQ0SDKError(response['error'])
 
         response = self.project.client.post(routes.model.predict, id=self.project.model_uuid)
         if 'error' in response and response['error'] != "":
-            print(response['error'])
-            return None
+            raise DQ0SDKError(response['error'])
         print(response['message'])
         return ModelRunner(self.project)
