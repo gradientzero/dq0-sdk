@@ -17,6 +17,8 @@ from dq0sdk.cli.api import routes
 from dq0sdk.cli.runner import ModelRunner
 from dq0sdk.errors import DQ0SDKError
 
+import numpy as np
+
 
 class Model:
     """A model predict wrapper
@@ -47,18 +49,32 @@ class Model:
         if project is None:
             raise ValueError('You need to provide the "project" argument')
         self.project = project
+        self.predict_allowed = False
 
-    def predict(self):
+        # TODO: get model info and set predict allowed
+        self.predict_allowed = True
+
+    def predict(self, test_data):
         """Starts a prediction run
 
         It calls the CLI command `model predict` and returns
         a Runner instance to watch to job
+
+        Args:
+            test_data (:obj:`numpy.array`) data to perform prediction for
         """
+        if test_data is None or not isinstance(test_data, np.ndarray):
+            raise ValueError('test_data not in np.array format')
         response = self.project._deploy()
         if 'error' in response and response['error'] != "":
             raise DQ0SDKError(response['error'])
 
-        response = self.project.client.post(routes.model.predict, id=self.project.model_uuid)
+        # save predict data
+        np.save('data/predict_data.npy', test_data)
+        data = {'input_path': './data/predict_data.npy'}
+
+        response = self.project.client.post(
+            routes.model.predict, id=self.project.model_uuid, data=data)
         if 'error' in response and response['error'] != "":
             raise DQ0SDKError(response['error'])
         print(response['message'])

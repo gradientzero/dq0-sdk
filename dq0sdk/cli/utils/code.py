@@ -38,7 +38,6 @@ def replace_function(lines, code):  # noqa: C901
     in_function = False
     indent = -1
     line_index = 0
-    filling = False
     for line in lines:
         line_index = line_index + 1
         if indent == -1:
@@ -56,7 +55,6 @@ def replace_function(lines, code):  # noqa: C901
                 len_indent = len(line) - len(line.lstrip())
                 if line_index == len(lines) or (len(line) > 1 and len_indent == indent):
                     in_function = False
-            filling = False
             while True:
                 # replace function
                 if code_lines_index < len(code_lines):
@@ -73,9 +71,7 @@ def replace_function(lines, code):  # noqa: C901
                     code_lines_index = code_lines_index + 1
                 if in_function or code_lines_index == len(code_lines):
                     break
-                else:
-                    filling = True
-        if not filling and not in_function:
+        if not in_function:
             # keep other code
             new_lines.append(line)
     if len(new_lines) == 0 or code_lines_index == 1:
