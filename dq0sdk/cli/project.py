@@ -23,6 +23,12 @@ import os
 
 from dq0sdk.cli import Model
 from dq0sdk.cli.api import Client, routes
+from dq0sdk.cli.utils.code import (
+    check_signature,
+    replace_data_parent_class,
+    replace_function,
+    replace_model_parent_class,
+)
 from dq0sdk.errors import DQ0SDKError
 
 
@@ -161,6 +167,9 @@ class Project:
 
         Saves the function code to user_model.py
 
+        Note: This function will only work inside iphyton notebooks,
+        otherwise the sources of the function arguments are not available.
+
         Args:
             setup_data (func): user defined setup_data function
             setup_model (func): user defined setup_model function
@@ -179,103 +188,59 @@ class Project:
             raise ValueError('You need to either pass setup_data '
                              'or setup_model function')
 
-        # check method signatures
-        def _check_signature(code, name):
-            if code is None:
-                return None
-            wrong_signature_error = 'Wrong function signature. '\
-                                    'Should start with "def {}():" '\
-                                    'or "def {}(self). '\
-                                    '(Static function will be changed to '\
-                                    'member function automatically.)"'\
-                                    .format(name, name)
-            try:
-                def_start_index = code.index('def {}('.format(name))
-                if def_start_index != 0:
-                    raise DQ0SDKError('{}. {}'.format(name, wrong_signature_error))
-                def_end_index = code.index(':')
-                code = code.replace(code[:def_end_index], 'def {}(self)'.format(name))
-            except ValueError:
-                raise DQ0SDKError('{}. {}'.format(name, wrong_signature_error))
-            return code
-
-        setup_data_code = _check_signature(setup_data_code, 'setup_data')
-        setup_model_code = _check_signature(setup_model_code, 'setup_model')
+        setup_data_code = check_signature(setup_data_code, 'setup_data')
+        setup_model_code = check_signature(setup_model_code, 'setup_model')
         if setup_data_code is None and setup_model_code is None:
             return
-
-        # replace functions
-        def _replace_function(lines, code):
-            search = code[:code.index(':')]
-            new_lines = []
-            code_lines = code.split('\n')
-            code_lines_index = 1  # skip signature
-            in_function = False
-            indent = -1
-            for line in lines:
-                if indent == -1:
-                    try:
-                        indent = line.index(search)
-                        # if search was not found ValueError is thrown.
-                        space_char = '\t' if line[:1] == '\t' else ' '
-                        in_function = True
-                        # use original function signature
-                        new_lines.append(line)
-                    except ValueError:
-                        pass
-                elif in_function:
-                    len_indent = len(line) - len(line.lstrip())
-                    if len(line) > 1 and len_indent == indent:
-                        in_function = False
-                    else:
-                        # replace function
-                        if code_lines_index < len(code_lines):
-                            code_line = code_lines[code_lines_index]
-                            num_code_spaces = len(code_line) - len(code_line.lstrip())
-                            if space_char == '\t':
-                                if code_line[:1] == ' ':
-                                    num_code_spaces = int(num_code_spaces / 4)
-                                num_code_spaces = num_code_spaces + 1
-                            else:
-                                num_code_spaces = num_code_spaces + 4
-                            code_spaces = space_char.join(['' for i in range(num_code_spaces + 1)])
-                            new_lines.append(code_spaces + code_line.lstrip() + '\n')
-                            code_lines_index = code_lines_index + 1
-                if not in_function:
-                    # keep other code
-                    new_lines.append(line)
-            if len(new_lines) == 0 or code_lines_index == 1:
-                raise DQ0SDKError('Function to replace not found in user_model.py')
-            return new_lines
-
-        def _replace_parent_class(lines, parent_class_name):
-            new_lines = []
-            for line in lines:
-                try:
-                    index = line.index('from dq0sdk.models')
-                    if index == 0:
-                        line = 'from dq0sdk.models.tf.neural_network import NeuralNetwork\n'
-                except ValueError:
-                    pass
-                try:
-                    line.index('class UserModel(')
-                    line = 'class UserModel(NeuralNetwork):\n'
-                except ValueError:
-                    pass
-                new_lines.append(line)
-            return new_lines
 
         # replace in user_model.py
         with open('models/user_model.py', 'r') as f:
             lines = f.readlines()
         if setup_data_code is not None:
-            lines = _replace_function(lines, setup_data_code)
+            lines = replace_function(lines, setup_data_code)
         if setup_model_code is not None:
-            lines = _replace_function(lines, setup_model_code)
+            lines = replace_function(lines, setup_model_code)
         if parent_class_name is not None:
             if parent_class_name != 'NeuralNetwork':
                 raise DQ0SDKError('Current version only allows "NeuralNetwork"'
                                   ' as parent_class_name!')
-            lines = _replace_parent_class(lines, parent_class_name)
+            lines = replace_model_parent_class(lines, parent_class_name)
         with open('models/user_model.py', 'w') as f:
+            f.writelines(lines)
+
+    def set_data_code(self, preprocess=None, parent_class_name=None):  # noqa: C901
+        """Sets the user defined preprocess function.
+
+        Saves the function code to user_source.py
+
+        Note: This function will only work inside iphyton notebooks,
+        otherwise the sources of the function arguments are not available.
+
+        Args:
+            preprocess (func): user defined preprocess function
+            parent_class_name (str): name of the parent class for UserSource
+        """
+        # check args
+        if preprocess is None:
+            raise ValueError('You need to pass preprocess function')
+        try:
+            preprocess_code = inspect.getsource(preprocess)
+        except OSError:
+            raise DQ0SDKError('Could not get sources. '
+                              'This will only work inside iphyton notebooks.')
+
+        preprocess_code = check_signature(preprocess_code, 'preprocess')
+        if preprocess_code is None:
+            return
+
+        # replace in user_source.py
+        with open('data/user_source.py', 'r') as f:
+            lines = f.readlines()
+        lines = replace_function(lines, preprocess_code)
+        if parent_class_name is not None:
+            if parent_class_name != 'CSVSource':
+                raise DQ0SDKError('Current version only allows "CSVSource"'
+                                  ' as parent_class_name!')
+            lines = replace_data_parent_class(lines, parent_class_name)
+        with open('data/user_source.py', 'w') as f:
             f.writelines(lines)

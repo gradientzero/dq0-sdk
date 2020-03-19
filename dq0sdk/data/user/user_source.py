@@ -32,30 +32,22 @@ class UserSource(Source):
         super().__init__()
         self.filepath = filepath
 
-    def read(self, force=False):
+    def read(self):
         """Read CSV data sources
-
-        Args:
-            force (bool): True to force re-read of the data.
 
         Returns:
             CSV data as pandas dataframe
-
-        Raises:
-            IOError: if file was not found
         """
         pass
 
-    def preprocess(self, force=False):
+    def preprocess(self):
         """Preprocess the data
 
         This function should be used by child classes to perform certain
         preprocessing steps to prepare the data for later use.
 
-        Preprocessed data should be stored in self.data
-
-        Args:
-            force (bool): True to force re-read of the data.
+        Returns:
+            preprocessed data
         """
         pass
 

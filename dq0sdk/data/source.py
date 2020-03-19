@@ -39,14 +39,11 @@ class Source(ABC):
         self.input_folder = input_folder
 
     @abstractmethod
-    def read(self, force=False):
+    def read(self):
         """Read data sources
 
         This function should be used by child classes to read data or return
         a data handler to read streaming data.
-
-        Args:
-            force (bool): True to force re-read of the data.
 
         Returns:
             data read from the data source.
@@ -54,15 +51,11 @@ class Source(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def preprocess(self, force=False, **kwargs):
+    def preprocess(self):
         """Preprocess the data
 
         This function should be used by child classes to perform certain
         preprocessing steps to prepare the data for later use.
-
-        Args:
-            force (bool): True to force re-read of the data.
-            kwargs (:obj:`dict`): dictionary of optional arguments.
 
         Returns:
             data read from the data source.
