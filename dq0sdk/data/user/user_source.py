@@ -15,6 +15,16 @@ All rights reserved
 import logging
 
 from dq0sdk.data.source import Source
+from dq0sdk.data.preprocessing import preprocessing
+
+from matplotlib import pyplot as plt
+
+import numpy as np
+
+import pandas as pd
+
+import tensorflow as tf
+
 
 logger = logging.getLogger()
 
@@ -28,36 +38,101 @@ class UserSource(Source):
     Args:
         filepath (str): Absolute path to the data file.
     """
-    def __init__(self, filepath):
-        super().__init__()
-        self.filepath = filepath
+    # def __init__(self, filepath):
+        # super().__init__()
+        # self.filepath = filepath
 
-    def read(self, force=False):
-        """Read CSV data sources
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.class_names = ['airplane', 'automobile', 'bird', 'cat', 'deer',
+                            'dog', 'frog', 'horse', 'ship', 'truck']
 
-        Args:
-            force (bool): True to force re-read of the data.
-
-        Returns:
-            CSV data as pandas dataframe
-
-        Raises:
-            IOError: if file was not found
+    def read(self, num_instances_to_load=None, num_images_to_plot=None):
         """
-        pass
 
-    def preprocess(self, force=False):
-        """Preprocess the data
-
-        This function should be used by child classes to perform certain
-        preprocessing steps to prepare the data for later use.
-
-        Preprocessed data should be stored in self.data
-
-        Args:
-            force (bool): True to force re-read of the data.
+        :param num_instances_to_load:
+        :param num_images_to_plot:
+        :return:
         """
-        pass
+
+        print('\nLoad CIFAR10 dataset')
+
+        (X_train_np_a, y_train_np_a), (X_test_np_a, y_test_np_a) = \
+            tf.keras.datasets.cifar10.load_data()
+
+        X_np_a, y_np_a = self._concatenate_tr_te_datasets(
+            X_train_np_a, X_test_np_a, y_train_np_a, y_test_np_a)
+
+        if num_instances_to_load is not None:
+            X_np_a = X_np_a[:num_instances_to_load]
+            y_np_a = y_np_a[:num_instances_to_load]
+
+        print('Dataset size: X=%s, y=%s' % (X_np_a.shape, y_np_a.shape))
+
+        if num_images_to_plot is not None:
+            self._plot_first_few_images(X_np_a, y_np_a, num_images_to_plot)
+
+        return X_np_a, y_np_a
+
+    def _concatenate_tr_te_datasets(self, X_train_np_a, X_test_np_a,
+                                    y_train_np_a, y_test_np_a):
+        """
+        :param X_train_np_a: numpy array
+        :param X_test_np_a: numpy array
+        :param y_train_np_a: numpy (also non-dimensional) array
+        :param y_test_np_a: numpy (also non-dimensional) array
+
+        :return: X, y
+        """
+        X_np_a = np.append(X_train_np_a, X_test_np_a, axis=0)
+        if y_train_np_a.ndim < 2:
+            # transform one-dimensional array into column vector via newaxis
+            y_train_np_a = y_train_np_a[:, np.newaxis]
+            y_test_np_a = y_test_np_a[:, np.newaxis]
+
+        y_np_a = np.append(y_train_np_a, y_test_np_a, axis=0)
+
+        return X_np_a, y_np_a
+
+    def _plot_first_few_images(self, X_np_a, y_np_a, num_images_to_plot):
+
+        plt.figure(figsize=(10, 10))
+        for i in range(num_images_to_plot):
+            plt.subplot(np.ceil(num_images_to_plot / 5), 5, i + 1)
+            plt.xticks([])
+            plt.yticks([])
+            plt.grid(False)
+            plt.imshow(X_np_a[i], cmap=plt.cm.binary)
+            # The CIFAR labels happen to be arrays,
+            # which is why you need the extra index
+            plt.xlabel(self.class_names[y_np_a[i][0]])
+        plt.show()
+
+    def get_preprocessed_X_y(self, num_instances_to_load=None,
+                             num_images_to_plot=None):
+        """
+        DEPRECATED. Will be removed in future releases.
+        :param num_instances_to_load:
+        :param num_images_to_plot:
+        :return:
+        """
+
+        X_np_a, y_np_a, = self.read(num_instances_to_load, num_images_to_plot)
+        X_np_a = self.preprocess(X=X_np_a)
+
+        return X_np_a, y_np_a
+
+    def preprocess(self, force=False, **kwargs):
+
+        assert isinstance(kwargs['X'], np.ndarray)
+
+        X_np_a = kwargs['X']
+
+        # scale pixel values to be between 0 and 1
+        max_pixel_intensity = 255
+        X_np_a = preprocessing.scale_pixels(X_np_a, max_pixel_intensity)
+
+        return X_np_a
 
     def to_json(self):
         """Returns a json representation of this data sources information.
@@ -65,4 +140,4 @@ class UserSource(Source):
         Returns:
             data source description as json.
         """
-        pass
+        raise NotImplementedError()
