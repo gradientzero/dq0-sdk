@@ -62,9 +62,8 @@ class Runner(ABC):
         response = self.project.client.get(route, id=id)
         if 'error' in response and response['error'] != "":
             raise DQ0SDKError(response['error'])
-        print(response['message'])
         self.state.update(response['message'])
-        return self.state
+        return self.state.message
 
     def get_results(self):
         """Gets the results of the running model or data experiment."""

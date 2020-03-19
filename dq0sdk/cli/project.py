@@ -176,6 +176,8 @@ class Project:
             parent_class_name (str): name of the parent class for UserModel
         """
         # check args
+        setup_data_code = None
+        setup_model_code = None
         try:
             if setup_data is not None:
                 setup_data_code = inspect.getsource(setup_data)
