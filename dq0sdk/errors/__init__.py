@@ -2,9 +2,10 @@
 """DQ0 SDK Error Package
 """
 
-from .errors import DQ0SDKError
+from .errors import DQ0SDKError, checkSDKResponse
 
 
 __all__ = [
-    'DQ0SDKError'
+    'DQ0SDKError',
+    'checkSDKResponse'
 ]

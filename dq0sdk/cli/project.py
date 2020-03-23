@@ -29,7 +29,7 @@ from dq0sdk.cli.utils.code import (
     replace_function,
     replace_model_parent_class,
 )
-from dq0sdk.errors import DQ0SDKError
+from dq0sdk.errors import DQ0SDKError, checkSDKResponse
 
 
 class Project:
@@ -94,8 +94,7 @@ class Project:
             name (str): The name of the new project
         """
         response = self.client.post(routes.project.create, data={'name': name})
-        if 'error' in response and response['error'] != "":
-            raise DQ0SDKError(response['error'])
+        checkSDKResponse(response)
         print(response['message'])
 
         with open('{}/.meta'.format(name)) as f:
@@ -126,8 +125,7 @@ class Project:
         The returned UUIDs can be used for the attach_data_source method.
         """
         response = self.client.get(routes.data.list)
-        if 'error' in response and response['error'] != "":
-            raise DQ0SDKError(response['error'])
+        checkSDKResponse(response)
         return response['results']
 
     def attach_data_source(self, data_source_uuid):
@@ -140,8 +138,7 @@ class Project:
             routes.data.attach,
             id=self.model_uuid,
             data={'data_source_uuid': data_source_uuid})
-        if 'error' in response and response['error'] != "":
-            raise DQ0SDKError(response['error'])
+        checkSDKResponse(response)
         print(response['message'])
 
     def _deploy(self):

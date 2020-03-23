@@ -16,7 +16,7 @@ All rights reserved
 
 from dq0sdk.cli.api import routes
 from dq0sdk.cli.runner import DataRunner, ModelRunner
-from dq0sdk.errors import DQ0SDKError
+from dq0sdk.errors import checkSDKResponse
 
 
 class Experiment:
@@ -68,12 +68,10 @@ class Experiment:
         a Runner instance to watch to job
         """
         response = self.project._deploy()
-        if 'error' in response and response['error'] != "":
-            raise DQ0SDKError(response['error'])
+        checkSDKResponse(response)
 
         response = self.project.client.post(routes.model.train, id=self.project.model_uuid)
-        if 'error' in response and response['error'] != "":
-            raise DQ0SDKError(response['error'])
+        checkSDKResponse(response)
         print(response['message'])
         return ModelRunner(self.project)
 
@@ -84,11 +82,9 @@ class Experiment:
         a Runner instance to watch to job
         """
         response = self.project._deploy()
-        if 'error' in response and response['error'] != "":
-            raise DQ0SDKError(response['error'])
+        checkSDKResponse(response)
 
         response = self.project.post(routes.data.preprocess, id=self.project.data_source_uuid)
-        if 'error' in response and response['error'] != "":
-            raise DQ0SDKError(response['error'])
+        checkSDKResponse(response)
         print(response['message'])
         return DataRunner(self.project)

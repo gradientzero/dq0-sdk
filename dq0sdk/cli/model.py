@@ -15,7 +15,7 @@ All rights reserved
 
 from dq0sdk.cli.api import routes
 from dq0sdk.cli.runner import ModelRunner
-from dq0sdk.errors import DQ0SDKError
+from dq0sdk.errors import checkSDKResponse
 
 import numpy as np
 
@@ -66,16 +66,14 @@ class Model:
         if test_data is None or not isinstance(test_data, np.ndarray):
             raise ValueError('test_data not in np.array format')
         response = self.project._deploy()
-        if 'error' in response and response['error'] != "":
-            raise DQ0SDKError(response['error'])
+        checkSDKResponse(response)
 
         # save predict data
-        np.save('data/predict_data.npy', test_data)
-        data = {'input_path': './data/predict_data.npy'}
+        np.save('predict_data.npy', test_data)
+        data = {'input_path': 'predict_data.npy'}
 
         response = self.project.client.post(
             routes.model.predict, id=self.project.model_uuid, data=data)
-        if 'error' in response and response['error'] != "":
-            raise DQ0SDKError(response['error'])
+        checkSDKResponse(response)
         print(response['message'])
         return ModelRunner(self.project)

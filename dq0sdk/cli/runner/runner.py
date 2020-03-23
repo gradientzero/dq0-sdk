@@ -21,7 +21,7 @@ import time
 from abc import ABC, abstractmethod
 
 from dq0sdk.cli.runner.state import State
-from dq0sdk.errors import DQ0SDKError
+from dq0sdk.errors import checkSDKResponse
 
 
 class Runner(ABC):
@@ -60,8 +60,7 @@ class Runner(ABC):
     def _get_state(self, route, id):
         """Gets the current state of the running model or data experiment."""
         response = self.project.client.get(route, id=id)
-        if 'error' in response and response['error'] != "":
-            raise DQ0SDKError(response['error'])
+        checkSDKResponse(response)
         self.state.update(response['message'])
         return self.state.message
 
@@ -79,8 +78,7 @@ class Runner(ABC):
     def _cancel(self, route, id):
         """Cancels the experiment run. Model or data."""
         response = self.project.client.post(route, id=id)
-        if 'error' in response and response['error'] != "":
-            raise DQ0SDKError(response['error'])
+        checkSDKResponse(response)
         print(response['message'])
 
     def wait_for_completion(self, verbose=False):
