@@ -36,11 +36,8 @@ class CSVSource(Source):
         super().__init__()
         self.filepath = filepath
 
-    def read(self, force=False):
+    def read(self):
         """Read CSV data sources
-
-        Args:
-            force (bool): True to force re-read of the data.
 
         Returns:
             CSV data as pandas dataframe
@@ -48,31 +45,21 @@ class CSVSource(Source):
         Raises:
             IOError: if file was not found
         """
-        if not force and self.data is not None:
-            return self.data
-
         path = self.filepath
         if not os.path.exists(path) or not os.path.isfile(path):
             raise IOError('Could not read csv data.'
                           'File not found {}'.format(path))
         return pd.read_csv(path)
 
-    def preprocess(self, force=False, **kwargs):
+    def preprocess(self):
         """Preprocess the data
 
         This function should be used by child classes to perform certain
         preprocessing steps to prepare the data for later use.
 
-        Args:
-            force (bool): True to force re-read of the data.
-            kwargs (:obj:`dict`): dictionary of optional arguments.
-
         Returns:
             preprocessed data
         """
-        if not force and self.preprocessed_data is not None:
-            return self.preprocessed_data
-
         self.preprocessed_data = self.data
         return self.preprocessed_data
 
