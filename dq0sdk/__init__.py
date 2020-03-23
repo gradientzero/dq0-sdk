@@ -4,14 +4,11 @@
 This is the main dq0sdk package containing everything SDK related
 """
 
-import pkg_resources  # part of setuptools
-
 from . import data
 from . import models
 
 # dq0 sdk version
-version = pkg_resources.require("dq0sdk")[0].version
-del pkg_resources
+version = '0.1'
 
 __all__ = [
     'version',
