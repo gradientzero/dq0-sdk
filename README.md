@@ -19,6 +19,26 @@ And install dependencies
 pip install -r requirements.txt
 ```
 
+## Generate sphinx documentation
+
+Generate modules .rst files first automatically:
+```bash
+sphinx-apidoc -M -o ./docs/source/generated ./dq0sdk -f -e
+```
+This will (re-)generate multiple .rst file for each module / submodule and class.
+
+Execute makefile inside folder doc:
+```bash
+(cd docs && make html)
+```
+
+generate pdf:
+```bash
+(cd docs && sphinx-build -b rinoh source build/rinoh)
+```
+
+
+
 ## Dev Guide
 
 This repository contains production-grade software. Thus, strict enterprise software development guidelines are to be respected.

@@ -14,6 +14,7 @@
 #
 import os
 import sys
+from datetime import datetime
 
 import sphinx_rtd_theme  # noqa: F401
 
@@ -22,15 +23,24 @@ sys.path.insert(0, os.path.abspath('../..'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'DQ0 SDK'
-copyright = '2020, Gradient Zero'
+project = 'dq0'
+copyright = '{}, Gradient Zero'.format(datetime.now().year)
 author = 'Gradient Zero'
 
 # The short X.Y version
-version = '1.0'
+version = 'latest'
 # The full version, including alpha/beta/rc tags
-release = '1.0.1'
+release = 'latest'
 
+# The version info for the project you're documenting, acts as replacement for
+# |version| and |release|, also used in various other places throughout the
+# built documents.
+try:
+    import dq0sdk
+    version = dq0sdk.version
+    release = version
+except ImportError:
+    version = 'latest'
 
 # -- General configuration ---------------------------------------------------
 
@@ -49,8 +59,9 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
+    'sphinx.ext.autosummary',
+    'rinoh.frontend.sphinx',
     'sphinx_rtd_theme',
-    'sphinx.ext.napoleon',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -70,7 +81,7 @@ master_doc = 'dq0sdk'
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = 'en'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -78,7 +89,7 @@ language = None
 exclude_patterns = []
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = None
+pygments_style = 'sphinx'
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -121,19 +132,19 @@ htmlhelp_basename = 'dq0sdk'
 latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
     #
-    # 'papersize': 'letterpaper',
+    'papersize': 'letterpaper',
 
     # The font size ('10pt', '11pt' or '12pt').
     #
-    # 'pointsize': '10pt',
+    'pointsize': '10pt',
 
     # Additional stuff for the LaTeX preamble.
     #
-    # 'preamble': '',
+    'preamble': '',
 
     # Latex figure (float) alignment
     #
-    # 'figure_align': 'htbp',
+    'figure_align': 'htbp',
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
