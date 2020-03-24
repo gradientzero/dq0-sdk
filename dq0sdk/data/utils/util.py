@@ -8,10 +8,14 @@ import os
 import pickle
 import shutil
 import sys
+import random
 
 import numpy as np
 
 import pandas as pd
+
+import scipy as sp
+
 
 import yaml
 
@@ -428,3 +432,45 @@ def save_preprocessed_tr_and_te_datasets(X_train, X_test, y_train, y_test,
                    y_train, delimiter=',')
         np.savetxt(working_folder + 'preprocessed_test_y.csv',
                    y_test, delimiter=',')
+
+
+def initialize_rnd_numbers_generators_state(seed=1):
+
+    np.random.seed(seed)
+    sp.random.seed(seed)
+    random.seed(seed)
+
+
+def manage_rnd_num_generators_state(action):
+    """
+    Save and restore the internal states of the random number generators used
+
+    """
+    if case_insensitive_str_comparison(action, 'save'):
+        # workaround to have function-level static variables in Python
+        if 'rnd_num_gens_state' not in \
+                manage_rnd_num_generators_state.__dict__:
+            manage_rnd_num_generators_state.rnd_num_gens_state = \
+                {
+                 'random': random.getstate(),
+                 'numpy': np.random.get_state(),
+                 'scipy': sp.random.get_state()
+                }
+        else:
+            raise RuntimeError('rnd numbers generators state already saved!')
+
+    if case_insensitive_str_comparison(action, 'restore'):
+
+        if 'rnd_num_gens_state' in manage_rnd_num_generators_state.__dict__:
+            random.setstate(
+                manage_rnd_num_generators_state.rnd_num_gens_state['random']
+            )
+            np.random.set_state(
+                manage_rnd_num_generators_state.rnd_num_gens_state['numpy']
+            )
+            sp.random.set_state(
+                manage_rnd_num_generators_state.rnd_num_gens_state['scipy']
+            )
+        else:
+            raise RuntimeError('cannot restore rnd numbers generators state! '
+                               'No state previously saved! ')
