@@ -16,6 +16,7 @@ import pandas as pd
 
 import scipy as sp
 
+import tensorflow as tf
 
 import yaml
 
@@ -437,9 +438,9 @@ def save_preprocessed_tr_and_te_datasets(X_train, X_test, y_train, y_test,
 def initialize_rnd_numbers_generators_state(seed=1):
 
     np.random.seed(seed)
+    tf.random.set_seed(seed)
     sp.random.seed(seed)
     random.seed(seed)
-
 
 def manage_rnd_num_generators_state(action):
     """
