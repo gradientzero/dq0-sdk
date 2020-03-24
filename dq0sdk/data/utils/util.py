@@ -50,11 +50,11 @@ def load_params_from_config_file(yaml_file_path):
         section_params_dict = params_dict['target-model parameters']
         target_model_type = section_params_dict['target_model_type']
 
-        section_params_dict = params_dict['robustness-test parameters']
-        precision_threshold = section_params_dict['precision_threshold']
-        recall_threshold = section_params_dict['recall_threshold']
-        stop_at_first_privacy_breach = section_params_dict[
-            'stop_at_first_privacy_breach']
+        # section_params_dict = params_dict['robustness-test parameters']
+        # precision_threshold = section_params_dict['precision_threshold']
+        # recall_threshold = section_params_dict['recall_threshold']
+        # stop_at_first_privacy_breach = section_params_dict[
+        #    'stop_at_first_privacy_breach']
 
         # print(type(stop_at_first_privacy_breach))
         # print(type(precision_threshold))
@@ -65,8 +65,7 @@ def load_params_from_config_file(yaml_file_path):
         section_params_dict = params_dict['Differential-privacy parameters']
         dp_epsilons_list = section_params_dict['epsilons']
 
-    return seed, target_model_type, precision_threshold, recall_threshold,  \
-        stop_at_first_privacy_breach, dp_epsilons_list
+    return seed, target_model_type, dp_epsilons_list
 
 
 def print_dataset_info(df_dataset, s_title):

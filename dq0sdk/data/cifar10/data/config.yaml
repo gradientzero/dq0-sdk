@@ -10,19 +10,6 @@ target-model parameters:
   target_model_type: CNN
 
 
-robustness-test parameters:
-  # precision threshold for the class "is_training_instance" when running the
-  # membership-inference attack'. Set to 1.0 for no threshold.
-  precision_threshold: 1.0
-  # recall threshold for the class "is_training_instance" when running the
-  # membership-inference attack'. Set to 1.0 for no threshold.
-  recall_threshold: 1.0
-  # if enabled, the testing of target-model robustness to privacy attacks
-  # stops as soon as an attack is successful. Otherwise the remaining planned
-  # attacks are run anyway
-  stop_at_first_privacy_breach: True
-
-
 Differential-privacy parameters:
   # privacy budget. The lower, the lower the privacy leakage, but the lower
   # the model utility, too.
