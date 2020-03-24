@@ -39,8 +39,11 @@ class Project:
     comprising of user_model and user_source code.
 
     Example:
-        # Create a new project
-        project = Project(name='some name')
+        >>> # Create a new project
+        >>> project = Project(name='some name')
+
+        >>> # Load a project (cd into project dir first)
+        >>> project = Project.load()
 
     Args:
         name (str): The name of the new project

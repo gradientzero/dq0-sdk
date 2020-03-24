@@ -26,20 +26,20 @@ class Model:
     Provides methods to call model predict
 
     Example:
-        # get the latest model
-        model = project.get_latest_model()
-
-        # check DQ0 privacy clearing
-        if model.predict_allowed:
-
-            # call predict
-            run = model.predict(np.array([1, 2, 3]))
-
-            # wait for completion
-            run.wait_for_completion(verbose=True)
-
-            # get training results
-            print(run.get_results())
+        >>> # get the latest model
+        >>> model = project.get_latest_model()
+        >>>
+        >>> # check DQ0 privacy clearing
+        >>> if model.predict_allowed:
+        >>>
+        >>>    # call predict
+        >>>    run = model.predict(np.array([1, 2, 3]))
+        >>>
+        >>>    # wait for completion
+        >>>    run.wait_for_completion(verbose=True)
+        >>>
+        >>>    # get training results
+        >>>    print(run.get_results())
 
     Args:
         project (:obj:`dq0sdk.cli.api.Project`): The project
