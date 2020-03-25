@@ -74,7 +74,8 @@ class Client:
         if id is not None:
             route = route.replace(':id', id)
         response = requests.get('{}{}'.format(self.api, route), data=data)
-        return response.json()
+        response_json = self._parse_response(response)
+        return response_json
 
     def post(self, route, id=None, data=None):
         """Make an HTTP POST request.
@@ -93,4 +94,21 @@ class Client:
             route = route.replace(':id', id)
         header = {"content-type": "application/json"}
         response = requests.post('{}{}'.format(self.api, route), data=json.dumps(data), headers=header)
-        return response.json()
+        response_json = self._parse_response(response)
+        return response_json
+
+    def _parse_response(self, response):
+        """Decodes the response to JSON.
+
+        Args:
+            response: The response to parse.
+
+        Returns:
+            Parsed JSON response
+        """
+        response_json = {}
+        try:
+            response_json = response.json()
+        except json.JSONDecodeError as error:
+            response_json['error'] = '{}. {}'.format(response, error)
+        return response_json

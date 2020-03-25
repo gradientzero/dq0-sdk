@@ -43,5 +43,4 @@ class UserSource(CSVSource):
     """
     def __init__(self, filepath):
         super().__init__(filepath)
-        self.filepath = filepath
         self.data = None
