@@ -445,13 +445,20 @@ def concatenate_train_test_datasets(X_train_np_a, X_test_np_a,
 
     :return: X, y
     """
-    X_np_a = np.append(X_train_np_a, X_test_np_a, axis=0)
-    if y_train_np_a.ndim < 2:
+    if X_test_np_a is None or X_train_np_a is None:
+        X_np_a = X_train_np_a if X_test_np_a is None else X_test_np_a
+    else:
+        X_np_a = np.append(X_train_np_a, X_test_np_a, axis=0)
+
+    if y_train_np_a is not None and y_train_np_a.ndim < 2:
         # transform one-dimensional array into column vector via newaxis
         y_train_np_a = y_train_np_a[:, np.newaxis]
-        y_test_np_a = y_test_np_a[:, np.newaxis]
-
-    y_np_a = np.append(y_train_np_a, y_test_np_a, axis=0)
+        if y_test_np_a is not None:
+            y_test_np_a = y_test_np_a[:, np.newaxis]
+    if y_test_np_a is None or y_train_np_a is None:
+        y_np_a = y_train_np_a if y_test_np_a is None else y_test_np_a
+    else:
+        y_np_a = np.append(y_train_np_a, y_test_np_a, axis=0)
 
     return X_np_a, y_np_a
 
@@ -462,6 +469,7 @@ def initialize_rnd_numbers_generators_state(seed=1):
     tf.random.set_seed(seed)
     sp.random.seed(seed)
     random.seed(seed)
+
 
 def manage_rnd_num_generators_state(action):
     """
@@ -474,9 +482,9 @@ def manage_rnd_num_generators_state(action):
                 manage_rnd_num_generators_state.__dict__:
             manage_rnd_num_generators_state.rnd_num_gens_state = \
                 {
-                 'random': random.getstate(),
-                 'numpy': np.random.get_state(),
-                 'scipy': sp.random.get_state()
+                    'random': random.getstate(),
+                    'numpy': np.random.get_state(),
+                    'scipy': sp.random.get_state()
                 }
         else:
             raise RuntimeError('rnd numbers generators state already saved!')

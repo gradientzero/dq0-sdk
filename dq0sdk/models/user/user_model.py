@@ -16,25 +16,18 @@ Todo:
 Copyright 2019, Gradient Zero
 """
 
-import os
-import warnings
+import logging
 
 from dq0sdk.data.utils import util
-from dq0sdk.models.model import Model
 from dq0sdk.models.tf.neural_network import NeuralNetwork
 
 import numpy as np
 
-import pandas as pd
-
-from sklearn import metrics
 from sklearn.preprocessing import LabelEncoder
 
-import tensorflow as tf  # no GPU support for Mac. In any case,
-# NVIDIA GPU card with CUDA is required.
-# from tensorflow import keras
+import tensorflow as tf
 
-from tensorflow_privacy.privacy.optimizers import dp_optimizer
+logger = logging.getLogger()
 
 
 class UserModel(NeuralNetwork):
@@ -50,15 +43,9 @@ class UserModel(NeuralNetwork):
     def __init__(self, model_path, **kwargs):
         super().__init__(model_path)
         self.model_type = 'keras'
-
-        # if 'saved_model_folder' in kwargs:
-        #    self._saved_model_folder = kwargs['saved_model_folder']
-        # else:
-        #    self._saved_model_folder = './data/output'
         self._classifier_type = 'cnn'  # kwargs['classifier_type']
         self._num_classes = 10
-
-        self._label_encoder = None
+        self.label_encoder = None
 
     def _get_cnn_model(self, n_out, which_model='ml-leaks_paper'):
 
@@ -103,7 +90,6 @@ class UserModel(NeuralNetwork):
         return model
 
     def setup_model(self):
-        # to inherit from abstract base class
         self.learning_rate = 0.001  # 0.15
         self.epochs = 50  # 50 in ML-leaks paper
         self.verbose = 2
@@ -117,7 +103,6 @@ class UserModel(NeuralNetwork):
             # 'bias_regularizer': tf.keras.regularizers.l2(
             #    self.regularization_param)
         }
-        # TODO: grid search over parameters space
 
         # network topology. TODO: make it parametric!
         if self._classifier_type.startswith('DP-'):
@@ -126,20 +111,35 @@ class UserModel(NeuralNetwork):
             network_type = self._classifier_type
         if util.case_insensitive_str_comparison(network_type, 'cnn'):
             print('Setting up a multilayer convolution neural network...')
-            self._model = self._get_cnn_model(self._num_classes)
+            self.model = self._get_cnn_model(self._num_classes)
 
     def setup_data(self):
-        if y_np_a.ndim == 2:
-            # make non-dimensional array (just to avoid Warnings by Sklearn)
-            y_np_a = np.ravel(y_np_a)
+        # load data
+        if len(self.data_sources) < 1:
+            logger.error('No data source found')
+            return
+        source = next(iter(self.data_sources.values()))
+        X_train, y_train, X_test, y_test = source.read(num_instances_to_load=10000)
+
+        # make non-dimensional array (just to avoid Warnings by Sklearn)
+        if y_train.ndim == 2:
+            y_train = np.ravel(y_train)
+        if y_test.ndim == 2:
+            y_test = np.ravel(y_test)
 
         # LabelEncoder() encodes target labels with value between 0 and
         # n_classes - 1
-        if self._label_encoder is None:
-            # self._label_encoder is None => y contains train labels
-            self._label_encoder = LabelEncoder()
-            y_encoded_np_a = self._label_encoder.fit_transform(y_np_a)
+        if self.label_encoder is None:
+            # self.label_encoder is None => y contains train labels
+            self.label_encoder = LabelEncoder()
+            y_train = self.label_encoder.fit_transform(y_train)
+            y_test = self.label_encoder.fit_transform(y_test)
         else:
-            y_encoded_np_a = self._label_encoder.transform(y_np_a)
+            y_train = self.label_encoder.transform(y_train)
+            y_test = self.label_encoder.transform(y_test)
 
-        return y_encoded_np_a
+        # set attributes
+        self.X_train = X_train
+        self.y_train = y_train
+        self.X_test = X_test
+        self.y_test = y_test
