@@ -435,6 +435,27 @@ def save_preprocessed_tr_and_te_datasets(X_train, X_test, y_train, y_test,
                    y_test, delimiter=',')
 
 
+def concatenate_train_test_datasets(X_train_np_a, X_test_np_a,
+                                    y_train_np_a, y_test_np_a):
+    """
+    :param X_train_np_a: numpy array
+    :param X_test_np_a: numpy array
+    :param y_train_np_a: numpy (also non-dimensional) array
+    :param y_test_np_a: numpy (also non-dimensional) array
+
+    :return: X, y
+    """
+    X_np_a = np.append(X_train_np_a, X_test_np_a, axis=0)
+    if y_train_np_a.ndim < 2:
+        # transform one-dimensional array into column vector via newaxis
+        y_train_np_a = y_train_np_a[:, np.newaxis]
+        y_test_np_a = y_test_np_a[:, np.newaxis]
+
+    y_np_a = np.append(y_train_np_a, y_test_np_a, axis=0)
+
+    return X_np_a, y_np_a
+
+
 def initialize_rnd_numbers_generators_state(seed=1):
 
     np.random.seed(seed)

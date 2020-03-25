@@ -72,27 +72,7 @@ class UserSource(Source):
         if num_images_to_plot is not None:
             self._plot_first_few_images(X_np_a, y_np_a, num_images_to_plot)
 
-        return X_np_a, y_np_a
-
-    def _concatenate_tr_te_datasets(self, X_train_np_a, X_test_np_a,
-                                    y_train_np_a, y_test_np_a):
-        """
-        :param X_train_np_a: numpy array
-        :param X_test_np_a: numpy array
-        :param y_train_np_a: numpy (also non-dimensional) array
-        :param y_test_np_a: numpy (also non-dimensional) array
-
-        :return: X, y
-        """
-        X_np_a = np.append(X_train_np_a, X_test_np_a, axis=0)
-        if y_train_np_a.ndim < 2:
-            # transform one-dimensional array into column vector via newaxis
-            y_train_np_a = y_train_np_a[:, np.newaxis]
-            y_test_np_a = y_test_np_a[:, np.newaxis]
-
-        y_np_a = np.append(y_train_np_a, y_test_np_a, axis=0)
-
-        return X_np_a, y_np_a
+        return X_np_a, y_np_a    
 
     def _plot_first_few_images(self, X_np_a, y_np_a, num_images_to_plot):
 
