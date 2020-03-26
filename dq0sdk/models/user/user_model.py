@@ -18,10 +18,13 @@ Copyright 2019, Gradient Zero
 
 import logging
 
+from dq0sdk.data.preprocessing import preprocessing
 from dq0sdk.data.utils import util
 from dq0sdk.models.tf.neural_network import NeuralNetwork
 
 import numpy as np
+
+import pandas as pd
 
 from sklearn.preprocessing import LabelEncoder
 
@@ -119,27 +122,41 @@ class UserModel(NeuralNetwork):
             logger.error('No data source found')
             return
         source = next(iter(self.data_sources.values()))
-        X_train, y_train, X_test, y_test = source.read(num_instances_to_load=10000)
+        # X, y = source.read()
+        X, y = source.read(num_instances_to_load=10000)
 
-        # make non-dimensional array (just to avoid Warnings by Sklearn)
-        if y_train.ndim == 2:
-            y_train = np.ravel(y_train)
-        if y_test.ndim == 2:
-            y_test = np.ravel(y_test)
+        # preprocess
+        X = preprocessing.scale_pixels(X, 255)
+
+        # check data format
+        if isinstance(X, pd.DataFrame):
+            X = X.values
+        else:
+            if not isinstance(X, np.ndarray):
+                raise Exception('X is not np.ndarray')
+
+        if isinstance(y, pd.Series):
+            y = y.values
+        else:
+            if not isinstance(y, np.ndarray):
+                raise Exception('y is not np.ndarray')
+
+        # prepare data
+        if y.ndim == 2:
+            # make non-dimensional array (just to avoid Warnings by Sklearn)
+            y = np.ravel(y)
 
         # LabelEncoder() encodes target labels with value between 0 and
         # n_classes - 1
         if self.label_encoder is None:
             # self.label_encoder is None => y contains train labels
             self.label_encoder = LabelEncoder()
-            y_train = self.label_encoder.fit_transform(y_train)
-            y_test = self.label_encoder.fit_transform(y_test)
+            y = self.label_encoder.fit_transform(y)
         else:
-            y_train = self.label_encoder.transform(y_train)
-            y_test = self.label_encoder.transform(y_test)
+            y = self.label_encoder.transform(y)
 
         # set attributes
-        self.X_train = X_train
-        self.y_train = y_train
-        self.X_test = X_test
-        self.y_test = y_test
+        self.X_train = X
+        self.y_train = y
+        self.X_test = X
+        self.y_test = y
