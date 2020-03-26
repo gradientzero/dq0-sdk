@@ -41,12 +41,6 @@ logger = logging.getLogger()
 class UserModel(NeuralNetwork):
     def __init__(self, model_path):
         super().__init__(model_path)
-        self.learning_rate = 0.3
-        self.epochs = 5
-        self.num_microbatches = 1
-        self.verbose = 0
-        self.metrics = ['accuracy', 'mse']
-        self.input_dim = None
 
     def setup_data(self):
         # load data
@@ -71,6 +65,9 @@ class UserModel(NeuralNetwork):
         self.y_test = y_test_ts
 
     def setup_model(self):
+        self.learning_rate = 0.3
+        self.epochs = 5
+        self.num_microbatches = 1
         self.model = keras.Sequential([
             keras.layers.Input(self.input_dim),
             keras.layers.Dense(10, activation='tanh'),

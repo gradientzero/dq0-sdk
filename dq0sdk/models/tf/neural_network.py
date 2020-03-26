@@ -60,7 +60,7 @@ class NeuralNetwork(Model):
         self.X_test = None
         self.y_train = None
         self.y_test = None
-        # Range possible: grid search, all combinations inside range
+        self.input_dim = None
 
     def setup_data(self, **kwargs):
         """Setup data function
