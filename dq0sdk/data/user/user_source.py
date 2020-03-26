@@ -14,8 +14,8 @@ All rights reserved
 
 import logging
 
-from dq0sdk.data.preprocessing import preprocessing
 from dq0sdk.data.source import Source
+from dq0sdk.data.utils import util
 
 from matplotlib import pyplot as plt
 
@@ -49,23 +49,19 @@ class UserSource(Source):
         (X_train_np_a, y_train_np_a), (X_test_np_a, y_test_np_a) = \
             tf.keras.datasets.cifar10.load_data()
 
-        if num_instances_to_load is not None:
-            X_train_np_a = X_train_np_a[:num_instances_to_load]
-            y_train_np_a = y_train_np_a[:num_instances_to_load]
-            X_test_np_a = X_test_np_a[:num_instances_to_load]
-            y_test_np_a = y_test_np_a[:num_instances_to_load]
+        X_np_a, y_np_a = util.concatenate_train_test_datasets(
+            X_train_np_a, X_test_np_a, y_train_np_a, y_test_np_a)
 
-        logger.debug('Dataset train size: X=%s, y=%s' % (X_train_np_a.shape, y_train_np_a.shape))
+        if num_instances_to_load is not None:
+            X_np_a = X_np_a[:num_instances_to_load]
+            y_np_a = y_np_a[:num_instances_to_load]
+
+        print('Dataset size: X=%s, y=%s' % (X_np_a.shape, y_np_a.shape))
 
         if num_images_to_plot is not None:
-            self._plot_first_few_images(X_train_np_a, y_train_np_a, num_images_to_plot)
+            self._plot_first_few_images(X_np_a, y_np_a, num_images_to_plot)
 
-        # scale pixel values to be between 0 and 1
-        max_pixel_intensity = 255
-        X_train_np_a = preprocessing.scale_pixels(X_train_np_a, max_pixel_intensity)
-        X_test_np_a = preprocessing.scale_pixels(X_test_np_a, max_pixel_intensity)
-
-        return X_train_np_a, y_train_np_a, X_test_np_a, y_test_np_a
+        return X_np_a, y_np_a
 
     def _plot_first_few_images(self, X_np_a, y_np_a, num_images_to_plot):
         plt.figure(figsize=(10, 10))

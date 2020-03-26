@@ -18,10 +18,13 @@ Copyright 2019, Gradient Zero
 
 import logging
 
+from dq0sdk.data.preprocessing import preprocessing
 from dq0sdk.data.utils import util
 from dq0sdk.models.tf.neural_network import NeuralNetwork
 
 import numpy as np
+
+import pandas as pd
 
 from sklearn.preprocessing import LabelEncoder
 
@@ -121,6 +124,7 @@ class UserModel(NeuralNetwork):
             logger.error('No data source found')
             return
         source = next(iter(self.data_sources.values()))
+<<<<<<< HEAD
 
         # @Jona
         X_train, y_train, X_test, y_test = source.read(num_instances_to_load=10000)
@@ -165,3 +169,43 @@ class UserModel(NeuralNetwork):
               self.X_test.shape)
         print('DEBUG: in user_model.setup_data: self.y_TEST.shape ',
               self.y_test.shape, '\n\n')
+=======
+        # X, y = source.read()
+        X, y = source.read(num_instances_to_load=10000)
+
+        # preprocess
+        X = preprocessing.scale_pixels(X, 255)
+
+        # check data format
+        if isinstance(X, pd.DataFrame):
+            X = X.values
+        else:
+            if not isinstance(X, np.ndarray):
+                raise Exception('X is not np.ndarray')
+
+        if isinstance(y, pd.Series):
+            y = y.values
+        else:
+            if not isinstance(y, np.ndarray):
+                raise Exception('y is not np.ndarray')
+
+        # prepare data
+        if y.ndim == 2:
+            # make non-dimensional array (just to avoid Warnings by Sklearn)
+            y = np.ravel(y)
+
+        # LabelEncoder() encodes target labels with value between 0 and
+        # n_classes - 1
+        if self.label_encoder is None:
+            # self.label_encoder is None => y contains train labels
+            self.label_encoder = LabelEncoder()
+            y = self.label_encoder.fit_transform(y)
+        else:
+            y = self.label_encoder.transform(y)
+
+        # set attributes
+        self.X_train = X
+        self.y_train = y
+        self.X_test = X
+        self.y_test = y
+>>>>>>> a30c4f3f1cfb3d0586231e84bd4b2193c11c84eb
