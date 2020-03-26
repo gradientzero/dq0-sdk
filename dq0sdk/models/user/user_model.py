@@ -124,54 +124,9 @@ class UserModel(NeuralNetwork):
             logger.error('No data source found')
             return
         source = next(iter(self.data_sources.values()))
-<<<<<<< HEAD
 
-        # @Jona
-        X_train, y_train, X_test, y_test = source.read(num_instances_to_load=10000)
-
-        assert isinstance(X_train, np.ndarray)
-        assert isinstance(y_train, np.ndarray)
-
-        # @Jona
-        # X_train = source.preprocess(X=X_train)
-        # X_test = source.preprocess(X=X_test)
-
-        # np.nan, np.Inf in y_train are counted as classes in the following
-        # line
-        self._num_classes = len(np.unique(np.ravel(y_train)))
-
-        # make non-dimensional array (just to avoid Warnings by Sklearn)
-        if y_train.ndim == 2:
-            y_train = np.ravel(y_train)
-        if y_test.ndim == 2:
-            y_test = np.ravel(y_test)
-
-        # LabelEncoder() encodes target labels with value between 0 and
-        # n_classes - 1
-        # if self.label_encoder is None:
-        #   print('Retraining')
-        self.label_encoder = LabelEncoder()
-        y_train = self.label_encoder.fit_transform(y_train)
-        y_test = self.label_encoder.transform(y_test)
-
-        # set attributes
-        self.X_train = X_train
-        self.y_train = y_train
-        self.X_test = X_test
-        self.y_test = y_test
-
-        print('\n\nDEBUG: in user_model.setup_data: self.X_train.shape ',
-              self.X_train.shape)
-        print('DEBUG: in user_model.setup_data: self.y_train.shape ',
-              self.y_train.shape, '\n\n')
-
-        print('\n\nDEBUG: in user_model.setup_data: self.X_TEST.shape ',
-              self.X_test.shape)
-        print('DEBUG: in user_model.setup_data: self.y_TEST.shape ',
-              self.y_test.shape, '\n\n')
-=======
         # X, y = source.read()
-        X, y = source.read(num_instances_to_load=10000)
+        X, y = source.read()
 
         # preprocess
         X = preprocessing.scale_pixels(X, 255)
@@ -194,18 +149,28 @@ class UserModel(NeuralNetwork):
             # make non-dimensional array (just to avoid Warnings by Sklearn)
             y = np.ravel(y)
 
+        # WARNING: np.nan, np.Inf in y are counted as classes by np.unique
+        self._num_classes = len(np.unique(y))  # np.ravel(y)
+
         # LabelEncoder() encodes target labels with value between 0 and
         # n_classes - 1
-        if self.label_encoder is None:
-            # self.label_encoder is None => y contains train labels
-            self.label_encoder = LabelEncoder()
-            y = self.label_encoder.fit_transform(y)
-        else:
-            y = self.label_encoder.transform(y)
+        # if self.label_encoder is None:
+        #   print('Retraining')
+        self.label_encoder = LabelEncoder()
+        y = self.label_encoder.fit_transform(y)
 
         # set attributes
         self.X_train = X
         self.y_train = y
-        self.X_test = X
-        self.y_test = y
->>>>>>> a30c4f3f1cfb3d0586231e84bd4b2193c11c84eb
+        self.X_test = None
+        self.y_test = None
+
+        print('\nAttached train dataset to user model. Feature matrix '
+              'shape:',
+              self.X_train.shape)
+        print('Class-labels vector shape:', self.y_train.shape)
+
+        if self.X_test is not None:
+            print('\nAttached test dataset to user model. Feature matrix '
+                  'shape:', self.X_test.shape)
+            print('Class-labels vector shape:', self.y_test.shape)
