@@ -13,6 +13,8 @@ Copyright 2020, Gradient Zero
 All rights reserved
 """
 
+import os
+
 from dq0sdk.cli.api import routes
 from dq0sdk.cli.runner import ModelRunner
 from dq0sdk.errors import checkSDKResponse
@@ -70,7 +72,7 @@ class Model:
 
         # save predict data
         np.save('predict_data.npy', test_data)
-        data = {'input_path': 'predict_data.npy'}
+        data = {'input_path': os.path.abspath('predict_data.npy')}
 
         response = self.project.client.post(
             routes.model.predict, id=self.project.model_uuid, data=data)

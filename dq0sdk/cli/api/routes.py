@@ -22,14 +22,16 @@ _routes = {
         '_base': 'models/:id/',
         'train': 'train/',
         'predict': 'predict/',
-        'state': ''
+        'state': '',
+        'cancel': 'cancel/'
     },
     'data': {
         '_base': 'data/',
         'list': '',
         'preprocess': ':id/preprocess/',
         'attach': ':id/attach/',
-        'state': ':id/'
+        'state': ':id/',
+        'cancel': 'cancel/'
     }
 }
 

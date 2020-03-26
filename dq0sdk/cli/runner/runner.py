@@ -89,7 +89,7 @@ class Runner(ABC):
         if verbose:
             print('Waiting for job to complete...')
         while not self.state.finished:
-            time.sleep(3.0)
+            time.sleep(5.0)
             # refetch model or data job state
             self.get_state()
             if verbose:
