@@ -210,6 +210,8 @@ class Project:
         with open('models/user_model.py', 'w') as f:
             f.writelines(lines)
 
+        print('Successfully set model code.')
+
     def set_data_code(self, preprocess=None, parent_class_name=None):  # noqa: C901
         """Sets the user defined preprocess function.
 
@@ -246,3 +248,5 @@ class Project:
             lines = replace_data_parent_class(lines, parent_class_name)
         with open('data/user_source.py', 'w') as f:
             f.writelines(lines)
+
+        print('Successfully set data code.')

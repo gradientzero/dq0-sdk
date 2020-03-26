@@ -61,14 +61,14 @@ class Runner(ABC):
         """Gets the current state of the running model or data experiment."""
         response = self.project.client.get(route, id=id)
         checkSDKResponse(response)
-        self.state.update(response['message'])
-        return self.state.message
+        self.state.update(response)
+        return self.state.results
 
     def get_results(self):
         """Gets the results of the running model or data experiment."""
         if self.state.finished:
-            return self.state.message
-        return ''
+            return self.state.results
+        return {}
 
     @abstractmethod
     def cancel(self, force=False):
