@@ -40,10 +40,10 @@ class Project:
 
     Example:
         >>> # Create a new project
-        >>> project = Project(name='some name')
+        >>> project = Project(name='some name') # doctest: +SKIP
 
         >>> # Load a project (cd into project dir first)
-        >>> project = Project.load()
+        >>> project = Project.load() # doctest: +SKIP
 
     Args:
         name (str): The name of the new project

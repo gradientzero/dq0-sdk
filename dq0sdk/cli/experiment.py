@@ -26,9 +26,9 @@ class Experiment:
 
     Example:
         >>> # Create an experiment. Then call train and preprocess
-        >>> experiment = Experiment(project=project, name='experiment_1')
-        >>> run = experiment.train()
-        >>> run = experiment.preprocess()
+        >>> experiment = Experiment(project=project, name='experiment_1') # doctest: +SKIP
+        >>> run = experiment.train() # doctest: +SKIP
+        >>> run = experiment.preprocess() # doctest: +SKIP
 
     Args:
         project (:obj:`dq0sdk.cli.api.Project`): The project

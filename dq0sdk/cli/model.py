@@ -29,19 +29,19 @@ class Model:
 
     Example:
         >>> # get the latest model
-        >>> model = project.get_latest_model()
+        >>> model = project.get_latest_model() # doctest: +SKIP
         >>>
         >>> # check DQ0 privacy clearing
-        >>> if model.predict_allowed:
+        >>> if model.predict_allowed: # doctest: +SKIP
         >>>
         >>>    # call predict
-        >>>    run = model.predict(np.array([1, 2, 3]))
+        >>>    run = model.predict(np.array([1, 2, 3])) # doctest: +SKIP
         >>>
         >>>    # wait for completion
-        >>>    run.wait_for_completion(verbose=True)
+        >>>    run.wait_for_completion(verbose=True) # doctest: +SKIP
         >>>
         >>>    # get training results
-        >>>    print(run.get_results())
+        >>>    print(run.get_results()) # doctest: +SKIP
 
     Args:
         project (:obj:`dq0sdk.cli.api.Project`): The project
