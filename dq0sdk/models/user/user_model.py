@@ -44,11 +44,13 @@ class UserModel(NeuralNetwork):
         super().__init__(model_path)
         self.model_type = 'keras'
         self._classifier_type = 'cnn'  # kwargs['classifier_type']
-        self._num_classes = 10
         self.label_encoder = None
 
-    def _get_cnn_model(self, n_out, which_model='ml-leaks_paper'):
+        # @Jona
+        self.DP_enabled = False
+        self.DP_epsilon = False
 
+    def _get_cnn_model(self, n_out, which_model='ml-leaks_paper'):
         if util.case_insensitive_str_comparison(which_model, 'ml-leaks_paper'):
 
             # https://github.com/AhmedSalem2/ML-Leaks/blob/master/classifier.py
@@ -104,14 +106,14 @@ class UserModel(NeuralNetwork):
             #    self.regularization_param)
         }
 
-        # network topology. TODO: make it parametric!
-        if self._classifier_type.startswith('DP-'):
-            network_type = self._classifier_type[3:]
-        else:
-            network_type = self._classifier_type
-        if util.case_insensitive_str_comparison(network_type, 'cnn'):
-            print('Setting up a multilayer convolution neural network...')
-            self.model = self._get_cnn_model(self._num_classes)
+        # network topology.
+        # if self._classifier_type.startswith('DP-'):
+        #    network_type = self._classifier_type[3:]
+        # else:
+        #    network_type = self._classifier_type
+        # if util.case_insensitive_str_comparison(network_type, 'cnn'):
+        print('Setting up a multilayer convolution neural network...')
+        self.model = self._get_cnn_model(self._num_classes)
 
     def setup_data(self):
         # load data
@@ -119,7 +121,20 @@ class UserModel(NeuralNetwork):
             logger.error('No data source found')
             return
         source = next(iter(self.data_sources.values()))
+
+        # @Jona
         X_train, y_train, X_test, y_test = source.read(num_instances_to_load=10000)
+
+        assert isinstance(X_train, np.ndarray)
+        assert isinstance(y_train, np.ndarray)
+
+        # @Jona
+        # X_train = source.preprocess(X=X_train)
+        # X_test = source.preprocess(X=X_test)
+
+        # np.nan, np.Inf in y_train are counted as classes in the following
+        # line
+        self._num_classes = len(np.unique(np.ravel(y_train)))
 
         # make non-dimensional array (just to avoid Warnings by Sklearn)
         if y_train.ndim == 2:
@@ -129,17 +144,24 @@ class UserModel(NeuralNetwork):
 
         # LabelEncoder() encodes target labels with value between 0 and
         # n_classes - 1
-        if self.label_encoder is None:
-            # self.label_encoder is None => y contains train labels
-            self.label_encoder = LabelEncoder()
-            y_train = self.label_encoder.fit_transform(y_train)
-            y_test = self.label_encoder.fit_transform(y_test)
-        else:
-            y_train = self.label_encoder.transform(y_train)
-            y_test = self.label_encoder.transform(y_test)
+        # if self.label_encoder is None:
+        #   print('Retraining')
+        self.label_encoder = LabelEncoder()
+        y_train = self.label_encoder.fit_transform(y_train)
+        y_test = self.label_encoder.transform(y_test)
 
         # set attributes
         self.X_train = X_train
         self.y_train = y_train
         self.X_test = X_test
         self.y_test = y_test
+
+        print('\n\nDEBUG: in user_model.setup_data: self.X_train.shape ',
+              self.X_train.shape)
+        print('DEBUG: in user_model.setup_data: self.y_train.shape ',
+              self.y_train.shape, '\n\n')
+
+        print('\n\nDEBUG: in user_model.setup_data: self.X_TEST.shape ',
+              self.X_test.shape)
+        print('DEBUG: in user_model.setup_data: self.y_TEST.shape ',
+              self.y_test.shape, '\n\n')
