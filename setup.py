@@ -1,11 +1,6 @@
 # -*- coding: utf-8 -*-
 """Setup script for DQ0 SDK.
 
-:Authors:
-    Jona Boeddinhaus <jb@gradient0.com>
-    Artur Susdorf <as@gradient0.com>
-    Wolfgang Groß <wg@gradient0.com>
-
 Copyright 2019, Gradient Zero
 All rights reserved
 """
