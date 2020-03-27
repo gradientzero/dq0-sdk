@@ -17,19 +17,19 @@ To install the DQ0 CLI it is sufficient to download the binary and add the insta
 
 You can install the DQ0 SDK with the pip package manager. Use an appropriate virtual environment (i.e. Miniconda or Virtualenv) based on Python 3.7 and install the DQ0 SDK with the following command:
 ```bash
-# will follow soon
-# pip install dq0sdk
-
 # switch to your python environment
-# conda activate dq0
+conda activate dq0
 
-# clone git repository 
+# install dq0 sdk
+pip install git+git://github.com/gradientzero/dq0-sdk.git#egg=dq0sdk
+
+# or clone git repository...
 git clone git@github.com:gradientzero/dq0-sdk.git
 
-# move into dq0-sdk
+# ...move into dq0-sdk...
 cd dq0-sdk
 
-# install requirements
+# ...and install the requirements
 pip install -r requirements.txt
 ```
 
