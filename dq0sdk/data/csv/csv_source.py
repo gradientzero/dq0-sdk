@@ -1,15 +1,9 @@
 # -*- coding: utf-8 -*-
 """Data Source for CSV files.
 
-This source call provides access to CSV data as pandas dataframes.
+This source class provides access to CSV data as pandas dataframes.
 
-:Authors:
-    Jona Boeddinhaus <jb@gradient0.com>
-    Wolfgang Groß <wg@gradient0.com>
-    Artur Susdorf <as@gradient0.com>
-    Craig Lincoln <cl@gradient0.com>
-
-Copyright 2019, Gradient Zero
+Copyright 2020, Gradient Zero
 All rights reserved
 """
 
@@ -30,7 +24,11 @@ class CSVSource(Source):
     Provides function to read in csv data.
 
     Args:
-        filepath (str): Absolute path to the CSV file.
+        filepath (:obj:`str`): Absolute path to the CSV file.
+
+    Attributes:
+        filepath (:obj:`str`): Absolute path to the CSV file.
+
     """
     def __init__(self, filepath):
         super().__init__()
@@ -67,7 +65,9 @@ class CSVSource(Source):
         """Returns a json representation of this data sources information.
 
         Args:
-            epsilon (float): Differential Privacy epsilon value
+            epsilon (float): Differential Privacy epsilon value. When called
+                inside the quarantine (from dq0-main) this value will always
+                be set to 0.1
 
         Returns:
             data source description as json.

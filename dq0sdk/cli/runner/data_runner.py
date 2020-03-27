@@ -25,29 +25,40 @@ class DataRunner(Runner):
     Provides methods to get job status, wait for completion or cancel job.
 
     Example:
-        # call preprocess
-        run = experiment.preprocess()
-
-        # get status
-        print(run.get_state())
-
-        # wait for completion
-        run.wait_for_completion(verbose=True)
-
-        # or cancel
-        run.cancel()
+        >>> # call preprocess
+        >>> run = experiment.preprocess() # doctest: +SKIP
+        >>>
+        >>> # get status
+        >>> print(run.get_state()) # doctest: +SKIP
+        >>>
+        >>> # wait for completion
+        >>> run.wait_for_completion(verbose=True) # doctest: +SKIP
+        >>>
+        >>> # or cancel
+        >>> run.cancel() # doctest: +SKIP
 
     Args:
-        project (:obj:`dq0sdk.cli.api.Project`): The project
+        project (:obj:`dq0sdk.cli.Project`): The project
             this runner belongs to
+
     """
     def __init__(self, project):
         super().__init__(project)
 
     def get_state(self):
-        """Gets the current state of the running data experiment."""
+        """Gets the current state of the running data experiment.
+
+        Returns:
+            The state in JSON format
+        """
         return super()._get_state(routes.data.state, self.project.data_source_uuid)
 
     def cancel(self, force=False):
-        """Cancels the experiment run"""
-        return super()._cancel(routes.data.cancel, self.project.data_source_uuid)
+        """Cancels the data run.
+
+        Args:
+            force (bool, optional): Set to true to force the job to be
+                interrupted. Default is false where the job gracefully
+                gets signalled to halt.
+        """
+        super()._cancel(routes.data.cancel, self.project.data_source_uuid)

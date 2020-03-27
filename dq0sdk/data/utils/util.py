@@ -28,7 +28,7 @@ def load_params_from_config_file(yaml_file_path):
     Load parameters from YAML configuration file.
 
     Args:
-        file_path (str): path to file. Defaults to `config.yml`
+        file_path (:obj:`str`): path to file. Defaults to `config.yml`
 
     Raises:
         FileNotFoundError: yaml config file not found

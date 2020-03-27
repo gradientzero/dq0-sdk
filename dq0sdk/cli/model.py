@@ -44,8 +44,16 @@ class Model:
         >>>    print(run.get_results()) # doctest: +SKIP
 
     Args:
-        project (:obj:`dq0sdk.cli.api.Project`): The project
+        project (:obj:`dq0sdk.cli.Project`): The project
             this experiment belongs to
+
+    Attributes:
+        project (:obj:`dq0sdk.cli.Project`): The project
+            this experiment belongs to
+        predict_allowed (bool): True if the model was checked by DQ0
+            and flagged as safe. Note that this attribute is here for
+            convenience. The actual allowance check is done by dq0-main.
+
     """
     def __init__(self, project=None):
         if project is None:
@@ -64,6 +72,9 @@ class Model:
 
         Args:
             test_data (:obj:`numpy.array`) data to perform prediction for
+
+        Returns:
+            New instance of the ModelRunner class representing the prediction run.
         """
         if test_data is None or not isinstance(test_data, np.ndarray):
             raise ValueError('test_data not in np.array format')

@@ -44,7 +44,7 @@ class NewsgroupsNeuralNetwork(Model):
     subclass this class to define custom neural networks.
 
     Args:
-        model_path (str): Path to the model save destination.
+        model_path (:obj:`str`): Path to the model save destination.
     """
     def __init__(self, model_path, **kwargs):
         super().__init__(model_path)
@@ -584,7 +584,7 @@ class NewsgroupsNeuralNetwork(Model):
         Save the model in binary format on local storage
 
         Args:
-            name (str): The name of the model
+            name (:obj:`str`): The name of the model
             version (int): The version of the model
         """
         self._model.save('{}/{}/{}.h5'.format(self.model_path,
@@ -595,7 +595,7 @@ class NewsgroupsNeuralNetwork(Model):
         Load the model from local storage
 
         Args:
-            name (str): The name of the model
+            name (:obj:`str`): The name of the model
             version (int): The version of the model
         """
         self._model = tf.keras.models.load_model('{}/{}/{}.h5'.format(

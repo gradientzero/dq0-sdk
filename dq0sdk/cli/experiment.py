@@ -24,6 +24,11 @@ class Experiment:
 
     Provides methods to train models and preprocess datasets.
 
+    Note:
+        There can be only one epxeriment for model and data each
+        per project version. If you want to run mulitple experiments for one
+        model in parallel use different project versions.
+
     Example:
         >>> # Create an experiment. Then call train and preprocess
         >>> experiment = Experiment(project=project, name='experiment_1') # doctest: +SKIP
@@ -31,9 +36,15 @@ class Experiment:
         >>> run = experiment.preprocess() # doctest: +SKIP
 
     Args:
-        project (:obj:`dq0sdk.cli.api.Project`): The project
+        project (:obj:`dq0sdk.cli.Project`): The project
             this experiment belongs to
-        name (str): The name of the new experiment
+        name (:obj:`str`): The name of the new experiment
+
+    Attributes:
+        project (:obj:`dq0sdk.cli.Project`): The project
+            this experiment belongs to
+        name (:obj:`str`): The of the experiment
+
     """
     def __init__(self, project=None, name=None):
         if project is None:
@@ -47,6 +58,9 @@ class Experiment:
         """Returns the latest ModelRunner.
 
         Can be used to cancel zombie jobs for example.
+
+        Returns:
+            A new instance of the ModelRunner class for the project.
         """
         return ModelRunner(self.project)
 
@@ -54,6 +68,9 @@ class Experiment:
         """Returns the latest DataRunner.
 
         Can be used to cancel zombie jobs for example.
+
+        Returns:
+            A new instance of the DataRunner class for the project.
         """
         return DataRunner(self.project)
 
@@ -62,6 +79,9 @@ class Experiment:
 
         It calls the CLI command `model train` and returns
         a Runner instance to watch to job
+
+        Returns:
+            A new instance of the ModelRunner class for the train run.
         """
         response = self.project._deploy()
         checkSDKResponse(response)
@@ -75,7 +95,10 @@ class Experiment:
         """Starts a preprocessing run
 
         It calls the CLI command `data preprocess` and returns
-        a Runner instance to watch to job
+        a Runner instance to watch to job.
+
+        Returns:
+            A new instance of the DataRunner class for the preprocess run.
         """
         response = self.project._deploy()
         checkSDKResponse(response)

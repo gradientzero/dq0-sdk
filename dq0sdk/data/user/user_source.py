@@ -26,7 +26,10 @@ class UserSource(Source):
     For example: UserSource(CSVSource)
 
     Args:
-        filepath (str): Absolute path to the data file.
+        filepath (:obj:`str`): Absolute path to the data file.
+
+    Attributes:
+        filepath (:obj:`str`): Absolute path to the data file.
     """
     def __init__(self, filepath):
         super().__init__()

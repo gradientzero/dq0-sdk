@@ -21,7 +21,7 @@ class UserModel(Model):
     definitions.
 
     Args:
-            model_path (str): Path to the model save destination.
+        model_path (:obj:`str`): Path to the model save destination.
     """
     def __init__(self, model_path):
         super().__init__(model_path)

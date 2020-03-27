@@ -154,7 +154,7 @@ class NeuralNetwork(Model):
         Save the model in binary format on local storage.
 
         Args:
-            name (str): The name of the model
+            name (:obj:`str`): The name of the model
             version (int): The version of the model
         """
         self.model.save('{}/{}/{}.h5'.format(self.model_path, version, name),
@@ -166,7 +166,7 @@ class NeuralNetwork(Model):
         Load the model from local storage.
 
         Args:
-            name (str): The name of the model
+            name (:obj:`str`): The name of the model
             version (int): The version of the model
         """
         self.model = tf.keras.models.load_model(

@@ -37,7 +37,7 @@ class TFHub(NeuralNetworkYaml):
         """Setup Predefined data
 
         args:
-            task (str): string specifying the task, i.e, im_clf or text_clf
+            task (:obj:`str`): string specifying the task, i.e, im_clf or text_clf
             augment (bool): augment training data
 
         returns:

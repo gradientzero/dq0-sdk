@@ -25,29 +25,40 @@ class ModelRunner(Runner):
     Provides methods to get job status, wait for completion or cancel job.
 
     Example:
-        # call train
-        run = experiment.train()
-
-        # get status
-        print(run.get_state())
-
-        # wait for completion
-        run.wait_for_completion(verbose=True)
-
-        # or cancel
-        run.cancel()
+        >>> # call train
+        >>> run = experiment.train() # doctest: +SKIP
+        >>>
+        >>> # get status
+        >>> print(run.get_state()) # doctest: +SKIP
+        >>>
+        >>> # wait for completion
+        >>> run.wait_for_completion(verbose=True) # doctest: +SKIP
+        >>>
+        >>> # or cancel
+        >>> run.cancel() # doctest: +SKIP
 
     Args:
-        project (:obj:`dq0sdk.cli.api.Project`): The project
+        project (:obj:`dq0sdk.cli.Project`): The project
             this runner belongs to
+
     """
     def __init__(self, project):
         super().__init__(project)
 
     def get_state(self):
-        """Gets the current state of the running model experiment."""
+        """Gets the current state of the running model experiment.
+
+        Returns:
+            The state in JSON format
+        """
         return super()._get_state(routes.model.state, self.project.model_uuid)
 
     def cancel(self, force=False):
-        """Cancels the experiment run"""
+        """Cancels the experiment run.
+
+        Args:
+            force (bool, optional): Set to true to force the job to be
+                interrupted. Default is false where the job gracefully
+                gets signalled to halt.
+        """
         return super()._cancel(routes.model.cancel, self.project.model_uuid)

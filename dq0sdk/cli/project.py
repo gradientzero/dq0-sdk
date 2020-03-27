@@ -46,7 +46,18 @@ class Project:
         >>> project = Project.load() # doctest: +SKIP
 
     Args:
-        name (str): The name of the new project
+        name (:obj:`str`): The name of the new project
+        create (bool): True to create a new project via DQ0 CLI.
+            Default is True.
+
+    Attributes:
+        name (:obj:`str`): The name of the project
+        model_uuid (:obj:`str`): The universally unique identifier of
+            the project's model
+        data_source_uuid (:obj:`str`): The universally unique identifier of
+            the project's currently attached data source
+        version (:obj:`str`): A version number of the project.
+
     """
     def __init__(self, name=None, create=True):
         if name is None:
@@ -57,7 +68,7 @@ class Project:
         self.version = '1'
 
         # create API client instance
-        self.client = Client()
+        self._client = Client()
 
         if create:
             self._create_new(name)
@@ -71,6 +82,13 @@ class Project:
 
         It reads the .meta file of the current directory to collect all
         neccessary project information.
+
+        Returns:
+            New instance of the Project class for the loaded project
+
+        Raises:
+            FileNotFoundError: if the .meta project file was not found in
+                the current directory.
         """
         # check if .meta file exists in current directory
         if not os.path.isfile('.meta'):
@@ -93,10 +111,13 @@ class Project:
         First, calls the API to creat a new project with the given name.
         Then sets the UUID property read from the new .meta file.
 
+        Note:
+            This function will change to the new project directory.
+
         Args:
-            name (str): The name of the new project
+            name (:obj:`str`): The name of the new project
         """
-        response = self.client.post(routes.project.create, data={'name': name})
+        response = self._client.post(routes.project.create, data={'name': name})
         checkSDKResponse(response)
         print(response['message'])
 
@@ -112,13 +133,17 @@ class Project:
 
         It calls the CLI command `project info` and returns
         the results as JSON.
+
+        Returns:
+            Project info in JSON format
         """
-        return self.client.get(routes.project.info, id=self.model_uuid)
+        return self._client.get(routes.project.info, id=self.model_uuid)
 
     def get_latest_model(self):
         """Returns the currently active model of this project.
 
-        Current implementation returns the project as is. Model management TBD.
+        Returns:
+            The currently active model of this project.
         """
         return Model(project=self)
 
@@ -126,8 +151,11 @@ class Project:
         """Returns a list of available data sources.
 
         The returned UUIDs can be used for the attach_data_source method.
+
+        Returns:
+            A list of available data sources.
         """
-        response = self.client.get(routes.data.list)
+        response = self._client.get(routes.data.list)
         checkSDKResponse(response)
         return response['results']
 
@@ -135,9 +163,9 @@ class Project:
         """Attaches a new data source to the project.
 
         Args:
-            data_source (str) The UUID of the new source to attach
+            data_source (:obj:`str`) The UUID of the new source to attach
         """
-        response = self.client.post(
+        response = self._client.post(
             routes.data.attach,
             id=self.model_uuid,
             data={'data_source_uuid': data_source_uuid})
@@ -148,8 +176,11 @@ class Project:
         """Deploys the project to DQ0
 
         This is called before every train, predict, or preprocess call.
+
+        Returns:
+            The API response in JSON format
         """
-        return self.client.post(routes.project.deploy, id=self.model_uuid)
+        return self._client.post(routes.project.deploy, id=self.model_uuid)
 
     def set_connection(self, host='localhost', port=9000):
         """Updates the connection string for the API communication.
@@ -157,23 +188,24 @@ class Project:
         Passes the updated info to the API handler.
 
         Args:
-            host (str): The host of the DQ0 CLI API Server
+            host (:obj:`str`): The host of the DQ0 CLI API Server
             port (int): The port of the DQ0 CLI API Server
         """
-        self.client.set_connection(host=host, port=port)
+        self._client.set_connection(host=host, port=port)
 
     def set_model_code(self, setup_data=None, setup_model=None, parent_class_name=None):  # noqa: C901
         """Sets the user defined setup_model and setup_data functions.
 
         Saves the function code to user_model.py
 
-        Note: This function will only work inside iphyton notebooks,
-        otherwise the sources of the function arguments are not available.
+        Note:
+            This function will only work inside iphyton notebooks,
+            otherwise the sources of the function arguments are not available.
 
         Args:
             setup_data (func): user defined setup_data function
             setup_model (func): user defined setup_model function
-            parent_class_name (str): name of the parent class for UserModel
+            parent_class_name (:obj:`str`): name of the parent class for UserModel
         """
         # check args
         setup_data_code = None
@@ -217,12 +249,13 @@ class Project:
 
         Saves the function code to user_source.py
 
-        Note: This function will only work inside iphyton notebooks,
-        otherwise the sources of the function arguments are not available.
+        Note:
+            This function will only work inside iphyton notebooks,
+            otherwise the sources of the function arguments are not available.
 
         Args:
             preprocess (func): user defined preprocess function
-            parent_class_name (str): name of the parent class for UserSource
+            parent_class_name (:obj:`str`): name of the parent class for UserSource
         """
         # check args
         if preprocess is None:

@@ -29,13 +29,13 @@ class AdultSource(CSVSource):
     Attributes:
         categorical_features_list (list): List of category features
         quantitative_features_list (list): List of quantitative features
-        target_feature (str): The target feature (column name)
-        filepath_train (str): Absolute path to the adult train dataset file.
-        filepath_test (str): Absolute path to the adult test dataset file.
+        target_feature (:obj:`str`): The target feature (column name)
+        filepath_train (:obj:`str`): Absolute path to the adult train dataset file.
+        filepath_test (:obj:`str`): Absolute path to the adult test dataset file.
         skiprows (int, optional): Number of rows to skip.
 
     Args:
-        paths (str): One or more paths (';' separated) for train and test
+        paths (:obj:`str`): One or more paths (';' separated) for train and test
     """
     def __init__(self, paths):
         super().__init__(paths)
@@ -153,9 +153,9 @@ class AdultSource(CSVSource):
 
         Args:
             force (bool): True to force re-read of the data.
-            approach_for_missing_feature (str): imputation or dropping
-            imputation_method_for_cat_feats (str): unknown or most_common_cat
-            imputation_method_for_quant_feats (str): median or mean
+            approach_for_missing_feature (:obj:`str`): imputation or dropping
+            imputation_method_for_cat_feats (:obj:`str`): unknown or most_common_cat
+            imputation_method_for_quant_feats (:obj:`str`): median or mean
             features_to_drop_list (list): list of features (columns) to drop
 
         Returns:

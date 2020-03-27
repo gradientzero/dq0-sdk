@@ -36,7 +36,8 @@ _routes = {
 }
 
 
-def build_routes():
+def _build_routes():
+    """Helper function to build namespaced routes"""
     r = {}
     for route, subroutes in _routes.items():
         s = {}
@@ -47,4 +48,4 @@ def build_routes():
     return r
 
 
-routes = SimpleNamespace(**build_routes())
+routes = SimpleNamespace(**_build_routes())

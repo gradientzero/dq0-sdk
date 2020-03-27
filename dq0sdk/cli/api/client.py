@@ -21,16 +21,20 @@ class Client:
     DQ0 CLI API.
 
     Example:
-        # Create an instance
-        client = Client()
-
-        # make a request
-        route = 'project'
-        json_response = client.request(route)
+        >>> # Create an instance
+        >>> client = Client() # doctest: +SKIP
+        >>>
+        >>> # make a request
+        >>> route = 'project' # doctest: +SKIP
+        >>> json_response = client.request(route) # doctest: +SKIP
 
     Args:
-        host (str): The host of the DQ0 CLI API Server
-        port (int): The port of the DQ0 CLI API Server
+        host (:obj:`str`): The host of the DQ0 CLI API Server
+            (default 'localhost')
+        port (int): The port of the DQ0 CLI API Server (default 9000)
+
+    Attributes:
+        api (:obj:`str`): The complete API URL, host + port
     """
     def __init__(self, host='localhost', port=9000):
         self.api = 'http://localhost:9000/api/'
@@ -40,7 +44,7 @@ class Client:
         """Updates the connection string for the API communication.
 
         Args:
-            host (str): The host of the DQ0 CLI API Server
+            host (:obj:`str`): The host of the DQ0 CLI API Server
             port (int): The port of the DQ0 CLI API Server
         """
         if not isinstance(host, str):
@@ -67,9 +71,12 @@ class Client:
         Throws an error on failure.
 
         Args:
-            route (str): The API route to request.
-            id (str): If set this value will replace route's ':id' placeholder
+            route (:obj:`str`): The API route to request.
+            id (:obj:`str`): If set this value will replace route's ':id' placeholder
             data (optional, dict): GET data to pass.
+
+        Returns:
+            The HTTP response in JSON format
         """
         if id is not None:
             route = route.replace(':id', id)
@@ -86,9 +93,12 @@ class Client:
         Throws an error on failure.
 
         Args:
-            route (str): The API route to request.
-            id (str): If set this value will replace route's ':id' placeholder
-            data (optional, dict): POST data to pass.
+            route (:obj:`str`): The API route to request.
+            id (:obj:`str`): If set this value will replace route's ':id' placeholder
+            data (:obj:`dict`, optional): POST data to pass.
+
+        Returns:
+            The HTTP response in JSON format
         """
         if id is not None:
             route = route.replace(':id', id)

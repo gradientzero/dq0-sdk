@@ -30,21 +30,27 @@ class Runner(ABC):
     Provides methods to get job status, wait for completion or cancel job.
 
     Example:
-        # call train
-        run = experiment.train()
-
-        # get status
-        print(run.get_state())
-
-        # wait for completion
-        run.wait_for_completion(verbose=True)
-
-        # or cancel
-        run.cancel()
+        >>> # call train
+        >>> run = experiment.train() # doctest: +SKIP
+        >>>
+        >>> # get status
+        >>> print(run.get_state()) # doctest: +SKIP
+        >>>
+        >>> # wait for completion
+        >>> run.wait_for_completion(verbose=True) # doctest: +SKIP
+        >>>
+        >>> # or cancel
+        >>> run.cancel() # doctest: +SKIP
 
     Args:
-        project (:obj:`dq0sdk.cli.api.Project`): The project
+        project (:obj:`dq0sdk.cli.Project`): The project
             this runner belongs to
+
+    Attributes:
+        project (:obj:`dq0sdk.cli.Project`): The project
+            this runner belongs to
+        state (:obj:`dq0sdk.cli.runner.State`) The runner's state
+
     """
     def __init__(self, project):
         if project is None:
@@ -54,18 +60,38 @@ class Runner(ABC):
 
     @abstractmethod
     def get_state(self):
-        """Gets the current state of the running model or data experiment."""
+        """Gets the current state of the running model or data experiment.
+
+        Returns:
+            The state in JSON format
+        """
         pass
 
     def _get_state(self, route, id):
-        """Gets the current state of the running model or data experiment."""
+        """Gets the current state of the running model or data experiment.
+
+        Helper function called by both DataRunner.get_state() and
+        ModelRunner.get_state() with the appropiate route.
+
+        Args:
+            route (:obj:`str`): The API route for either data or model state
+            id (int): The ID of the project or data source for the API call
+
+        Returns:
+            The state in JSON format
+        """
         response = self.project.client.get(route, id=id)
         checkSDKResponse(response)
         self.state.update(response)
         return self.state.results
 
     def get_results(self):
-        """Gets the results of the running model or data experiment."""
+        """Gets the results of the running model or data experiment.
+
+        Returns:
+            The final state in JSON format or an empty dict if the run
+            has not finished yet.
+        """
         if self.state.finished:
             return self.state.results
         return {}
@@ -76,7 +102,13 @@ class Runner(ABC):
         pass
 
     def _cancel(self, route, id):
-        """Cancels the experiment run. Model or data."""
+        """Cancels the experiment run. Model or data.
+
+        Args:
+            force (bool, optional): Set to true to force the job to be
+                interrupted. Default is false where the job gracefully
+                gets signalled to halt.
+        """
         response = self.project.client.post(route, id=id)
         checkSDKResponse(response)
         print(response['message'])
@@ -84,7 +116,11 @@ class Runner(ABC):
     def wait_for_completion(self, verbose=False):
         """Loops until the state reflects the end of the run.
 
-        This function is blocking in single-threaded contexts.
+        This function is blocking.
+
+        Args:
+            verbose (bool, optional): Set to true to see periodic state outputs.
+                Default is false
         """
         if verbose:
             print('Waiting for job to complete...')

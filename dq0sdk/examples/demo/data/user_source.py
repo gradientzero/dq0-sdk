@@ -39,7 +39,7 @@ class UserSource(CSVSource):
     Provides function to read in csv data.
 
     Args:
-        filepath (str): Absolute path to the CSV file.
+        filepath (:obj:`str`): Absolute path to the CSV file.
     """
     def __init__(self, filepath):
         super().__init__(filepath)
