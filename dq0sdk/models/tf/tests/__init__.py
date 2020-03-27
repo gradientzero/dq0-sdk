@@ -1,3 +1,3 @@
 # -*- coding: utf-8 -*-
-"""Whatever.
+"""DQ0 SDK Models Test Package
 """

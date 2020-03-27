@@ -1,3 +1,3 @@
 # -*- coding: utf-8 -*-
-"""Whatever.
+"""CIFAR10 data config
 """
