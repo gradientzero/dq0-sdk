@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
+"""Util
 
-"""
-@author: Paolo Campigotto
+Copyright 2020, Gradient Zero
+All rights reserved
 """
 
 import os
