@@ -557,7 +557,7 @@ np.save('predict_data.npy', data)
 
 
 # Jupyter Notebook - DQ0 SDK
-The DQ0-SDK contains a sample notebook named "DQ0SDK-Demo.ipynb". This example is explained in more detail below.
+The DQ0-SDK contains a sample notebook named [DQ0SDK-Demo.ipynb](./dq0sdk/cli/DQ0SDK-Quickstart.ipynb). This example is explained in more detail below.
 
 
 ## Prerequisites
