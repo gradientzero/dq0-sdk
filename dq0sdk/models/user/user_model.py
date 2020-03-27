@@ -54,6 +54,7 @@ class UserModel(NeuralNetwork):
         self.DP_epsilon = False
 
     def _get_cnn_model(self, n_out, which_model='ml-leaks_paper'):
+
         if util.case_insensitive_str_comparison(which_model, 'ml-leaks_paper'):
 
             # https://github.com/AhmedSalem2/ML-Leaks/blob/master/classifier.py
@@ -125,8 +126,8 @@ class UserModel(NeuralNetwork):
             return
         source = next(iter(self.data_sources.values()))
 
-        # X, y = source.read()
         X, y = source.read()
+        # X, y = source.read(num_instances_to_load=10000)
 
         # preprocess
         X = preprocessing.scale_pixels(X, 255)
@@ -158,6 +159,10 @@ class UserModel(NeuralNetwork):
         #   print('Retraining')
         self.label_encoder = LabelEncoder()
         y = self.label_encoder.fit_transform(y)
+
+        # back to column vector. Transform one-dimensional array into column
+        # vector via newaxis
+        y = y[:, np.newaxis]
 
         # set attributes
         self.X_train = X
