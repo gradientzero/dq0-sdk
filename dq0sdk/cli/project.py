@@ -68,7 +68,7 @@ class Project:
         self.version = '1'
 
         # create API client instance
-        self._client = Client()
+        self.client = Client()
 
         if create:
             self._create_new(name)
@@ -117,7 +117,7 @@ class Project:
         Args:
             name (:obj:`str`): The name of the new project
         """
-        response = self._client.post(routes.project.create, data={'name': name})
+        response = self.client.post(routes.project.create, data={'name': name})
         checkSDKResponse(response)
         print(response['message'])
 
@@ -137,7 +137,7 @@ class Project:
         Returns:
             Project info in JSON format
         """
-        return self._client.get(routes.project.info, id=self.model_uuid)
+        return self.client.get(routes.project.info, id=self.model_uuid)
 
     def get_latest_model(self):
         """Returns the currently active model of this project.
@@ -155,9 +155,26 @@ class Project:
         Returns:
             A list of available data sources.
         """
-        response = self._client.get(routes.data.list)
+        response = self.client.get(routes.data.list)
         checkSDKResponse(response)
         return response['results']
+
+    def get_data_info(self, data_uuid):
+        """Returns info of a given data source.
+
+        The returned dict contains information about the
+        data source depending on the source's permissions set by
+        the data owner.
+
+        Args:
+            data_uuid (:obj:`str`): The UUID of the requested data source
+
+        Returns:
+            The data source information in JSON format
+        """
+        response = self.client.get(routes.data.info, id=data_uuid)
+        checkSDKResponse(response)
+        return response
 
     def attach_data_source(self, data_source_uuid):
         """Attaches a new data source to the project.
@@ -165,7 +182,7 @@ class Project:
         Args:
             data_source (:obj:`str`) The UUID of the new source to attach
         """
-        response = self._client.post(
+        response = self.client.post(
             routes.data.attach,
             id=self.model_uuid,
             data={'data_source_uuid': data_source_uuid})
@@ -180,7 +197,7 @@ class Project:
         Returns:
             The API response in JSON format
         """
-        return self._client.post(routes.project.deploy, id=self.model_uuid)
+        return self.client.post(routes.project.deploy, id=self.model_uuid)
 
     def set_connection(self, host='localhost', port=9000):
         """Updates the connection string for the API communication.
@@ -191,7 +208,7 @@ class Project:
             host (:obj:`str`): The host of the DQ0 CLI API Server
             port (int): The port of the DQ0 CLI API Server
         """
-        self._client.set_connection(host=host, port=port)
+        self.client.set_connection(host=host, port=port)
 
     def set_model_code(self, setup_data=None, setup_model=None, parent_class_name=None):  # noqa: C901
         """Sets the user defined setup_model and setup_data functions.
