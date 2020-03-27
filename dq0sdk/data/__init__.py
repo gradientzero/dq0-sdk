@@ -5,18 +5,16 @@ This package contains the data connector abstract classes and
 implementing subclasses.
 """
 
-from . import adult, csv, user
+from . import census, cifar10, csv, user, utils
 from .connector import Connector
 from .source import Source
 
 __all__ = [
     'Connector',
     'Source',
-    'adult',
+    'census',
     'csv',
     'user',
-    'census_data',
-    '20_newsgroups',
     'cifar10',
     'utils'
 ]

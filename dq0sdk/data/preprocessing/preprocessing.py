@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-""" Data preprocessing utils.
+"""Data preprocessing utils.
 
 Collection of functions for preprocessing datasets, including data-scrubbing,
 extraction of count features from corpora of documents, missing-data

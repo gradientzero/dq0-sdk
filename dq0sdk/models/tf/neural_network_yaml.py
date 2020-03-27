@@ -4,18 +4,7 @@
 Basic tensorflow neural network implementation using Keras
 for image classification using a yaml config
 
-Todo:
-    * Protect keras compile and fit functions
-
-Example:
-
-
-:Authors:
-    Wolfgang Groß <wg@gradient0.com>
-    Jona Boeddinhaus <jb@gradient0.com>
-    Artur Susdorf <as@gradient0.com>
-
-Copyright 2019, Gradient Zero
+Copyright 2020, Gradient Zero
 All rights reserved
 """
 
@@ -23,19 +12,36 @@ import logging
 import sys
 
 from dq0sdk.models.model import Model
+from dq0sdk.utils import YamlConfig
 from dq0sdk.utils.managed_classes import custom_objects
 from dq0sdk.utils.managed_classes import losses
 from dq0sdk.utils.managed_classes import optimizers
-from dq0sdk.utils.utils import YamlConfig
 
 from tensorflow import keras
-
-# from tensorflow_privacy.privacy.optimizers import dp_optimizer
 
 logger = logging.getLogger()
 
 
 class NeuralNetworkYaml(Model):
+    """Neural Network defined by Yaml file.
+
+    Note:
+        fit, predict, and evaluate functions will be overriden at runtime
+        when executed inside the DQ0 quarantine instance.
+
+    Args:
+        model_path (:obj:`str`): path of model (save / load)
+        yaml_path (:obj:`str`): path to the model definition file.
+
+    Attributes:
+        model_type (:obj:`str`): type of this model instance. Options: 'keras'.
+        yaml_config (:obj:`dq0sdk.utils.YamlConfig`): yaml config reader
+        yaml_dict (:obj:`dict`): Parsed yaml config dictionary.
+        model_path (:obj:`str`): path of model (save / load)
+        model (:obj:`tf.Keras.Sequential`): the actual keras model.
+        custom_objects (:obj:`dict`): A dictionary of additional model objects.
+
+    """
     def __init__(self, model_path=None, yaml_path=None):
         super().__init__(model_path)
         self.model_type = 'keras'
@@ -90,7 +96,7 @@ class NeuralNetworkYaml(Model):
         other tasks that dont need to be repeated for every training run.
 
         Args:
-            augmentation (bool): applies image augmenttion to training data
+            augment (bool): applies image augmenttion to training data
         """
         pass
 
@@ -117,21 +123,8 @@ class NeuralNetworkYaml(Model):
             logger.error('model_from_yaml: {}'.format(e))
             sys.exit(1)
 
-    def prepare(self):
-        """called before model fit on every run.
-
-        Implementing child classes can use this method to prepare
-        data for model training (preprocess data).
-
-        Args:
-            kwargs (:obj:`dict`): dictionary of optional arguments
-        """
-        pass
-
     def fit(self):
         """Model fit function.
-
-        This method is final. Signature will be checked at runtime!
 
         Args:
             self.X_train: Input data. It could be:
@@ -158,47 +151,10 @@ class NeuralNetworkYaml(Model):
             epochs=self.epochs,
             **self.fit_kwargs,)
 
-    def fit_dp(self):
-        """Model fit function.
-
-        Implementing child classes will perform model fitting here.
-
-        This is the differential private training version.
-        TODO: discuss if we need both fit and fit_dp
-
-        The implemented child class version will be final (non-derivable).
-
-        Args:
-            self.X_train: Input data. It could be:
-                A Numpy array (or array-like), or a list of arrays (in case the model has multiple inputs).
-                A TensorFlow tensor, or a list of tensors (in case the model has multiple inputs).
-                A dict mapping input names to the corresponding array/tensors, if the model has named inputs.
-                A tf.data dataset. Should return a tuple of either (inputs, targets) or (inputs, targets, sample_weights).
-                A generator or keras.utils.Sequence returning (inputs, targets) or (inputs, targets, sample weights).
-                A more detailed description of unpacking behavior for iterator types (Dataset, generator, Sequence) is given below.
-                See https://www.tensorflow.org/api_docs/python/tf/keras/Model#evaluate
-            self.y_train: Target data.
-                Like the input data x, it could be either Numpy array(s) or TensorFlow tensor(s).
-                It should be consistent with x (you cannot have Numpy inputs and tensor targets, or inversely).
-                If x is a dataset, generator, or keras.utils.Sequence instance, y should not be
-                specified (since targets will be obtained from x).
-        """
-        self.model.compile(optimizer=self.dp_optimizer,
-                           loss=self.loss,
-                           metrics=self.metrics)
-
-        self.model.fit(
-            self.X_train,
-            self.y_train,
-            epochs=self.dp_epochs,
-            **self.fit_kwargs,)
-
     def predict(self, x):
         """Model predict function.
 
         Model scoring.
-
-        This method is final. Signature will be checked at runtime!
 
         Args:
             x: Input data. It could be:
@@ -219,8 +175,6 @@ class NeuralNetworkYaml(Model):
 
     def evaluate(self, test_data=True):
         """Model predict and evluate.
-
-        This method is final. Signature will be checked at runtime!
 
         Args:
             self.X_train/self.X_test: Input data. It could be:
@@ -268,7 +222,7 @@ class NeuralNetworkYaml(Model):
         self.setup_model()
 
         # fit
-        self.fit_dp()
+        self.fit()
 
         # evaluate
         evaluation = self.evaluate(test_data=False)
