@@ -4,19 +4,17 @@ Adult dataset example for cli.
 data source example
 
 Example:
-    ```bash
-    ./dq0 project create --name demo
-    cd demo
-    copy user_source.py to demo/data/
-    copy user_model.py to demo/model/
-    ../dq0 data list
-    ../dq0 model attach --id <dataset id>
-    ../dq0 project deploy
-    ../dq0 model train
-    ../dq0 model state
-    ../dq0 model predict --input-path </path/to/numpy.npy>
-    ../dq0 model state
-    ```
+    >>> ./dq0 project create --name demo # doctest: +SKIP
+    >>> cd demo # doctest: +SKIP
+    >>> copy user_source.py to demo/data/ # doctest: +SKIP
+    >>> copy user_model.py to demo/model/ # doctest: +SKIP
+    >>> ../dq0 data list # doctest: +SKIP
+    >>> ../dq0 model attach --id <dataset id> # doctest: +SKIP
+    >>> ../dq0 project deploy # doctest: +SKIP
+    >>> ../dq0 model train # doctest: +SKIP
+    >>> ../dq0 model state # doctest: +SKIP
+    >>> ../dq0 model predict --input-path </path/to/numpy.npy> # doctest: +SKIP
+    >>> ../dq0 model state # doctest: +SKIP
 
 Copyright 2020, Gradient Zero
 All rights reserved

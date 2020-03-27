@@ -6,7 +6,7 @@ Subpackages
 
 .. toctree::
 
-   dq0sdk.examples.adult_dataset
+   dq0sdk.examples.census
 
 Module contents
 ---------------

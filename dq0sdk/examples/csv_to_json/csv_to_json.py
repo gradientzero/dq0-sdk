@@ -2,10 +2,8 @@
 """Example of dp stats for CSVSource using adult.data
 
 Example:
-    ```bash
-    ../dq0 data list
-    ../dq0 data info --uuid <UUID-OF-SOURCE>
-    ```
+    >>> ../dq0 data list # doctest: +SKIP
+    >>> ../dq0 data info --uuid <UUID-OF-SOURCE> # doctest: +SKIP
 
 Copyright 2020, Gradient Zero
 All rights reserved
