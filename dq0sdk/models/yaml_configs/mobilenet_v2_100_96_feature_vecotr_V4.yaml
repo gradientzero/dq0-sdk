@@ -1,0 +1,75 @@
+PREPROCESSING:
+  datagen_kwargs: 
+    rescale: !!python/float 0.00392156862745098  # or 1/255
+    validation_split: !!python/float 0.2
+  train_datagen: 
+    rotation_range: 40
+    horizontal_flip: True
+    width_shift_range: 0.2
+    height_shift_range: 0.2
+    shear_range: 0.2
+    zoom_range: 0.2
+  dataflow_kwargs: 
+    target_size: !!python/tuple [96,96]
+    batch_size: 32
+    interpolation: 'bilinear'
+  train_dataflow: 
+    subset: 'training'
+    shuffle: True
+  development_dataflow: 
+    subset: 'validation'
+    shuffle: False
+  test_dataflow: 
+    shuffle: False
+
+MODEL:
+  GRAPH:
+    config:
+      layers:
+      - class_name: KerasLayer
+        config:
+          batch_input_shape: !!python/tuple
+          - null
+          - 96
+          - 96
+          - 3
+          dtype: float32
+          handle: 'https://tfhub.dev/google/imagenet/mobilenet_v2_100_96/feature_vector/4'
+          name: keras_layer
+          trainable: false
+      - class_name: Dropout
+        config:
+          rate: 0.2
+      - class_name: Dense
+        config:
+          activation: softmax
+          kernel_regularizer:
+            class_name: L1L2
+            config:
+              l1: 0.0
+              l2: 9.999999747378752e-05
+          units: null
+  OPTIMIZER:
+    optimizer: SGD
+    kwargs:
+      learning_rate: 0.15
+  DP_OPTIMIZER:
+    optimizer: DPGradientDescentGaussianOptimizer
+    kwargs:
+      learning_rate: 0.15
+      noise_multiplier: 10
+      l2_norm_clip: 1.5
+      num_microbatches: 1
+  LOSS:
+    loss: CategoricalCrossentropy
+    kwargs:
+      label_smoothing: 0.1
+  METRICS:
+    - 'accuracy'
+    - 'mse'
+
+FIT:
+  epochs: 1
+
+FIT_DP:
+  epochs: 1
