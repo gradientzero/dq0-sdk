@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
-"""
-Adult dataset loading
+"""CIFAR10 data source implementation.
 
-:Authors:
-    Wolfgang Groß <wg@gradient0.com>
-    Paolo Campigotto <pc@gradient0.com>
+More information on CIFAR10: https://www.cs.toronto.edu/~kriz/cifar.html
 
-Copyright 2019, Gradient Zero
+Copyright 2020, Gradient Zero
 """
+
+import logging
 
 from dq0sdk.data.preprocessing import preprocessing
 from dq0sdk.data.source import Source
@@ -20,23 +19,47 @@ import pandas as pd
 
 import tensorflow as tf
 
+logger = logging.getLogger()
+
 
 class CIFAR10Source(Source):
+    """Data Source for CIFAR10 dataset.
 
-    def __init__(self, **kwargs):
-        super().__init__(name='CIFAR10', **kwargs)
+    From the CIFAR description: The CIFAR-10 dataset consists of 60000 32x32
+    colour images in 10 classes, with 6000 images per class. There are 50000
+    training images and 10000 test images.
+
+    Attributes:
+        class_names (:obj:`list`): List of CIFAR class names to use
+
+    """
+    def __init__(self):
+        super().__init__()
         self.class_names = ['airplane', 'automobile', 'bird', 'cat', 'deer',
                             'dog', 'frog', 'horse', 'ship', 'truck']
 
     def read(self, num_instances_to_load=None, num_images_to_plot=None):
-        """
+        """Read CIFAR10 data.
 
-        :param num_instances_to_load:
-        :param num_images_to_plot:
-        :return:
-        """
+        Read the CIFAR10 datset with tf.keras.datasets.cifar10.load_data()
 
-        print('\nLoad CIFAR10 dataset')
+        Note:
+            To first load the dataset an internet connection is required. This
+            is not allowed in DQ0. The initial loading should therefore be
+            performed outside of the quarantine. Once loaded the locally cached
+            version is used.
+
+        Args:
+            num_instances_to_load (int, optional): Optional number of maximum instances
+            num_images_to_plot (int, optional): Optionally plot n images
+
+        Returns:
+            X_train_np_a (:obj:`numpy.ndarray`): X train data
+            X_test_np_a (:obj:`numpy.ndarray`): X test data
+            y_train_np_a (:obj:`numpy.ndarray`): y train data
+            y_test_np_a (:obj:`numpy.ndarray`): y test data
+        """
+        logger.debug('Load CIFAR10 dataset')
 
         (X_train_np_a, y_train_np_a), (X_test_np_a, y_test_np_a) = \
             tf.keras.datasets.cifar10.load_data()
@@ -47,10 +70,10 @@ class CIFAR10Source(Source):
             X_test_np_a = X_test_np_a[:num_instances_to_load]
             y_test_np_a = y_test_np_a[:num_instances_to_load]
 
-        print('Train-dataset size: X=%s, y=%s' % (X_train_np_a.shape,
-                                                  y_train_np_a.shape))
-        print('Test-dataset size: X=%s, y=%s' % (X_test_np_a.shape,
-                                                 y_test_np_a.shape))
+        logger.debug('Train-dataset size: X=%s, y=%s' % (X_train_np_a.shape,
+                                                         y_train_np_a.shape))
+        logger.debug('Test-dataset size: X=%s, y=%s' % (X_test_np_a.shape,
+                                                        y_test_np_a.shape))
 
         if num_images_to_plot is not None:
             self._plot_first_few_images(X_train_np_a, y_train_np_a,
@@ -60,7 +83,7 @@ class CIFAR10Source(Source):
 
     def _plot_first_few_images(self, X_train_np_a, y_train_np_a,
                                num_images_to_plot):
-
+        """Plot the num_images_to_plot first images."""
         plt.figure(figsize=(10, 10))
         for i in range(num_images_to_plot):
             plt.subplot(np.ceil(num_images_to_plot / 5), 5, i + 1)
@@ -75,9 +98,19 @@ class CIFAR10Source(Source):
 
     def get_preprocessed_X_y_train_and_X_y_test(self,
                                                 num_instances_to_load=None,
-                                                num_images_to_plot=None
-                                                ):
+                                                num_images_to_plot=None):
+        """Loads and preprocesses the data.
 
+        Args:
+            num_instances_to_load (int, optional): Optional number of maximum instances
+            num_images_to_plot (int, optional): Optionally plot n images
+
+        Returns:
+            X_train_np_a (:obj:`numpy.ndarray`): X train data preprocessed
+            X_test_np_a (:obj:`numpy.ndarray`): X test data preprocessed
+            y_train_np_a (:obj:`numpy.ndarray`): y train data preprocessed
+            y_test_np_a (:obj:`numpy.ndarray`): y test data preprocessed
+        """
         X_train_np_a, X_test_np_a, y_train_np_a, y_test_np_a = \
             self.read(num_instances_to_load, num_images_to_plot)
 
@@ -92,7 +125,20 @@ class CIFAR10Source(Source):
 
     def preprocess(self, X_train_np_a, X_test_np_a, y_train_np_a, y_test_np_a,
                    force=False):
+        """Preprocess the loaded data.
 
+        Args:
+            X_train_np_a (:obj:`numpy.ndarray`): X train data
+            X_test_np_a (:obj:`numpy.ndarray`): X test data
+            y_train_np_a (:obj:`numpy.ndarray`): y train data
+            y_test_np_a (:obj:`numpy.ndarray`): y test data
+
+        Returns:
+            X_train_np_a (:obj:`numpy.ndarray`): X train data preprocessed
+            X_test_np_a (:obj:`numpy.ndarray`): X test data preprocessed
+            y_train_np_a (:obj:`numpy.ndarray`): y train data preprocessed
+            y_test_np_a (:obj:`numpy.ndarray`): y test data preprocessed
+        """
         # Make 1-dimensional arrays
         # y_train_np_a = np.ravel(y_train_np_a)
         # y_test_np_a = np.ravel(y_test_np_a)
@@ -109,25 +155,22 @@ class CIFAR10Source(Source):
     def save_preprocessed_tr_and_te_datasets(self, X_train, X_test,
                                              y_train, y_test,
                                              working_folder):
-        """
+        """Saves the preprocessed train and test datasets.
 
-        :param X_train: Pandas Dataframe or numpy array
-        :param X_test:  Pandas Dataframe or numpy array
-        :param y_train: Pandas Series or numpy (also non-dimensional) array
-        :param y_test: Pandas Series or numpy (also non-dimensional) array
-        :param working_folder: str with file path
-        :return:
+        Args:
+            X_train: Pandas Dataframe or numpy array
+            X_test:  Pandas Dataframe or numpy array
+            y_train: Pandas Series or numpy (also non-dimensional) array
+            y_test: Pandas Series or numpy (also non-dimensional) array
+            working_folder: str with file path
         """
-
         if isinstance(X_train, pd.DataFrame):
-
             pd.concat([X_train, y_train], axis=1).to_csv(
                 working_folder + 'preprocessed_training_data.csv', index=False)
             pd.concat([X_test, y_test], axis=1).to_csv(
                 working_folder + 'preprocessed_test_data.csv', index=False)
 
         elif isinstance(X_train, np.ndarray):
-
             if y_train.ndim < 2:
                 # transform one-dimensional array into column vector via
                 # newaxis
