@@ -5,11 +5,6 @@ The source class serves as the base class for all dq0sdk data sources.
 
 Implementing subclasses have to define at least read
 
-:Authors:
-    Jona Boeddinhaus <jb@gradient0.com>
-    Wolfgang Groß <wg@gradient0.com>
-    Artur Susdorf <as@gradient0.com>
-
 Copyright 2019, Gradient Zero
 All rights reserved
 """
@@ -24,6 +19,22 @@ class Source(ABC):
 
     Data sources classes provide a read method to read the data into memory or
     provide a data reader for the underlying source.
+
+    Args:
+        input_folder (:obj:`str`, optional): Path to the data
+
+    Attributes:
+        uuid (:obj:`str`): The universally unique identifier of the data source.
+        uuid (:obj:`str`): The data source's name
+        data (:obj:`pandas.DataFrame`): The loaded data
+        preprocessed_data (:obj:`pandas.DataFrame`): The preprocessed data
+        read_allowed (bool): True if this source can be read
+        meta_allowed (bool): True if this source provides meta information
+        types_allowed (bool): True if this source provides data type information
+        stats_allowed (bool): True if this source provides statistics
+        sample_allowed (bool): True if there is sample data for this source
+        input_folder (:obj:`str`): Path to the data
+
     """
     def __init__(self, input_folder=None):
         super().__init__()
@@ -39,39 +50,37 @@ class Source(ABC):
         self.input_folder = input_folder
 
     @abstractmethod
-    def read(self, force=False):
+    def read(self):
         """Read data sources
 
         This function should be used by child classes to read data or return
         a data handler to read streaming data.
 
-        Args:
-            force (bool): True to force re-read of the data.
-
         Returns:
             data read from the data source.
         """
         raise NotImplementedError()
 
     @abstractmethod
-    def preprocess(self, force=False, **kwargs):
+    def preprocess(self):
         """Preprocess the data
 
         This function should be used by child classes to perform certain
         preprocessing steps to prepare the data for later use.
 
-        Args:
-            force (bool): True to force re-read of the data.
-            kwargs (:obj:`dict`): dictionary of optional arguments.
-
         Returns:
-            data read from the data source.
+            preprocessed data
         """
         raise NotImplementedError()
 
     @abstractmethod
-    def to_json(self):
+    def to_json(self, epsilon=0.1):
         """Returns a json representation of this data sources information.
+
+        Args:
+            epsilon (float): Differential Privacy epsilon value. When called
+                inside the quarantine (from dq0-main) this value will always
+                be set to 0.1
 
         Returns:
             data source description as json.

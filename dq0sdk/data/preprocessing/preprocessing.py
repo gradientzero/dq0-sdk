@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
-"""
+"""Data preprocessing utils.
+
 Collection of functions for preprocessing datasets, including data-scrubbing,
 extraction of count features from corpora of documents, missing-data
 handling, etc.
 
-:Authors:
-    Paolo Campigotto <pc@gradient0.com>
-    Wolfgang Groß <wg@gradient0.com>
-Copyright 2019, Gradient Zero
+Copyright 2020, Gradient Zero
 """
 
 import sys
@@ -19,12 +17,28 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_selection import SelectKBest, chi2, mutual_info_classif
 
 
-def handle_missing_data(dataset_df, mode='imputation',
+def handle_missing_data(dataset_df,
+                        mode='imputation',
                         imputation_method_for_cat_feats='unknown',
                         imputation_method_for_quant_feats='median',
                         categorical_features_list=None,
                         quantitative_features_list=None):
+    """Fills missing data values.
 
+    Args:
+        dataset_df (:obj:`pandas.DataFrame`): the data frame to transform.
+        mode (:obj:`str`): either 'imputation' or 'dropping' to fill or drop missing values.
+        imputation_method_for_cat_feats (:obj:`str`): either 'unknown' or 'most_common_cat'.
+            'unkowon' will replace all missing categorical feature values by 'Unknown'.
+            'most_common_cat' will replace the missing values with the most common categorical feature.
+        imputation_method_for_quant_feats (:obj:`str`): Will replace the missing quantitative feature values
+            with either 'mean' or 'median' value.
+        categorical_features_list (:obj:`list`): list of categorical features
+        quantitative_features_list (:obj:`list`): list of quantitative features
+
+    Returns:
+        Transformed data frame.
+    """
     if mode.lower() == 'imputation':
 
         if categorical_features_list is not None:
@@ -69,7 +83,7 @@ def handle_missing_data(dataset_df, mode='imputation',
 
 
 def _drop_instances_with_missing_values(dataset_df):
-
+    """Helper function that drops missing values from the dataframe."""
     print('\nMissing values per feature:')
     print(util.missing_values_table(dataset_df))
 
@@ -81,12 +95,26 @@ def _drop_instances_with_missing_values(dataset_df):
 
 
 def train_test_split(X_df, y_ts, num_tr_instances):
-    #
-    # ASSUMPTION: train instances on top, test instances at the bottom
-    #
-    # TODO  Make this more robust by adding a column defining tr / test status
-    #       and split based on it rather than on above assumption
+    """Splits the given X and y data in train and test sets.
 
+    Assumption: train instances on top, test instances at the bottom
+
+    TODO:
+        Make this more robust by adding a column defining tr / test status
+        and split based on it rather than on above assumption
+
+    Args:
+        X_df (:obj:`pandas.DataFrame`): data frame containing the X values
+        y_ts (:obj:`pandas.DataFrame`): data frame containing the y values
+        num_tr_instances (int): The number of desired training instances in
+            the resulting split.
+
+    Returns:
+        X_train_df (:obj:`pandas.DataFrame`): X train split
+        X_test_df (:obj:`pandas.DataFrame`): X test split
+        y_train_ts (:obj:`pandas.DataFrame`): y train split
+        y_test_ts (:obj:`pandas.DataFrame`): y test split
+    """
     # recover original split
     X_train_df = X_df.iloc[:num_tr_instances, :]
     X_test_df = X_df.iloc[num_tr_instances:, :]
@@ -101,13 +129,15 @@ def train_test_split(X_df, y_ts, num_tr_instances):
 
 
 def extract_count_features_from_text_corpus(tr_data_list, test_data_list):
-    """
+    """Extracts count features from the given list of documents.
 
-    :param tr_data_list: list of text documents
-    :param test_data_list: list of text documents
-    :return: sparse Scipy matrices with the extracted features
-    """
+    Args:
+        tr_data_list (:obj:`list`): list of text documents
+        test_data_list (:obj:`list`): list of text documents
 
+    Returns:
+        Sparse Scipy matrices with the extracted features
+    """
     print(
         '\nExtracting count features from the training documents using a '
         'sparse vectorizer. Tfidf features extracted.')
@@ -140,6 +170,23 @@ def extract_count_features_from_text_corpus(tr_data_list, test_data_list):
 def univariate_feature_selection(num_top_ranked_feats_to_keep, X_train,
                                  y_train, X_test, technique,
                                  feature_names_list=None, verbose=False):
+    """Univariate feature selection.
+
+    Args:
+        num_top_ranked_feats_to_keep (int): Keep top n features
+        X_train (:obj:`numpy.ndarray`): Training input samples
+        y_train (:obj:`numpy.ndarray`): Target values
+        X_test (:obj:`numpy.ndarray`): Test samples
+        technique (:obj:`str`): Selection technique.
+            Either 'chi-squared test' or 'mutual information'.
+        feature_names_list (:obj:`list`): List of features.
+        verbose (bool): True to print output.
+
+    Returns:
+        X_train (:obj:`numpy.ndarray`): transformed X train set
+        X_test (:obj:`numpy.ndarray`): transformed X test set
+        selected_feature_lsit (:obj:`list`): List of selected features
+    """
 
     print('\nUnivariate feature-selection: keep only the top',
           num_top_ranked_feats_to_keep, 'features '
@@ -173,13 +220,15 @@ def univariate_feature_selection(num_top_ranked_feats_to_keep, X_train,
 
 
 def scale_pixels(X_np_a, max_pixel_intensity):
-    """
-    Scale pixel values to be in [0, 1] to help gradient-descent optimization.
-    :param X_np_a: Matrix of pixel intensities
-    :param max_pixel_intensity: normalization constant set by user
-    :return: matrix of scaled intensities of the pixels
-    """
+    """Scale pixel values to be in [0, 1] to help gradient-descent optimization.
 
+    Args:
+        X_np_a (:obj:`numpy.ndarray`): Matrix of pixel intensities
+        max_pixel_intensity (int): normalization constant set by user
+
+    Returns:
+        matrix of scaled intensities of the pixels
+    """
     print('\nScale pixel values to be in [0, 1] to help gradient-descent opt.')
     print('\tMax_pixel_intensity_detected:', X_np_a.max())
     print('\tNormalization constant used:', max_pixel_intensity)

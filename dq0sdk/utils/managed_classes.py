@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Managed classes of custom_objects, Optimizers and Losses
 
 Needed to:
@@ -9,6 +10,9 @@ from core to the sdk after any edits.
 
 TODO: check how the none Gaussian optimizers work.
 For now we just stick to Gaussian versions.
+
+Copyright 2020, Gradient Zero
+All rights reserved
 """
 import tensorflow
 
@@ -24,9 +28,6 @@ optimizers = {
     'Adagrad': tensorflow.keras.optimizers.Adagrad,
     'Adam': tensorflow.keras.optimizers.Adam,
     'SGD': tensorflow.keras.optimizers.SGD,
-    # 'DPAdagradOptimizer': tensorflow_privacy.privacy.optimizers.dp_optimizer.DPAdagradOptimizer,  # to be checked how they work
-    # 'DPAdamOptimizer': tensorflow_privacy.privacy.optimizers.dp_optimizer.DPAdamOptimizer,
-    # 'DPGradientDescentOptimizer': tensorflow_privacy.privacy.optimizers.dp_optimizer.DPGradientDescentOptimizer,
     'DPAdagradGaussianOptimizer': tensorflow_privacy.privacy.optimizers.dp_optimizer.DPAdagradGaussianOptimizer,
     'DPAdamGaussianOptimizer': tensorflow_privacy.privacy.optimizers.dp_optimizer.DPAdamGaussianOptimizer,
     'DPGradientDescentGaussianOptimizer': tensorflow_privacy.privacy.optimizers.dp_optimizer.DPGradientDescentGaussianOptimizer,
