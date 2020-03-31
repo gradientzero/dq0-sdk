@@ -12,7 +12,7 @@ Copyright 2020, Gradient Zero
 All rights reserved
 """
 
-from dq0sdk.data.cifar10 import CIFAR10Source
+from dq0sdk.data.image.cifar10 import CIFAR10Source
 
 
 class UserSource(CIFAR10Source):

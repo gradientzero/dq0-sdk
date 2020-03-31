@@ -144,7 +144,7 @@ class ImageSource(Source):
 
         return {
             "name": self.name,
-            "type": 'cifar',
+            "type": 'image',
             "shape": shape,
             "permissions": permissions
         }
