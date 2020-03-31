@@ -3,25 +3,14 @@
 
 The connector class serves as the main data connection manager.
 It provides methods to list available data sources and reads them via
-their specific data source implementaions.
-
-Attributes:
-    sources (list): List of available data sources.
+their specific data source implementations.
 
 Example:
-    connector = dq0sdk.data.Connector()
-    sources = connector.list()
-    data = sources[0].read()
+    >>> connector = dq0sdk.data.Connector() # doctest: +SKIP
+    >>> sources = connector.list() # doctest: +SKIP
+    >>> data = sources[0].read() # doctest: +SKIP
 
-Todo:
-    * Implement _detect_sources()
-
-:Authors:
-    Jona Boeddinhaus <jb@gradient0.com>
-    Wolfgang Groß <wg@gradient0.com>
-    Artur Susdorf <as@gradient0.com>
-
-Copyright 2019, Gradient Zero
+Copyright 2020, Gradient Zero
 All rights reserved
 """
 import logging
@@ -36,12 +25,19 @@ class Connector():
     """Data connector. Manages all data sources available through the SDK.
 
     Args:
-        dataconfig: Data source configuration in yaml format.
+        dataconfig (:obj:`dict`): Dictonary of data configuration from YAML.
+        working_dir (:obj:`str`, optional): Current working directory.
+
+    Attributes:
+        sources (:obj:`list`): List of available data sources.
+        dataconfig (:obj:`dict`): Dictonary of data configuration.
+
     """
-    def __init__(self, dataconfig=None):
+    def __init__(self, dataconfig=None, working_dir=None):
         super().__init__()
         self.sources = None
         self.dataconfig = dataconfig
+        self.working_dir = working_dir if working_dir is not None else ''
 
     def list(self, reload=False):
         """List available data sources
@@ -87,7 +83,7 @@ class Connector():
                 sample_allowed = 'read' in source['settings']['allowed_actions']
 
             if source['type'] == 'csv':
-                csv = CSVSource(os.path.join(self.dataconfig['settings']['csv_base_dir'], source['path']))
+                csv = CSVSource(os.path.join(self.working_dir, self.dataconfig['settings']['csv_base_dir'], source['path']))
                 csv.name = name
                 csv.read_allowed = read_allowed
                 csv.meta_allowed = meta_allowed

@@ -3,14 +3,9 @@
 
 The Model class serves as the base class for all models.
 
-Implementing subclasses have to define setup, fit and predict fucntions.
+Implementing subclasses have to define setup_data and setup_model functions.
 
-:Authors:
-    Jona Boeddinhaus <jb@gradient0.com>
-    Wolfgang Groß <wg@gradient0.com>
-    Artur Susdorf <as@gradient0.com>
-
-Copyright 2019, Gradient Zero
+Copyright 2020, Gradient Zero
 All rights reserved
 """
 
@@ -28,7 +23,14 @@ class Model(ABC):
     ML model functions.
 
     Args:
-        model_path (str): Path to the model save destination.
+        model_path (:obj:`str`): Path to the model save destination.
+
+    Attributes:
+        model_type (:obj:`str`): type of this model instance. Options: 'keras'.
+        model_path (:obj:`str`): path of model (save / load)
+        uuid (:obj:`str`): UUID of this model.
+        data_sources (:obj:`dict`): dict of attached data sources.
+
     """
     def __init__(self, model_path):
         super().__init__()

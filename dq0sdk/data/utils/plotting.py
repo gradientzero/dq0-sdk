@@ -1,8 +1,7 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+"""Helper functions for plotting data analysis results.
 
-"""
-@author: Paolo Campigotto
+Copyright 2020, Gradient Zero
+All rights reserved
 """
 
 from matplotlib import pyplot as plt
@@ -17,31 +16,31 @@ from sklearn import metrics, tree
 from sklearn.utils.multiclass import unique_labels
 
 
-def plot_confusion_matrix_for_scikit_classifier(
-    classifier,
-    X_test_np_a,
-    y_test_np_a,
-    class_names=None,
-    xticks_rotation='horizontal',  # 'vertical', 'horizontal', float
-    part_of_fn_describing_matrix='',
-    output_folder='../data/output/'
-):
-    #
-    # classifier must be a Scikit trained classifier! E.g., after creating the
-    # classifier object, its fit() method had been invoked.
-    #
-    # class_names = None  # list of labels to index the confusion matrix. This
-    # may be used to reorder or select a subset of labels. If None is given,
-    # those that appear at least once in y_true or y_pred are used in sorted
-    # order.
-    # To get the labels:
-    #      class_names = sklearn.utils.multiclass.unique_labels(y_true)
-    # To use only the labels that appear in the data:
-    #      class_names = sklearn.utils.multiclass.unique_labels(y_true, y_pred)
-    #
-    # xticks_rotation can be 'horizontal', 'vertical' or float
-    #
+def plot_confusion_matrix_for_scikit_classifier(classifier,
+                                                X_test_np_a,
+                                                y_test_np_a,
+                                                class_names=None,
+                                                xticks_rotation='horizontal',  # 'vertical', 'horizontal', float
+                                                part_of_fn_describing_matrix='',
+                                                output_folder='../data/output/'):
+    """Plots a confusion matrix for the scikit classifier.
 
+    Args:
+        classifier: a Scikit trained classifier! E.g., after creating the
+            classifier object, its fit() method had been invoked.
+        X_test_np_a (:obj:`numpy.ndarray`): X test data
+        y_test_np_a (:obj:`numpy.ndarray`): y test data
+        class_names (:obj:`list`): optional list of labels to index the confusion matrix.
+            This may be used to reorder or select a subset of labels. If None is given,
+            those that appear at least once in y_true or y_pred are used in sorted order.
+            To get the labels:
+                class_names = sklearn.utils.multiclass.unique_labels(y_true)
+            To use only the labels that appear in the data:
+                class_names = sklearn.utils.multiclass.unique_labels(y_true, y_pred)
+        xticks_rotation: can be 'horizontal', 'vertical' or float
+        part_of_fn_describing_matrix (:obj:`str`): function description for matrix.
+        output_folder (:obj:`str`): Path to the output folder for the matrix png image.
+    """
     titles_options = [('Confusion matrix', None),
                       ('Normalized confusion matrix', 'true')]
     for title, normalize in titles_options:
@@ -65,7 +64,13 @@ def plot_confusion_matrix_for_scikit_classifier(
 
 
 def _save_plotted_cm(part_of_fn_describing_matrix, title, output_folder):
+    """Saves the confusion matrix as PNG image.
 
+    Args:
+        part_of_fn_describing_matrix (:obj:`str`): File part description
+        title (:obj:`str`): Title of the matrix
+        output_folder (:obj:`str`): Path to the output folder for the matrix png image.
+    """
     if part_of_fn_describing_matrix != '':
         if not part_of_fn_describing_matrix.startswith('_for_'):
             part_of_fn_describing_matrix = '_for_' + \
@@ -77,15 +82,22 @@ def _save_plotted_cm(part_of_fn_describing_matrix, title, output_folder):
     return file_path
 
 
-def plot_confusion_matrix(y_true, y_pred, output_folder,
+def plot_confusion_matrix(y_true,
+                          y_pred,
+                          output_folder,
                           xticks_rotation='horizontal',
                           cmap=plt.cm.Blues,
                           part_of_fn_describing_matrix=''):
-    """
-    Print and plot the confusion matrix
+    """Print and plot the confusion matrix.
 
+    Args:
+        y_true (:obj:`numpy.ndarray`): target y values.
+        y_pred (:obj:`numpy.ndarray`): predicted y values.
+        output_folder (:obj:`str`): Path to the output folder for the matrix png image.
+        xticks_rotation: can be 'horizontal', 'vertical' or float
+        cmap: Matplotlib color map.
+        part_of_fn_describing_matrix (:obj:`str`): function description for matrix.
     """
-
     titles_options = [('Confusion matrix', None),
                       ('Normalized confusion matrix', 'true')]
     for title, normalize in titles_options:
@@ -137,23 +149,30 @@ def plot_confusion_matrix(y_true, y_pred, output_folder,
 
 
 def compute_confusion_matrix(y_true, y_pred, normalize):
+    """Computes the confusion matrix.
 
-    # only use the labels that appear in the data
+    Pass the labels list to the confusion_matrix function in order to
+    index the confusion matrix based on the order of labels in the list.
+    Using labels_list ensures that the confusion matrix matches the ticks in
+    the figure plotting it.
+
+    From Scikit documentation:
+        labels: array-like of shape (n_classes), default=None
+        List of labels to index the matrix.
+        This may be used to reorder or select a subset of
+        labels. If None is given, those that appear at least
+        once in y_true or y_pred are used in sorted order.
+
+    Args:
+        y_true (:obj:`numpy.ndarray`): target y values.
+        y_pred (:obj:`numpy.ndarray`): predicted y values.
+        normalize (bool): True to normalize the matrix.
+    """
+    # Only use the labels that appear in the data:
     labels_list = list(unique_labels(list(y_true) + list(y_pred)))
-    # or u can also use np.unique()
+
+    # Or u can also use np.unique()
     cm = metrics.confusion_matrix(y_true, y_pred, labels_list)
-    # Pass the labels list to the confusion_matrix function in order to
-    # index the confusion matrix based on the order of labels in the list.
-    # Using labels_list ensures that the confusion matrix matches the ticks in
-    # the figure plotting it.
-    #
-    # From Scikit documentation:
-    #       labels: array-like of shape (n_classes), default=None
-    #               List of labels to index the matrix.
-    #               This may be used to reorder or select a subset of
-    #               labels. If None is given, those that appear at least
-    #               once in y_true or y_pred are used in sorted order.
-    #
 
     if normalize:
         # cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
@@ -168,9 +187,20 @@ def compute_confusion_matrix(y_true, y_pred, normalize):
     return cm_df, labels_list
 
 
-def scatterplot(x, y, working_folder='../data/working/', hue=None,
+def scatterplot(x,
+                y,
+                working_folder='../data/working/',
+                hue=None,
                 part_of_fn_describing_data=''):
+    """Plots a scatterplot graph with seaborn.
 
+    Args:
+        x: names of x variables in data or vector data
+        y: names of y variables in data or vector data
+        working_folder (:obj:`str`): working directory
+        hue: Grouping variable that will produce points with different colors
+        part_of_fn_describing_data (:obj:`str`): function description for plot.
+    """
     fig = plt.figure()
     sns.set(style="white")
     sns.scatterplot(x=x,
@@ -192,7 +222,12 @@ def scatterplot(x, y, working_folder='../data/working/', hue=None,
 
 
 def plot_decision_tree(dec_tree, folder):
+    """Plot scikit-learn decision tree.
 
+    Args:
+        dec_tree: The decision tree to plot.
+        folder (:obj:`str`): Folder to save the figure to.
+    """
     fig = plt.figure()
     tree.plot_tree(dec_tree)
     file_path = folder + 'Learned_decision_tree_attack_model.png'
@@ -202,7 +237,7 @@ def plot_decision_tree(dec_tree, folder):
 
 
 def _debug_cm_plot():
-
+    """Helper funtion to test the plotting utils."""
     import random
 
     num_preds = 50000

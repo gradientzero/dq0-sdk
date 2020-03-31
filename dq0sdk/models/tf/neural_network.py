@@ -3,35 +3,31 @@
 
 Basic tensorflow neural network implementation using Keras.
 
-Todo:
-    * Protect keras compile and fit functions
+This can be used as a base class for UserModel definitions.
 
 Example:
-    class MyAwsomeModel(dq0.models.tf.NeuralNetwork):
-        def init():
-            self.learning_rate = 0.3
+    >>> import dq0sdk.models.tf.NeuralNetwork # doctest: +SKIP
+    >>>
+    >>> class MyAwsomeModel(NeuralNetwork): # doctest: +SKIP
+    >>>     def init(): # doctest: +SKIP
+    >>>         self.learning_rate = 0.3 # doctest: +SKIP
+    >>>
+    >>>     def setup_data(): # doctest: +SKIP
+    >>>         # do something
+    >>>         pass # doctest: +SKIP
+    >>>
+    >>>     def setup_model(): # doctest: +SKIP
+    >>>         # freely deinfe the tf / keras model
+    >>>         pass # doctest: +SKIP
+    >>>
+    >>> if __name__ == "__main__": # doctest: +SKIP
+    >>>     myModel = MyAwsomeModel() # doctest: +SKIP
+    >>>     myModel.setup_data() # doctest: +SKIP
+    >>>     myModel.setup_model() # doctest: +SKIP
+    >>>     myModel.fit() # doctest: +SKIP
+    >>>     myModel.save() # doctest: +SKIP
 
-        def setup_data():
-            # do something
-            pass
-
-        def setup_model():
-            # freely deinfe the tf / keras model
-            pass
-
-    if __name__ == "__main__":
-        myModel = MyAwsomeModel()
-        myModel.setup_data()
-        myModel.setup_model()
-        myModel.fit()
-        myModel.save()
-
-:Authors:
-    Wolfgang Groß <wg@gradient0.com>
-    Jona Boeddinhaus <jb@gradient0.com>
-    Artur Susdorf <as@gradient0.com>
-
-Copyright 2019, Gradient Zero
+Copyright 2020, Gradient Zero
 All rights reserved
 """
 
@@ -46,6 +42,25 @@ class NeuralNetwork(Model):
 
     SDK users can use this class to create and train Keras models or
     subclass this class to define custom neural networks.
+
+    Note:
+        fit, predict, and evaluate functions will be overriden at runtime
+        when executed inside the DQ0 quarantine instance.
+
+    Attributes:
+        model_type (:obj:`str`): type of this model instance. Options: 'keras'.
+        model_path (:obj:`str`): path of model (save / load)
+        learning_rate (float): Learning rate for model fitting.
+        epochs (int): Number of epochs for model fitting.
+        num_microbatches (int): Number of microbatches in training.
+        verbose (int): Set greater than 0 to print output.
+        metrics (:obj:`list`): List of evaluation metrics.
+        model (:obj:`tf.Keras.Sequential`): the actual keras model.
+        X_train (:obj:`numpy.ndarray`): X training data
+        y_train (:obj:`numpy.ndarray`): y training data
+        X_test (:obj:`numpy.ndarray`, optional): X test data
+        y_test (:obj:`numpy.ndarray`, optional): y test data
+        input_dim (int): Number of input neurons.
     """
     def __init__(self, model_path):
         super().__init__(model_path)
@@ -60,41 +75,31 @@ class NeuralNetwork(Model):
         self.X_test = None
         self.y_train = None
         self.y_test = None
-        # Range possible: grid search, all combinations inside range
+        self.input_dim = None
 
-    def setup_data(self, **kwargs):
+    def setup_data(self):
         """Setup data function
 
         This function can be used by child classes to prepare data or perform
         other tasks that dont need to be repeated for every training run.
-
-        Args:
-            kwargs (:obj:`dict`): dictionary of optional arguments
         """
         pass
 
-    def setup_model(self, **kwargs):
+    def setup_model(self):
         """Setup model function
 
         Implementing child classes can use this method to define the
         Keras model.
-
-        Args:
-            kwargs (:obj:`dict`): dictionary of optional arguments
         """
         self.model = keras.Sequential([
-            keras.layers.Input(len(kwargs['feature_columns'])),
+            keras.layers.Input(self.input_dim),
             keras.layers.Dense(10, activation='tanh'),
             keras.layers.Dense(10, activation='tanh'),
             keras.layers.Dense(2, activation='softmax')]
         )
 
-    def fit(self, **kwargs):
+    def fit(self):
         """Model fit function.
-
-        Args:
-            kwargs (:obj:`dict`): dictionary of optional arguments.
-                preprocessed data, feature columns
         """
         optimizer = tf.keras.optimizers.SGD(learning_rate=self.learning_rate)
         loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
@@ -106,22 +111,17 @@ class NeuralNetwork(Model):
                        epochs=self.epochs,
                        verbose=self.verbose)
 
-    def predict(self, x, **kwargs):
+    def predict(self, x):
         """Model predict function.
 
         Model scoring.
-
-        This method is final. Signature will be checked at runtime!
-
-        Args:
-            kwargs (:obj:`dict`): dictionary of optional arguments.
 
         Returns:
             yhat: numerical matrix containing the predicted responses.
         """
         return self.model.predict(x)
 
-    def evaluate(self, test_data=True, verbose=0, **kwargs):
+    def evaluate(self, test_data=True, verbose=0):
         """Model predict and evluate.
 
         This method is final. Signature will be checked at runtime!
@@ -130,15 +130,13 @@ class NeuralNetwork(Model):
             test_data (bool): False to use train data instead of test
                 Default is True.
             verbose (int): Verbose level, Default is 0
-            kwargs (:obj:`dict`): dictionary of optional arguments.
 
         Returns:
-            metrics: to be defined!
+            evaluation metrics
         """
         x = self.X_test if test_data else self.X_train
         y = self.y_test if test_data else self.y_train
         batch_size = self.num_microbatches
-        # TODO: SEE fit_dp: make training robust for any number of minibatches
         num_minibatches = round(x.shape[0] / self.num_microbatches)
         x = x[:num_minibatches * self.num_microbatches]
         y = y[:num_minibatches * self.num_microbatches]
@@ -154,7 +152,7 @@ class NeuralNetwork(Model):
         Save the model in binary format on local storage.
 
         Args:
-            name (str): The name of the model
+            name (:obj:`str`): The name of the model
             version (int): The version of the model
         """
         self.model.save('{}/{}/{}.h5'.format(self.model_path, version, name),
@@ -166,7 +164,7 @@ class NeuralNetwork(Model):
         Load the model from local storage.
 
         Args:
-            name (str): The name of the model
+            name (:obj:`str`): The name of the model
             version (int): The version of the model
         """
         self.model = tf.keras.models.load_model(
