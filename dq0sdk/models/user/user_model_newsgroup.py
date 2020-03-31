@@ -18,7 +18,6 @@ Copyright 2019, Gradient Zero
 
 import logging
 
-from dq0sdk.data.preprocessing import preprocessing
 from dq0sdk.data.utils import util
 from dq0sdk.models.tf.neural_network import NeuralNetwork
 
@@ -35,7 +34,7 @@ logger = logging.getLogger()
 
 class UserModel(NeuralNetwork):
     """
-    Convolutional Neural Network model implementation for Cifar10
+    Convolutional Neural Network model implementation for "20 Newsgroups"
 
     SDK users instantiate this class to create and train Keras models or
     subclass this class to define custom neural networks.
@@ -46,15 +45,13 @@ class UserModel(NeuralNetwork):
     def __init__(self, model_path):
         super().__init__(model_path)
         self.model_type = 'keras'
-        self._classifier_type = 'cnn'
+        self._classifier_type = 'mlnn'
         self.label_encoder = None
 
         self.DP_enabled = False
         self.DP_epsilon = False
 
-    def _get_cnn_model(self, which_model='ml-leaks_paper'):
-
-        n_out = self._num_classes
+    def _get_cnn_model(self, n_out, which_model='ml-leaks_paper'):
 
         if util.case_insensitive_str_comparison(which_model, 'ml-leaks_paper'):
 
@@ -97,8 +94,9 @@ class UserModel(NeuralNetwork):
         return model
 
     def setup_model(self):
+
         self.learning_rate = 0.001  # 0.15
-        self.epochs = 50  # 50 in ML-leaks paper
+        self.epochs = 5  # 50 in ML-leaks paper
         self.verbose = 2
         self.metrics = ['accuracy']
         self.regularization_param = 1e-3
@@ -111,14 +109,36 @@ class UserModel(NeuralNetwork):
             #    self.regularization_param)
         }
 
-        # network topology.
-        # if self._classifier_type.startswith('DP-'):
-        #    network_type = self._classifier_type[3:]
-        # else:
-        #    network_type = self._classifier_type
-        # if util.case_insensitive_str_comparison(network_type, 'cnn'):
-        print('Setting up a multilayer convolution neural network...')
-        self.model = self._get_cnn_model()
+        print('Setting up a multilayer neural network...')
+        self.model = self._get_mlnn_model()
+
+    def _get_mlnn_model(self, which_model='ml-leaks_paper'):
+
+        n_in = self._num_features
+        n_out = self._num_classes
+
+        if util.case_insensitive_str_comparison(which_model, 'ml-leaks_paper'):
+            # https://github.com/AhmedSalem2/ML-Leaks/blob/master/classifier.py
+            num_units_hidden_layer = 128
+            model = tf.keras.Sequential([
+                tf.keras.layers.Input(n_in),
+                tf.keras.layers.Dense(num_units_hidden_layer,
+                                      activation='tanh',
+                                      **self.regularizer_dict
+                                      ),
+                tf.keras.layers.Dense(n_out, activation='softmax')
+            ]
+            )
+        else:
+            model = tf.keras.Sequential([
+                tf.keras.layers.Input(n_in),
+                tf.keras.layers.Dense(10, activation='tanh'),
+                tf.keras.layers.Dense(10, activation='tanh'),
+                tf.keras.layers.Dense(n_out, activation='softmax')]
+            )
+
+        model.summary()
+        return model
 
     def setup_data(self):
         # load data
@@ -128,10 +148,6 @@ class UserModel(NeuralNetwork):
         source = next(iter(self.data_sources.values()))
 
         X, y = source.read()
-        # X, y = source.read(num_instances_to_load=10000)
-
-        # preprocess
-        X = preprocessing.scale_pixels(X, 255)
 
         # check data format
         if isinstance(X, pd.DataFrame):
@@ -150,6 +166,8 @@ class UserModel(NeuralNetwork):
         if y.ndim == 2:
             # make non-dimensional array (just to avoid Warnings by Sklearn)
             y = np.ravel(y)
+
+        self._num_features = X.shape[1]
 
         # WARNING: np.nan, np.Inf in y are counted as classes by np.unique
         self._num_classes = len(np.unique(y))  # np.ravel(y)
