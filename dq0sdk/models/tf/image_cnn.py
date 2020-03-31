@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
-"""Neural Network model for CIFAR10 dataset.
+"""Neural Network model for image data sets like CIFAR10.
 
-Use this example to train a classifier on the CIFAR10 image data.
-
-More information on CIFAR10: https://www.cs.toronto.edu/~kriz/cifar.html
+Use this class to train a classifier on image data.
 
 Copyright 2019, Gradient Zero
 All rights reserved
@@ -11,7 +9,6 @@ All rights reserved
 
 import logging
 
-from dq0sdk.data.preprocessing import preprocessing
 from dq0sdk.data.utils import util
 from dq0sdk.models.tf.neural_network import NeuralNetwork
 
@@ -26,9 +23,9 @@ import tensorflow as tf
 logger = logging.getLogger()
 
 
-class CIFAR10Model(NeuralNetwork):
+class ImageCNN(NeuralNetwork):
     """
-    Convolutional Neural Network model implementation for Cifar10
+    Convolutional Neural Network model implementation for image data (e.g. Cifar10)
 
     SDK users instantiate this class to create and train Keras models or
     subclass this class to define custom neural networks.
@@ -95,7 +92,7 @@ class CIFAR10Model(NeuralNetwork):
     def setup_model(self):
         """Setup model function
 
-        Define the CIFAR CNN model.
+        Define the CNN model.
         """
         self.learning_rate = 0.001  # 0.15
         self.epochs = 50  # 50 in ML-leaks paper
@@ -123,7 +120,7 @@ class CIFAR10Model(NeuralNetwork):
     def setup_data(self):
         """Setup data function
 
-        Prepare the data for the CIFAR10 CNN.
+        Prepare the data for the CNN.
         """
         if len(self.data_sources) < 1:
             logger.error('No data source found')
@@ -132,9 +129,6 @@ class CIFAR10Model(NeuralNetwork):
 
         X, y = source.read()
         # X, y = source.read(num_instances_to_load=10000)
-
-        # preprocess
-        X = preprocessing.scale_pixels(X, 255)
 
         # check data format
         if isinstance(X, pd.DataFrame):
@@ -173,13 +167,3 @@ class CIFAR10Model(NeuralNetwork):
         self.y_train = y
         self.X_test = None
         self.y_test = None
-
-        print('\nAttached train dataset to user model. Feature matrix '
-              'shape:',
-              self.X_train.shape)
-        print('Class-labels vector shape:', self.y_train.shape)
-
-        if self.X_test is not None:
-            print('\nAttached test dataset to user model. Feature matrix '
-                  'shape:', self.X_test.shape)
-            print('Class-labels vector shape:', self.y_test.shape)
