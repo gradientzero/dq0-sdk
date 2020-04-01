@@ -38,10 +38,11 @@ class Connector():
     Args:
         dataconfig: Data source configuration in yaml format.
     """
-    def __init__(self, dataconfig=None):
+    def __init__(self, dataconfig=None, working_dir=None):
         super().__init__()
         self.sources = None
         self.dataconfig = dataconfig
+        self.working_dir = working_dir if working_dir is not None else ''
 
     def list(self, reload=False):
         """List available data sources
