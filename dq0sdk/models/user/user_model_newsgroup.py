@@ -49,7 +49,7 @@ class UserModel(NeuralNetwork):
         self.label_encoder = None
 
         self.DP_enabled = False
-        self.DP_epsilon = False
+        self.DP_epsilon = None
 
     def _get_cnn_model(self, n_out, which_model='ml-leaks_paper'):
 
@@ -96,7 +96,7 @@ class UserModel(NeuralNetwork):
     def setup_model(self):
 
         self.learning_rate = 0.001  # 0.15
-        self.epochs = 5  # 50 in ML-leaks paper
+        self.epochs = 50  # 50 in ML-leaks paper
         self.verbose = 2
         self.metrics = ['accuracy']
         self.regularization_param = 1e-3

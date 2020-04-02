@@ -50,7 +50,7 @@ class UserModel(NeuralNetwork):
         self.label_encoder = None
 
         self.DP_enabled = False
-        self.DP_epsilon = False
+        self.DP_epsilon = None
 
     def _get_cnn_model(self, which_model='ml-leaks_paper'):
 
