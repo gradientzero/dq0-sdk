@@ -1,12 +1,7 @@
 # -*- coding: utf-8 -*-
 """Neural network pytests.
 
-:Authors:
-    Jona Boeddinhaus <jb@gradient0.com>
-    Artur Susdorf <as@gradient0.com>
-    Wolfgang Groß <wg@gradient0.com>
-
-Copyright 2019, Gradient Zero
+Copyright 2020, Gradient Zero
 All rights reserved
 """
 

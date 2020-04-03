@@ -1,12 +1,7 @@
 # -*- coding: utf-8 -*-
 """TF Hub pretrained Models
 
-:Authors:
-    Wolfgang Groß <wg@gradient0.com>
-    Jona Boeddinhaus <jb@gradient0.com>
-    Artur Susdorf <as@gradient0.com>
-
-Copyright 2019, Gradient Zero
+Copyright 2020, Gradient Zero
 All rights reserved
 """
 
@@ -22,6 +17,11 @@ logger = logging.getLogger()
 
 
 class TFHub(NeuralNetworkYaml):
+    """Tensorflow Hub Network Model.
+
+    Uses NeuralNetworkYaml to read a TF Hub Yaml config
+    to define the model.
+    """
     def __init__(self, model_path=None, tf_hub_url=None):
         yaml_path = hub_models_dict[tf_hub_url]['yaml_path']
         super().__init__(model_path, yaml_path)
@@ -37,7 +37,7 @@ class TFHub(NeuralNetworkYaml):
         """Setup Predefined data
 
         args:
-            task (str): string specifying the task, i.e, im_clf or text_clf
+            task (:obj:`str`): string specifying the task, i.e, im_clf or text_clf
             augment (bool): augment training data
 
         returns:

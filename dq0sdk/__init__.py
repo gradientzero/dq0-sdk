@@ -7,7 +7,11 @@ This is the main dq0sdk package containing everything SDK related
 from . import data
 from . import models
 
+# dq0 sdk version
+version = '1.0'
+
 __all__ = [
+    'version',
     'data',
     'models'
 ]
