@@ -127,8 +127,9 @@ class CIFAR10Model(NeuralNetwork):
             logger.error('No data source found')
             return
         source = next(iter(self.data_sources.values()))
-
-        X, y = source.read()
+        data = source.read()
+        X, y = source.prepare_data(data, num_instances_to_load=60000)
+        
         # X, y = source.read(num_instances_to_load=10000)
 
         # preprocess
@@ -168,10 +169,10 @@ class CIFAR10Model(NeuralNetwork):
         y = y[:, np.newaxis]
 
         # set attributes
-        self.X_train = X
-        self.y_train = y
-        self.X_test = None
-        self.y_test = None
+        self.X_train = X[:50000]
+        self.y_train = y[:50000]
+        self.X_test = X[50000:]
+        self.y_test = y[50000:]
 
         print('\nAttached train dataset to user model. Feature matrix '
               'shape:',

@@ -10,7 +10,7 @@ Copyright 2019, Gradient Zero
 """
 
 from dq0sdk.data.preprocessing import preprocessing
-from dq0sdk.data.source import Source
+from dq0sdk.data.csv.csv_source import CSVSource
 
 from matplotlib import pyplot as plt
 
@@ -21,14 +21,14 @@ import pandas as pd
 import tensorflow as tf
 
 
-class CIFAR10Source(Source):
+class CIFAR10Source(CSVSource):
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, file_path, **kwargs):
+        super().__init__(file_path,**kwargs)
         self.class_names = ['airplane', 'automobile', 'bird', 'cat', 'deer',
                             'dog', 'frog', 'horse', 'ship', 'truck']
 
-    def read(self, num_instances_to_load=None, num_images_to_plot=None):
+    def prepare_data(self, data, num_instances_to_load=None, num_images_to_plot=None):
         """
 
         :param num_instances_to_load:
@@ -38,8 +38,13 @@ class CIFAR10Source(Source):
 
         print('\nLoad CIFAR10 dataset')
 
-        (X_train_np_a, y_train_np_a), (X_test_np_a, y_test_np_a) = \
-            tf.keras.datasets.cifar10.load_data()
+        #(X_train_np_a, y_train_np_a), (X_test_np_a, y_test_np_a) = \
+        #    tf.keras.datasets.cifar10.load_data()
+        X_train_np_a = data.iloc[:50000][data.columns[:-1]].values.reshape(50000,32,32,3)
+        X_test_np_a = data.iloc[50000:][data.columns[:-1]].values.reshape(10000,32,32,3)
+        y_train_np_a = data.iloc[:50000][data.columns[-1]].values#.reshape(50000,1)
+        y_test_np_a = data.iloc[50000:][data.columns[-1]].values#.reshape(10000,1)
+
 
         X_np_a, y_np_a = self._concatenate_tr_te_datasets(
             X_train_np_a, X_test_np_a, y_train_np_a, y_test_np_a)
