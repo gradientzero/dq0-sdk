@@ -23,3 +23,4 @@ class UserModel(ImageCNN):
     """
     def __init__(self, model_path):
         super().__init__(model_path)
+        # self.model_type = 'NeuralNetworkClassification' set in ImageCNN

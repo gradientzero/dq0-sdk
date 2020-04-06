@@ -44,7 +44,7 @@ class UserModel(NeuralNetwork):
     """
     def __init__(self, model_path):
         super().__init__(model_path)
-        self.model_type = 'keras'
+        self.model_type = 'NeuralNetworkClassification'
         self._classifier_type = 'mlnn'
         self.label_encoder = None
 
