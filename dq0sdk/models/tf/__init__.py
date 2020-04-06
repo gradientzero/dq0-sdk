@@ -14,5 +14,5 @@ __all__ = [
     'NeuralNetwork',
     'NeuralNetworkYaml',
     'TFHub',
-    'ImageCNN',
+    'ImageCNN'
 ]
