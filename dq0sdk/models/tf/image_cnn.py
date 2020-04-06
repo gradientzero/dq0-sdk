@@ -114,7 +114,7 @@ class ImageCNN(NeuralNetwork):
         # else:
         #    network_type = self._classifier_type
         # if util.case_insensitive_str_comparison(network_type, 'cnn'):
-        print('Setting up a multilayer convolution neural network...')
+        print('Setting up a convolution neural network...')
         self.model = self._get_cnn_model(self._num_classes)
 
     def setup_data(self):

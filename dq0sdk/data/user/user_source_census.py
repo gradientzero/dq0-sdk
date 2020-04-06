@@ -42,7 +42,7 @@ class UserSource(Source):
         self.features_to_drop_list = None
 
         # folder with the data files
-        self.input_folder = '../dq0-sdk/dq0sdk/data/census_data/data/'
+        self.input_folder = '../dq0-sdk/dq0sdk/data/csv/census/data/'
 
     def read(self):
         """
