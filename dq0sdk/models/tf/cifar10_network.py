@@ -10,7 +10,7 @@ import logging
 
 from dq0sdk.data.preprocessing import preprocessing
 from dq0sdk.data.utils import util
-from dq0sdk.models.tf.neural_network import NeuralNetwork
+from dq0sdk.models.tf.neural_network_multiclass_classification import NeuralNetworkMultiClassClassification
 
 import numpy as np
 
@@ -23,7 +23,7 @@ import tensorflow as tf
 logger = logging.getLogger()
 
 
-class CIFAR10Model(NeuralNetwork):
+class CIFAR10Model(NeuralNetworkMultiClassClassification):
     """Convolutional Neural Network model implementation for Cifar10
 
     SDK users instantiate this class to create and train Keras models or
@@ -38,7 +38,6 @@ class CIFAR10Model(NeuralNetwork):
     """
     def __init__(self, model_path, **kwargs):
         super().__init__(model_path)
-        self.model_type = 'keras'
         self._classifier_type = 'cnn'  # kwargs['classifier_type']
         self.label_encoder = None
         self.model_selection = 'ml-leaks_paper'
