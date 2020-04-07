@@ -7,12 +7,17 @@ All rights reserved
 
 import os
 import pickle
+import random
 import shutil
 import sys
 
 import numpy as np
 
 import pandas as pd
+
+import scipy as sp
+
+import tensorflow as tf
 
 import yaml
 
@@ -387,3 +392,123 @@ def estimate_freq_of_labels(y):
         # print(pd.Series(y).value_counts(normalize=True) * 100)
         print('Value     percentage freq.')
         pretty_print_dict(get_percentage_freq_of_values(y))
+
+
+def save_preprocessed_tr_and_te_datasets(X_train, X_test, y_train, y_test,
+                                         working_folder):
+    """Save train and test dataset
+
+    Args:
+        X_train: Pandas Dataframe or numpy array
+        X_test: Pandas Dataframe or numpy array
+        y_train: Pandas Series or numpy (also non-dimensional) array
+        y_test: Pandas Series or numpy (also non-dimensional) array
+        working_folder: str with file path
+    """
+    if isinstance(X_train, pd.DataFrame):
+
+        pd.concat([X_train, y_train], axis=1).to_csv(
+            working_folder + 'preprocessed_training_data.csv', index=False)
+        pd.concat([X_test, y_test], axis=1).to_csv(
+            working_folder + 'preprocessed_test_data.csv', index=False)
+
+    elif isinstance(X_train, np.ndarray):
+
+        if y_train.ndim < 2:
+            # transform one-dimensional array into column vector via
+            # newaxis
+            y_train = y_train[:, np.newaxis]
+            y_test = y_test[:, np.newaxis]
+
+        if X_train.ndim <= 2:
+            np.savetxt(working_folder + 'preprocessed_training_X.csv',
+                       X_train, delimiter=',')
+            np.savetxt(working_folder + 'preprocessed_test_X.csv',
+                       X_test, delimiter=',')
+        else:
+            np.save(working_folder + 'preprocessed_training_X.npy', X_train)
+            np.save(working_folder + 'preprocessed_test_X.npy', X_test)
+
+        np.savetxt(working_folder + 'preprocessed_training_y.csv',
+                   y_train, delimiter=',')
+        np.savetxt(working_folder + 'preprocessed_test_y.csv',
+                   y_test, delimiter=',')
+
+
+def concatenate_train_test_datasets(X_train_np_a, X_test_np_a,
+                                    y_train_np_a, y_test_np_a):
+    """Concetenates train and test datasets
+
+    Args:
+        X_train_np_a: numpy array
+        X_test_np_a: numpy array
+        y_train_np_a: numpy (also non-dimensional) array
+        y_test_np_a: numpy (also non-dimensional) array
+
+    Returns:
+        Concetentated X and y
+    """
+    if X_test_np_a is None or X_train_np_a is None:
+        X_np_a = X_train_np_a if X_test_np_a is None else X_test_np_a
+    else:
+        X_np_a = np.append(X_train_np_a, X_test_np_a, axis=0)
+
+    if y_train_np_a is not None and y_train_np_a.ndim < 2:
+        # transform one-dimensional array into column vector via newaxis
+        y_train_np_a = y_train_np_a[:, np.newaxis]
+        if y_test_np_a is not None:
+            y_test_np_a = y_test_np_a[:, np.newaxis]
+    if y_test_np_a is None or y_train_np_a is None:
+        y_np_a = y_train_np_a if y_test_np_a is None else y_test_np_a
+    else:
+        y_np_a = np.append(y_train_np_a, y_test_np_a, axis=0)
+
+    return X_np_a, y_np_a
+
+
+def initialize_rnd_numbers_generators_state(seed=1):
+    """Initialize tf random generator.
+
+    Args:
+        seed (int, optional): Random seed. Default is 1.
+    """
+    np.random.seed(seed)
+    tf.random.set_seed(seed)
+    sp.random.seed(seed)
+    random.seed(seed)
+
+
+def manage_rnd_num_generators_state(action):
+    """Save and restore the internal states of the random number generators used
+
+    Args:
+        action (str): Manage action. Options: 'save'
+    """
+    if case_insensitive_str_comparison(action, 'save'):
+        # workaround to have function-level static variables in Python
+        if 'rnd_num_gens_state' not in \
+                manage_rnd_num_generators_state.__dict__:
+            manage_rnd_num_generators_state.rnd_num_gens_state = \
+                {
+                    'random': random.getstate(),
+                    'numpy': np.random.get_state(),
+                    'scipy': sp.random.get_state()
+                }
+        else:
+            raise RuntimeError('rnd numbers generators state already saved!')
+
+    if case_insensitive_str_comparison(action, 'restore'):
+
+        if 'rnd_num_gens_state' in manage_rnd_num_generators_state.__dict__:
+            random.setstate(
+                manage_rnd_num_generators_state.rnd_num_gens_state['random']
+            )
+            np.random.set_state(
+                manage_rnd_num_generators_state.rnd_num_gens_state['numpy']
+            )
+            sp.random.set_state(
+                manage_rnd_num_generators_state.rnd_num_gens_state['scipy']
+            )
+        else:
+            raise RuntimeError('cannot restore rnd numbers generators state! '
+                               'No state previously saved! ')

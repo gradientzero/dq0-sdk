@@ -5,7 +5,7 @@ This package contains the tensorflow models subclassing the abstract
 model base class.
 """
 
-from .cifar10_network import CIFAR10Model
+from .image_cnn import ImageCNN
 from .neural_network import NeuralNetwork
 from .neural_network_yaml import NeuralNetworkYaml
 from .tf_hub import TFHub
@@ -14,5 +14,5 @@ __all__ = [
     'NeuralNetwork',
     'NeuralNetworkYaml',
     'TFHub',
-    'CIFAR10Model',
+    'ImageCNN'
 ]
