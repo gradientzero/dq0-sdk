@@ -435,8 +435,64 @@ def save_preprocessed_tr_and_te_datasets(X_train, X_test, y_train, y_test,
                    y_test, delimiter=',')
 
 
-def concatenate_train_test_datasets(X_train_np_a, X_test_np_a,
-                                    y_train_np_a, y_test_np_a):
+def concatenate_train_test_datasets(X_train, X_test, y_train, y_test):
+    """Concetenates train and test datasets
+
+    Args:
+        X_train: Numpy array or Pandas DataFrame
+        X_test: Numpy array or Pandas DataFrame
+        y_train: Numpy (also non-dimensional) array or Pandas Series
+        y_test: Numpy (also non-dimensional) array or Pandas Series
+
+    Returns:
+        Concetentated X and y
+    """
+    if isinstance(X_train, pd.DataFrame):
+        X, y = concatenate_train_test_datasets_pd_Dataframes(
+            X_train, X_test, y_train, y_test
+        )
+    else:
+        if not isinstance(X_train, np.ndarray):
+            raise Exception('X_train is neither np.ndarray nor pd.DataFrame')
+        X, y = concatenate_train_test_datasets_np_array(
+            X_train, X_test, y_train, y_test
+        )
+    return X, y
+
+
+def concatenate_train_test_datasets_pd_Dataframes(X_train_df, X_test_df,
+                                                  y_train_se, y_test_se):
+    """Concetenates train and test datasets
+
+    Args:
+        X_train_df: Pandas DataFrame
+        X_test_df: Pandas DataFrame
+        y_train_se: Pandas Series
+        y_test_se: Pandas Series
+
+    Returns:
+        Concetentated X and y
+    """
+    
+    # X: matrix of size (num_examples, num_features)
+    # y: vector of class labels
+    if X_train_df is not None:
+        X_df = X_train_df
+        y_se = y_train_se
+    
+        if X_test_df is not None:
+            X_df = X_train_df.append(X_test_df, ignore_index=True)
+            y_se = y_train_se.append(y_test_se, ignore_index=True)
+    else:
+        # X_test_df is not None
+        X_df = X_test_df
+        y_se = y_test_se
+
+    return X_df, y_se
+
+
+def concatenate_train_test_datasets_np_array(X_train_np_a, X_test_np_a,
+                                             y_train_np_a, y_test_np_a):
     """Concetenates train and test datasets
 
     Args:
@@ -456,8 +512,9 @@ def concatenate_train_test_datasets(X_train_np_a, X_test_np_a,
     if y_train_np_a is not None and y_train_np_a.ndim < 2:
         # transform one-dimensional array into column vector via newaxis
         y_train_np_a = y_train_np_a[:, np.newaxis]
-        if y_test_np_a is not None:
-            y_test_np_a = y_test_np_a[:, np.newaxis]
+    if y_test_np_a is not None and y_test_np_a.ndim < 2:
+        y_test_np_a = y_test_np_a[:, np.newaxis]
+
     if y_test_np_a is None or y_train_np_a is None:
         y_np_a = y_train_np_a if y_test_np_a is None else y_test_np_a
     else:
@@ -465,6 +522,46 @@ def concatenate_train_test_datasets(X_train_np_a, X_test_np_a,
 
     return X_np_a, y_np_a
 
+def numerical_datasets_are_equal(d1, d2, approx_error=1e-4):
+    """
+    Compare two numerical datasets for equality. A small tolerance value is 
+    considered for floating-point error mitigation. I.e., values d1[i, 
+    j] and d2[i,j] are considered equal iff:
+                abs(d1[i,j] - d2[i,j]) < approx_error
+                
+    Input Pandas DataFrames / Series (if any) must not contain non-numeric 
+    values. d1 and d2 types may be different.
+    
+        Args:
+            d1: Numpy array or Pandas DataFrame or Pandas Series
+            d2: Numpy array or Pandas DataFrame or Pandas Series
+            approx_error: tolerance value for equality in floating-point arithmetic
+
+    Returns:
+        Boolean value True / False if d1 and d2 are / are not equal
+    """
+
+    for d in [d1, d2]:
+        if not isinstance(d, np.ndarray) and not isinstance(d, pd.DataFrame)\
+                and not isinstance(d, pd.Series):
+            raise Exception('d type must be np.ndarray, pd.DataFrame or '
+                            'pd.Series')
+
+    if isinstance(d1, pd.DataFrame) or isinstance(d1, pd.Series):
+        d1 = d1.values
+
+    if isinstance(d2, pd.DataFrame) or isinstance(d2, pd.Series):
+        d2 = d2.values
+
+    if d1.shape != d2.shape:
+        raise Exception('Comparison for equality of two datasets with '
+                        'different shapes: ' + str(d1.shape) + ' and ' +
+                        str(d2.shape))
+
+    # if isinstance(d1, pd.DataFrame):
+    #    return not ((d1 - d2).abs() >= approx_error).any()
+
+    return np.all(np.absolute(d1 - d2) < approx_error)
 
 def initialize_rnd_numbers_generators_state(seed=1):
     """Initialize tf random generator.

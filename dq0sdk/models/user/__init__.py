@@ -3,7 +3,7 @@
 created).
 """
 
-test_case = 'Cifar10'  # 'Cifar10' 'Newsgroup' 'Census'
+test_case = 'Census'  # 'Cifar10' 'Newsgroup' 'Census'
 
 if test_case.lower() == 'Cifar10'.lower():
     from .user_model_cifar10 import UserModel
