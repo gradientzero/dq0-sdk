@@ -48,3 +48,25 @@ class UserModel(Model):
         Define the model here.
         """
         pass
+
+    def fit(self, **kwargs):
+        """
+
+        Train model on a dataset passed as input.
+
+        Args:
+            kwargs (:obj:`dict`): dictionary of optional arguments
+        """
+        pass
+
+    def save(self):
+        """Saves the model.
+
+        """
+        pass
+
+    def load(self):
+        """Loads the model.
+
+        """
+        pass

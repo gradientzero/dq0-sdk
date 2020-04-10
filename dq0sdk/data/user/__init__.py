@@ -4,14 +4,14 @@
 This package contains templates for user defined data sources.
 """
 
-test_case = 'Census'  # 'Cifar10' 'Newsgroup' 'Census'
+test_case = 'Census'  # 'Cifar_10' '20_Newsgroups' 'Census'
 
-if test_case.lower() == 'Cifar10'.lower():
-    from .user_source_cifar10 import UserSource
-elif test_case.lower() == 'Newsgroup'.lower():
-    from .user_source_newsgroup import UserSource
+if test_case.lower() == 'Cifar_10'.lower():
+    from dq0sdk.examples.cifar.data.user_source import UserSource
+elif test_case.lower() == '20_Newsgroups'.lower():
+    from dq0sdk.examples.newsgroups.data.user_source import UserSource
 elif test_case.lower() == 'Census'.lower():
-    from .user_source_census import UserSource
+    from dq0sdk.examples.census.data.user_source_for_bayesian_model import UserSource
 
 __all__ = [
     'UserSource'

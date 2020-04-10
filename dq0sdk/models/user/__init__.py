@@ -3,14 +3,16 @@
 created).
 """
 
-test_case = 'Census'  # 'Cifar10' 'Newsgroup' 'Census'
+test_case = 'Census'  # 'Cifar_10' '20_Newsgroups' 'Census'
 
-if test_case.lower() == 'Cifar10'.lower():
-    from .user_model_cifar10 import UserModel
-elif test_case.lower() == 'Newsgroup'.lower():
-    from .user_model_newsgroup import UserModel
+if test_case.lower() == 'Cifar_10'.lower():
+    from dq0sdk.examples.cifar.model.user_model import UserModel
+elif test_case.lower() == '20_Newsgroups'.lower():
+    from dq0sdk.examples.newsgroups.model.user_model import UserModel
 elif test_case.lower() == 'Census'.lower():
-    from .user_model_census import UserModel
+    from dq0sdk.examples.census.model.bayesian_user_model import UserModel
+
+# from .user_model import UserModel
 
 __all__ = [
     'UserModel'

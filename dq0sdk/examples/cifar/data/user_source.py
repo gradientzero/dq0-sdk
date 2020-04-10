@@ -1,24 +1,47 @@
 # -*- coding: utf-8 -*-
-"""CIFAR10 User Data Source.
+"""User Image Source for CIFAR-10 dataset.
 
-This is an example for the CIFAR10 data set.
+This is a template for user defined Image sources (i.e., data sources for
+image datasets).
 
-Installation notes:
-    It loads the data set via `tf.keras.datasets.cifar10.load_data()` therefore
-    requiring an active internet connection. Once the data is downloaded it is
-    cached in the user's home directory.
+This template class derives from ImageSource.
 
 Copyright 2020, Gradient Zero
 All rights reserved
 """
 
-from dq0sdk.data.image.cifar10 import CIFAR10Source
+import logging
+
+from dq0sdk.data.image.image_source import ImageSource
+
+import tensorflow as tf
+
+logger = logging.getLogger()
 
 
-class UserSource(CIFAR10Source):
-    """User Data Source.
+class UserSource(ImageSource):
+    """
+    Image Source for CIFAR-10 image dataset.
 
-    Implementation for CIFAR10 dataset.
     """
     def __init__(self):
         super().__init__()
+
+    def _load_data(self):
+        """Loads the image data.
+
+        Child classes need to implement this function!
+
+        Returns:
+            X_train_np_a (:obj:`numpy.ndarray`): X train data
+            X_test_np_a (:obj:`numpy.ndarray`): X test data
+            y_train_np_a (:obj:`numpy.ndarray`): y train data
+            y_test_np_a (:obj:`numpy.ndarray`): y test data
+        """
+
+        (X_train_np_a, y_train_np_a), (X_test_np_a, y_test_np_a) = \
+            tf.keras.datasets.cifar10.load_data()
+
+        logger.debug('Loaded CIFAR-10 image dataset')
+
+        return X_train_np_a, X_test_np_a, y_train_np_a, y_test_np_a
