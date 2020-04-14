@@ -18,8 +18,6 @@ from dq0sdk.data.preprocessing import preprocessing
 from dq0sdk.data.source import Source
 from dq0sdk.data.utils import util
 
-import numpy as np
-
 import pandas as pd
 
 
@@ -51,8 +49,8 @@ class UserSource(Source):
         :return:
         """
 
-        logger.debug('Loading "Adult Census Income" dataset from folder' +
-                     self.input_folder)
+        logger.debug('Loading "Adult Census Income" dataset from folder' + ''
+                     '' + self.input_folder)
 
         training_dataset_path = self.input_folder + 'adult.data'  # csv file
         test_dataset_path = self.input_folder + 'adult.test'  # csv file
@@ -167,8 +165,7 @@ class UserSource(Source):
 
         self.categorical_features_list = [
             column for column in dataset_df.columns
-            if column != self.target_feature and
-            dataset_df[column].dtype == 'object'
+            if column != self.target_feature and dataset_df[column].dtype == 'object'
         ]
 
         # List difference. Warning: in below operation, set does not preserve

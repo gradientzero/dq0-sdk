@@ -15,4 +15,3 @@ class NeuralNetworkClassification(NeuralNetwork):
     def __init__(self, model_path):
         super().__init__(model_path)
         self.model_type = 'NeuralNetworkClassification'
-        

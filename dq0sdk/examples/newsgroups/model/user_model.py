@@ -1,19 +1,9 @@
-
+# -*- coding: utf-8 -*-
 """
-Neural network Model class
+Convolutional Neural Network model implementation for "20 Newsgroups"
 
-Basic Tensorflow neural-network implementation using Keras.
-
-Todo:
-    * Protect Keras compile and fit functions
-
-:Authors:
-    Wolfgang Groß <wg@gradient0.com>
-    Jona Boeddinhaus <jb@gradient0.com>
-    Artur Susdorf <as@gradient0.com>
-    Paolo Campigotto <pc@gradient0.com>
-
-Copyright 2019, Gradient Zero
+Copyright 2020, Gradient Zero
+All rights reserved
 """
 
 import logging
