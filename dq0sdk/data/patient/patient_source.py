@@ -17,7 +17,6 @@ from sklearn.preprocessing import minmax_scale
 from matplotlib import pyplot as plt
 
 import numpy as np
-
 import pandas as pd
 
 import tensorflow as tf
@@ -37,7 +36,7 @@ class PatientSource(CSVSource):
         data['STATE_NUM'] = le.fit_transform(data['STATE'])
         data['COUNTY_NUM'] = le.fit_transform(data['COUNTY'])
 
-        data['BIRTHDATE'] = [pd.Timestamp(ts) for ts in df['patients']['BIRTHDATE']]
+        data['BIRTHDATE'] = [pd.Timestamp(ts) for ts in data['BIRTHDATE']]
         data['BIRTHDATE_UNIX'] = data['BIRTHDATE'].astype(int)/ 10**9
 
         target_col = 'BIRTHDATE_UNIX'

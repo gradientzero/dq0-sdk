@@ -28,15 +28,15 @@ logger = logging.getLogger()
 
 class PatientModel(NeuralNetworkRegression):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, model_path, **kwargs):
+        super().__init__(model_path)
 
         self.DP_enabled = False
         self.DP_epsilon = False
 
         self.learning_rate = 0.001
-        self.epochs = 10000
-        self.optimizer = keras.optimizers.Adam(learning_rate=self.learning_rate)
+        self.epochs = 10#10000
+        self.optimizer = 'Adam'
         self.loss = keras.losses.MeanSquaredError()
         
 

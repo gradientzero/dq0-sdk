@@ -3,7 +3,7 @@
 created).
 """
 
-test_case = 'Cifar10'  # 'Cifar10' 'Newsgroup' 'Census'
+test_case = 'Patient'  # 'Cifar10' 'Newsgroup' 'Census' Patient
 
 if test_case.lower() == 'Cifar10'.lower():
     from .user_model_cifar10 import UserModel
@@ -11,6 +11,8 @@ elif test_case.lower() == 'Newsgroup'.lower():
     from .user_model_newsgroup import UserModel
 elif test_case.lower() == 'Census'.lower():
     from .user_model_census import UserModel
+elif test_case.lower() == 'Patient'.lower():
+    from .user_model_patient import UserModel
 
 __all__ = [
     'UserModel'
