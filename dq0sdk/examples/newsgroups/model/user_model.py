@@ -41,48 +41,6 @@ class UserModel(NeuralNetwork):
         self.DP_enabled = False
         self.DP_epsilon = None
 
-    def _get_cnn_model(self, n_out, which_model='ml-leaks_paper'):
-
-        if util.case_insensitive_str_comparison(which_model, 'ml-leaks_paper'):
-
-            # https://github.com/AhmedSalem2/ML-Leaks/blob/master/classifier.py
-
-            model = tf.keras.Sequential()
-            # create the convolutional base
-            model.add(tf.keras.layers.Conv2D(32, (5, 5), activation='relu',
-                      input_shape=(32, 32, 3), **self.regularizer_dict))
-            model.add(tf.keras.layers.MaxPooling2D((2, 2)))
-            model.add(tf.keras.layers.Conv2D(32, (5, 5), activation='relu',
-                                             **self.regularizer_dict))
-            model.add(tf.keras.layers.MaxPooling2D((2, 2)))
-
-            # add dense layers on top
-            model.add(tf.keras.layers.Flatten())
-            model.add(tf.keras.layers.Dense(128, activation='tanh',
-                                            **self.regularizer_dict))
-            model.add(tf.keras.layers.Dense(n_out, activation='softmax'))
-
-        elif util.case_insensitive_str_comparison(which_model, 'tf_tutorial'):
-
-            # https://www.tensorflow.org/tutorials/images/cnn
-
-            model = tf.keras.Sequential()
-            # create the convolutional base
-            model.add(tf.keras.layers.Conv2D(32, (3, 3), activation='relu',
-                      input_shape=(32, 32, 3)))
-            model.add(tf.keras.layers.MaxPooling2D((2, 2)))
-            model.add(tf.keras.layers.Conv2D(64, (3, 3), activation='relu'))
-            model.add(tf.keras.layers.MaxPooling2D((2, 2)))
-            model.add(tf.keras.layers.Conv2D(64, (3, 3), activation='relu'))
-
-            # add dense layers on top
-            model.add(tf.keras.layers.Flatten())
-            model.add(tf.keras.layers.Dense(64, activation='relu'))
-            model.add(tf.keras.layers.Dense(n_out, activation='softmax'))
-
-        model.summary()
-        return model
-
     def setup_model(self):
 
         self.learning_rate = 0.001  # 0.15
