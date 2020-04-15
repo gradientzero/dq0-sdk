@@ -101,13 +101,15 @@ class NeuralNetwork(Model):
     def fit(self):
         """Model fit function.
         """
-        optimizer = tf.keras.optimizers.SGD(learning_rate=self.learning_rate)
+        # optimizer = tf.keras.optimizers.SGD(learning_rate=self.learning_rate)
+        optimizer = tf.keras.optimizers.Adam(learning_rate=self.learning_rate)
         loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
         self.model.compile(optimizer=optimizer,
                            loss=loss,
                            metrics=self.metrics)
         self.model.fit(self.X_train,
                        self.y_train,
+                       batch_size=self.num_microbatches,
                        epochs=self.epochs,
                        verbose=self.verbose)
 

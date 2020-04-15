@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-"""Neural network Model class for the CIFAR10 dataset.
+"""Neural Network model for CIFAR-10 image dataset.
 
-More information on CIFAR10: https://www.cs.toronto.edu/~kriz/cifar.html
+Use this class to train a classifier on CIFAR-10 image data.
 
-Copyright 2020, Gradient Zero
+Copyright 2019, Gradient Zero
+All rights reserved
 """
 
 import logging
 
-from dq0sdk.data.preprocessing import preprocessing
 from dq0sdk.data.utils import util
 from dq0sdk.models.tf.neural_network import NeuralNetwork
 
@@ -23,8 +23,9 @@ import tensorflow as tf
 logger = logging.getLogger()
 
 
-class CIFAR10Model(NeuralNetwork):
-    """Convolutional Neural Network model implementation for Cifar10
+class UserModel(NeuralNetwork):
+    """
+    Convolutional Neural Network model implementation for Cifar-10 image data.
 
     SDK users instantiate this class to create and train Keras models or
     subclass this class to define custom neural networks.
@@ -36,9 +37,9 @@ class CIFAR10Model(NeuralNetwork):
         model_type (:obj:`str`): type of this model instance. Options: 'keras'.
         label_encoder (:obj:`sklearn.preprocessing.LabelEncoder`): sklearn class label encoder.
     """
-    def __init__(self, model_path, **kwargs):
+    def __init__(self, model_path):
         super().__init__(model_path)
-        self.model_type = 'keras'
+        self.model_type = 'NeuralNetworkClassification'  # 'keras'
         self._classifier_type = 'cnn'  # kwargs['classifier_type']
         self.label_encoder = None
 
@@ -47,7 +48,7 @@ class CIFAR10Model(NeuralNetwork):
         self.DP_epsilon = False
 
     def _get_cnn_model(self, n_out, which_model='ml-leaks_paper'):
-        """Create the convoluational neural network."""
+
         if util.case_insensitive_str_comparison(which_model, 'ml-leaks_paper'):
 
             # https://github.com/AhmedSalem2/ML-Leaks/blob/master/classifier.py
@@ -91,7 +92,7 @@ class CIFAR10Model(NeuralNetwork):
     def setup_model(self):
         """Setup model function
 
-        Define the CIFAR CNN model.
+        Define the CNN model.
         """
         self.learning_rate = 0.001  # 0.15
         self.epochs = 50  # 50 in ML-leaks paper
@@ -113,15 +114,14 @@ class CIFAR10Model(NeuralNetwork):
         # else:
         #    network_type = self._classifier_type
         # if util.case_insensitive_str_comparison(network_type, 'cnn'):
-        print('Setting up a multilayer convolution neural network...')
+        print('Setting up a convolution neural network...')
         self.model = self._get_cnn_model(self._num_classes)
 
     def setup_data(self):
         """Setup data function
 
-        Load and prepare CIFAR10 dataset.
+        Prepare the data for the CNN.
         """
-        # load data
         if len(self.data_sources) < 1:
             logger.error('No data source found')
             return
@@ -129,9 +129,6 @@ class CIFAR10Model(NeuralNetwork):
 
         X, y = source.read()
         # X, y = source.read(num_instances_to_load=10000)
-
-        # preprocess
-        X = preprocessing.scale_pixels(X, 255)
 
         # check data format
         if isinstance(X, pd.DataFrame):
@@ -170,13 +167,3 @@ class CIFAR10Model(NeuralNetwork):
         self.y_train = y
         self.X_test = None
         self.y_test = None
-
-        print('\nAttached train dataset to user model. Feature matrix '
-              'shape:',
-              self.X_train.shape)
-        print('Class-labels vector shape:', self.y_train.shape)
-
-        if self.X_test is not None:
-            print('\nAttached test dataset to user model. Feature matrix '
-                  'shape:', self.X_test.shape)
-            print('Class-labels vector shape:', self.y_test.shape)

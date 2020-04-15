@@ -7,12 +7,17 @@ All rights reserved
 
 import os
 import pickle
+import random
 import shutil
 import sys
 
 import numpy as np
 
 import pandas as pd
+
+import scipy as sp
+
+import tensorflow as tf
 
 import yaml
 
@@ -387,3 +392,221 @@ def estimate_freq_of_labels(y):
         # print(pd.Series(y).value_counts(normalize=True) * 100)
         print('Value     percentage freq.')
         pretty_print_dict(get_percentage_freq_of_values(y))
+
+
+def save_preprocessed_tr_and_te_datasets(X_train, X_test, y_train, y_test,
+                                         working_folder):
+    """Save train and test dataset
+
+    Args:
+        X_train: Pandas Dataframe or numpy array
+        X_test: Pandas Dataframe or numpy array
+        y_train: Pandas Series or numpy (also non-dimensional) array
+        y_test: Pandas Series or numpy (also non-dimensional) array
+        working_folder: str with file path
+    """
+    if isinstance(X_train, pd.DataFrame):
+
+        pd.concat([X_train, y_train], axis=1).to_csv(
+            working_folder + 'preprocessed_training_data.csv', index=False)
+        pd.concat([X_test, y_test], axis=1).to_csv(
+            working_folder + 'preprocessed_test_data.csv', index=False)
+
+    elif isinstance(X_train, np.ndarray):
+
+        if y_train.ndim < 2:
+            # transform one-dimensional array into column vector via
+            # newaxis
+            y_train = y_train[:, np.newaxis]
+            y_test = y_test[:, np.newaxis]
+
+        if X_train.ndim <= 2:
+            np.savetxt(working_folder + 'preprocessed_training_X.csv',
+                       X_train, delimiter=',')
+            np.savetxt(working_folder + 'preprocessed_test_X.csv',
+                       X_test, delimiter=',')
+        else:
+            np.save(working_folder + 'preprocessed_training_X.npy', X_train)
+            np.save(working_folder + 'preprocessed_test_X.npy', X_test)
+
+        np.savetxt(working_folder + 'preprocessed_training_y.csv',
+                   y_train, delimiter=',')
+        np.savetxt(working_folder + 'preprocessed_test_y.csv',
+                   y_test, delimiter=',')
+
+
+def concatenate_train_test_datasets(X_train, X_test, y_train, y_test):
+    """Concetenates train and test datasets
+
+    Args:
+        X_train: Numpy array or Pandas DataFrame
+        X_test: Numpy array or Pandas DataFrame
+        y_train: Numpy (also non-dimensional) array or Pandas Series
+        y_test: Numpy (also non-dimensional) array or Pandas Series
+
+    Returns:
+        Concetentated X and y
+    """
+    if isinstance(X_train, pd.DataFrame):
+        X, y = concatenate_train_test_datasets_pd_Dataframes(
+            X_train, X_test, y_train, y_test
+        )
+    else:
+        if not isinstance(X_train, np.ndarray):
+            raise Exception('X_train is neither np.ndarray nor pd.DataFrame')
+        X, y = concatenate_train_test_datasets_np_array(
+            X_train, X_test, y_train, y_test
+        )
+    return X, y
+
+
+def concatenate_train_test_datasets_pd_Dataframes(X_train_df, X_test_df,
+                                                  y_train_se, y_test_se):
+    """Concetenates train and test datasets
+
+    Args:
+        X_train_df: Pandas DataFrame
+        X_test_df: Pandas DataFrame
+        y_train_se: Pandas Series
+        y_test_se: Pandas Series
+
+    Returns:
+        Concetentated X and y
+    """
+
+    # X: matrix of size (num_examples, num_features)
+    # y: vector of class labels
+    if X_train_df is not None:
+        X_df = X_train_df
+        y_se = y_train_se
+
+        if X_test_df is not None:
+            X_df = X_train_df.append(X_test_df, ignore_index=True)
+            y_se = y_train_se.append(y_test_se, ignore_index=True)
+    else:
+        # X_test_df is not None
+        X_df = X_test_df
+        y_se = y_test_se
+
+    return X_df, y_se
+
+
+def concatenate_train_test_datasets_np_array(X_train_np_a, X_test_np_a,
+                                             y_train_np_a, y_test_np_a):
+    """Concetenates train and test datasets
+
+    Args:
+        X_train_np_a: numpy array
+        X_test_np_a: numpy array
+        y_train_np_a: numpy (also non-dimensional) array
+        y_test_np_a: numpy (also non-dimensional) array
+
+    Returns:
+        Concetentated X and y
+    """
+    if X_test_np_a is None or X_train_np_a is None:
+        X_np_a = X_train_np_a if X_test_np_a is None else X_test_np_a
+    else:
+        X_np_a = np.append(X_train_np_a, X_test_np_a, axis=0)
+
+    if y_train_np_a is not None and y_train_np_a.ndim < 2:
+        # transform one-dimensional array into column vector via newaxis
+        y_train_np_a = y_train_np_a[:, np.newaxis]
+    if y_test_np_a is not None and y_test_np_a.ndim < 2:
+        y_test_np_a = y_test_np_a[:, np.newaxis]
+
+    if y_test_np_a is None or y_train_np_a is None:
+        y_np_a = y_train_np_a if y_test_np_a is None else y_test_np_a
+    else:
+        y_np_a = np.append(y_train_np_a, y_test_np_a, axis=0)
+
+    return X_np_a, y_np_a
+
+
+def numerical_datasets_are_equal(d1, d2, approx_error=1e-4):
+    """Compare two numerical datasets for equality. A small tolerance value is
+    considered for floating-point error mitigation. I.e., values d1[i,
+    j] and d2[i,j] are considered equal iff:
+                abs(d1[i,j] - d2[i,j]) < approx_error
+
+    Input Pandas DataFrames / Series (if any) must not contain non-numeric
+    values. d1 and d2 types may be different.
+
+        Args:
+            d1: Numpy array or Pandas DataFrame or Pandas Series
+            d2: Numpy array or Pandas DataFrame or Pandas Series
+            approx_error: tolerance value for equality in floating-point arithmetic
+
+    Returns:
+        Boolean value True / False if d1 and d2 are / are not equal
+    """
+
+    for d in [d1, d2]:
+        if not isinstance(d, np.ndarray) and not isinstance(d, pd.DataFrame)\
+                and not isinstance(d, pd.Series):
+            raise Exception('d type must be np.ndarray, pd.DataFrame or '
+                            'pd.Series')
+
+    if isinstance(d1, pd.DataFrame) or isinstance(d1, pd.Series):
+        d1 = d1.values
+
+    if isinstance(d2, pd.DataFrame) or isinstance(d2, pd.Series):
+        d2 = d2.values
+
+    if d1.shape != d2.shape:
+        raise Exception('Comparison for equality of two datasets with '
+                        'different shapes: ' + str(d1.shape) + ' and ' + ''
+                        '' + str(d2.shape))
+
+    # if isinstance(d1, pd.DataFrame):
+    #    return not ((d1 - d2).abs() >= approx_error).any()
+
+    return np.all(np.absolute(d1 - d2) < approx_error)
+
+
+def initialize_rnd_numbers_generators_state(seed=1):
+    """Initialize tf random generator.
+
+    Args:
+        seed (int, optional): Random seed. Default is 1.
+    """
+    np.random.seed(seed)
+    tf.random.set_seed(seed)
+    sp.random.seed(seed)
+    random.seed(seed)
+
+
+def manage_rnd_num_generators_state(action):
+    """Save and restore the internal states of the random number generators used
+
+    Args:
+        action (str): Manage action. Options: 'save'
+    """
+    if case_insensitive_str_comparison(action, 'save'):
+        # workaround to have function-level static variables in Python
+        if 'rnd_num_gens_state' not in \
+                manage_rnd_num_generators_state.__dict__:
+            manage_rnd_num_generators_state.rnd_num_gens_state = \
+                {
+                    'random': random.getstate(),
+                    'numpy': np.random.get_state(),
+                    'scipy': sp.random.get_state()
+                }
+        else:
+            raise RuntimeError('rnd numbers generators state already saved!')
+
+    if case_insensitive_str_comparison(action, 'restore'):
+
+        if 'rnd_num_gens_state' in manage_rnd_num_generators_state.__dict__:
+            random.setstate(
+                manage_rnd_num_generators_state.rnd_num_gens_state['random']
+            )
+            np.random.set_state(
+                manage_rnd_num_generators_state.rnd_num_gens_state['numpy']
+            )
+            sp.random.set_state(
+                manage_rnd_num_generators_state.rnd_num_gens_state['scipy']
+            )
+        else:
+            raise RuntimeError('cannot restore rnd numbers generators state! '
+                               'No state previously saved! ')

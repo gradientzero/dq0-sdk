@@ -2,6 +2,7 @@
 """Naive Bayesian Model class
 
 Copyright 2020, Gradient Zero
+All rights reserved
 """
 
 import logging

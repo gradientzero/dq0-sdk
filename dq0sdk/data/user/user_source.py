@@ -1,10 +1,10 @@
+
 # -*- coding: utf-8 -*-
 """User Data Source.
-
 This is a template for user defined data sources.
+
 When training a model on a certain deta source dq0-core is looking for a
 UserSource class that is to be used as the custom data source implementation.
-
 This template class derives from Source. Actual implementations should derive
 from child classes like CSVSource.
 
@@ -21,7 +21,6 @@ logger = logging.getLogger()
 
 class UserSource(Source):
     """User Data Source.
-
     Template. Real implementations should derive from Source child classes.
     For example: UserSource(CSVSource)
 
@@ -45,7 +44,6 @@ class UserSource(Source):
 
     def preprocess(self):
         """Preprocess the data
-
         This function should be used by child classes to perform certain
         preprocessing steps to prepare the data for later use.
 
