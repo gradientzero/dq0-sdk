@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 """User Data Source.
 This is a template for user defined data sources.

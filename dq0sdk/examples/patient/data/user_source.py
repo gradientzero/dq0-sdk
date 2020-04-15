@@ -1,32 +1,27 @@
 # -*- coding: utf-8 -*-
-"""
-Adult dataset loading
+"""Patient Data Source Example
 
-:Authors:
-    Wolfgang Groß <wg@gradient0.com>
-    Paolo Campigotto <pc@gradient0.com>
+https://synthea.mitre.org/downloads
 
-Copyright 2019, Gradient Zero
+Copyright 2020, Gradient Zero
 """
 
-from dq0sdk.data.preprocessing import preprocessing
 from dq0sdk.data.csv.csv_source import CSVSource
+
+import pandas as pd
+
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import minmax_scale
 
-from matplotlib import pyplot as plt
 
-import numpy as np
-import pandas as pd
+class UserSource(CSVSource):
+    """Patient Data Source class.
 
-import tensorflow as tf
+    Example data source for regression model.
+    """
+    def __init__(self, file_path):
+        super().__init__(file_path)
 
-class PatientSource(CSVSource):
-
-    def __init__(self, file_path, **kwargs):
-        super().__init__(file_path,**kwargs)
-        
-    
     def prepare_data(self, data):
 
         le = LabelEncoder()
@@ -37,11 +32,11 @@ class PatientSource(CSVSource):
         data['COUNTY_NUM'] = le.fit_transform(data['COUNTY'])
 
         data['BIRTHDATE'] = [pd.Timestamp(ts) for ts in data['BIRTHDATE']]
-        data['BIRTHDATE_UNIX'] = data['BIRTHDATE'].astype(int)/ 10**9
+        data['BIRTHDATE_UNIX'] = data['BIRTHDATE'].astype(int) / 10**9
 
         target_col = 'BIRTHDATE_UNIX'
-        col_selecion = ['GENDER_NUM','BIRTHPLACE_NUM','CITY_NUM','STATE_NUM','COUNTY_NUM','ZIP','LAT','LON','HEALTHCARE_EXPENSES',
-                    'HEALTHCARE_COVERAGE']
+        col_selecion = ['GENDER_NUM', 'BIRTHPLACE_NUM', 'CITY_NUM', 'STATE_NUM', 'COUNTY_NUM',
+                        'ZIP', 'LAT', 'LON', 'HEALTHCARE_EXPENSES', 'HEALTHCARE_COVERAGE']
 
         X_df = data[col_selecion].fillna(0.)
         y_df = data[target_col]

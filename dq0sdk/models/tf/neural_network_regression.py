@@ -6,6 +6,7 @@ All rights reserved
 """
 
 from dq0sdk.models.tf import NeuralNetwork
+
 import tensorflow as tf
 
 
@@ -21,7 +22,7 @@ class NeuralNetworkRegression(NeuralNetwork):
     def fit(self):
         """Model fit function.
         """
-        #optimizer = tf.keras.optimizers.SGD(learning_rate=self.learning_rate)
+        # optimizer = tf.keras.optimizers.SGD(learning_rate=self.learning_rate)
         optimizer = tf.keras.optimizers.Adam(learning_rate=self.learning_rate)
         loss = tf.keras.losses.MeanSquaredError()
         self.model.compile(optimizer=optimizer,
