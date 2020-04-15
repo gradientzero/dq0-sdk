@@ -1,22 +1,18 @@
 
+# -*- coding: utf-8 -*-
 """
 Gaussian Naive Bayesian Model class
 
-:Authors:
-    Wolfgang Groß <wg@gradient0.com>
-    Jona Boeddinhaus <jb@gradient0.com>
-    Artur Susdorf <as@gradient0.com>
-    Paolo Campigotto <pc@gradient0.com>
-
-Copyright 2019, Gradient Zero
+Copyright 2020, Gradient Zero
+All rights reserved
 """
 
 import logging
 import os
 import pickle
 
-from dq0sdk.data.preprocessing import preprocessing
-from dq0sdk.data.utils import util
+import diffprivlib.models as dp
+
 from dq0sdk.models.model import Model
 
 import numpy as np
@@ -25,9 +21,7 @@ import pandas as pd
 
 from sklearn.naive_bayes import GaussianNB
 from sklearn.preprocessing import LabelEncoder
-import diffprivlib.models as dp
 
-import tensorflow as tf
 
 logger = logging.getLogger()
 

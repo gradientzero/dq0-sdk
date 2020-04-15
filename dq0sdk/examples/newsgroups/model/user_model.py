@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
-"""Neural network Model class for the CIFAR10 dataset.
-
-More information on CIFAR10: https://www.cs.toronto.edu/~kriz/cifar.html
+"""
+Convolutional Neural Network model implementation for "20 Newsgroups"
 
 Copyright 2020, Gradient Zero
+All rights reserved
 """
 
 import logging
 
-from dq0sdk.data.preprocessing import preprocessing
 from dq0sdk.data.utils import util
-from dq0sdk.models.tf.neural_network_multiclass_classification import NeuralNetworkMultiClassClassification
+from dq0sdk.models.tf.neural_network import NeuralNetwork
 
 import numpy as np
 
@@ -23,31 +22,27 @@ import tensorflow as tf
 logger = logging.getLogger()
 
 
-class CIFAR10Model(NeuralNetworkMultiClassClassification):
-    """Convolutional Neural Network model implementation for Cifar10
+class UserModel(NeuralNetwork):
+    """
+    Convolutional Neural Network model implementation for "20 Newsgroups"
 
     SDK users instantiate this class to create and train Keras models or
     subclass this class to define custom neural networks.
 
     Args:
         model_path (str): Path to the model save destination.
-
-    Attributes:
-        model_type (:obj:`str`): type of this model instance. Options: 'keras'.
-        label_encoder (:obj:`sklearn.preprocessing.LabelEncoder`): sklearn class label encoder.
     """
-    def __init__(self, model_path, **kwargs):
+    def __init__(self, model_path):
         super().__init__(model_path)
-        self._classifier_type = 'cnn'  # kwargs['classifier_type']
+        self.model_type = 'NeuralNetworkClassification'
+        self._classifier_type = 'mlnn'
         self.label_encoder = None
-        self.model_selection = 'ml-leaks_paper'
 
-        # @Jona
         self.DP_enabled = False
-        self.DP_epsilon = False
+        self.DP_epsilon = None
 
     def _get_cnn_model(self, n_out, which_model='ml-leaks_paper'):
-        """Create the convoluational neural network."""
+
         if util.case_insensitive_str_comparison(which_model, 'ml-leaks_paper'):
 
             # https://github.com/AhmedSalem2/ML-Leaks/blob/master/classifier.py
@@ -89,10 +84,7 @@ class CIFAR10Model(NeuralNetworkMultiClassClassification):
         return model
 
     def setup_model(self):
-        """Setup model function
 
-        Define the CIFAR CNN model.
-        """
         self.learning_rate = 0.001  # 0.15
         self.epochs = 50  # 50 in ML-leaks paper
         self.verbose = 2
@@ -107,32 +99,45 @@ class CIFAR10Model(NeuralNetworkMultiClassClassification):
             #    self.regularization_param)
         }
 
-        # network topology.
-        # if self._classifier_type.startswith('DP-'):
-        #    network_type = self._classifier_type[3:]
-        # else:
-        #    network_type = self._classifier_type
-        # if util.case_insensitive_str_comparison(network_type, 'cnn'):
-        print('Setting up a multilayer convolution neural network...')
-        self.model = self._get_cnn_model(self._num_classes, self.model_selection)
+        print('Setting up a multilayer neural network...')
+        self.model = self._get_mlnn_model()
+
+    def _get_mlnn_model(self, which_model='ml-leaks_paper'):
+
+        n_in = self._num_features
+        n_out = self._num_classes
+
+        if util.case_insensitive_str_comparison(which_model, 'ml-leaks_paper'):
+            # https://github.com/AhmedSalem2/ML-Leaks/blob/master/classifier.py
+            num_units_hidden_layer = 128
+            model = tf.keras.Sequential([
+                tf.keras.layers.Input(n_in),
+                tf.keras.layers.Dense(num_units_hidden_layer,
+                                      activation='tanh',
+                                      **self.regularizer_dict
+                                      ),
+                tf.keras.layers.Dense(n_out, activation='softmax')
+            ]
+            )
+        else:
+            model = tf.keras.Sequential([
+                tf.keras.layers.Input(n_in),
+                tf.keras.layers.Dense(10, activation='tanh'),
+                tf.keras.layers.Dense(10, activation='tanh'),
+                tf.keras.layers.Dense(n_out, activation='softmax')]
+            )
+
+        model.summary()
+        return model
 
     def setup_data(self):
-        """Setup data function
-
-        Load and prepare CIFAR10 dataset.
-        """
         # load data
         if len(self.data_sources) < 1:
             logger.error('No data source found')
             return
         source = next(iter(self.data_sources.values()))
-        data = source.read()
-        X, y = source.prepare_data(data, num_instances_to_load=60000)
-        
-        # X, y = source.read(num_instances_to_load=10000)
 
-        # preprocess
-        X = preprocessing.scale_pixels(X, 255)
+        X, y = source.read()
 
         # check data format
         if isinstance(X, pd.DataFrame):
@@ -152,6 +157,8 @@ class CIFAR10Model(NeuralNetworkMultiClassClassification):
             # make non-dimensional array (just to avoid Warnings by Sklearn)
             y = np.ravel(y)
 
+        self._num_features = X.shape[1]
+
         # WARNING: np.nan, np.Inf in y are counted as classes by np.unique
         self._num_classes = len(np.unique(y))  # np.ravel(y)
 
@@ -162,16 +169,15 @@ class CIFAR10Model(NeuralNetworkMultiClassClassification):
         self.label_encoder = LabelEncoder()
         y = self.label_encoder.fit_transform(y)
 
-
         # back to column vector. Transform one-dimensional array into column
         # vector via newaxis
         y = y[:, np.newaxis]
 
         # set attributes
-        self.X_train = X[:50000]
-        self.y_train = y[:50000]
-        self.X_test = X[50000:]
-        self.y_test = y[50000:]
+        self.X_train = X
+        self.y_train = y
+        self.X_test = None
+        self.y_test = None
 
         print('\nAttached train dataset to user model. Feature matrix '
               'shape:',
