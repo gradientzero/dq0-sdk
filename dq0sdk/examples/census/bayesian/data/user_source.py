@@ -15,7 +15,6 @@ All rights reserved
 import os
 
 from dq0sdk.data.csv import CSVSource
-from dq0sdk.data.preprocessing import preprocessing
 
 import pandas as pd
 
@@ -92,6 +91,10 @@ class UserSource(CSVSource):
                                      'occupation': '?'}
                                  )
 
+        dataset_df.drop(['lastname', 'firstname'], axis=1, inplace=True)
+        column_names_list.remove('lastname')
+        column_names_list.remove('firstname')
+
         categorical_features_list = [
             col for col in dataset_df.columns
             if col != target_feature and dataset_df[col].dtype == 'object']
@@ -128,6 +131,9 @@ class UserSource(CSVSource):
         Returns:
             preprocessed data
         """
+        from dq0sdk.data.preprocessing import preprocessing
+        import sklearn.preprocessing
+
         # read data first
         dataset_df = self.read()
 
@@ -139,9 +145,6 @@ class UserSource(CSVSource):
             imputation_method_for_quant_feats=imputation_method_for_quant_feats,  # noqa: E501
             categorical_features_list=self.categorical_features_list,
             quantitative_features_list=self.quantitative_features_list)
-
-        # cleanup labels: strip trailing '.'
-        dataset_df = dataset_df.apply(lambda label: label.rstrip("."))
 
         if features_to_drop_list is not None:
             dataset_df.drop(features_to_drop_list, axis=1, inplace=True)
@@ -155,5 +158,18 @@ class UserSource(CSVSource):
         # Rather than get_dummies, it would be better as follows ...
         # enc = OneHotEncoder(handle_unknown='ignore', sparse=False)
         # enc.fit(X_df[categorical_features_list])
+
+        # Scale values to the range from 0 to 1 to be precessed by the neural network
+        dataset_df[self.quantitative_features_list] =\
+            sklearn.preprocessing.minmax_scale(
+                dataset_df[self.quantitative_features_list])
+
+        # label target
+        y_ts = dataset_df[self.target_feature]
+        le = sklearn.preprocessing.LabelEncoder()
+        y_bin_nb = le.fit_transform(y_ts)
+        y_bin = pd.Series(index=y_ts.index, data=y_bin_nb)
+        dataset_df.drop([self.target_feature], axis=1, inplace=True)
+        dataset_df[self.target_feature] = y_bin
 
         return dataset_df

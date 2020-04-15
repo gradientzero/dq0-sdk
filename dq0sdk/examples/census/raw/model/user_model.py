@@ -52,6 +52,7 @@ class UserModel(NeuralNetwork):
             return
         source = next(iter(self.data_sources.values()))
 
+        # read and preprocess data
         data = source.preprocess()
 
         X_train_df, X_test_df, y_train_ts, y_test_ts =\

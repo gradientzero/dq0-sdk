@@ -42,7 +42,10 @@ class UserModel(Model):
         self.DP_epsilon = None
 
     def setup_model(self):
+        """Setup model function
 
+        Define the model here.
+        """
         self._classifier_type = 'GaussianNB'
 
         if not self.DP_enabled:
@@ -127,10 +130,8 @@ class UserModel(Model):
 
         self.features_bounds = list(zip(min_values, max_values))
 
-    def fit(self, **kwargs):
-        """
-
-        Train model on a dataset passed as input.
+    def fit(self):
+        """Train model.
 
         Args:
             kwargs (:obj:`dict`): dictionary of optional arguments

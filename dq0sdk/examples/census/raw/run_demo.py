@@ -9,12 +9,12 @@ All rights reserved
 
 import os
 
-from dq0sdk.examples.demo.data.user_source import UserSource
-from dq0sdk.examples.demo.model.user_model import UserModel
+from dq0sdk.examples.census.raw.data.user_source import UserSource
+from dq0sdk.examples.census.raw.model.user_model import UserModel
 
 
 if __name__ == '__main__':
-    path = 'data/adult_with_rand_names.csv'
+    path = 'data/data/adult_with_rand_names.csv'
     filepath = os.path.join(os.path.dirname(
         os.path.abspath(__file__)), path)
     # init data sourcd
