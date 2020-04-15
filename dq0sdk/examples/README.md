@@ -12,6 +12,7 @@ The following examples are available:
 * Census adult data set (three versions)
 * CIFAR10 image data set
 * Newsgroup data set
+* Patient data set
 
 ## Census examples
 Census examples are available in the sub-package `census`
@@ -65,6 +66,8 @@ The `DataSource` definition is accordingly very lean in this example. The class 
 This last census example provides an alternative to the neural network based income prediction. `UserSource` code, including read and preprocess is similar, only the model definition of `UserModel` has changed.
 
 ## CIFAR10
+This example is placed in `cifar`.
+
 This example demonstrates the use of DQ0 with image data. The presented data source is an implementation for the CIFAR10 data set.
 
 More information on CIFAR10 can be found here: [https://www.cs.toronto.edu/~kriz/cifar.html](https://www.cs.toronto.edu/~kriz/cifar.html)
@@ -74,6 +77,15 @@ The CIFAR-10 dataset consists of 60000 32x32 colour images in 10 classes, with 6
 The included model definition forms a convolutional neural network based on either this paper [https://github.com/AhmedSalem2/ML-Leaks/blob/master/classifier.py](https://github.com/AhmedSalem2/ML-Leaks/blob/master/classifier.py) or this Tensorflow tutorial [https://www.tensorflow.org/tutorials/images/cnn](https://www.tensorflow.org/tutorials/images/cnn).
 
 ## Newsgroups
+This example is placed in `newsgroups`.
+
 This is a text classification example known from the Scikit-learn API: [https://scikit-learn.org/stable/datasets/index.html#the-20-newsgroups-text-dataset](https://scikit-learn.org/stable/datasets/index.html#the-20-newsgroups-text-dataset).
 
 From the scikit-learn documentation: The 20 newsgroups dataset comprises around 18000 newsgroups posts on 20 topics split in two subsets: one for training (or development) and the other one for testing (or for performance evaluation). The split between the train and test set is based upon a messages posted before and after a specific date.
+
+## Patient
+This example is placed in `patient`.
+
+Regression example with a data set from Synthea, an open-source patient population simulation made available by The MITRE Corporation: [https://synthea.mitre.org/downloads](https://synthea.mitre.org/downloads).
+
+Target column is the birthdate of patients. Features used are general patient record information.
