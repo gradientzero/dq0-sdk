@@ -29,6 +29,7 @@ class UserSource(Source):
 
     Implementation for the "Adult Census Income" dataset.
     """
+    
     def __init__(self):
         super().__init__()
 

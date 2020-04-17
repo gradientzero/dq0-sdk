@@ -462,7 +462,7 @@ def concatenate_train_test_datasets(X_train, X_test, y_train, y_test):
 
 def concatenate_train_test_datasets_pd_Dataframes(X_train_df, X_test_df,
                                                   y_train_se, y_test_se):
-    """Concetenates train and test datasets
+    """Concatenates train and test datasets
 
     Args:
         X_train_df: Pandas DataFrame
@@ -471,7 +471,7 @@ def concatenate_train_test_datasets_pd_Dataframes(X_train_df, X_test_df,
         y_test_se: Pandas Series
 
     Returns:
-        Concetentated X and y
+        Concatenated X and y
     """
 
     # X: matrix of size (num_examples, num_features)
@@ -493,7 +493,7 @@ def concatenate_train_test_datasets_pd_Dataframes(X_train_df, X_test_df,
 
 def concatenate_train_test_datasets_np_array(X_train_np_a, X_test_np_a,
                                              y_train_np_a, y_test_np_a):
-    """Concetenates train and test datasets
+    """Concatenates train and test datasets
 
     Args:
         X_train_np_a: numpy array
@@ -502,7 +502,7 @@ def concatenate_train_test_datasets_np_array(X_train_np_a, X_test_np_a,
         y_test_np_a: numpy (also non-dimensional) array
 
     Returns:
-        Concetentated X and y
+        Concatenated X and y
     """
     if X_test_np_a is None or X_train_np_a is None:
         X_np_a = X_train_np_a if X_test_np_a is None else X_test_np_a

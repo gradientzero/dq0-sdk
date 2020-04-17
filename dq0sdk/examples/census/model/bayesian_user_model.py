@@ -14,10 +14,13 @@ import pickle
 import diffprivlib.models as dp
 
 from dq0sdk.models.model import Model
+from dq0sdk.data.utils import util
 
 import numpy as np
 
 import pandas as pd
+
+from sklearn import metrics
 
 from sklearn.naive_bayes import GaussianNB
 from sklearn.preprocessing import LabelEncoder
@@ -129,15 +132,92 @@ class UserModel(Model):
 
         self.features_bounds = list(zip(min_values, max_values))
 
-    def fit(self, **kwargs):
+
+    def fit(self):
+        """
+        Model fit function learning a model from training data
         """
 
-        Train model on a dataset passed as input.
+        # Check for valid model setup
+        if not hasattr(self, 'X_train'):
+            raise ValueError('Missing argument in model: X_train')
+        if not hasattr(self, 'y_train'):
+            raise ValueError('Missing argument in model: y_train')
+
+        if isinstance(self.y_train, np.ndarray):
+            if self.y_train.ndim == 2:
+                # make 1-dimensional array
+                self.y_train = np.ravel(self.y_train)
+
+        print('\n\n-------------------- ' + self._classifier_type + ' '
+              'classifier learning ---------------------')
+        if self.DP_enabled:
+            print('DP epsilon set to', self.DP_epsilon)
+        print('\nPercentage freq. of target labels in train dataset:')
+        util.estimate_freq_of_labels(self.y_train)
+
+        self.model.fit(self.X_train, self.y_train)
+        print('\nLearned a ' + self._classifier_type + ' model. ')
+
+    def evaluate(self, test_data=True, verbose=0):
+        """Model predict and evaluate.
+
+        Test learnt classifier over a test set
+        This method is final. Signature will be checked at runtime!
 
         Args:
-            kwargs (:obj:`dict`): dictionary of optional arguments
+            test_data (bool): False to use train data instead of test
+                Default is True.
+            verbose (int): Verbose level, Default is 0
+
+        Returns:
+            accuracy score over test set
         """
-        pass
+        X = self.X_test if test_data else self.X_train
+        y = self.y_test if test_data else self.y_train
+
+        data_type = 'test' if test_data else 'train' 
+
+
+        print('\n\n----------------- Testing learnt classifier on ' + data_type + ' data '
+              '-----------------')
+
+        if isinstance(y, np.ndarray):
+            if y.ndim == 2:
+                # Make 1-dimensional arrays
+                y = np.ravel(y)
+
+        y_pred_np_a = self.model.predict(X)
+
+        print(
+            '\nPercentage freq. of target labels in ' + data_type + ' dataset (baseline '
+            'for classification performance):')
+        util.estimate_freq_of_labels(y)
+
+        accuracy_score = metrics.accuracy_score(y, y_pred_np_a)
+        print('\nModel accuracy on ' + data_type + ' data:', round(accuracy_score, 2))
+        print('\n', metrics.classification_report(y, y_pred_np_a))
+
+        # print('\nNormalized confusion matrix:')
+        # cm_df, _ = plotting.compute_confusion_matrix(
+        #     y_test, y_pred_np_a, normalize='true'
+        # )
+        # print(cm_df)
+        # # By default, labels that appear at least once in y_test or
+        # # y_pred_np_a are used in sorted order in the confusion matrix.
+        #
+        # if enable_plots:
+        #     plotting.plot_confusion_matrix_for_scikit_classifier(
+        #         self._classifier,
+        #         X_test.values if isinstance(X_test, pd.DataFrame) else X_test,
+        #         y_test.values if isinstance(y_test, pd.Series) else y_test,
+        #         class_names=None,
+        #         xticks_rotation='horizontal',
+        #         part_of_fn_describing_matrix=classifier_description,
+        #         output_folder=output_folder
+        #     )
+
+        return accuracy_score
 
     def save(self, name, version):
         """Saves the model.
