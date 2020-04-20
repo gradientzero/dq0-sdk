@@ -59,26 +59,16 @@ class UserSource(CSVSource):
         logger.debug('Loading "Adult Census Income" dataset from file' + ''
                      '' + self.filepath)
         dataset_df = self._load_input_dataset(self.filepath)
-        util.print_dataset_info(dataset_df, 'Raw dataset')
+        # util.print_dataset_info(dataset_df, 'Raw dataset')
 
-        y_ts = dataset_df[self.target_feature]
-        X_df = dataset_df.drop(self.target_feature, axis=1, inplace=False)
-
-        X_df = self._keep_selected_quantitative_features_only(X_df)
-
-        # cleanup labels: strip trailing '.'
-        y_ts = y_ts.apply(lambda label: label.rstrip("."))
-
-        logger.debug('Dataset size: X=%s, y=%s' % (X_df.shape, y_ts.shape))
-
-        return X_df, y_ts
+        return dataset_df
 
     def _load_input_dataset(self, dataset_file_path, skiprows=None):
 
         # logger.debug('Load dataset from file "' + dataset_file_path + '" ')
         column_names_list = [
-            'surname',
-            'name',
+            'firstname',
+            'lastname',
             'age',
             'workclass',
             'fnlwgt',
@@ -163,7 +153,9 @@ class UserSource(CSVSource):
                                  # encoded via '?'.
                                  )
 
-        dataset_df.drop(['surname', 'name'], axis=1, inplace=True)
+        dataset_df.drop(['lastname', 'firstname'], axis=1, inplace=True)
+        column_names_list.remove('lastname')
+        column_names_list.remove('firstname')
 
         self.categorical_features_list = [
             column for column in dataset_df.columns
@@ -201,9 +193,15 @@ class UserSource(CSVSource):
 
         return X_df
 
-    def preprocess(self, force=False, **kwargs):
+    def preprocess(self):
+        """Read and preprocess the dataset.
 
-        X_df = kwargs['X']
+        Returns:
+            the prerocessed dataset as a pandas dataframe.
+        """
+        import sklearn.preprocessing
+
+        X_df = self.read()
 
         logger.debug('Preprocessing "Adult Census Income" dataset')
         # print('\n\n--------- Data preprocessing ---------')
@@ -260,6 +258,14 @@ class UserSource(CSVSource):
                 X_df.columns.tolist(),
                 'After one-hot encoding categorical features, the features are'
             )
+
+        # label target
+        y_ts = X_df[self.target_feature]
+        le = sklearn.preprocessing.LabelEncoder()
+        y_bin_nb = le.fit_transform(y_ts)
+        y_bin = pd.Series(index=y_ts.index, data=y_bin_nb)
+        X_df.drop([self.target_feature], axis=1, inplace=True)
+        X_df[self.target_feature] = y_bin
 
         return X_df
 

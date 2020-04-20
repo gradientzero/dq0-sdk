@@ -9,12 +9,10 @@ All rights reserved
 
 import os
 
-from dq0sdk.examples.census.data.user_source_for_bayesian_model import UserSource
-from dq0sdk.examples.census.model.bayesian_user_model import UserModel
+from dq0sdk.examples.census.bayesian.data.user_source import UserSource
+from dq0sdk.examples.census.bayesian.model.user_model import UserModel
 
 import numpy as np
-
-from sklearn import model_selection
 
 
 if __name__ == '__main__':
@@ -37,16 +35,6 @@ if __name__ == '__main__':
 
     # setup model
     model.setup_model()
-
-    # model_selection.train_test_split: output type is the same as the
-    # input type
-    model.X_train, model.X_test, model.y_train, model.y_test = \
-        model_selection.train_test_split(
-            model.X_train,
-            model.y_train,
-            test_size=.20,
-            shuffle=True,
-            stratify=model.y_train)
 
     # fit the model
     model.fit()
