@@ -13,9 +13,11 @@ All rights reserved
 """
 
 import logging
+import os
 
 from dq0sdk.data.preprocessing import preprocessing
-from dq0sdk.data.source import Source
+from dq0sdk.data.csv.csv_source import CSVSource
+# from dq0sdk.data.source import Source
 from dq0sdk.data.utils import util
 
 import pandas as pd
@@ -24,14 +26,24 @@ import pandas as pd
 logger = logging.getLogger()
 
 
-class UserSource(Source):
+class UserSource(CSVSource):
     """User Data Source.
 
     Implementation for the "Adult Census Income" dataset.
+    Provides function to read in csv data.
+
+    Args:
+        filepath (:obj:`str`): Absolute path to the CSV file.
     """
-    
+
     def __init__(self):
-        super().__init__()
+
+        path = 'adult_with_rand_names.csv'
+        filepath = os.path.join(os.path.dirname(
+            os.path.abspath(__file__)), path)
+
+        super().__init__(filepath)
+        # self.data = None
 
         self.approach_for_missing_feature = 'imputation'  # 'imputation',
         # 'dropping'
@@ -41,7 +53,7 @@ class UserSource(Source):
         self.features_to_drop_list = None
 
         # folder with the data files
-        self.input_folder = '../dq0-sdk/dq0sdk/data/csv/census/data/'
+        # self.input_folder = '../dq0-sdk/dq0sdk/data/csv/census/data/'
 
     def read(self):
         """
@@ -50,18 +62,21 @@ class UserSource(Source):
         :return:
         """
 
-        logger.debug('Loading "Adult Census Income" dataset from folder' + ''
-                     '' + self.input_folder)
+        # logger.debug('Loading "Adult Census Income" dataset from folder' + ''
+        #              '' + self.input_folder)
 
-        training_dataset_path = self.input_folder + 'adult.data'  # csv file
-        test_dataset_path = self.input_folder + 'adult.test'  # csv file
+        # training_dataset_path = self.input_folder + 'adult.data'  # csv file
+        # test_dataset_path = self.input_folder + 'adult.test'  # csv file
 
-        tr_dataset_df = self._load_input_dataset(training_dataset_path)
-        # Load test data skipping the bad row in the test data.
-        test_dataset_df = self._load_input_dataset(test_dataset_path,
-                                                   skiprows=1)
+        # tr_dataset_df = self._load_input_dataset(training_dataset_path)
+        # # Load test data skipping the bad row in the test data.
+        # test_dataset_df = self._load_input_dataset(test_dataset_path,
+        #                                            skiprows=1)
+        # dataset_df = tr_dataset_df.append(test_dataset_df)
 
-        dataset_df = tr_dataset_df.append(test_dataset_df)
+        logger.debug('Loading "Adult Census Income" dataset from file' + ''
+                     '' + self.filepath)
+        dataset_df = self._load_input_dataset(self.filepath)
         util.print_dataset_info(dataset_df, 'Raw dataset')
 
         y_ts = dataset_df[self.target_feature]
@@ -80,6 +95,8 @@ class UserSource(Source):
 
         # logger.debug('Load dataset from file "' + dataset_file_path + '" ')
         column_names_list = [
+            'surname',
+            'name',
             'age',
             'workclass',
             'fnlwgt',
@@ -164,6 +181,8 @@ class UserSource(Source):
                                  # encoded via '?'.
                                  )
 
+        dataset_df.drop(['surname', 'name'], axis=1, inplace=True)
+
         self.categorical_features_list = [
             column for column in dataset_df.columns
             if column != self.target_feature and dataset_df[column].dtype == 'object'
@@ -188,7 +207,8 @@ class UserSource(Source):
             'hours-per-week'
         ]
 
-        X_df = X_df[selected_quantitative_feats_list + self.categorical_features_list]
+        X_df = X_df[selected_quantitative_feats_list +
+                    self.categorical_features_list]
 
         self.quantitative_features_list = selected_quantitative_feats_list
 
@@ -231,11 +251,13 @@ class UserSource(Source):
                 '\nThe following features have been dropped:')
 
             self.quantitative_features_list = list(
-                set(self.quantitative_features_list) - set(self.features_to_drop_list)
+                set(self.quantitative_features_list) -
+                set(self.features_to_drop_list)
             )
 
             self.categorical_features_list = list(
-                set(self.categorical_features_list) - set(self.features_to_drop_list)
+                set(self.categorical_features_list) -
+                set(self.features_to_drop_list)
             )
 
         if self.categorical_features_list:
