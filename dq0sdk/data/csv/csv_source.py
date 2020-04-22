@@ -34,8 +34,11 @@ class CSVSource(Source):
         super().__init__()
         self.filepath = filepath
 
-    def read(self):
+    def read(self, **kwargs):
         """Read CSV data sources
+
+        Args:
+            kwargs: keyword arguments
 
         Returns:
             CSV data as pandas dataframe
@@ -47,7 +50,7 @@ class CSVSource(Source):
         if not os.path.exists(path) or not os.path.isfile(path):
             raise IOError('Could not read csv data.'
                           'File not found {}'.format(path))
-        return pd.read_csv(path)
+        return pd.read_csv(path, **kwargs)
 
     def preprocess(self):
         """Preprocess the data

@@ -29,13 +29,13 @@ class Model(ABC):
         model_type (:obj:`str`): type of this model instance. Options: 'keras'.
         model_path (:obj:`str`): path of model (save / load)
         uuid (:obj:`str`): UUID of this model.
-        data_sources (:obj:`dict`): dict of attached data sources.
+        data_source (:obj:`dq0sdk.data.Source`): dict of attached data sources.
 
     """
     def __init__(self, model_path):
         super().__init__()
         # data source, model path and uuid will be set at runtime
-        self.data_sources = {}
+        self.data_source = None
         self.model_path = model_path
         self.uuid = uuid.uuid1()
         self.model_type = ''
@@ -49,11 +49,7 @@ class Model(ABC):
         Args:
             data_source (:obj:`dq0sdk.data.Source`): The new data source to add
         """
-        if data_source.uuid in self.data_sources.keys():
-            logger.debug('Data source with uuid {} already attached.'.
-                         format(data_source.uuid))
-            return
-        self.data_sources[data_source.uuid] = data_source
+        self.data_source = data_source
 
     @abstractmethod
     def setup_data(self, **kwargs):

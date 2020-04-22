@@ -9,7 +9,7 @@ All rights reserved
 
 import os
 
-from dq0sdk.examples.census.raw.data.user_source import UserSource
+import dq0sdk
 from dq0sdk.examples.census.raw.model.user_model import UserModel
 
 
@@ -17,14 +17,14 @@ if __name__ == '__main__':
     path = '../_data/adult_with_rand_names.csv'
     filepath = os.path.join(os.path.dirname(
         os.path.abspath(__file__)), path)
-    # init data source
-    dc = UserSource(filepath)
+    # init input data source
+    data_source = dq0sdk.data.csv.CSVSource(filepath)
 
     # create model
     model = UserModel('notebooks/saved_model/')
 
     # attach data source
-    model.attach_data_source(dc)
+    model.attach_data_source(data_source)
 
     # prepare data
     model.setup_data()

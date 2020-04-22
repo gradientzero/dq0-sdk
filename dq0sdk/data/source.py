@@ -50,11 +50,14 @@ class Source(ABC):
         self.input_folder = input_folder
 
     @abstractmethod
-    def read(self):
+    def read(self, **kwargs):
         """Read data sources
 
         This function should be used by child classes to read data or return
         a data handler to read streaming data.
+
+        Args:
+            kwargs: keyword arguments
 
         Returns:
             data read from the data source.
