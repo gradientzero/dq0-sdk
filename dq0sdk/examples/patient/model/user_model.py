@@ -10,6 +10,11 @@ import logging
 
 from dq0sdk.models.tf.neural_network_regression import NeuralNetworkRegression
 
+import pandas as pd
+
+from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import minmax_scale
+
 
 logger = logging.getLogger()
 
@@ -34,12 +39,13 @@ class UserModel(NeuralNetworkRegression):
         """
         from sklearn.model_selection import train_test_split
 
-        if len(self.data_sources) < 1:
+        # get the input dataset
+        if self.data_source is None:
             logger.error('No data source found')
             return
-        source = next(iter(self.data_sources.values()))
-        data = source.read()
-        X, y = source.prepare_data(data)
+
+        data = self.data_source.read()
+        X, y = self._prepare_data(data)
 
         self.input_dim = X.shape[1]
         self.batch_size = X.shape[0]
@@ -52,6 +58,33 @@ class UserModel(NeuralNetworkRegression):
         self.y_train = y_train
         self.X_test = X_test
         self.y_test = y_test
+
+    def _prepare_data(self, data):
+        """Helper function to prepare the input data."""
+        le = LabelEncoder()
+        data['GENDER_NUM'] = le.fit_transform(data['GENDER'])
+        data['BIRTHPLACE_NUM'] = le.fit_transform(data['BIRTHPLACE'])
+        data['CITY_NUM'] = le.fit_transform(data['CITY'])
+        data['STATE_NUM'] = le.fit_transform(data['STATE'])
+        data['COUNTY_NUM'] = le.fit_transform(data['COUNTY'])
+
+        data['BIRTHDATE'] = [pd.Timestamp(ts) for ts in data['BIRTHDATE']]
+        data['BIRTHDATE_UNIX'] = data['BIRTHDATE'].astype(int) / 10**9
+
+        target_col = 'BIRTHDATE_UNIX'
+        col_selecion = ['GENDER_NUM', 'BIRTHPLACE_NUM', 'CITY_NUM', 'STATE_NUM', 'COUNTY_NUM',
+                        'ZIP', 'LAT', 'LON', 'HEALTHCARE_EXPENSES', 'HEALTHCARE_COVERAGE']
+
+        X_df = data[col_selecion].fillna(0.)
+        y_df = data[target_col]
+
+        X = X_df.values
+        y = y_df.values
+
+        X_scale = minmax_scale(X)
+        y_scale = minmax_scale(y)
+
+        return X_scale, y_scale
 
     def setup_model(self):
         """Setup model function

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Multinomial Naive Bayesian Model class
+"""Multinomial Naive Bayesian Model class for the 20Newsgroups dataset.
 
 Copyright 2020, Gradient Zero
 All rights reserved
@@ -39,7 +39,10 @@ class UserModel(Model):
         self.DP_epsilon = None
 
     def setup_model(self):
+        """Setup model.
 
+        Define the model here.
+        """
         self._classifier_type = 'MultinomialNB'
 
         if not self.DP_enabled:
@@ -56,14 +59,25 @@ class UserModel(Model):
         print('Setting up a ' + self._classifier_type + ' classifier...')
 
     def setup_data(self):
+        """Setup data function
 
-        # load data
-        if len(self.data_sources) < 1:
+        This function can be used to prepare data or perform
+        other tasks for the training run.
+
+        At runtime the selected datset is attached to this model. It
+        is available as the `data_source` attribute.
+
+        For local testing call `model.attach_data_source(some_data_source)`
+        manually before calling `setup_data()`.
+
+        Use `self.data_source.read()` to read the attached data.
+        """
+        # get the input dataset
+        if self.data_source is None:
             logger.error('No data source found')
             return
-        source = next(iter(self.data_sources.values()))
 
-        X, y = source.read()
+        X, y = self.data_source.read()
 
         # check data format
         if isinstance(X, pd.DataFrame):
@@ -114,7 +128,6 @@ class UserModel(Model):
             print('Class-labels vector shape:', self.y_test.shape)
 
     def _compute_features_bounds(self):
-
         if isinstance(self.X_train, pd.DataFrame):
             min_values = self.X_train.min(axis=0).values
             max_values = self.X_train.max(axis=0).values
@@ -124,10 +137,8 @@ class UserModel(Model):
 
         self.features_bounds = list(zip(min_values, max_values))
 
-    def fit(self, **kwargs):
-        """
-
-        Train model on a dataset passed as input.
+    def fit(self):
+        """Train model on a dataset passed as input.
 
         Args:
             kwargs (:obj:`dict`): dictionary of optional arguments

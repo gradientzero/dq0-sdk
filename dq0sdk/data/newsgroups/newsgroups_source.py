@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-"""User Data Source.
+"""20Newsgroups Data Source.
 
-This is a template for user defined data sources.
-When training a model on a certain deta source dq0-core is looking for a
-UserSource class that is to be used as the custom data source implementation.
+This is a data source example known from the Scikit-learn API:
+https://scikit-learn.org/stable/datasets/index.html#the-20-newsgroups-text-dataset
 
-This template class derives from Source. Actual implementations should derive
-from child classes like CSVSource.
+The 20 newsgroups dataset comprises around 18000 newsgroups posts on 20 topics split
+in two subsets: one for training (or development) and the other one for testing
+(or for performance evaluation). The split between the train and test set is based
+upon a messages posted before and after a specific date.
 
 Copyright 2020, Gradient Zero
 All rights reserved
 """
 
-import logging
 import ssl
 
 from dq0sdk.data.preprocessing import preprocessing
@@ -24,19 +24,23 @@ import pandas as pd
 from sklearn.datasets import fetch_20newsgroups
 
 
-logger = logging.getLogger()
+class NewsgroupsSource(Source):
+    """Data Source for 20Newsgroups.
 
-
-class UserSource(Source):
-    """User Data Source.
-
-    Implementation for the 20_Newsgroups dataset.
+    Newsgroups posts on 20 topics from scikit-learn.
     """
     def __init__(self):
         super().__init__()
 
-    def read(self, force=False):
+    def read(self):
+        """Read the 20newsgroups data source
 
+        Args:
+            kwargs: keyword arguments
+
+        Returns:
+            data read from the data source.
+        """
         tr_dataset_df, test_dataset_df, categorical_features_list, \
             quantitative_features_list, target_feature = \
             self._get_train_and_test_dataset()
@@ -59,12 +63,13 @@ class UserSource(Source):
         return X_df, y_ts
 
     def _get_train_and_test_dataset(self):
-        """
-        '20_Newsgroups' is a corpus of labeled documents. We extract features
+        """'20_Newsgroups' is a corpus of labeled documents. We extract features
         by counting word occurrences (Tfidf). However, since the dictionary
         of words is quite big, the code allow to keep only the most
         discriminative words for the classification task.
-        :return: traing and test
+
+        Returns:
+            train and test data sets for 20newsgroups.
         """
 
         # print('Fetching "20 newsgroups" dataset from remote repository')
@@ -146,7 +151,7 @@ class UserSource(Source):
     def _build_data_structures(self, X_train_sp_matr, X_test_sp_matr,
                                feature_names_list, y_train_np_a, y_test_np_a,
                                sparse_representation=True):
-
+        """Data structure helper function."""
         tr_dataset_df = util.sparse_scipy_matrix_to_Pandas_df(
             X_train_sp_matr,
             sparse_representation,
