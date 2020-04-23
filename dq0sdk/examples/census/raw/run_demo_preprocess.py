@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Adult dataset example.
 
-Run script to test the exeuction locally.
+Run script to test the data preprocessing exeuction locally.
 
 Copyright 2020, Gradient Zero
 All rights reserved
@@ -28,17 +28,8 @@ if __name__ == '__main__':
     # attach data source
     model.attach_data_source(data_source)
 
-    # prepare data
-    model.setup_data()
+    # execute preprocessing
+    dataset = model.preprocess()
 
-    # setup model
-    model.setup_model()
-
-    # fit the model
-    model.fit()
-
-    # evaluate
-    loss_tr, acc_tr, mse_te = model.evaluate(test_data=False)
-    loss_te, acc_te, mse_te = model.evaluate()
-    print('Train Acc: %.2f %%' % (100 * acc_tr))
-    print('Test  Acc: %.2f %%' % (100 * acc_te))
+    # save the resulting dataset
+    dataset.to_csv('out.csv')

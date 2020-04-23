@@ -51,15 +51,53 @@ class UserModel(NeuralNetwork):
         For local testing call `model.attach_data_source(some_data_source)`
         manually before calling `setup_data()`.
 
-        Use `self.data_source.read()` to read the attache data.
+        Use `self.data_source.read()` to read the attached data.
         """
         from sklearn.model_selection import train_test_split
 
-        # read the input dataset
+        # read and preprocess the data
+        dataset_df = self.preprocess()
+
+        # do the train test split
+        X_train_df, X_test_df, y_train_ts, y_test_ts =\
+            train_test_split(dataset_df.iloc[:, :-1],
+                             dataset_df.iloc[:, -1],
+                             test_size=0.33,
+                             random_state=42)
+        self.input_dim = X_train_df.shape[1]
+
+        # set data attributes
+        self.X_train = X_train_df
+        self.X_test = X_test_df
+        self.y_train = y_train_ts
+        self.y_test = y_test_ts
+
+    def preprocess(self):
+        """Preprocess the data
+
+        Preprocess the data set. The input data is read from the attached source.
+
+        At runtime the selected datset is attached to this model. It
+        is available as the `data_source` attribute.
+
+        For local testing call `model.attach_data_source(some_data_source)`
+        manually before calling `setup_data()`.
+
+        Use `self.data_source.read()` to read the attached data.
+
+        Returns:
+            preprocessed data
+        """
+        from dq0sdk.data.preprocessing import preprocessing
+        import sklearn.preprocessing
+        import pandas as pd
+
+        # get the input dataset
         if self.data_source is None:
             logger.error('No data source found')
             return
 
+        # columns
         column_names_list = [
             'lastname',
             'firstname',
@@ -80,10 +118,11 @@ class UserModel(NeuralNetwork):
             'income'
         ]
 
-        dataset_df = self.data_source.read(
+        # read the data via the attached input data source
+        dataset = self.data_source.read(
             names=column_names_list,
             sep=',',
-            skiprows=self.skiprows,
+            skiprows=1,
             index_col=None,
             skipinitialspace=True,
             na_values={
@@ -95,15 +134,18 @@ class UserModel(NeuralNetwork):
                 'occupation': '?'}
         )
 
-        target_feature = 'income'
-
-        dataset_df.drop(['lastname', 'firstname'], axis=1, inplace=True)
+        # drop unused columns
+        dataset.drop(['lastname', 'firstname'], axis=1, inplace=True)
         column_names_list.remove('lastname')
         column_names_list.remove('firstname')
 
+        # define target feature
+        target_feature = 'income'
+
+        # get categorical features
         categorical_features_list = [
-            col for col in dataset_df.columns
-            if col != target_feature and dataset_df[col].dtype == 'object']
+            col for col in dataset.columns
+            if col != target_feature and dataset[col].dtype == 'object']
 
         # List difference. Warning: in below operation, set does not preserve
         # the order. If order matters, use, e.g., list comprehension.
@@ -111,43 +153,15 @@ class UserModel(NeuralNetwork):
             list(set(column_names_list) - set(categorical_features_list) - set(
                 [target_feature]))
 
-        dataset_df = self.prepare_data(
-            dataset_df,
-            categorical_features_list,
-            quantitative_features_list,
-            target_feature
-        )
-
-        X_train_df, X_test_df, y_train_ts, y_test_ts =\
-            train_test_split(dataset_df.iloc[:, :-1],
-                             dataset_df.iloc[:, -1],
-                             test_size=0.33,
-                             random_state=42)
-        self.input_dim = X_train_df.shape[1]
-
-        # set data member variables
-        self.X_train = X_train_df
-        self.X_test = X_test_df
-        self.y_train = y_train_ts
-        self.y_test = y_test_ts
-
-    def prepare_data(self,
-                     dataset_df,
-                     categorical_features_list,
-                     quantitative_features_list,
-                     target_feature,
-                     approach_for_missing_feature='imputation',
-                     imputation_method_for_cat_feats='unknown',
-                     imputation_method_for_quant_feats='median',
-                     features_to_drop_list=None):
-        """Helper function to prepare the data for training."""
-        from dq0sdk.data.preprocessing import preprocessing
-        import sklearn.preprocessing
-        import pandas as pd
+        # get arguments
+        approach_for_missing_feature = 'imputation'
+        imputation_method_for_cat_feats = 'unknown'
+        imputation_method_for_quant_feats = 'median'
+        features_to_drop_list = None
 
         # handle missing data
-        dataset_df = preprocessing.handle_missing_data(
-            dataset_df,
+        dataset = preprocessing.handle_missing_data(
+            dataset,
             mode=approach_for_missing_feature,
             imputation_method_for_cat_feats=imputation_method_for_cat_feats,
             imputation_method_for_quant_feats=imputation_method_for_quant_feats,  # noqa: E501
@@ -155,32 +169,29 @@ class UserModel(NeuralNetwork):
             quantitative_features_list=quantitative_features_list)
 
         if features_to_drop_list is not None:
-            dataset_df.drop(features_to_drop_list, axis=1, inplace=True)
+            dataset.drop(features_to_drop_list, axis=1, inplace=True)
 
         # Investigate whether ordinal features are present
         # (Weak) assumption: for each categorical feature, its values in the
         # test set is already present in the training set.
-        dataset_df = pd.get_dummies(dataset_df, columns=categorical_features_list,
-                                    dummy_na=False)
+        dataset = pd.get_dummies(dataset, columns=categorical_features_list, dummy_na=False)
         # True => add a column to indicate NaNs. False => NaNs are ignored.
         # Rather than get_dummies, it would be better as follows ...
         # enc = OneHotEncoder(handle_unknown='ignore', sparse=False)
         # enc.fit(X_df[categorical_features_list])
 
         # Scale values to the range from 0 to 1 to be precessed by the neural network
-        dataset_df[quantitative_features_list] =\
-            sklearn.preprocessing.minmax_scale(
-                dataset_df[quantitative_features_list])
+        dataset[quantitative_features_list] = sklearn.preprocessing.minmax_scale(dataset[quantitative_features_list])
 
         # label target
-        y_ts = dataset_df[target_feature]
+        y_ts = dataset[target_feature]
         le = sklearn.preprocessing.LabelEncoder()
         y_bin_nb = le.fit_transform(y_ts)
         y_bin = pd.Series(index=y_ts.index, data=y_bin_nb)
-        dataset_df.drop([target_feature], axis=1, inplace=True)
-        dataset_df[target_feature] = y_bin
+        dataset.drop([target_feature], axis=1, inplace=True)
+        dataset[target_feature] = y_bin
 
-        return dataset_df
+        return dataset
 
     def setup_model(self):
         """Setup model function

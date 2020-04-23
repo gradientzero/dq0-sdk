@@ -52,38 +52,26 @@ class Model(ABC):
         self.data_source = data_source
 
     @abstractmethod
-    def setup_data(self, **kwargs):
+    def setup_data(self):
         """Setup data function
 
         This function can be used by child classes to prepare data or perform
         other tasks that dont need to be repeated for every training run.
-
-        Args:
-            kwargs (:obj:`dict`): dictionary of optional arguments
         """
         pass
 
     @abstractmethod
-    def setup_model(self, **kwargs):
+    def setup_model(self):
         """Setup model function
 
-        Implementing child classes can use this method to define the
-        Keras model.
-
-        Args:
-            kwargs (:obj:`dict`): dictionary of optional arguments
+        Implementing child classes can use this method to define the model.
         """
         pass
 
-    @abstractmethod
-    def fit(self, **kwargs):
+    def fit(self):
+        """Train model on a dataset passed as input.
         """
-
-        Train model on a dataset passed as input.
-
-        Args:
-            kwargs (:obj:`dict`): dictionary of optional arguments
-        """
+        pass
 
     @abstractmethod
     def save(self):
@@ -104,5 +92,23 @@ class Model(ABC):
         model from local storage.
 
         The implemented child class version will be final (non-derivable).
+        """
+        pass
+
+    def preprocess(self, dataset):
+        """Preprocess the data
+
+        Preprocess the data set. The input data is read from the attached source.
+
+        At runtime the selected datset is attached to this model. It
+        is available as the `data_source` attribute.
+
+        For local testing call `model.attach_data_source(some_data_source)`
+        manually before calling `setup_data()`.
+
+        Use `self.data_source.read()` to read the attached data.
+
+        Returns:
+            preprocessed data
         """
         pass
