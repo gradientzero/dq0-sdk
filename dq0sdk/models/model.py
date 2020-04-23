@@ -99,7 +99,7 @@ class Model(ABC):
         """
         pass
 
-    def preprocess(self, dataset):
+    def preprocess(self):
         """Preprocess the data
 
         Preprocess the data set. The input data is read from the attached source.
