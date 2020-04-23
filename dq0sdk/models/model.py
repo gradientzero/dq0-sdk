@@ -74,24 +74,28 @@ class Model(ABC):
         pass
 
     @abstractmethod
-    def save(self):
+    def save(self, name, version):
         """Saves the model.
 
         Implementing child classes should use this function to save the
         model in binary format on local storage.
 
-        The implemented child class version will be final (non-derivable).
+        Args:
+            name (:obj:`str`): The name of the model
+            version (int): The version of the model
         """
         pass
 
     @abstractmethod
-    def load(self):
+    def load(self, name, version):
         """Loads the model.
 
         Implementing child classes should use this function to load the
         model from local storage.
 
-        The implemented child class version will be final (non-derivable).
+        Args:
+            name (:obj:`str`): The name of the model
+            version (int): The version of the model
         """
         pass
 

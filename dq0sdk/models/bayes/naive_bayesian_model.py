@@ -256,18 +256,26 @@ class NaiveBayesianModel(Model):
 
         return accuracy_score
 
-    def save(self):
-        """Saves the model in binary format on local storage.
-        """
-        name = '{}.pickle'.format(self.uuid)
+    def save(self, name, version):
+        """Saves the model.
 
-        with open(os.path.join(self._saved_model_folder, name), 'wb') as f:
+        Save the model in binary format on local storage.
+
+        Args:
+            name (:obj:`str`): The name of the model
+            version (int): The version of the model
+        """
+        with open(os.path.join(self._saved_model_folder, name, version), 'wb') as f:
             pickle.dump(self._classifier, f)
 
-    def load(self):
-        """Loads the model from local storage.
-        """
-        name = '{}.pickle'.format(self.uuid)
+    def load(self, name, version):
+        """Loads the model.
 
-        with open(os.path.join(self._saved_model_folder, name), 'rb') as file:
+        Load the model from local storage.
+
+        Args:
+            name (:obj:`str`): The name of the model
+            version (int): The version of the model
+        """
+        with open(os.path.join(self._saved_model_folder, name, version), 'rb') as file:
             self._classifier = pickle.load(file)
