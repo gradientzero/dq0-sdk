@@ -96,22 +96,3 @@ def replace_model_parent_class(lines, parent_class_name):
             pass
         new_lines.append(line)
     return new_lines
-
-
-def replace_data_parent_class(lines, parent_class_name):
-    """Replace parent class. Used my set_code functions."""
-    new_lines = []
-    for line in lines:
-        try:
-            index = line.index('from dq0sdk.data')
-            if index == 0:
-                line = 'from dq0sdk.data.csv.csv_source import CSVSource\n'
-        except ValueError:
-            pass
-        try:
-            line.index('class UserSource(')
-            line = 'class UserSource(CSVSource):\n'
-        except ValueError:
-            pass
-        new_lines.append(line)
-    return new_lines
