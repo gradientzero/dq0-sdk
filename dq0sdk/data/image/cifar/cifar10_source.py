@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""CIFAR10 User Data Source.
+"""CIFAR10 Image Data Source.
 
 This is a data source implementation for the CIFAR10 data set.
 
@@ -19,7 +19,7 @@ from dq0sdk.data.image import ImageSource
 import tensorflow as tf
 
 
-class UserSource(ImageSource):
+class Cifar10Source(ImageSource):
     """Data Source for CIFAR10 dataset.
 
     From the CIFAR description: The CIFAR-10 dataset consists of 60000 32x32

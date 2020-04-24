@@ -25,7 +25,6 @@ from dq0sdk.cli import Model
 from dq0sdk.cli.api import Client, routes
 from dq0sdk.cli.utils.code import (
     check_signature,
-    replace_data_parent_class,
     replace_function,
     replace_model_parent_class,
 )
@@ -210,7 +209,11 @@ class Project:
         """
         self.client.set_connection(host=host, port=port)
 
-    def set_model_code(self, setup_data=None, setup_model=None, parent_class_name=None):  # noqa: C901
+    def set_model_code(self,  # noqa: C901
+                       setup_data=None,
+                       setup_model=None,
+                       preprocess=None,
+                       parent_class_name=None):
         """Sets the user defined setup_model and setup_data functions.
 
         Saves the function code to user_model.py
@@ -220,28 +223,33 @@ class Project:
             otherwise the sources of the function arguments are not available.
 
         Args:
-            setup_data (func): user defined setup_data function
-            setup_model (func): user defined setup_model function
-            parent_class_name (:obj:`str`): name of the parent class for UserModel
+            setup_data (func, optional): user defined setup_data function
+            setup_model (func, optional): user defined setup_model function
+            preprocess (func, optional): user defined preprocess function
+            parent_class_name (:obj:`str`, optional): name of the parent class for UserModel
         """
         # check args
         setup_data_code = None
         setup_model_code = None
+        preprocess_code = None
         try:
             if setup_data is not None:
                 setup_data_code = inspect.getsource(setup_data)
             if setup_model is not None:
                 setup_model_code = inspect.getsource(setup_model)
+            if preprocess is not None:
+                preprocess_code = inspect.getsource(preprocess)
         except OSError:
             raise DQ0SDKError('Could not get sources. '
                               'This will only work inside iphyton notebooks.')
-        if setup_data_code is None and setup_model_code is None:
-            raise ValueError('You need to either pass setup_data '
-                             'or setup_model function')
+        if setup_data_code is None and setup_model_code is None and preprocess_code is None:
+            raise ValueError('You need to either pass setup_data, '
+                             'setup_model or preprocess function')
 
         setup_data_code = check_signature(setup_data_code, 'setup_data')
         setup_model_code = check_signature(setup_model_code, 'setup_model')
-        if setup_data_code is None and setup_model_code is None:
+        preprocess_code = check_signature(preprocess_code, 'preprocess')
+        if setup_data_code is None and setup_model_code is None and preprocess_code is None:
             return
 
         # replace in user_model.py
@@ -251,6 +259,8 @@ class Project:
             lines = replace_function(lines, setup_data_code)
         if setup_model_code is not None:
             lines = replace_function(lines, setup_model_code)
+        if preprocess_code is not None:
+            lines = replace_function(lines, preprocess_code)
         if parent_class_name is not None:
             if parent_class_name != 'NeuralNetwork':
                 raise DQ0SDKError('Current version only allows "NeuralNetwork"'
@@ -260,43 +270,3 @@ class Project:
             f.writelines(lines)
 
         print('Successfully set model code.')
-
-    def set_data_code(self, preprocess=None, parent_class_name=None):  # noqa: C901
-        """Sets the user defined preprocess function.
-
-        Saves the function code to user_source.py
-
-        Note:
-            This function will only work inside iphyton notebooks,
-            otherwise the sources of the function arguments are not available.
-
-        Args:
-            preprocess (func): user defined preprocess function
-            parent_class_name (:obj:`str`): name of the parent class for UserSource
-        """
-        # check args
-        if preprocess is None:
-            raise ValueError('You need to pass preprocess function')
-        try:
-            preprocess_code = inspect.getsource(preprocess)
-        except OSError:
-            raise DQ0SDKError('Could not get sources. '
-                              'This will only work inside iphyton notebooks.')
-
-        preprocess_code = check_signature(preprocess_code, 'preprocess')
-        if preprocess_code is None:
-            return
-
-        # replace in user_source.py
-        with open('data/user_source.py', 'r') as f:
-            lines = f.readlines()
-        lines = replace_function(lines, preprocess_code)
-        if parent_class_name is not None:
-            if parent_class_name != 'CSVSource':
-                raise DQ0SDKError('Current version only allows "CSVSource"'
-                                  ' as parent_class_name!')
-            lines = replace_data_parent_class(lines, parent_class_name)
-        with open('data/user_source.py', 'w') as f:
-            f.writelines(lines)
-
-        print('Successfully set data code.')

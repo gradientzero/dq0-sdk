@@ -89,13 +89,25 @@ class UserModel(NeuralNetwork):
         return model
 
     def setup_data(self):
-        # load data
-        if len(self.data_sources) < 1:
+        """Setup data function
+
+        This function can be used to prepare data or perform
+        other tasks for the training run.
+
+        At runtime the selected datset is attached to this model. It
+        is available as the `data_source` attribute.
+
+        For local testing call `model.attach_data_source(some_data_source)`
+        manually before calling `setup_data()`.
+
+        Use `self.data_source.read()` to read the attached data.
+        """
+        # get the input dataset
+        if self.data_source is None:
             logger.error('No data source found')
             return
-        source = next(iter(self.data_sources.values()))
 
-        X, y = source.read()
+        X, y = self.data_source.read()
 
         # check data format
         if isinstance(X, pd.DataFrame):

@@ -44,16 +44,26 @@ class UserModel(NeuralNetwork):
 
         This function can be used to prepare data or perform
         other tasks for the training run.
+
+        At runtime the selected datset is attached to this model. It
+        is available as the `data_source` attribute.
+
+        For local testing call `model.attach_data_source(some_data_source)`
+        manually before calling `setup_data()`.
+
+        Use `self.data_source.read()` to read the attached data.
         """
         from sklearn.model_selection import train_test_split
 
-        if len(self.data_sources) < 1:
+        # get the input dataset
+        if self.data_source is None:
             logger.error('No data source found')
             return
-        source = next(iter(self.data_sources.values()))
 
-        data = source.read()
+        # read the dataset from the attached input source
+        data = self.data_source.read()
 
+        # do the train test split
         X_train_df, X_test_df, y_train_ts, y_test_ts =\
             train_test_split(data.iloc[:, :-1],
                              data.iloc[:, -1],
@@ -61,7 +71,7 @@ class UserModel(NeuralNetwork):
                              random_state=42)
         self.input_dim = X_train_df.shape[1]
 
-        # set data member variables
+        # set data attributes
         self.X_train = X_train_df
         self.X_test = X_test_df
         self.y_train = y_train_ts
