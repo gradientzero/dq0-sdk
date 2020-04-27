@@ -24,6 +24,7 @@ import os
 from dq0sdk.cli import Model
 from dq0sdk.cli.api import Client, routes
 from dq0sdk.cli.utils.code import (
+    add_function,
     check_signature,
     replace_function,
     replace_model_parent_class,
@@ -260,11 +261,25 @@ class Project:
         if setup_model_code is not None:
             lines = replace_function(lines, setup_model_code)
         if preprocess_code is not None:
-            lines = replace_function(lines, preprocess_code)
+            add_preprocess = True
+            try:
+                '\n'.join(lines).index('def preprocess(')
+                add_preprocess = False
+            except ValueError:
+                lines = add_function(lines, preprocess_code)
+            if not add_preprocess:
+                lines = replace_function(lines, preprocess_code)
         if parent_class_name is not None:
-            if parent_class_name != 'NeuralNetwork':
-                raise DQ0SDKError('Current version only allows "NeuralNetwork"'
-                                  ' as parent_class_name!')
+            allowed_class_names = [
+                'Model',
+                'NeuralNetwork',
+                'NeuralNetworkClassification',
+                'NeuralNetworkRegression',
+                'NeuralNetworkYaml'
+            ]
+            if parent_class_name not in allowed_class_names:
+                raise DQ0SDKError('DQ0SDK only allows one of {}'
+                                  ' as parent_class_name!'.format(allowed_class_names))
             lines = replace_model_parent_class(lines, parent_class_name)
         with open('models/user_model.py', 'w') as f:
             f.writelines(lines)
