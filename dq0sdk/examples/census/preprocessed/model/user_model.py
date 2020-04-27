@@ -22,12 +22,12 @@ All rights reserved
 
 import logging
 
-from dq0sdk.models.tf.neural_network import NeuralNetwork
+from dq0sdk.models.tf.neural_network_classification import NeuralNetworkClassification
 
 logger = logging.getLogger()
 
 
-class UserModel(NeuralNetwork):
+class UserModel(NeuralNetworkClassification):
     """Derived from dq0sdk.models.tf.NeuralNetwork class
 
     Model classes provide a setup method for data and model

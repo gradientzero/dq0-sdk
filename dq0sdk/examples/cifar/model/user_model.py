@@ -10,7 +10,7 @@ All rights reserved
 import logging
 
 from dq0sdk.data.utils import util
-from dq0sdk.models.tf.neural_network import NeuralNetwork
+from dq0sdk.models.tf.neural_network_classification import NeuralNetworkClassification
 
 import numpy as np
 
@@ -23,7 +23,7 @@ import tensorflow as tf
 logger = logging.getLogger()
 
 
-class UserModel(NeuralNetwork):
+class UserModel(NeuralNetworkClassification):
     """
     Convolutional Neural Network model implementation for Cifar-10 image data.
 
@@ -39,11 +39,9 @@ class UserModel(NeuralNetwork):
     """
     def __init__(self, model_path):
         super().__init__(model_path)
-        self.model_type = 'NeuralNetworkClassification'  # 'keras'
         self._classifier_type = 'cnn'  # kwargs['classifier_type']
         self.label_encoder = None
 
-        # @Jona
         self.DP_enabled = False
         self.DP_epsilon = False
 
