@@ -157,7 +157,7 @@ class Project:
         """
         response = self.client.get(routes.data.list)
         checkSDKResponse(response)
-        return response['results']
+        return response['items']
 
     def get_data_info(self, data_uuid):
         """Returns info of a given data source.

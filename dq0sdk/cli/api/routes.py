@@ -30,9 +30,9 @@ _routes = {
         'list': '',
         'preprocess': ':id/preprocess/',
         'attach': ':id/attach/',
-        'state': ':id/',
-        'info': ':id/info/',
-        'cancel': 'cancel/'
+        'state': ':id/state/',
+        'info': ':id/',
+        'cancel': ':id/cancel/'
     }
 }
 
