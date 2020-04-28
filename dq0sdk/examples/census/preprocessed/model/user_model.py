@@ -103,7 +103,7 @@ class UserModel(NeuralNetworkClassification):
     #     y = y[:steps_per_epoch * self.num_microbatches]
         
     #     optimizer_dp = DPAdamGaussianOptimizer(learning_rate=self.learning_rate,
-    #                                            l2_norm_clip=1,
+    #                                            l2_norm_clip=.5,
     #                                            noise_multiplier=1000,
     #                                            num_microbatches=self.num_microbatches,
     #                                            ledger=False)
