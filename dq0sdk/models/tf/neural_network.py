@@ -105,7 +105,7 @@ class NeuralNetwork(Model):
         steps_per_epoch = self.X_train.shape[0] // self.num_microbatches
         x = x[:steps_per_epoch * self.num_microbatches]
         y = y[:steps_per_epoch * self.num_microbatches]
-        
+
         optimizer = tf.keras.optimizers.Adam(learning_rate=self.learning_rate)
         loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
         self.model.compile(optimizer=optimizer,

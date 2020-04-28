@@ -22,7 +22,7 @@ All rights reserved
 
 import logging
 
-from dq0sdk.models.tf.neural_network_classification import NeuralNetworkClassification        
+from dq0sdk.models.tf.neural_network_classification import NeuralNetworkClassification
 
 logger = logging.getLogger()
 
@@ -70,7 +70,6 @@ class UserModel(NeuralNetworkClassification):
                              test_size=0.33,
                              random_state=42)
         self.input_dim = X_train_df.shape[1]
-        
 
         # set data attributes
         self.X_train = X_train_df
@@ -95,13 +94,13 @@ class UserModel(NeuralNetworkClassification):
     #     """
     #     from tensorflow_privacy import DPAdamGaussianOptimizer
     #     import tensorflow.compat.v1 as tf
-        
+
     #     x = self.X_train
     #     y = self.y_train
     #     steps_per_epoch = self.X_train.shape[0] // self.num_microbatches
     #     x = x[:steps_per_epoch * self.num_microbatches]
     #     y = y[:steps_per_epoch * self.num_microbatches]
-        
+
     #     optimizer_dp = DPAdamGaussianOptimizer(learning_rate=self.learning_rate,
     #                                            l2_norm_clip=.5,
     #                                            noise_multiplier=1000,
@@ -116,4 +115,3 @@ class UserModel(NeuralNetworkClassification):
     #                    batch_size=self.num_microbatches,
     #                    epochs=self.epochs,
     #                    verbose=self.verbose)
-    

@@ -118,7 +118,7 @@ class NeuralNetworkYaml(Model):
 
         try:
             self.model = tf.keras.models.model_from_yaml(graph_str,
-                                                      custom_objects=self.custom_objects)
+                                                         custom_objects=self.custom_objects)
         except Exception as e:
             logger.error('model_from_yaml: {}'.format(e))
             sys.exit(1)
@@ -146,7 +146,7 @@ class NeuralNetworkYaml(Model):
         steps_per_epoch = self.X_train.shape[0] // self.num_microbatches
         x = x[:steps_per_epoch * self.num_microbatches]
         y = y[:steps_per_epoch * self.num_microbatches]
-        
+
         self.model.compile(optimizer=self.optimizer,
                            loss=self.loss,
                            metrics=self.metrics)
@@ -206,7 +206,7 @@ class NeuralNetworkYaml(Model):
         steps_per_epoch = x.shape[0] // self.num_microbatches
         x = x[:steps_per_epoch * self.num_microbatches]
         y = y[:steps_per_epoch * self.num_microbatches]
-        
+
         if test_data:
             evaluation = self.model.evaluate(
                 x,
