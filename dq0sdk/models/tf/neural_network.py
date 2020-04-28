@@ -65,10 +65,10 @@ class NeuralNetwork(Model):
     def __init__(self, model_path):
         super().__init__(model_path)
         self.model_type = 'keras'
-        self.learning_rate = 0.15
+        self.learning_rate = 0.01
         self.epochs = 10
         self.num_microbatches = 250
-        self.verbose = 0
+        self.verbose = 1
         self.metrics = ['accuracy', 'mse']
         self.model = None
         self.X_train = None
@@ -139,7 +139,7 @@ class NeuralNetwork(Model):
         x = self.X_test if test_data else self.X_train
         y = self.y_test if test_data else self.y_train
         batch_size = self.num_microbatches
-        num_minibatches = round(x.shape[0] / self.num_microbatches)
+        num_minibatches = x.shape[0] // self.num_microbatches
         x = x[:num_minibatches * self.num_microbatches]
         y = y[:num_minibatches * self.num_microbatches]
         return self.model.evaluate(
