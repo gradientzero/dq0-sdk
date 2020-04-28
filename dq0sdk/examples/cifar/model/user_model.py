@@ -18,7 +18,7 @@ import pandas as pd
 
 from sklearn.preprocessing import LabelEncoder
 
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 
 logger = logging.getLogger()
 

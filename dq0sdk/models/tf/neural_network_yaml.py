@@ -141,13 +141,19 @@ class NeuralNetworkYaml(Model):
                 If x is a dataset, generator, or tf.keras.utils.Sequence instance, y should not be
                 specified (since targets will be obtained from x).
         """
+        x = self.X_train
+        y = self.y_train
+        steps_per_epoch = self.X_train.shape[0] // self.num_microbatches
+        x = x[:steps_per_epoch * self.num_microbatches]
+        y = y[:steps_per_epoch * self.num_microbatches]
+        
         self.model.compile(optimizer=self.optimizer,
                            loss=self.loss,
                            metrics=self.metrics)
 
         self.model.fit(
-            self.X_train,
-            self.y_train,
+            x,
+            y,
             epochs=self.epochs,
             **self.fit_kwargs,)
 
@@ -195,16 +201,22 @@ class NeuralNetworkYaml(Model):
             metrics: to be defined!
 
         """
+        x = self.X_test if test_data else self.X_train
+        y = self.y_test if test_data else self.y_train
+        steps_per_epoch = x.shape[0] // self.num_microbatches
+        x = x[:steps_per_epoch * self.num_microbatches]
+        y = y[:steps_per_epoch * self.num_microbatches]
+        
         if test_data:
             evaluation = self.model.evaluate(
-                self.X_test,
-                self.y_test,
+                x,
+                y,
                 **self.eval_test_kwargs,
             )
         else:
             evaluation = self.model.evaluate(
-                self.X_train,
-                self.y_train,
+                x,
+                y,
                 **self.eval_train_kwargs,
             )
         return evaluation
