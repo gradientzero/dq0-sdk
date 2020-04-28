@@ -33,8 +33,7 @@ All rights reserved
 
 from dq0sdk.models.model import Model
 
-import tensorflow as tf
-from tensorflow import keras
+import tensorflow.compat.v1 as tf
 
 
 class NeuralNetwork(Model):
@@ -91,24 +90,29 @@ class NeuralNetwork(Model):
         Implementing child classes can use this method to define the
         Keras model.
         """
-        self.model = keras.Sequential([
-            keras.layers.Input(self.input_dim),
-            keras.layers.Dense(10, activation='tanh'),
-            keras.layers.Dense(10, activation='tanh'),
-            keras.layers.Dense(2, activation='softmax')]
+        self.model = tf.keras.Sequential([
+            tf.keras.layers.Input(self.input_dim),
+            tf.keras.layers.Dense(10, activation='tanh'),
+            tf.keras.layers.Dense(10, activation='tanh'),
+            tf.keras.layers.Dense(2, activation='softmax')]
         )
 
     def fit(self):
         """Model fit function.
         """
-        # optimizer = tf.keras.optimizers.SGD(learning_rate=self.learning_rate)
+        x = self.X_train
+        y = self.y_train
+        steps_per_epoch = self.X_train.shape[0] // self.num_microbatches
+        x = x[:steps_per_epoch * self.num_microbatches]
+        y = y[:steps_per_epoch * self.num_microbatches]
+        
         optimizer = tf.keras.optimizers.Adam(learning_rate=self.learning_rate)
         loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
         self.model.compile(optimizer=optimizer,
                            loss=loss,
                            metrics=self.metrics)
-        self.model.fit(self.X_train,
-                       self.y_train,
+        self.model.fit(x,
+                       y,
                        batch_size=self.num_microbatches,
                        epochs=self.epochs,
                        verbose=self.verbose)
@@ -138,14 +142,13 @@ class NeuralNetwork(Model):
         """
         x = self.X_test if test_data else self.X_train
         y = self.y_test if test_data else self.y_train
-        batch_size = self.num_microbatches
-        num_minibatches = x.shape[0] // self.num_microbatches
-        x = x[:num_minibatches * self.num_microbatches]
-        y = y[:num_minibatches * self.num_microbatches]
+        steps_per_epoch = x.shape[0] // self.num_microbatches
+        x = x[:steps_per_epoch * self.num_microbatches]
+        y = y[:steps_per_epoch * self.num_microbatches]
         return self.model.evaluate(
             x=x,
             y=y,
-            batch_size=batch_size,
+            batch_size=self.num_microbatches,
             verbose=verbose)
 
     def save(self, name, version):

@@ -56,7 +56,7 @@ losses = {
     'MeanSquaredError': tensorflow.keras.losses.MeanSquaredError,
     'MeanSquaredLogarithmicError': tensorflow.keras.losses.MeanSquaredLogarithmicError,
     'Poisson': tensorflow.keras.losses.Poisson,
-    'Reduction': tensorflow.keras.losses.Reduction,
+    # 'Reduction': tensorflow.keras.losses.Reduction,
     'SparseCategoricalCrossentropy': tensorflow.keras.losses.SparseCategoricalCrossentropy,
     'SquaredHinge': tensorflow.keras.losses.SquaredHinge,
 }
