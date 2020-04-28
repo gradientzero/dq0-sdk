@@ -14,7 +14,7 @@ For now we just stick to Gaussian versions.
 Copyright 2020, Gradient Zero
 All rights reserved
 """
-import tensorflow
+import tensorflow.compat.v1
 
 import tensorflow_hub as hub
 
