@@ -180,6 +180,27 @@ class Project:
         checkSDKResponse(response)
         return response
 
+    def get_sample_data(self, data_uuid):
+        """Returns sample data for a given data source.
+
+        Sample data is provided manually and is not available
+        for every data source.
+
+        Args:
+            data_uuid (:obj:`str`): The UUID of the requested data source
+
+        Returns:
+            The data source sample data
+        """
+        response = self.client.get(routes.data.sample, id=data_uuid)
+        checkSDKResponse(response)
+        if 'sample' in response:
+            try:
+                response = json.loads(response['sample'])
+            except Exception:
+                pass
+        return response
+
     def attach_data_source(self, data_source_uuid):
         """Attaches a new data source to the project.
 
