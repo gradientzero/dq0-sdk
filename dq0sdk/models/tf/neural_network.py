@@ -67,7 +67,7 @@ class NeuralNetwork(Model):
         self.learning_rate = 0.01
         self.epochs = 10
         self.num_microbatches = 250
-        self.verbose = 1
+        self.verbose = 0
         self.metrics = ['accuracy', 'mse']
         self.model = None
         self.X_train = None
