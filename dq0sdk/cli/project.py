@@ -117,9 +117,13 @@ class Project:
         Args:
             name (:obj:`str`): The name of the new project
         """
-        response = self.client.post(routes.project.create, data={'name': name})
+        working_dir = os.getcwd()
+        response = self.client.post(routes.project.create, data={'working_dir': working_dir, 'name': name})
         checkSDKResponse(response)
         print(response['message'])
+
+        # change to working directory where the new project was created
+        os.chdir(working_dir)
 
         with open('{}/.meta'.format(name)) as f:
             meta = json.load(f)
@@ -157,7 +161,7 @@ class Project:
         """
         response = self.client.get(routes.data.list)
         checkSDKResponse(response)
-        return response['results']
+        return response['items']
 
     def get_data_info(self, data_uuid):
         """Returns info of a given data source.
@@ -172,7 +176,7 @@ class Project:
         Returns:
             The data source information in JSON format
         """
-        response = self.client.get(routes.data.info, id=data_uuid)
+        response = self.client.get(routes.data.get, id=data_uuid)
         checkSDKResponse(response)
         return response
 
@@ -183,7 +187,7 @@ class Project:
             data_source (:obj:`str`) The UUID of the new source to attach
         """
         response = self.client.post(
-            routes.data.attach,
+            routes.project.attach,
             id=self.model_uuid,
             data={'data_source_uuid': data_source_uuid})
         checkSDKResponse(response)
