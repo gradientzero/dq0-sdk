@@ -83,7 +83,11 @@ class Connector():
                 sample_allowed = 'read' in source['settings']['allowed_actions']
 
             if source['type'] == 'csv':
-                csv = CSVSource(os.path.join(self.working_dir, self.dataconfig['settings']['csv_base_dir'], source['path']))
+                filepath = os.path.join(self.working_dir, self.dataconfig['settings']['csv_base_dir'], source['path'])
+                samplepath = None
+                if 'sample_path' in source:
+                    samplepath = os.path.join(self.working_dir, self.dataconfig['settings']['csv_base_dir'], source['sample_path'])
+                csv = CSVSource(filepath, sample_filepath=samplepath)
                 csv.name = name
                 csv.read_allowed = read_allowed
                 csv.meta_allowed = meta_allowed
