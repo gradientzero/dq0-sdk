@@ -25,14 +25,17 @@ class CSVSource(Source):
 
     Args:
         filepath (:obj:`str`): Absolute path to the CSV file.
+        sample_filepath (:obj:`str`): Absolute path to the CSV file containing sample data.
 
     Attributes:
         filepath (:obj:`str`): Absolute path to the CSV file.
+        sample_filepath (optional, :obj:`str`): Absolute path to the CSV file containing sample data.
 
     """
-    def __init__(self, filepath):
+    def __init__(self, filepath, sample_filepath=None):
         super().__init__()
         self.filepath = filepath
+        self.sample_filepath = sample_filepath
 
     def read(self, **kwargs):
         """Read CSV data sources
@@ -122,6 +125,7 @@ class CSVSource(Source):
             "name": self.name,
             "type": 'csv',
             "filepath": self.filepath,
+            "samplepath": self.sample_filepath,
             "length": length,
             "permissions": permissions,
             "mean": mean,
