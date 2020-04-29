@@ -14,7 +14,7 @@ For now we just stick to Gaussian versions.
 Copyright 2020, Gradient Zero
 All rights reserved
 """
-import tensorflow
+import tensorflow.compat.v1
 
 import tensorflow_hub as hub
 
@@ -56,7 +56,7 @@ losses = {
     'MeanSquaredError': tensorflow.keras.losses.MeanSquaredError,
     'MeanSquaredLogarithmicError': tensorflow.keras.losses.MeanSquaredLogarithmicError,
     'Poisson': tensorflow.keras.losses.Poisson,
-    'Reduction': tensorflow.keras.losses.Reduction,
+    # 'Reduction': tensorflow.keras.losses.Reduction,
     'SparseCategoricalCrossentropy': tensorflow.keras.losses.SparseCategoricalCrossentropy,
     'SquaredHinge': tensorflow.keras.losses.SquaredHinge,
 }

@@ -82,12 +82,36 @@ class UserModel(NeuralNetworkClassification):
 
         Define the model here.
         """
-        from tensorflow import keras
-        self.learning_rate = 0.3
-        self.epochs = 5
-        self.num_microbatches = 1
-        self.model = keras.Sequential([
-            keras.layers.Input(self.input_dim),
-            keras.layers.Dense(10, activation='tanh'),
-            keras.layers.Dense(10, activation='tanh'),
-            keras.layers.Dense(2, activation='softmax')])
+        import tensorflow as tf
+        self.model = tf.keras.Sequential([
+            tf.keras.layers.Input(self.input_dim),
+            tf.keras.layers.Dense(10, activation='tanh'),
+            tf.keras.layers.Dense(10, activation='tanh'),
+            tf.keras.layers.Dense(2, activation='softmax')])
+
+    # def fit(self):
+    #     """Model fit function.
+    #     """
+    #     from tensorflow_privacy import DPAdamGaussianOptimizer
+    #     import tensorflow.compat.v1 as tf
+
+    #     x = self.X_train
+    #     y = self.y_train
+    #     steps_per_epoch = self.X_train.shape[0] // self.num_microbatches
+    #     x = x[:steps_per_epoch * self.num_microbatches]
+    #     y = y[:steps_per_epoch * self.num_microbatches]
+
+    #     optimizer_dp = DPAdamGaussianOptimizer(learning_rate=self.learning_rate,
+    #                                            l2_norm_clip=.5,
+    #                                            noise_multiplier=1000,
+    #                                            num_microbatches=self.num_microbatches,
+    #                                            ledger=False)
+    #     loss_dp = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True, reduction=tf.losses.Reduction.NONE)
+    #     self.model.compile(optimizer=optimizer_dp,
+    #                        loss=loss_dp,
+    #                        metrics=self.metrics)
+    #     self.model.fit(x,
+    #                    y,
+    #                    batch_size=self.num_microbatches,
+    #                    epochs=self.epochs,
+    #                    verbose=self.verbose)
