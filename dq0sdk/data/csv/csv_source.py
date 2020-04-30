@@ -25,17 +25,18 @@ class CSVSource(Source):
 
     Args:
         filepath (:obj:`str`): Absolute path to the CSV file.
-        sample_filepath (:obj:`str`): Absolute path to the CSV file containing sample data.
 
     Attributes:
         filepath (:obj:`str`): Absolute path to the CSV file.
-        sample_filepath (optional, :obj:`str`): Absolute path to the CSV file containing sample data.
+        sample_filepath (:obj:`str`): Absolute path to the CSV file containing sample data.
+        types: json object containing column type description
 
     """
-    def __init__(self, filepath, sample_filepath=None):
+    def __init__(self, filepath):
         super().__init__()
         self.filepath = filepath
-        self.sample_filepath = sample_filepath
+        self.sample_filepath = None
+        self.types = ''
 
     def read(self, **kwargs):
         """Read CSV data sources
@@ -85,7 +86,6 @@ class CSVSource(Source):
         mean = ''
         std = ''
         hist = ''
-        types = ''
         content = None
         if self.read_allowed:
             try:
@@ -102,12 +102,6 @@ class CSVSource(Source):
                 hist = '{}'.format(dp_hist)
             except Exception as e:
                 logger.warn('Could not get stats for content. {}'.format(e))
-
-        if self.types_allowed and content is not None:
-            try:
-                types = '{}'.format(content.dtypes)
-            except Exception as e:
-                logger.warn('Could not get types for content. {}'.format(e))
 
         permissions = []
         if self.read_allowed:
@@ -130,6 +124,6 @@ class CSVSource(Source):
             "permissions": permissions,
             "mean": mean,
             "std": std,
-            'hist': hist,
-            "types": types
+            'stats': hist,
+            "types": self.types
         }

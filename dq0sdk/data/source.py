@@ -25,7 +25,7 @@ class Source(ABC):
 
     Attributes:
         uuid (:obj:`str`): The universally unique identifier of the data source.
-        uuid (:obj:`str`): The data source's name
+        name (:obj:`str`): The data source's name
         data (:obj:`pandas.DataFrame`): The loaded data
         preprocessed_data (:obj:`pandas.DataFrame`): The preprocessed data
         read_allowed (bool): True if this source can be read
