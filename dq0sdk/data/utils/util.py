@@ -564,6 +564,50 @@ def numerical_datasets_are_equal(d1, d2, approx_error=1e-4):
     return np.all(np.absolute(d1 - d2) < approx_error)
 
 
+def datasets_are_equal(d1, d2):
+    """Compare two datasets for equality.
+
+        Args:
+            d1: Numpy array or Pandas DataFrame or Pandas Series
+            d2: Numpy array or Pandas DataFrame or Pandas Series
+
+    Returns:
+        Boolean value True / False if d1 and d2 are / are not equal
+    """
+
+    for d in [d1, d2]:
+        if not isinstance(d, np.ndarray) and not isinstance(d, pd.DataFrame)\
+                and not isinstance(d, pd.Series):
+            raise Exception('d type must be np.ndarray, pd.DataFrame or '
+                            'pd.Series')
+
+    if isinstance(d1, pd.DataFrame):
+        if isinstance(d2, pd.DataFrame):
+            return d1.equals(d2)
+        else:
+            raise Exception('Comparing for equality a ' + type(d1) +
+                            'with a ' + type(d2))
+
+    if isinstance(d1, pd.Series):
+        if isinstance(d2, pd.Series):
+            return d1.equals(d2)
+        else:
+            raise Exception('Comparing for equality a ' + type(d1) +
+                            'with a ' + type(d2))
+
+    if isinstance(d1, np.ndarray):
+        if isinstance(d2, np.ndarray):
+            if d1.shape != d2.shape:
+                raise Exception('Comparing for equality two Numpy arrays '
+                                'with different shapes: ' + str(d1.shape) +
+                                ' and ' + str(d2.shape))
+            else:
+                return np.allclose(d1, d2)
+        else:
+            raise Exception('Comparing for equality a ' + type(d1) +
+                            'with a ' + type(d2))
+
+
 def initialize_rnd_numbers_generators_state(seed=1):
     """Initialize tf random generator.
 
