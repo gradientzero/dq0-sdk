@@ -118,6 +118,7 @@ class CSVSource(Source):
         return {
             "name": self.name,
             "type": 'csv',
+            "description": self.description,
             "filepath": self.filepath,
             "samplepath": self.sample_filepath,
             "length": length,
