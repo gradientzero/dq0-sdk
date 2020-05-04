@@ -24,9 +24,9 @@ h5py==2.10.0
 keras==2.3.1
 Keras-Applications==1.0.8
 Keras-Preprocessing==1.1.0
-tensorboard==2.1.0
-tensorflow==2.1.0
-tensorflow-estimator==2.1.0
+tensorboard==1.15.0
+tensorflow==1.15.2
+tensorflow-estimator==1.15.1
 tensorflow-privacy==0.2.2
 tensorflow_hub==0.7.0
 pyyaml==5.3

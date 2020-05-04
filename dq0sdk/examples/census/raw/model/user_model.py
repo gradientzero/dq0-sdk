@@ -383,12 +383,9 @@ class UserModel(NeuralNetworkClassification):
 
         Define the model here.
         """
-        from tensorflow import keras
-        self.learning_rate = 0.3
-        self.epochs = 5
-        self.num_microbatches = 1
-        self.model = keras.Sequential([
-            keras.layers.Input(self.input_dim),
-            keras.layers.Dense(10, activation='tanh'),
-            keras.layers.Dense(10, activation='tanh'),
-            keras.layers.Dense(2, activation='softmax')])
+        import tensorflow.compat.v1 as tf
+        self.model = tf.keras.Sequential([
+            tf.keras.layers.Input(self.input_dim),
+            tf.keras.layers.Dense(10, activation='tanh'),
+            tf.keras.layers.Dense(10, activation='tanh'),
+            tf.keras.layers.Dense(2, activation='softmax')])

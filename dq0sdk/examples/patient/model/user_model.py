@@ -91,16 +91,16 @@ class UserModel(NeuralNetworkRegression):
 
         Define the model here.
         """
-        from tensorflow import keras
+        import tensorflow.compat.v1 as tf
 
         self.learning_rate = 0.001
         self.epochs = 10  # 10000
         self.optimizer = 'Adam'
-        self.loss = keras.losses.MeanSquaredError()
+        self.loss = tf.keras.losses.MeanSquaredError()
 
-        self.model = keras.Sequential([
-            keras.layers.Input(self.input_dim),
-            keras.layers.Dense(1000, activation='tanh'),
-            keras.layers.Dense(1000, activation='tanh'),
-            keras.layers.Dense(1, activation='linear')]
+        self.model = tf.keras.Sequential([
+            tf.keras.layers.Input(self.input_dim),
+            tf.keras.layers.Dense(1000, activation='tanh'),
+            tf.keras.layers.Dense(1000, activation='tanh'),
+            tf.keras.layers.Dense(1, activation='linear')]
         )

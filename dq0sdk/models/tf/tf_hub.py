@@ -11,7 +11,7 @@ import sys
 from dq0sdk.models.tf.neural_network_yaml import NeuralNetworkYaml
 from dq0sdk.models.yaml_configs.tf_hub_models import hub_models_dict
 
-from tensorflow import keras
+import tensorflow.compat.v1 as tf
 
 logger = logging.getLogger()
 
@@ -56,7 +56,7 @@ class TFHub(NeuralNetworkYaml):
         self.path_test = source.path_test
 
         if self.task == 'im_clf':
-            development_datagen = keras.preprocessing.image.ImageDataGenerator(
+            development_datagen = tf.keras.preprocessing.image.ImageDataGenerator(
                 **self.preprocessing['datagen_kwargs'],)
             development_generator = development_datagen.flow_from_directory(
                 self.path_train,
@@ -64,7 +64,7 @@ class TFHub(NeuralNetworkYaml):
                 **self.preprocessing['dataflow_kwargs'],)
 
             if augment:
-                train_datagen = keras.preprocessing.image.ImageDataGenerator(
+                train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(
                     **self.preprocessing['datagen_kwargs'],
                     **self.preprocessing['train_datagen'],)
             else:
@@ -74,7 +74,7 @@ class TFHub(NeuralNetworkYaml):
                 **self.preprocessing['train_dataflow'],
                 **self.preprocessing['dataflow_kwargs'])
 
-            test_datagen = keras.preprocessing.image.ImageDataGenerator(
+            test_datagen = tf.keras.preprocessing.image.ImageDataGenerator(
                 **self.preprocessing['datagen_kwargs'],)
             test_generator = test_datagen.flow_from_directory(
                 self.path_test,
