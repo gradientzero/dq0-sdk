@@ -384,6 +384,7 @@ class UserModel(NeuralNetworkClassification):
         Define the model here.
         """
         import tensorflow.compat.v1 as tf
+        self.optimizer = 'Adam'
         self.model = tf.keras.Sequential([
             tf.keras.layers.Input(self.input_dim),
             tf.keras.layers.Dense(10, activation='tanh'),
