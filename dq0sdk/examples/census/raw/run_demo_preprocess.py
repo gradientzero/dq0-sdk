@@ -29,7 +29,7 @@ if __name__ == '__main__':
     model.attach_data_source(data_source)
 
     # execute preprocessing
-    dataset = model.preprocess(None, None)
+    dataset = model.preprocess()
 
     # save the resulting dataset
     dataset.to_csv('out.csv')

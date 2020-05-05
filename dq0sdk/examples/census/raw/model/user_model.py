@@ -92,7 +92,8 @@ class UserModel(NeuralNetworkClassification):
                     'Local-gov',
                     'State-gov',
                     'Without-pay',
-                    'Never-worked'
+                    'Never-worked',
+                    'Unknown'
                 ]
             },
             {
@@ -155,7 +156,8 @@ class UserModel(NeuralNetworkClassification):
                     'Transport-moving',
                     'Priv-house-serv',
                     'Protective-serv',
-                    'Armed-Forces'
+                    'Armed-Forces',
+                    'Unknown'
                 ]
             },
             {
@@ -245,13 +247,14 @@ class UserModel(NeuralNetworkClassification):
                     'Trinadad&Tobago',
                     'Peru',
                     'Hong',
-                    'Holand-Netherlands'
+                    'Holand-Netherlands',
+                    'Unknown'
                 ]
             }
         ]
 
         # read and preprocess the data
-        dataset_df = self.preprocess(self.column_names_list, self.columns_types_list)
+        dataset_df = self.preprocess()
 
         # do the train test split
         X_train_df, X_test_df, y_train_ts, y_test_ts =\
@@ -267,7 +270,7 @@ class UserModel(NeuralNetworkClassification):
         self.y_train = y_train_ts
         self.y_test = y_test_ts
 
-    def preprocess(self, column_names_list, columns_types_list):
+    def preprocess(self):
         """Preprocess the data
 
         Preprocess the data set. The input data is read from the attached source.
@@ -286,6 +289,9 @@ class UserModel(NeuralNetworkClassification):
         from dq0sdk.data.preprocessing import preprocessing
         import sklearn.preprocessing
         import pandas as pd
+
+        column_names_list = self.column_names_list
+        columns_types_list = self.columns_types_list
 
         # get the input dataset
         if self.data_source is None:
@@ -344,14 +350,8 @@ class UserModel(NeuralNetworkClassification):
         if features_to_drop_list is not None:
             dataset.drop(features_to_drop_list, axis=1, inplace=True)
 
-        # Investigate whether ordinal features are present
-        # (Weak) assumption: for each categorical feature, its values in the
-        # test set is already present in the training set.
+        # get dummy columns
         dataset = pd.get_dummies(dataset, columns=categorical_features_list, dummy_na=False)
-        # True => add a column to indicate NaNs. False => NaNs are ignored.
-        # Rather than get_dummies, it would be better as follows ...
-        # enc = OneHotEncoder(handle_unknown='ignore', sparse=False)
-        # enc.fit(X_df[categorical_features_list])
 
         # unzip categorical features with dummies
         categorical_features_list_with_dummies = []
@@ -364,6 +364,9 @@ class UserModel(NeuralNetworkClassification):
         missing_columns = set(categorical_features_list_with_dummies) - set(dataset.columns)
         for col in missing_columns:
             dataset[col] = 0
+
+        # and sort the columns
+        dataset = dataset.reindex(sorted(dataset.columns), axis=1)
 
         # Scale values to the range from 0 to 1 to be precessed by the neural network
         dataset[quantitative_features_list] = sklearn.preprocessing.minmax_scale(dataset[quantitative_features_list])
