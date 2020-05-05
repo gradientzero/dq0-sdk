@@ -41,6 +41,7 @@ class NewsgroupsSource(Source):
         Returns:
             data read from the data source.
         """
+
         tr_dataset_df, test_dataset_df, categorical_features_list, \
             quantitative_features_list, target_feature = \
             self._get_train_and_test_dataset()

@@ -614,8 +614,16 @@ def initialize_rnd_numbers_generators_state(seed=1):
     Args:
         seed (int, optional): Random seed. Default is 1.
     """
+    # get Tensorflow version (first number only)
+    tf_version = int(tf.__version__.split('.')[0])
+
     np.random.seed(seed)
-    tf.random.set_seed(seed)
+
+    if tf_version == 1:
+        tf.set_random_seed(seed)
+    elif tf_version > 1:
+        tf.random.set_seed(seed)
+
     sp.random.seed(seed)
     random.seed(seed)
 
