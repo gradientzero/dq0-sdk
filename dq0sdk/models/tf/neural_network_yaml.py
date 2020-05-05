@@ -17,7 +17,7 @@ from dq0sdk.utils.managed_classes import custom_objects
 from dq0sdk.utils.managed_classes import losses
 from dq0sdk.utils.managed_classes import optimizers
 
-from tensorflow import keras
+import tensorflow.compat.v1 as tf
 
 logger = logging.getLogger()
 
@@ -38,7 +38,7 @@ class NeuralNetworkYaml(Model):
         yaml_config (:obj:`dq0sdk.utils.YamlConfig`): yaml config reader
         yaml_dict (:obj:`dict`): Parsed yaml config dictionary.
         model_path (:obj:`str`): path of model (save / load)
-        model (:obj:`tf.Keras.Sequential`): the actual keras model.
+        model (:obj:`tf.keras.Sequential`): the actual keras model.
         custom_objects (:obj:`dict`): A dictionary of additional model objects.
 
     """
@@ -104,7 +104,7 @@ class NeuralNetworkYaml(Model):
         """Setup model from yaml MODEL
 
         This function converts the yaml MODEL:GRAPH: config
-        to an instance of tf.Keras.Sequential
+        to an instance of tf.keras.Sequential
         """
         if 'class_name' not in self.graph_dict.keys():
             self.graph_dict['class_name'] = 'Sequential'
@@ -117,8 +117,8 @@ class NeuralNetworkYaml(Model):
         graph_str = self.yaml_config.dump_yaml(self.graph_dict)
 
         try:
-            self.model = keras.models.model_from_yaml(graph_str,
-                                                      custom_objects=self.custom_objects)
+            self.model = tf.keras.models.model_from_yaml(graph_str,
+                                                         custom_objects=self.custom_objects)
         except Exception as e:
             logger.error('model_from_yaml: {}'.format(e))
             sys.exit(1)
@@ -132,22 +132,28 @@ class NeuralNetworkYaml(Model):
                 A TensorFlow tensor, or a list of tensors (in case the model has multiple inputs).
                 A dict mapping input names to the corresponding array/tensors, if the model has named inputs.
                 A tf.data dataset. Should return a tuple of either (inputs, targets) or (inputs, targets, sample_weights).
-                A generator or keras.utils.Sequence returning (inputs, targets) or (inputs, targets, sample weights).
+                A generator or tf.keras.utils.Sequence returning (inputs, targets) or (inputs, targets, sample weights).
                 A more detailed description of unpacking behavior for iterator types (Dataset, generator, Sequence) is given below.
                 See https://www.tensorflow.org/api_docs/python/tf/keras/Model#evaluate
             self.y_train: Target data.
                 Like the input data x, it could be either Numpy array(s) or TensorFlow tensor(s).
                 It should be consistent with x (you cannot have Numpy inputs and tensor targets, or inversely).
-                If x is a dataset, generator, or keras.utils.Sequence instance, y should not be
+                If x is a dataset, generator, or tf.keras.utils.Sequence instance, y should not be
                 specified (since targets will be obtained from x).
         """
+        x = self.X_train
+        y = self.y_train
+        steps_per_epoch = self.X_train.shape[0] // self.num_microbatches
+        x = x[:steps_per_epoch * self.num_microbatches]
+        y = y[:steps_per_epoch * self.num_microbatches]
+
         self.model.compile(optimizer=self.optimizer,
                            loss=self.loss,
                            metrics=self.metrics)
 
         self.model.fit(
-            self.X_train,
-            self.y_train,
+            x,
+            y,
             epochs=self.epochs,
             **self.fit_kwargs,)
 
@@ -162,7 +168,7 @@ class NeuralNetworkYaml(Model):
                 A TensorFlow tensor, or a list of tensors (in case the model has multiple inputs).
                 A dict mapping input names to the corresponding array/tensors, if the model has named inputs.
                 A tf.data dataset. Should return a tuple of either (inputs, targets) or (inputs, targets, sample_weights).
-                A generator or keras.utils.Sequence returning (inputs, targets) or (inputs, targets, sample weights).
+                A generator or tf.keras.utils.Sequence returning (inputs, targets) or (inputs, targets, sample weights).
                     A more detailed description of unpacking behavior for iterator types (Dataset, generator, Sequence) is given below.
 
         Returns:
@@ -182,29 +188,35 @@ class NeuralNetworkYaml(Model):
                 A TensorFlow tensor, or a list of tensors (in case the model has multiple inputs).
                 A dict mapping input names to the corresponding array/tensors, if the model has named inputs.
                 A tf.data dataset. Should return a tuple of either (inputs, targets) or (inputs, targets, sample_weights).
-                A generator or keras.utils.Sequence returning (inputs, targets) or (inputs, targets, sample weights).
+                A generator or tf.keras.utils.Sequence returning (inputs, targets) or (inputs, targets, sample weights).
                 A more detailed description of unpacking behavior for iterator types (Dataset, generator, Sequence) is given below.
                 See https://www.tensorflow.org/api_docs/python/tf/keras/Model#evaluate
             self.y_train/self.y_test: Target data.
                 Like the input data x, it could be either Numpy array(s) or TensorFlow tensor(s).
                 It should be consistent with x (you cannot have Numpy inputs and tensor targets, or inversely).
-                If x is a dataset, generator, or keras.utils.Sequence instance, y should not be
+                If x is a dataset, generator, or tf.keras.utils.Sequence instance, y should not be
                 specified (since targets will be obtained from x).
 
         Returns:
             metrics: to be defined!
 
         """
+        x = self.X_test if test_data else self.X_train
+        y = self.y_test if test_data else self.y_train
+        steps_per_epoch = x.shape[0] // self.num_microbatches
+        x = x[:steps_per_epoch * self.num_microbatches]
+        y = y[:steps_per_epoch * self.num_microbatches]
+
         if test_data:
             evaluation = self.model.evaluate(
-                self.X_test,
-                self.y_test,
+                x,
+                y,
                 **self.eval_test_kwargs,
             )
         else:
             evaluation = self.model.evaluate(
-                self.X_train,
-                self.y_train,
+                x,
+                y,
                 **self.eval_train_kwargs,
             )
         return evaluation
@@ -262,7 +274,7 @@ class NeuralNetworkYaml(Model):
             name (:obj:`str`): The name of the model
             version (int): The version of the model
         """
-        self.model = keras.models.load_model(
+        self.model = tf.keras.models.load_model(
             '{}/{}/{}.h5'.format(
                 self.model_path, version, name),
             custom_objects=self.custom_objects,

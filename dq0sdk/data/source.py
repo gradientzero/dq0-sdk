@@ -25,7 +25,8 @@ class Source(ABC):
 
     Attributes:
         uuid (:obj:`str`): The universally unique identifier of the data source.
-        uuid (:obj:`str`): The data source's name
+        name (:obj:`str`): The data source's name
+        description (:obj:`str`): The data source's description
         data (:obj:`pandas.DataFrame`): The loaded data
         preprocessed_data (:obj:`pandas.DataFrame`): The preprocessed data
         read_allowed (bool): True if this source can be read
@@ -40,6 +41,7 @@ class Source(ABC):
         super().__init__()
         self.uuid = uuid.uuid1()  # UUID for this data source. Will be set at runtime.
         self.name = ''
+        self.description = ''
         self.data = None
         self.preprocessed_data = None
         self.read_allowed = False

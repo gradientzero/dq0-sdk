@@ -55,6 +55,204 @@ class UserModel(NeuralNetworkClassification):
         """
         from sklearn.model_selection import train_test_split
 
+        # columns
+        self.column_names_list = [
+            'lastname',
+            'firstname',
+            'age',
+            'workclass',
+            'fnlwgt',
+            'education',
+            'education-num',
+            'marital-status',
+            'occupation',
+            'relationship',
+            'race',
+            'sex',
+            'capital-gain',
+            'capital-loss',
+            'hours-per-week',
+            'native-country',
+            'income'
+        ]
+
+        self.columns_types_list = [
+            {
+                'name': 'age',
+                'type': 'int'
+            },
+            {
+                'name': 'workclass',
+                'type': 'string',
+                'values': [
+                    'Private',
+                    'Self-emp-not-inc',
+                    'Self-emp-inc',
+                    'Federal-gov',
+                    'Local-gov',
+                    'State-gov',
+                    'Without-pay',
+                    'Never-worked',
+                    'Unknown'
+                ]
+            },
+            {
+                'name': 'fnlwgt',
+                'type': 'int'
+            },
+            {
+                'name': 'education',
+                'type': 'string',
+                'values': [
+                    'Bachelors',
+                    'Some-college',
+                    '11th',
+                    'HS-grad',
+                    'Prof-school',
+                    'Assoc-acdm',
+                    'Assoc-voc',
+                    '9th',
+                    '7th-8th',
+                    '12th',
+                    'Masters',
+                    '1st-4th',
+                    '10th',
+                    'Doctorate',
+                    '5th-6th',
+                    'Preschool'
+                ]
+            },
+            {
+                'name': 'education-num',
+                'type': 'int'
+            },
+            {
+                'name': 'marital-status',
+                'type': 'string',
+                'values': [
+                    'Married-civ-spouse',
+                    'Divorced',
+                    'Never-married',
+                    'Separated',
+                    'Widowed',
+                    'Married-spouse-absent',
+                    'Married-AF-spouse'
+                ]
+            },
+            {
+                'name': 'occupation',
+                'type': 'string',
+                'values': [
+                    'Tech-support',
+                    'Craft-repair',
+                    'Other-service',
+                    'Sales',
+                    'Exec-managerial',
+                    'Prof-specialty',
+                    'Handlers-cleaners',
+                    'Machine-op-inspct',
+                    'Adm-clerical',
+                    'Farming-fishing',
+                    'Transport-moving',
+                    'Priv-house-serv',
+                    'Protective-serv',
+                    'Armed-Forces',
+                    'Unknown'
+                ]
+            },
+            {
+                'name': 'relationship',
+                'type': 'string',
+                'values': [
+                    'Wife',
+                    'Own-child',
+                    'Husband',
+                    'Not-in-family',
+                    'Other-relative',
+                    'Unmarried'
+                ]
+            },
+            {
+                'name': 'race',
+                'type': 'string',
+                'values': [
+                    'White',
+                    'Asian-Pac-Islander',
+                    'Amer-Indian-Eskimo',
+                    'Other',
+                    'Black'
+                ]
+            },
+            {
+                'name': 'sex',
+                'type': 'string',
+                'values': [
+                    'Female',
+                    'Male'
+                ]
+            },
+            {
+                'name': 'capital-gain',
+                'type': 'int'
+            },
+            {
+                'name': 'capital-loss',
+                'type': 'int'
+            },
+            {
+                'name': 'hours-per-week',
+                'type': 'int'
+            },
+            {
+                'name': 'native-country',
+                'type': 'string',
+                'values': [
+                    'United-States',
+                    'Cambodia',
+                    'England',
+                    'Puerto-Rico',
+                    'Canada',
+                    'Germany',
+                    'Outlying-US(Guam-USVI-etc)',
+                    'India',
+                    'Japan',
+                    'Greece',
+                    'South',
+                    'China',
+                    'Cuba',
+                    'Iran',
+                    'Honduras',
+                    'Philippines',
+                    'Italy',
+                    'Poland',
+                    'Jamaica',
+                    'Vietnam',
+                    'Mexico',
+                    'Portugal',
+                    'Ireland',
+                    'France',
+                    'Dominican-Republic',
+                    'Laos',
+                    'Ecuador',
+                    'Taiwan',
+                    'Haiti',
+                    'Columbia',
+                    'Hungary',
+                    'Guatemala',
+                    'Nicaragua',
+                    'Scotland',
+                    'Thailand',
+                    'Yugoslavia',
+                    'El-Salvador',
+                    'Trinadad&Tobago',
+                    'Peru',
+                    'Hong',
+                    'Holand-Netherlands',
+                    'Unknown'
+                ]
+            }
+        ]
+
         # read and preprocess the data
         dataset_df = self.preprocess()
 
@@ -92,31 +290,13 @@ class UserModel(NeuralNetworkClassification):
         import sklearn.preprocessing
         import pandas as pd
 
+        column_names_list = self.column_names_list
+        columns_types_list = self.columns_types_list
+
         # get the input dataset
         if self.data_source is None:
             logger.error('No data source found')
             return
-
-        # columns
-        column_names_list = [
-            'lastname',
-            'firstname',
-            'age',
-            'workclass',
-            'fnlwgt',
-            'education',
-            'education-num',
-            'marital-status',
-            'occupation',
-            'relationship',
-            'race',
-            'sex',
-            'capital-gain',
-            'capital-loss',
-            'hours-per-week',
-            'native-country',
-            'income'
-        ]
 
         # read the data via the attached input data source
         dataset = self.data_source.read(
@@ -144,14 +324,13 @@ class UserModel(NeuralNetworkClassification):
 
         # get categorical features
         categorical_features_list = [
-            col for col in dataset.columns
-            if col != target_feature and dataset[col].dtype == 'object']
+            col['name'] for col in columns_types_list
+            if col['type'] == 'string']
 
-        # List difference. Warning: in below operation, set does not preserve
-        # the order. If order matters, use, e.g., list comprehension.
-        quantitative_features_list =\
-            list(set(column_names_list) - set(categorical_features_list) - set(
-                [target_feature]))
+        # get categorical features
+        quantitative_features_list = [
+            col['name'] for col in columns_types_list
+            if col['type'] == 'int' or col['type'] == 'float']
 
         # get arguments
         approach_for_missing_feature = 'imputation'
@@ -171,14 +350,23 @@ class UserModel(NeuralNetworkClassification):
         if features_to_drop_list is not None:
             dataset.drop(features_to_drop_list, axis=1, inplace=True)
 
-        # Investigate whether ordinal features are present
-        # (Weak) assumption: for each categorical feature, its values in the
-        # test set is already present in the training set.
+        # get dummy columns
         dataset = pd.get_dummies(dataset, columns=categorical_features_list, dummy_na=False)
-        # True => add a column to indicate NaNs. False => NaNs are ignored.
-        # Rather than get_dummies, it would be better as follows ...
-        # enc = OneHotEncoder(handle_unknown='ignore', sparse=False)
-        # enc.fit(X_df[categorical_features_list])
+
+        # unzip categorical features with dummies
+        categorical_features_list_with_dummies = []
+        for col in columns_types_list:
+            if col['type'] == 'string':
+                for value in col['values']:
+                    categorical_features_list_with_dummies.append('{}_{}'.format(col['name'], value))
+
+        # add missing columns
+        missing_columns = set(categorical_features_list_with_dummies) - set(dataset.columns)
+        for col in missing_columns:
+            dataset[col] = 0
+
+        # and sort the columns
+        dataset = dataset.reindex(sorted(dataset.columns), axis=1)
 
         # Scale values to the range from 0 to 1 to be precessed by the neural network
         dataset[quantitative_features_list] = sklearn.preprocessing.minmax_scale(dataset[quantitative_features_list])
@@ -198,12 +386,10 @@ class UserModel(NeuralNetworkClassification):
 
         Define the model here.
         """
-        from tensorflow import keras
-        self.learning_rate = 0.3
-        self.epochs = 5
-        self.num_microbatches = 1
-        self.model = keras.Sequential([
-            keras.layers.Input(self.input_dim),
-            keras.layers.Dense(10, activation='tanh'),
-            keras.layers.Dense(10, activation='tanh'),
-            keras.layers.Dense(2, activation='softmax')])
+        import tensorflow.compat.v1 as tf
+        self.optimizer = 'Adam'
+        self.model = tf.keras.Sequential([
+            tf.keras.layers.Input(self.input_dim),
+            tf.keras.layers.Dense(10, activation='tanh'),
+            tf.keras.layers.Dense(10, activation='tanh'),
+            tf.keras.layers.Dense(2, activation='softmax')])
