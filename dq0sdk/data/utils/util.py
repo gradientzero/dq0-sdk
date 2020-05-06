@@ -585,26 +585,26 @@ def datasets_are_equal(d1, d2):
         if isinstance(d2, pd.DataFrame):
             return d1.equals(d2)
         else:
-            raise Exception('Comparing for equality a ' + type(d1) +
+            raise Exception('Comparing for equality a ' + type(d1) + ''
                             'with a ' + type(d2))
 
     if isinstance(d1, pd.Series):
         if isinstance(d2, pd.Series):
             return d1.equals(d2)
         else:
-            raise Exception('Comparing for equality a ' + type(d1) +
+            raise Exception('Comparing for equality a ' + type(d1) + ''
                             'with a ' + type(d2))
 
     if isinstance(d1, np.ndarray):
         if isinstance(d2, np.ndarray):
             if d1.shape != d2.shape:
                 raise Exception('Comparing for equality two Numpy arrays '
-                                'with different shapes: ' + str(d1.shape) +
+                                'with different shapes: ' + str(d1.shape) + ''
                                 ' and ' + str(d2.shape))
             else:
                 return np.allclose(d1, d2)
         else:
-            raise Exception('Comparing for equality a ' + type(d1) +
+            raise Exception('Comparing for equality a ' + type(d1) + ''
                             'with a ' + type(d2))
 
 
