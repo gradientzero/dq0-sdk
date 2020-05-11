@@ -155,7 +155,8 @@ class NeuralNetworkYaml(Model):
             x,
             y,
             epochs=self.epochs,
-            **self.fit_kwargs,)
+            **self.fit_kwargs
+        )
 
     def predict(self, x):
         """Model predict function.

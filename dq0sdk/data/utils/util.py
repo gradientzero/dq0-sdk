@@ -620,7 +620,8 @@ def initialize_rnd_numbers_generators_state(seed=1):
     np.random.seed(seed)
 
     if tf_version == 1:
-        tf.set_random_seed(seed)
+        # tf.set_random_seed(seed)  deprecated
+        tf.compat.v1.set_random_seed(seed)
     elif tf_version > 1:
         tf.random.set_seed(seed)
 

@@ -93,9 +93,10 @@ class UserModel(NeuralNetworkRegression):
         """
         import tensorflow.compat.v1 as tf
 
-        self.learning_rate = 0.001
-        self.epochs = 10  # 10000
         self.optimizer = 'Adam'
+        self.learning_rate = 0.001
+
+        self.epochs = 10
         self.loss = tf.keras.losses.MeanSquaredError()
 
         self.model = tf.keras.Sequential([

@@ -5,6 +5,6 @@ This package contains general data helper functions.
 """
 
 __all__ = [
-    'util'
+    'util',
     'plotting'
 ]

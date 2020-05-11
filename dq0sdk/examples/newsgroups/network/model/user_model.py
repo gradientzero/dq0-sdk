@@ -24,7 +24,7 @@ logger = logging.getLogger()
 
 class UserModel(NeuralNetworkClassification):
     """
-    Convolutional Neural Network model implementation for "20 Newsgroups"
+    Neural Network model implementation for "20 Newsgroups"
 
     SDK users instantiate this class to create and train Keras models or
     subclass this class to define custom neural networks.
@@ -37,12 +37,11 @@ class UserModel(NeuralNetworkClassification):
         self._classifier_type = 'mlnn'
         self.label_encoder = None
 
-        self.DP_enabled = False
-        self.DP_epsilon = None
-
     def setup_model(self):
 
+        self.optimizer = 'Adam'
         self.learning_rate = 0.001  # 0.15
+
         self.epochs = 50  # 50 in ML-leaks paper
         self.verbose = 2
         self.metrics = ['accuracy']

@@ -373,8 +373,8 @@ class UserModel(NeuralNetworkClassification):
 
         # label target
         y_ts = dataset[target_feature]
-        le = sklearn.preprocessing.LabelEncoder()
-        y_bin_nb = le.fit_transform(y_ts)
+        self.label_encoder = sklearn.preprocessing.LabelEncoder()
+        y_bin_nb = self.label_encoder.fit_transform(y_ts)
         y_bin = pd.Series(index=y_ts.index, data=y_bin_nb)
         dataset.drop([target_feature], axis=1, inplace=True)
         dataset[target_feature] = y_bin
@@ -387,9 +387,17 @@ class UserModel(NeuralNetworkClassification):
         Define the model here.
         """
         import tensorflow.compat.v1 as tf
-        self.optimizer = 'Adam'
+
         self.model = tf.keras.Sequential([
             tf.keras.layers.Input(self.input_dim),
             tf.keras.layers.Dense(10, activation='tanh'),
             tf.keras.layers.Dense(10, activation='tanh'),
             tf.keras.layers.Dense(2, activation='softmax')])
+        self.optimizer = 'Adam'
+        self.learning_rate = 0.015
+
+        self.epochs = 10
+        self.num_microbatches = 250
+        self.verbose = 0
+        self.metrics = ['accuracy', 'mse']
+
