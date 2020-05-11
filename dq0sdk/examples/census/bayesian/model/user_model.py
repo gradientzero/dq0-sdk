@@ -115,18 +115,7 @@ class UserModel(Model):
         self.y_test = y_test_ts
 
         if self.DP_enabled:
-            self._compute_features_bounds()
-
-    def _compute_features_bounds(self):
-
-        if isinstance(self.X_train, pd.DataFrame):
-            min_values = self.X_train.min(axis=0).values
-            max_values = self.X_train.max(axis=0).values
-        elif isinstance(self.X_train, np.ndarray):
-            min_values = self.X_train.min(axis=0)
-            max_values = self.X_train.max(axis=0)
-
-        self.features_bounds = list(zip(min_values, max_values))
+            self.features_bounds = util.compute_features_bounds(self.X_train)
 
     def preprocess(self):
         """Preprocess the data
