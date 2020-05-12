@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Multinomial Naive Bayesian Model class for the 20Newsgroups dataset.
+"""Multinomial Naive Bayesian Model example for the 20Newsgroups dataset.
 
 Copyright 2020, Gradient Zero
 All rights reserved
@@ -35,25 +35,16 @@ class UserModel(Model):
         self.model_type = 'IBM_Diffpriv'
         self.label_encoder = None
 
-        self.DP_enabled = False
-        self.DP_epsilon = None
-
     def setup_model(self):
         """Setup model.
 
         Define the model here.
         """
-        self._classifier_type = 'MultinomialNB'
+        self._classifier_type = 'MultinomialNB'  # just for better-quality
+        # printings
 
-        if not self.DP_enabled:
-            self.model = MultinomialNB()
-        else:
-            self._classifier_type = 'DP-' + self._classifier_type
-            self.DP_epsilon = 0.01
-            raise RuntimeError('DP-version of MultinomialNB not yet '
-                               'available!')
-
-        # set smoothing prior:
+        self.model = MultinomialNB()
+        # set smoothing prior
         self.model.set_params(alpha=.01)
 
         print('Setting up a ' + self._classifier_type + ' classifier...')
@@ -114,9 +105,6 @@ class UserModel(Model):
         self.X_test = None
         self.y_test = None
 
-        if self.DP_enabled:
-            self._compute_features_bounds()
-
         print('\nAttached train dataset to user model. Feature matrix '
               'shape:',
               self.X_train.shape)
@@ -126,16 +114,6 @@ class UserModel(Model):
             print('\nAttached test dataset to user model. Feature matrix '
                   'shape:', self.X_test.shape)
             print('Class-labels vector shape:', self.y_test.shape)
-
-    def _compute_features_bounds(self):
-        if isinstance(self.X_train, pd.DataFrame):
-            min_values = self.X_train.min(axis=0).values
-            max_values = self.X_train.max(axis=0).values
-        elif isinstance(self.X_train, np.ndarray):
-            min_values = self.X_train.min(axis=0)
-            max_values = self.X_train.max(axis=0)
-
-        self.features_bounds = list(zip(min_values, max_values))
 
     def fit(self):
         """Train model on a dataset passed as input.
