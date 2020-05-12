@@ -395,9 +395,7 @@ class UserModel(NeuralNetworkClassification):
             tf.keras.layers.Dense(2, activation='softmax')])
         self.optimizer = 'Adam'
         self.learning_rate = 0.015
-
         self.epochs = 10
         self.num_microbatches = 250
         self.verbose = 0
         self.metrics = ['accuracy', 'mse']
-
