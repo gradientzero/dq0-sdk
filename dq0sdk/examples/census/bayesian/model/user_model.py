@@ -271,7 +271,8 @@ class UserModel(Model):
         util.estimate_freq_of_labels(self.y_train)
 
         self.model.fit(self.X_train, self.y_train)
-        print('\nLearned a ' + self._classifier_type + ' model. ')
+        print('\nLearned a ' + self._classifier_type + ' model from',
+              self.X_train.shape[0], 'examples')
 
     def evaluate(self, test_data=True, verbose=0):
         """Model predict and evaluate.

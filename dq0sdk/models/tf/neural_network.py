@@ -63,18 +63,12 @@ class NeuralNetwork(Model):
     """
     def __init__(self, model_path):
         super().__init__(model_path)
-        self.model_type = 'keras'
-        self.learning_rate = 0.01
-        self.epochs = 10
-        self.num_microbatches = 250
-        self.verbose = 0
-        self.metrics = ['accuracy', 'mse']
+
         self.model = None
         self.X_train = None
         self.X_test = None
         self.y_train = None
         self.y_test = None
-        self.input_dim = None
 
     def setup_data(self):
         """Setup data function
@@ -82,6 +76,8 @@ class NeuralNetwork(Model):
         This function can be used by child classes to prepare data or perform
         other tasks that dont need to be repeated for every training run.
         """
+
+        self.input_dim = None
         pass
 
     def setup_model(self):
@@ -90,6 +86,14 @@ class NeuralNetwork(Model):
         Implementing child classes can use this method to define the
         Keras model.
         """
+
+        self.optimizer = None
+
+        self.epochs = 10
+        self.num_microbatches = 250
+        self.verbose = 0
+        self.metrics = ['accuracy', 'mse']
+
         self.model = tf.keras.Sequential([
             tf.keras.layers.Input(self.input_dim),
             tf.keras.layers.Dense(10, activation='tanh'),
@@ -106,9 +110,8 @@ class NeuralNetwork(Model):
         x = x[:steps_per_epoch * self.num_microbatches]
         y = y[:steps_per_epoch * self.num_microbatches]
 
-        optimizer = tf.keras.optimizers.Adam(learning_rate=self.learning_rate)
         loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
-        self.model.compile(optimizer=optimizer,
+        self.model.compile(optimizer=self.optimizer,
                            loss=loss,
                            metrics=self.metrics)
         self.model.fit(x,

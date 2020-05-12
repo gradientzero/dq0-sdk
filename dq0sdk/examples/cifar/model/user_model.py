@@ -35,21 +35,17 @@ class UserModel(NeuralNetworkClassification):
 
     Attributes:
         model_type (:obj:`str`): type of this model instance. Options: 'keras'.
-        label_encoder (:obj:`sklearn.preprocessing.LabelEncoder`): sklearn class label encoder.
+        label_encoder (:obj:`sklearn.preprocessing.LabelEncoder`): sklearn
+        class label encoder.
     """
     def __init__(self, model_path):
         super().__init__(model_path)
-        self._classifier_type = 'cnn'  # kwargs['classifier_type']
+        self._classifier_type = 'cnn'
         self.label_encoder = None
 
-        self.DP_enabled = False
-        self.DP_epsilon = False
-
-    def _get_cnn_model(self, n_out, which_model='ml-leaks_paper'):
+    def _get_cnn_model(self, which_model='ml-leaks_paper'):
 
         if util.case_insensitive_str_comparison(which_model, 'ml-leaks_paper'):
-
-            # https://github.com/AhmedSalem2/ML-Leaks/blob/master/classifier.py
 
             model = tf.keras.Sequential()
             # create the convolutional base
@@ -64,11 +60,9 @@ class UserModel(NeuralNetworkClassification):
             model.add(tf.keras.layers.Flatten())
             model.add(tf.keras.layers.Dense(128, activation='tanh',
                                             **self.regularizer_dict))
-            model.add(tf.keras.layers.Dense(n_out, activation='softmax'))
+            model.add(tf.keras.layers.Dense(self._num_classes, activation='softmax'))
 
         elif util.case_insensitive_str_comparison(which_model, 'tf_tutorial'):
-
-            # https://www.tensorflow.org/tutorials/images/cnn
 
             model = tf.keras.Sequential()
             # create the convolutional base
@@ -82,7 +76,7 @@ class UserModel(NeuralNetworkClassification):
             # add dense layers on top
             model.add(tf.keras.layers.Flatten())
             model.add(tf.keras.layers.Dense(64, activation='relu'))
-            model.add(tf.keras.layers.Dense(n_out, activation='softmax'))
+            model.add(tf.keras.layers.Dense(self._num_classes, activation='softmax'))
 
         model.summary()
         return model
@@ -92,8 +86,12 @@ class UserModel(NeuralNetworkClassification):
 
         Define the CNN model.
         """
-        self.learning_rate = 0.001  # 0.15
-        self.epochs = 50  # 50 in ML-leaks paper
+
+        self.learning_rate = 0.001
+        self.optimizer = 'Adam'
+
+        self.epochs = 50
+        self.num_microbatches = 250
         self.verbose = 2
         self.metrics = ['accuracy']
         self.regularization_param = 1e-3
@@ -106,14 +104,8 @@ class UserModel(NeuralNetworkClassification):
             #    self.regularization_param)
         }
 
-        # network topology.
-        # if self._classifier_type.startswith('DP-'):
-        #    network_type = self._classifier_type[3:]
-        # else:
-        #    network_type = self._classifier_type
-        # if util.case_insensitive_str_comparison(network_type, 'cnn'):
         print('Setting up a convolution neural network...')
-        self.model = self._get_cnn_model(self._num_classes)
+        self.model = self._get_cnn_model()
 
     def setup_data(self):
         """Setup data function
@@ -134,8 +126,7 @@ class UserModel(NeuralNetworkClassification):
             logger.error('No data source found')
             return
 
-        # X, y = self.data_source.read()
-        X, y = self.data_source.read(num_instances_to_load=10000)
+        X, y = self.data_source.read()  # num_instances_to_load=10000
 
         # check data format
         if isinstance(X, pd.DataFrame):
@@ -155,13 +146,11 @@ class UserModel(NeuralNetworkClassification):
             # make non-dimensional array (just to avoid Warnings by Sklearn)
             y = np.ravel(y)
 
-        # WARNING: np.nan, np.Inf in y are counted as classes by np.unique
+        # np.nan, np.Inf in y are counted as classes by np.unique
         self._num_classes = len(np.unique(y))  # np.ravel(y)
 
         # LabelEncoder() encodes target labels with value between 0 and
         # n_classes - 1
-        # if self.label_encoder is None:
-        #   print('Retraining')
         self.label_encoder = LabelEncoder()
         y = self.label_encoder.fit_transform(y)
 
