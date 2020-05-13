@@ -394,6 +394,25 @@ def estimate_freq_of_labels(y):
         pretty_print_dict(get_percentage_freq_of_values(y))
 
 
+def compute_features_bounds(X):
+    """
+    Compute min / max value for each feature.
+    :param X: data matrix (features are the columns).
+    :return: ordered list of tuples with min/max values for each feature.
+             Order of the list is the order of the columns in the data matrix.
+    """
+
+    if isinstance(X, pd.DataFrame):
+        min_values = X.min(axis=0).values
+        max_values = X.max(axis=0).values
+    elif isinstance(X, np.ndarray):
+        min_values = X.min(axis=0)
+        max_values = X.max(axis=0)
+
+    features_bounds = list(zip(min_values, max_values))
+    return features_bounds
+
+
 def save_preprocessed_tr_and_te_datasets(X_train, X_test, y_train, y_test,
                                          working_folder):
     """Save train and test dataset
