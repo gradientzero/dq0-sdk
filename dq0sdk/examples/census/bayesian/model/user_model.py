@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 """Gaussian Naive Bayesian Model example for the adult census data set.
 
@@ -9,8 +8,6 @@ All rights reserved
 import logging
 import os
 import pickle
-
-import diffprivlib.models as dp
 
 from dq0sdk.data.utils import util
 from dq0sdk.models.model import Model
@@ -40,26 +37,15 @@ class UserModel(Model):
         self.model_type = 'IBM_Diffpriv'
         self.label_encoder = None
 
-        self.DP_enabled = False
-        self.DP_epsilon = None
-
     def setup_model(self):
         """Setup model function
 
         Define the model here.
         """
-        self._classifier_type = 'GaussianNB'
+        self._classifier_type = 'GaussianNB'  # just for better-quality
+        # printings
 
-        if not self.DP_enabled:
-            self.model = GaussianNB()
-        else:
-            self._classifier_type = 'DP-' + self._classifier_type
-            self.DP_epsilon = 0.01
-
-            self.model = dp.GaussianNB(
-                epsilon=self.DP_epsilon,
-                bounds=self.features_bounds
-            )
+        self.model = GaussianNB()
         print('Setting up a ' + self._classifier_type + ' classifier...')
 
     def setup_data(self):
@@ -98,7 +84,8 @@ class UserModel(Model):
         if y_test_ts.ndim == 2:
             y_test_ts = np.ravel(y_test_ts)
 
-        # LabelEncoder() encodes target labels with value between 0 and n_classes - 1
+        # LabelEncoder() encodes target labels with value between 0 and
+        # n_classes - 1
         self.label_encoder = LabelEncoder()
         y_train_ts = self.label_encoder.fit_transform(y_train_ts)
         y_test_ts = self.label_encoder.fit_transform(y_test_ts)
@@ -113,20 +100,6 @@ class UserModel(Model):
         self.y_train = y_train_ts
         self.X_test = X_test_df
         self.y_test = y_test_ts
-
-        if self.DP_enabled:
-            self._compute_features_bounds()
-
-    def _compute_features_bounds(self):
-
-        if isinstance(self.X_train, pd.DataFrame):
-            min_values = self.X_train.min(axis=0).values
-            max_values = self.X_train.max(axis=0).values
-        elif isinstance(self.X_train, np.ndarray):
-            min_values = self.X_train.min(axis=0)
-            max_values = self.X_train.max(axis=0)
-
-        self.features_bounds = list(zip(min_values, max_values))
 
     def preprocess(self):
         """Preprocess the data
@@ -206,8 +179,8 @@ class UserModel(Model):
         # List difference. Warning: in below operation, set does not preserve
         # the order. If order matters, use, e.g., list comprehension.
         quantitative_features_list =\
-            list(set(column_names_list) - set(categorical_features_list) - set(
-                [target_feature]))
+            list(set(column_names_list) - set(categorical_features_list) - {
+                target_feature})
 
         # get arguments
         approach_for_missing_feature = 'imputation'
@@ -230,14 +203,17 @@ class UserModel(Model):
         # Investigate whether ordinal features are present
         # (Weak) assumption: for each categorical feature, its values in the
         # test set is already present in the training set.
-        dataset = pd.get_dummies(dataset, columns=categorical_features_list, dummy_na=False)
-        # True => add a column to indicate NaNs. False => NaNs are ignored.
+        dataset = pd.get_dummies(dataset, columns=categorical_features_list)
+        # dummy_na=True => add a column to indicate NaNs. False => NaNs are
+        # ignored.
         # Rather than get_dummies, it would be better as follows ...
         # enc = OneHotEncoder(handle_unknown='ignore', sparse=False)
         # enc.fit(X_df[categorical_features_list])
 
-        # Scale values to the range from 0 to 1 to be precessed by the neural network
-        dataset[quantitative_features_list] = sklearn.preprocessing.minmax_scale(dataset[quantitative_features_list])
+        # Scale values to the range from 0 to 1 to be precessed by the
+        # neural network
+        dataset[quantitative_features_list] = sklearn.preprocessing.\
+            minmax_scale(dataset[quantitative_features_list])
 
         # label target
         y_ts = dataset[target_feature]
@@ -265,8 +241,6 @@ class UserModel(Model):
 
         print('\n\n-------------------- ' + self._classifier_type + ' '
               'classifier learning ---------------------')
-        if self.DP_enabled:
-            print('DP epsilon set to', self.DP_epsilon)
         print('\nPercentage freq. of target labels in train dataset:')
         util.estimate_freq_of_labels(self.y_train)
 
@@ -293,43 +267,25 @@ class UserModel(Model):
 
         data_type = 'test' if test_data else 'train'
 
-        print('\n\n----------------- Testing learnt classifier on ' + data_type + ' data '
-              '-----------------')
+        print('\n\n----------------- Testing learnt classifier on ' + data_type + ''
+              ' data -----------------')
 
         if isinstance(y, np.ndarray):
             if y.ndim == 2:
-                # Make 1-dimensional arrays
+                # make 1-dimensional arrays
                 y = np.ravel(y)
 
         y_pred_np_a = self.model.predict(X)
 
         print(
-            '\nPercentage freq. of target labels in ' + data_type + ' dataset (baseline '
-            'for classification performance):')
+            '\nPercentage freq. of target labels in ' + data_type + ' dataset '
+            '(baseline for classification performance):')
         util.estimate_freq_of_labels(y)
 
         accuracy_score = metrics.accuracy_score(y, y_pred_np_a)
-        print('\nModel accuracy on ' + data_type + ' data:', round(accuracy_score, 2))
+        print('\nModel accuracy on ' + data_type + ' data:', round(
+            accuracy_score, 2))
         print('\n', metrics.classification_report(y, y_pred_np_a))
-
-        # print('\nNormalized confusion matrix:')
-        # cm_df, _ = plotting.compute_confusion_matrix(
-        #     y_test, y_pred_np_a, normalize='true'
-        # )
-        # print(cm_df)
-        # # By default, labels that appear at least once in y_test or
-        # # y_pred_np_a are used in sorted order in the confusion matrix.
-        #
-        # if enable_plots:
-        #     plotting.plot_confusion_matrix_for_scikit_classifier(
-        #         self._classifier,
-        #         X_test.values if isinstance(X_test, pd.DataFrame) else X_test,
-        #         y_test.values if isinstance(y_test, pd.Series) else y_test,
-        #         class_names=None,
-        #         xticks_rotation='horizontal',
-        #         part_of_fn_describing_matrix=classifier_description,
-        #         output_folder=output_folder
-        #     )
 
         return accuracy_score
 
