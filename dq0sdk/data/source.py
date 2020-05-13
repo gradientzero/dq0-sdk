@@ -5,7 +5,7 @@ The source class serves as the base class for all dq0sdk data sources.
 
 Implementing subclasses have to define at least read
 
-Copyright 2019, Gradient Zero
+Copyright 2020, Gradient Zero
 All rights reserved
 """
 

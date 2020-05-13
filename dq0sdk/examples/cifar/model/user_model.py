@@ -3,7 +3,7 @@
 
 Use this class to train a classifier on CIFAR-10 image data.
 
-Copyright 2019, Gradient Zero
+Copyright 2020, Gradient Zero
 All rights reserved
 """
 

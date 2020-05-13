@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Setup script for DQ0 SDK.
 
-Copyright 2019, Gradient Zero
+Copyright 2020, Gradient Zero
 All rights reserved
 """
 
@@ -22,7 +22,7 @@ setup(
     version=VERSION,
     description="DQ0 SDK",
     author="Gradient Zero",
-    author_email="jb@gradient0.com",
+    author_email="dq0@gradient0.com",
     packages=find_packages(),
     install_requires=install_requires,
     setup_requires=[
