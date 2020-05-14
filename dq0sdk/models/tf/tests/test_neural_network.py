@@ -5,10 +5,10 @@ Copyright 2020, Gradient Zero
 All rights reserved
 """
 
-from dq0sdk.models.tf import NeuralNetwork
+from dq0sdk.models.tf.neural_network_classification import NeuralNetworkClassification
 
 
 def test_set_params():
-    neural_network = NeuralNetwork('')
+    neural_network = NeuralNetworkClassification('')
     neural_network.learning_rate = 0.3
     assert neural_network.learning_rate == 0.3
