@@ -28,7 +28,7 @@ setup(
     setup_requires=[
         "setuptools>=41.0.0",
         "pytest-runner~=5.2",
-        "flake8~=3.7.9",
+        "flake8~=3.8.1",
         "flake8-import-order~=0.18.1"
     ]
 )
