@@ -9,8 +9,6 @@ import logging
 import os
 import pickle
 
-import diffprivlib.models as dp
-
 from dq0sdk.data.utils import plotting
 from dq0sdk.data.utils import util
 from dq0sdk.models.model import Model
