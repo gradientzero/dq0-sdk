@@ -89,6 +89,9 @@ class NeuralNetworkYaml(Model):
         self.eval_train_kwargs = {}
         self.eval_test_kwargs = {}
 
+    def to_string(self):
+        print('\nModel type is: ', self.model_type)
+
     def setup_data(self, augment=False):
         """Setup data function
 

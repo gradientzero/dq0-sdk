@@ -43,6 +43,7 @@ class UserModel(NeuralNetworkClassification):
         self.learning_rate = 0.001  # 0.15
 
         self.epochs = 50  # 50 in ML-leaks paper
+        self.num_microbatches = 250
         self.verbose = 2
         self.metrics = ['accuracy']
         self.regularization_param = 1e-3

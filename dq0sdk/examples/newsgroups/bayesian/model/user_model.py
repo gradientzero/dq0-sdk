@@ -35,6 +35,9 @@ class UserModel(Model):
         self.model_type = 'IBM_Diffpriv'
         self.label_encoder = None
 
+    def to_string(self):
+        print('\nModel type is: ', self.model_type)
+
     def setup_model(self):
         """Setup model.
 

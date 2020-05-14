@@ -116,3 +116,12 @@ class Model(ABC):
             preprocessed data
         """
         pass
+
+    @abstractmethod
+    def to_string(self):
+        """Print model type.
+
+        Implementing child classes should use this function to print the
+        model_type.
+        """
+    pass

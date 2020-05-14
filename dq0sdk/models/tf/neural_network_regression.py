@@ -19,6 +19,9 @@ class NeuralNetworkRegression(NeuralNetwork):
         self.model_type = 'NeuralNetworkRegression'
         self.metrics = ['mean_squared_error']
 
+    def to_string(self):
+        print('\nModel type is: ', self.model_type)
+
     def fit(self):
         """Model fit function.
         """

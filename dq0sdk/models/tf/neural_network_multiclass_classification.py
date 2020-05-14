@@ -14,3 +14,6 @@ class NeuralNetworkMultiClassClassification(NeuralNetwork):
     def __init__(self, model_path):
         super().__init__(model_path)
         self.model_type = 'NeuralNetworkMultiClassClassification'
+
+    def to_string(self):
+        print('\nModel type is: ', self.model_type)
