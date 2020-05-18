@@ -2,13 +2,12 @@
 """Naive Bayesian Model class
 
 Copyright 2020, Gradient Zero
+All rights reserved
 """
 
 import logging
 import os
 import pickle
-
-import diffprivlib.models as dp
 
 from dq0sdk.data.utils import plotting
 from dq0sdk.data.utils import util
@@ -36,41 +35,8 @@ class NaiveBayesianModel(Model):
             self._saved_model_folder = kwargs['saved_model_folder']
         else:
             self._saved_model_folder = './data/output'
+
         self._classifier_type = kwargs['classifier_type']
-
-        if 'DP_enabled' in kwargs:
-            self.DP_enabled = kwargs['DP_enabled']
-        else:
-            self.DP_enabled = False
-
-        if util.case_insensitive_str_comparison(self._classifier_type,
-                                                'GaussianNB'):
-
-            if not self.DP_enabled:
-                self._classifier = GaussianNB()
-            else:
-                self._classifier_type = 'DP-' + self._classifier_type
-                self.DP_epsilon = kwargs['DP_epsilon']
-                self._classifier = dp.GaussianNB(
-                    epsilon=self.DP_epsilon,
-                    bounds=kwargs['features_bounds']
-                )
-
-        elif util.case_insensitive_str_comparison(self._classifier_type,
-                                                  'MultinomialNB'):
-            if not self.DP_enabled:
-                self._classifier = MultinomialNB()
-            else:
-                self._classifier_type = 'DP-' + self._classifier_type
-                self.DP_epsilon = kwargs['DP_epsilon']
-                raise RuntimeError('DP-version of MultinomialNB not yet '
-                                   'available!')
-
-            if 'smoothing_prior' in kwargs:
-                alpha = kwargs['smoothing_prior']
-            else:
-                alpha = .01
-            self._classifier.set_params(alpha=alpha)
 
     def setup_data(self):
         """load train data."""
@@ -90,9 +56,24 @@ class NaiveBayesianModel(Model):
         self.X_train = X_df
         self.y_train = y_ts
 
-    def setup_model(self):
-        # to inherit from abstract base class
-        pass
+    def setup_model(self, kwargs):
+        """
+        Setup a Naive Bayesian classifier from sklearn.naive_bayes
+
+        """
+
+        if util.case_insensitive_str_comparison(self._classifier_type,
+                                                'GaussianNB'):
+            self._classifier = GaussianNB()
+
+        elif util.case_insensitive_str_comparison(self._classifier_type,
+                                                  'MultinomialNB'):
+            self._classifier = MultinomialNB()
+            if 'smoothing_prior' in kwargs:
+                alpha = kwargs['smoothing_prior']
+            else:
+                alpha = .01
+            self._classifier.set_params(alpha=alpha)
 
     def fit(self):
         """
@@ -108,8 +89,6 @@ class NaiveBayesianModel(Model):
 
         logger.debug('-------------------- ' + self._classifier_type + ' '
                      'classifier learning ---------------------')
-        if self.DP_enabled:
-            logger.debug('DP epsilon set to', self.DP_epsilon)
         logger.debug('Percentage freq. of target labels in train dataset:')
         util.estimate_freq_of_labels(y_train)
 
@@ -160,13 +139,12 @@ class NaiveBayesianModel(Model):
 
         probs_np_a = self._classifier.predict_proba(X_test)
 
-        # print(type(probs_np_a))
         probs_np_a, class_names = self._keep_top_n_class_probabilities_only(
             probs_np_a, top_n_proba_only)
         posterior_class_probab_df = pd.DataFrame(probs_np_a,
                                                  columns=class_names)
 
-        return posterior_class_probab_df  # probs_np_a
+        return posterior_class_probab_df
 
     def _keep_top_n_class_probabilities_only(self, probs_np_a,
                                              top_n_proba_only):
@@ -255,18 +233,26 @@ class NaiveBayesianModel(Model):
 
         return accuracy_score
 
-    def save(self):
-        """Saves the model in binary format on local storage.
-        """
-        name = '{}.pickle'.format(self.uuid)
+    def save(self, name, version):
+        """Saves the model.
 
-        with open(os.path.join(self._saved_model_folder, name), 'wb') as f:
+        Save the model in binary format on local storage.
+
+        Args:
+            name (:obj:`str`): The name of the model
+            version (int): The version of the model
+        """
+        with open(os.path.join(self._saved_model_folder, name, version), 'wb') as f:
             pickle.dump(self._classifier, f)
 
-    def load(self):
-        """Loads the model from local storage.
-        """
-        name = '{}.pickle'.format(self.uuid)
+    def load(self, name, version):
+        """Loads the model.
 
-        with open(os.path.join(self._saved_model_folder, name), 'rb') as file:
+        Load the model from local storage.
+
+        Args:
+            name (:obj:`str`): The name of the model
+            version (int): The version of the model
+        """
+        with open(os.path.join(self._saved_model_folder, name, version), 'rb') as file:
             self._classifier = pickle.load(file)

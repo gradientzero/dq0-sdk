@@ -6,17 +6,17 @@ Basic tensorflow neural network implementation using Keras.
 This can be used as a base class for UserModel definitions.
 
 Example:
-    >>> import dq0sdk.models.tf.NeuralNetwork # doctest: +SKIP
+    >>> import dq0sdk.models.tf.NeuralNetworkClassification # doctest: +SKIP
     >>>
     >>> class MyAwsomeModel(NeuralNetwork): # doctest: +SKIP
-    >>>     def init(): # doctest: +SKIP
-    >>>         self.learning_rate = 0.3 # doctest: +SKIP
+    >>>     def __init__(self, model_path): # doctest: +SKIP
+    >>>         super().__init__(model_path) # doctest: +SKIP
     >>>
-    >>>     def setup_data(): # doctest: +SKIP
+    >>>     def setup_data(self): # doctest: +SKIP
     >>>         # do something
     >>>         pass # doctest: +SKIP
     >>>
-    >>>     def setup_model(): # doctest: +SKIP
+    >>>     def setup_model(self): # doctest: +SKIP
     >>>         # freely deinfe the tf / keras model
     >>>         pass # doctest: +SKIP
     >>>
@@ -33,8 +33,7 @@ All rights reserved
 
 from dq0sdk.models.model import Model
 
-import tensorflow as tf
-from tensorflow import keras
+import tensorflow.compat.v1 as tf
 
 
 class NeuralNetwork(Model):
@@ -64,18 +63,12 @@ class NeuralNetwork(Model):
     """
     def __init__(self, model_path):
         super().__init__(model_path)
-        self.model_type = 'keras'
-        self.learning_rate = 0.15
-        self.epochs = 10
-        self.num_microbatches = 250
-        self.verbose = 0
-        self.metrics = ['accuracy', 'mse']
+
         self.model = None
         self.X_train = None
         self.X_test = None
         self.y_train = None
         self.y_test = None
-        self.input_dim = None
 
     def setup_data(self):
         """Setup data function
@@ -83,6 +76,8 @@ class NeuralNetwork(Model):
         This function can be used by child classes to prepare data or perform
         other tasks that dont need to be repeated for every training run.
         """
+
+        self.input_dim = None
         pass
 
     def setup_model(self):
@@ -91,23 +86,37 @@ class NeuralNetwork(Model):
         Implementing child classes can use this method to define the
         Keras model.
         """
-        self.model = keras.Sequential([
-            keras.layers.Input(self.input_dim),
-            keras.layers.Dense(10, activation='tanh'),
-            keras.layers.Dense(10, activation='tanh'),
-            keras.layers.Dense(2, activation='softmax')]
+
+        self.optimizer = None
+
+        self.epochs = 10
+        self.num_microbatches = 250
+        self.verbose = 0
+        self.metrics = ['accuracy', 'mse']
+
+        self.model = tf.keras.Sequential([
+            tf.keras.layers.Input(self.input_dim),
+            tf.keras.layers.Dense(10, activation='tanh'),
+            tf.keras.layers.Dense(10, activation='tanh'),
+            tf.keras.layers.Dense(2, activation='softmax')]
         )
 
     def fit(self):
         """Model fit function.
         """
-        optimizer = tf.keras.optimizers.SGD(learning_rate=self.learning_rate)
+        x = self.X_train
+        y = self.y_train
+        steps_per_epoch = self.X_train.shape[0] // self.num_microbatches
+        x = x[:steps_per_epoch * self.num_microbatches]
+        y = y[:steps_per_epoch * self.num_microbatches]
+
         loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
-        self.model.compile(optimizer=optimizer,
+        self.model.compile(optimizer=self.optimizer,
                            loss=loss,
                            metrics=self.metrics)
-        self.model.fit(self.X_train,
-                       self.y_train,
+        self.model.fit(x,
+                       y,
+                       batch_size=self.num_microbatches,
                        epochs=self.epochs,
                        verbose=self.verbose)
 
@@ -136,14 +145,13 @@ class NeuralNetwork(Model):
         """
         x = self.X_test if test_data else self.X_train
         y = self.y_test if test_data else self.y_train
-        batch_size = self.num_microbatches
-        num_minibatches = round(x.shape[0] / self.num_microbatches)
-        x = x[:num_minibatches * self.num_microbatches]
-        y = y[:num_minibatches * self.num_microbatches]
+        steps_per_epoch = x.shape[0] // self.num_microbatches
+        x = x[:steps_per_epoch * self.num_microbatches]
+        y = y[:steps_per_epoch * self.num_microbatches]
         return self.model.evaluate(
             x=x,
             y=y,
-            batch_size=batch_size,
+            batch_size=self.num_microbatches,
             verbose=verbose)
 
     def save(self, name, version):

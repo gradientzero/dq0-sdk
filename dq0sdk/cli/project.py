@@ -8,7 +8,7 @@ Project reads and writes the .meta file in the current project directory.
 
 Project wraps the following CLI commands:
     * dq0 project info
-    * dq0 project create --name [NAME]
+    * dq0 project create [NAME]
     * dq0 project deploy
     * dq0 data list
     * dq0 data attach
@@ -24,8 +24,8 @@ import os
 from dq0sdk.cli import Model
 from dq0sdk.cli.api import Client, routes
 from dq0sdk.cli.utils.code import (
+    add_function,
     check_signature,
-    replace_data_parent_class,
     replace_function,
     replace_model_parent_class,
 )
@@ -117,9 +117,13 @@ class Project:
         Args:
             name (:obj:`str`): The name of the new project
         """
-        response = self.client.post(routes.project.create, data={'name': name})
+        working_dir = os.getcwd()
+        response = self.client.post(routes.project.create, data={'working_dir': working_dir, 'name': name})
         checkSDKResponse(response)
         print(response['message'])
+
+        # change to working directory where the new project was created
+        os.chdir(working_dir)
 
         with open('{}/.meta'.format(name)) as f:
             meta = json.load(f)
@@ -157,7 +161,7 @@ class Project:
         """
         response = self.client.get(routes.data.list)
         checkSDKResponse(response)
-        return response['results']
+        return response['items']
 
     def get_data_info(self, data_uuid):
         """Returns info of a given data source.
@@ -172,8 +176,29 @@ class Project:
         Returns:
             The data source information in JSON format
         """
-        response = self.client.get(routes.data.info, id=data_uuid)
+        response = self.client.get(routes.data.get, id=data_uuid)
         checkSDKResponse(response)
+        return response
+
+    def get_sample_data(self, data_uuid):
+        """Returns sample data for a given data source.
+
+        Sample data is provided manually and is not available
+        for every data source.
+
+        Args:
+            data_uuid (:obj:`str`): The UUID of the requested data source
+
+        Returns:
+            The data source sample data
+        """
+        response = self.client.get(routes.data.sample, id=data_uuid)
+        checkSDKResponse(response)
+        if 'sample' in response:
+            try:
+                response = json.loads(response['sample'])
+            except Exception:
+                pass
         return response
 
     def attach_data_source(self, data_source_uuid):
@@ -183,7 +208,7 @@ class Project:
             data_source (:obj:`str`) The UUID of the new source to attach
         """
         response = self.client.post(
-            routes.data.attach,
+            routes.project.attach,
             id=self.model_uuid,
             data={'data_source_uuid': data_source_uuid})
         checkSDKResponse(response)
@@ -210,7 +235,11 @@ class Project:
         """
         self.client.set_connection(host=host, port=port)
 
-    def set_model_code(self, setup_data=None, setup_model=None, parent_class_name=None):  # noqa: C901
+    def set_model_code(self,  # noqa: C901
+                       setup_data=None,
+                       setup_model=None,
+                       preprocess=None,
+                       parent_class_name=None):
         """Sets the user defined setup_model and setup_data functions.
 
         Saves the function code to user_model.py
@@ -220,28 +249,33 @@ class Project:
             otherwise the sources of the function arguments are not available.
 
         Args:
-            setup_data (func): user defined setup_data function
-            setup_model (func): user defined setup_model function
-            parent_class_name (:obj:`str`): name of the parent class for UserModel
+            setup_data (func, optional): user defined setup_data function
+            setup_model (func, optional): user defined setup_model function
+            preprocess (func, optional): user defined preprocess function
+            parent_class_name (:obj:`str`, optional): name of the parent class for UserModel
         """
         # check args
         setup_data_code = None
         setup_model_code = None
+        preprocess_code = None
         try:
             if setup_data is not None:
                 setup_data_code = inspect.getsource(setup_data)
             if setup_model is not None:
                 setup_model_code = inspect.getsource(setup_model)
+            if preprocess is not None:
+                preprocess_code = inspect.getsource(preprocess)
         except OSError:
             raise DQ0SDKError('Could not get sources. '
                               'This will only work inside iphyton notebooks.')
-        if setup_data_code is None and setup_model_code is None:
-            raise ValueError('You need to either pass setup_data '
-                             'or setup_model function')
+        if setup_data_code is None and setup_model_code is None and preprocess_code is None:
+            raise ValueError('You need to either pass setup_data, '
+                             'setup_model or preprocess function')
 
         setup_data_code = check_signature(setup_data_code, 'setup_data')
         setup_model_code = check_signature(setup_model_code, 'setup_model')
-        if setup_data_code is None and setup_model_code is None:
+        preprocess_code = check_signature(preprocess_code, 'preprocess')
+        if setup_data_code is None and setup_model_code is None and preprocess_code is None:
             return
 
         # replace in user_model.py
@@ -251,52 +285,28 @@ class Project:
             lines = replace_function(lines, setup_data_code)
         if setup_model_code is not None:
             lines = replace_function(lines, setup_model_code)
+        if preprocess_code is not None:
+            add_preprocess = True
+            try:
+                '\n'.join(lines).index('def preprocess(')
+                add_preprocess = False
+            except ValueError:
+                lines = add_function(lines, preprocess_code)
+            if not add_preprocess:
+                lines = replace_function(lines, preprocess_code)
         if parent_class_name is not None:
-            if parent_class_name != 'NeuralNetwork':
-                raise DQ0SDKError('Current version only allows "NeuralNetwork"'
-                                  ' as parent_class_name!')
+            allowed_class_names = [
+                'Model',
+                'NeuralNetwork',
+                'NeuralNetworkClassification',
+                'NeuralNetworkRegression',
+                'NeuralNetworkYaml'
+            ]
+            if parent_class_name not in allowed_class_names:
+                raise DQ0SDKError('DQ0SDK only allows one of {}'
+                                  ' as parent_class_name!'.format(allowed_class_names))
             lines = replace_model_parent_class(lines, parent_class_name)
         with open('models/user_model.py', 'w') as f:
             f.writelines(lines)
 
         print('Successfully set model code.')
-
-    def set_data_code(self, preprocess=None, parent_class_name=None):  # noqa: C901
-        """Sets the user defined preprocess function.
-
-        Saves the function code to user_source.py
-
-        Note:
-            This function will only work inside iphyton notebooks,
-            otherwise the sources of the function arguments are not available.
-
-        Args:
-            preprocess (func): user defined preprocess function
-            parent_class_name (:obj:`str`): name of the parent class for UserSource
-        """
-        # check args
-        if preprocess is None:
-            raise ValueError('You need to pass preprocess function')
-        try:
-            preprocess_code = inspect.getsource(preprocess)
-        except OSError:
-            raise DQ0SDKError('Could not get sources. '
-                              'This will only work inside iphyton notebooks.')
-
-        preprocess_code = check_signature(preprocess_code, 'preprocess')
-        if preprocess_code is None:
-            return
-
-        # replace in user_source.py
-        with open('data/user_source.py', 'r') as f:
-            lines = f.readlines()
-        lines = replace_function(lines, preprocess_code)
-        if parent_class_name is not None:
-            if parent_class_name != 'CSVSource':
-                raise DQ0SDKError('Current version only allows "CSVSource"'
-                                  ' as parent_class_name!')
-            lines = replace_data_parent_class(lines, parent_class_name)
-        with open('data/user_source.py', 'w') as f:
-            f.writelines(lines)
-
-        print('Successfully set data code.')

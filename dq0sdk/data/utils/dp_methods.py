@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """diffpriv methods for calculating mean, std and histrograms
 
 calculates differentially private statisitics for

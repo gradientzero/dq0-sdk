@@ -31,7 +31,10 @@ def check_signature(code, name):
 
 def replace_function(lines, code):  # noqa: C901
     """Replace functions code. Used my set_code functions."""
-    search = code[:code.index(':')]
+    try:
+        search = code[:code.index(':')]
+    except ValueError:
+        raise DQ0SDKError('Wrong function definition')
     new_lines = []
     code_lines = code.split('\n')
     code_lines_index = 1  # skip signature
@@ -59,14 +62,7 @@ def replace_function(lines, code):  # noqa: C901
                 # replace function
                 if code_lines_index < len(code_lines):
                     code_line = code_lines[code_lines_index]
-                    num_code_spaces = len(code_line) - len(code_line.lstrip())
-                    if space_char == '\t':
-                        if code_line[:1] == ' ':
-                            num_code_spaces = int(num_code_spaces / 4)
-                        num_code_spaces = num_code_spaces + 1
-                    else:
-                        num_code_spaces = num_code_spaces + 4
-                    code_spaces = space_char.join(['' for i in range(num_code_spaces + 1)])
+                    code_spaces = _get_code_spaces(code_line, space_char)
                     new_lines.append(code_spaces + code_line.lstrip() + '\n')
                     code_lines_index = code_lines_index + 1
                 if in_function or code_lines_index == len(code_lines):
@@ -79,38 +75,68 @@ def replace_function(lines, code):  # noqa: C901
     return new_lines
 
 
-def replace_model_parent_class(lines, parent_class_name):
+def add_function(lines, code):
+    """Add the given code to the end of lines."""
+    new_lines = []
+    try:
+        search = code[:code.index(':')]
+    except ValueError:
+        raise DQ0SDKError('Wrong function definition')
+    indent = -1
+    space_char = ' '
+    for line in lines:
+        if indent == -1:
+            try:
+                indent = line.index(search)
+                space_char = '\t' if line[:1] == '\t' else ' '
+            except ValueError:
+                pass
+        new_lines.append(line)
+    new_lines.append('\n')
+    if indent == -1:
+        indent = 0
+    code_lines = code.split('\n')
+    for code_line in code_lines:
+        code_spaces = _get_code_spaces(code_line, space_char, number_of_leading_chars=indent)
+        new_lines.append(code_spaces + code_line.lstrip() + '\n')
+    return new_lines
+
+
+def _get_code_spaces(code_line, space_char, number_of_leading_chars=0):
+    """Helper function to get leading spaces."""
+    num_code_spaces = len(code_line) - len(code_line.lstrip())
+    num_code_spaces = num_code_spaces + number_of_leading_chars
+    if space_char == '\t':
+        if code_line[:1] == ' ':
+            num_code_spaces = int(num_code_spaces / 4)
+        num_code_spaces = num_code_spaces + 1
+    else:
+        num_code_spaces = num_code_spaces + 4
+    return space_char.join(['' for i in range(num_code_spaces + 1)])
+
+
+def replace_model_parent_class(lines, parent_class_name):  # noqa: C901
     """Replace parent class. Used my set_code functions."""
     new_lines = []
     for line in lines:
         try:
             index = line.index('from dq0sdk.models')
             if index == 0:
-                line = 'from dq0sdk.models.tf.neural_network import NeuralNetwork\n'
+                if parent_class_name == 'NeuralNetwork':
+                    line = 'from dq0sdk.models.tf.neural_network import NeuralNetwork\n'
+                elif parent_class_name == 'NeuralNetworkClassification':
+                    line = 'from dq0sdk.models.tf.neural_network_classification import NeuralNetworkClassification\n'
+                elif parent_class_name == 'NeuralNetworkMultiClassClassification':
+                    line = 'from dq0sdk.models.tf.neural_network_multiclass_classification import NeuralNetworkMultiClassClassification\n'
+                elif parent_class_name == 'NeuralNetworkRegression':
+                    line = 'from dq0sdk.models.tf.neural_network_regression import NeuralNetworkRegression\n'
+                elif parent_class_name == 'NeuralNetworkYaml':
+                    line = 'from dq0sdk.models.tf.neural_network_yaml import NeuralNetworkYaml\n'
         except ValueError:
             pass
         try:
             line.index('class UserModel(')
-            line = 'class UserModel(NeuralNetwork):\n'
-        except ValueError:
-            pass
-        new_lines.append(line)
-    return new_lines
-
-
-def replace_data_parent_class(lines, parent_class_name):
-    """Replace parent class. Used my set_code functions."""
-    new_lines = []
-    for line in lines:
-        try:
-            index = line.index('from dq0sdk.data')
-            if index == 0:
-                line = 'from dq0sdk.data.csv.csv_source import CSVSource\n'
-        except ValueError:
-            pass
-        try:
-            line.index('class UserSource(')
-            line = 'class UserSource(CSVSource):\n'
+            line = 'class UserModel({}):\n'.format(parent_class_name)
         except ValueError:
             pass
         new_lines.append(line)

@@ -5,7 +5,7 @@ The source class serves as the base class for all dq0sdk data sources.
 
 Implementing subclasses have to define at least read
 
-Copyright 2019, Gradient Zero
+Copyright 2020, Gradient Zero
 All rights reserved
 """
 
@@ -25,7 +25,8 @@ class Source(ABC):
 
     Attributes:
         uuid (:obj:`str`): The universally unique identifier of the data source.
-        uuid (:obj:`str`): The data source's name
+        name (:obj:`str`): The data source's name
+        description (:obj:`str`): The data source's description
         data (:obj:`pandas.DataFrame`): The loaded data
         preprocessed_data (:obj:`pandas.DataFrame`): The preprocessed data
         read_allowed (bool): True if this source can be read
@@ -40,6 +41,7 @@ class Source(ABC):
         super().__init__()
         self.uuid = uuid.uuid1()  # UUID for this data source. Will be set at runtime.
         self.name = ''
+        self.description = ''
         self.data = None
         self.preprocessed_data = None
         self.read_allowed = False
@@ -50,11 +52,14 @@ class Source(ABC):
         self.input_folder = input_folder
 
     @abstractmethod
-    def read(self):
+    def read(self, **kwargs):
         """Read data sources
 
         This function should be used by child classes to read data or return
         a data handler to read streaming data.
+
+        Args:
+            kwargs: keyword arguments
 
         Returns:
             data read from the data source.

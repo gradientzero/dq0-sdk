@@ -29,13 +29,13 @@ class Model(ABC):
         model_type (:obj:`str`): type of this model instance. Options: 'keras'.
         model_path (:obj:`str`): path of model (save / load)
         uuid (:obj:`str`): UUID of this model.
-        data_sources (:obj:`dict`): dict of attached data sources.
+        data_source (:obj:`dq0sdk.data.Source`): dict of attached data sources.
 
     """
     def __init__(self, model_path):
         super().__init__()
         # data source, model path and uuid will be set at runtime
-        self.data_sources = {}
+        self.data_source = None
         self.model_path = model_path
         self.uuid = uuid.uuid1()
         self.model_type = ''
@@ -49,54 +49,79 @@ class Model(ABC):
         Args:
             data_source (:obj:`dq0sdk.data.Source`): The new data source to add
         """
-        if data_source.uuid in self.data_sources.keys():
-            logger.debug('Data source with uuid {} already attached.'.
-                         format(data_source.uuid))
-            return
-        self.data_sources[data_source.uuid] = data_source
+        self.data_source = data_source
 
     @abstractmethod
-    def setup_data(self, **kwargs):
+    def setup_data(self):
         """Setup data function
 
         This function can be used by child classes to prepare data or perform
         other tasks that dont need to be repeated for every training run.
-
-        Args:
-            kwargs (:obj:`dict`): dictionary of optional arguments
         """
         pass
 
     @abstractmethod
-    def setup_model(self, **kwargs):
+    def setup_model(self):
         """Setup model function
 
-        Implementing child classes can use this method to define the
-        Keras model.
+        Implementing child classes can use this method to define the model.
+        """
+        pass
 
-        Args:
-            kwargs (:obj:`dict`): dictionary of optional arguments
+    def fit(self):
+        """Train model on a dataset passed as input.
         """
         pass
 
     @abstractmethod
-    def save(self):
+    def save(self, name, version):
         """Saves the model.
 
         Implementing child classes should use this function to save the
         model in binary format on local storage.
 
-        The implemented child class version will be final (non-derivable).
+        Args:
+            name (:obj:`str`): The name of the model
+            version (int): The version of the model
         """
         pass
 
     @abstractmethod
-    def load(self):
+    def load(self, name, version):
         """Loads the model.
 
         Implementing child classes should use this function to load the
         model from local storage.
 
-        The implemented child class version will be final (non-derivable).
+        Args:
+            name (:obj:`str`): The name of the model
+            version (int): The version of the model
         """
         pass
+
+    def preprocess(self):
+        """Preprocess the data
+
+        Preprocess the data set. The input data is read from the attached source.
+
+        At runtime the selected datset is attached to this model. It
+        is available as the `data_source` attribute.
+
+        For local testing call `model.attach_data_source(some_data_source)`
+        manually before calling `setup_data()`.
+
+        Use `self.data_source.read()` to read the attached data.
+
+        Returns:
+            preprocessed data
+        """
+        pass
+
+    @abstractmethod
+    def to_string(self):
+        """Print model type.
+
+        Implementing child classes should use this function to print the
+        model_type.
+        """
+    pass

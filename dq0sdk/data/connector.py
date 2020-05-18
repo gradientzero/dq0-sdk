@@ -70,6 +70,7 @@ class Connector():
 
         for source in self.dataconfig['sources']:
             name = source['name']
+            description = source['description'] if 'description' in source else ''
             read_allowed = read_allowed_globally
             meta_allowed = meta_allowed_globally
             types_allowed = types_allowed_globally
@@ -77,19 +78,30 @@ class Connector():
             sample_allowed = sample_allowed_globally
             if 'settings' in source and 'allowed_actions' in source['settings']:
                 read_allowed = 'read' in source['settings']['allowed_actions']
-                meta_allowed = 'read' in source['settings']['allowed_actions']
-                types_allowed = 'read' in source['settings']['allowed_actions']
-                stats_allowed = 'read' in source['settings']['allowed_actions']
-                sample_allowed = 'read' in source['settings']['allowed_actions']
+                meta_allowed = 'meta' in source['settings']['allowed_actions']
+                types_allowed = 'types' in source['settings']['allowed_actions']
+                stats_allowed = 'stats' in source['settings']['allowed_actions']
+                sample_allowed = 'sample' in source['settings']['allowed_actions']
+
+            types = []
+            if types_allowed:
+                types = source['types']
 
             if source['type'] == 'csv':
-                csv = CSVSource(os.path.join(self.working_dir, self.dataconfig['settings']['csv_base_dir'], source['path']))
+                filepath = os.path.join(self.working_dir, self.dataconfig['settings']['csv_base_dir'], source['path'])
+                samplepath = None
+                if 'sample_path' in source:
+                    samplepath = os.path.join(self.working_dir, self.dataconfig['settings']['csv_base_dir'], source['sample_path'])
+                csv = CSVSource(filepath)
                 csv.name = name
+                csv.description = description
+                csv.sample_filepath = samplepath
                 csv.read_allowed = read_allowed
                 csv.meta_allowed = meta_allowed
                 csv.types_allowed = types_allowed
                 csv.stats_allowed = stats_allowed
                 csv.sample_allowed = sample_allowed
+                csv.types = types
                 self.sources.append(csv)
 
         logger.debug('Found {} available sources'.format(len(self.sources)))

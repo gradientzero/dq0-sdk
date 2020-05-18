@@ -28,14 +28,21 @@ class CSVSource(Source):
 
     Attributes:
         filepath (:obj:`str`): Absolute path to the CSV file.
+        sample_filepath (:obj:`str`): Absolute path to the CSV file containing sample data.
+        types: json object containing column type description
 
     """
     def __init__(self, filepath):
         super().__init__()
         self.filepath = filepath
+        self.sample_filepath = None
+        self.types = ''
 
-    def read(self):
+    def read(self, **kwargs):
         """Read CSV data sources
+
+        Args:
+            kwargs: keyword arguments
 
         Returns:
             CSV data as pandas dataframe
@@ -47,7 +54,7 @@ class CSVSource(Source):
         if not os.path.exists(path) or not os.path.isfile(path):
             raise IOError('Could not read csv data.'
                           'File not found {}'.format(path))
-        return pd.read_csv(path)
+        return pd.read_csv(path, **kwargs)
 
     def preprocess(self):
         """Preprocess the data
@@ -79,7 +86,6 @@ class CSVSource(Source):
         mean = ''
         std = ''
         hist = ''
-        types = ''
         content = None
         if self.read_allowed:
             try:
@@ -97,12 +103,6 @@ class CSVSource(Source):
             except Exception as e:
                 logger.warn('Could not get stats for content. {}'.format(e))
 
-        if self.types_allowed and content is not None:
-            try:
-                types = '{}'.format(content.dtypes)
-            except Exception as e:
-                logger.warn('Could not get types for content. {}'.format(e))
-
         permissions = []
         if self.read_allowed:
             permissions.append('read')
@@ -118,11 +118,13 @@ class CSVSource(Source):
         return {
             "name": self.name,
             "type": 'csv',
+            "description": self.description,
             "filepath": self.filepath,
+            "samplepath": self.sample_filepath,
             "length": length,
             "permissions": permissions,
             "mean": mean,
             "std": std,
-            'hist': hist,
-            "types": types
+            'stats': hist,
+            "types": self.types
         }

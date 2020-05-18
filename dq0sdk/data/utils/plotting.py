@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Helper functions for plotting data analysis results.
 
 Copyright 2020, Gradient Zero
