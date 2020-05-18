@@ -9,7 +9,7 @@ All rights reserved
 import logging
 
 from dq0sdk.data.utils import util
-from dq0sdk.models.tf.neural_network_classification import NeuralNetworkClassification
+from dq0sdk.models.tf import NeuralNetworkClassification
 
 import numpy as np
 
