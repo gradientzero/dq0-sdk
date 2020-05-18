@@ -42,7 +42,7 @@ Examples:
 
 ```bash
 # login to the DQ0 instance
-dq0 auth login
+dq0 user login
 ```
 
 ```bash
@@ -71,7 +71,7 @@ In order to communicate with the DQ0 instance, you have to log in so authorize a
 If you are not yet registered, you can do this directly via the CLI using the following command:
 
 ```bash
-dq0 auth register
+dq0 user register
 ````
 
 You will then be asked for a user name (email address) and password.
@@ -83,7 +83,7 @@ While registering the CLI will create your personal DQ0 SSH key pair (private an
 The registration request must first be confirmed by your customer's DQ0 administrator. Only then can you log in with your chosen credentials using the following command:
 
 ```bash
-dq0 auth login
+dq0 user login
 ````
 
 In the following dialog, please enter your chosen email address and password.
@@ -95,13 +95,13 @@ After successful registration, the session is valid for 30 days.
 Working with DQ0 is about developing machine learning models for existing datasets. The first step is therefore always to create a project for a model to be developed. Enter the following command:
 
 ```bash
-dq0 project create --name [PROJECT NAME]
+dq0 project create [PROJECT NAME]
 ```
 
 Example:
 
 ```bash
-dq0 project create --name model1
+dq0 project create model1
 ```
 
 This command creates a folder with the name of your project (here “model1”) within the current directory of your terminal session. In this new folder there is a minimal Python project, which is explained in the next section.
@@ -113,7 +113,7 @@ The CLI automatically initialized and manages a local git repository for each pr
 To set the version of the model, enter the following CLI command:
 
 ```bash
-dq0 project set --version [VERSION-STRING]
+dq0 project set-version [VERSION-STRING]
 ```
 
 ## Data
@@ -151,7 +151,7 @@ dq0 data info --id 1
 Alternatively, the UUID can also be used:
 
 ```bash
-dq0 data info --uuid 44b147aa-30a2-48d1-8c0b-73c9ab914c18
+dq0 data info --data-source-uuid 44b147aa-30a2-48d1-8c0b-73c9ab914c18
 ```
 
 An answer comes in JSON format and can look like this:
@@ -170,7 +170,7 @@ dq0 data attach --id [DATASET-ID]
 or
 
 ```bash
-dq0 data attach --uuid [DATASET-UUID]
+dq0 data attach --data-source-uuid [DATASET-UUID]
 ```
 
 Example:
@@ -343,10 +343,8 @@ To define different models, the UserModel class can be derived from existing mod
 If the model is defined and has been tested locally (see run.py script above), it can be transferred to the DQ0 instance. This is done with the following command:
 
 ```bash
-dq0 project deploy --version [VERSION]
+dq0 project deploy
 ```
-
-The --version argument is optional; if you omit it the curret model version will be used as stored in the .meta file.
 
 After the model has been successfully transferred, a training run can be started:
 
@@ -367,7 +365,7 @@ A response can look like this:
 State: Finished at 2020-02-17 11:12:54.405378 +0000 UTC. Progress: 1.0. Train Results: [...]. Predict Results: [...]
 ```
 
-*Note: only one training or prediction process can be executed at a time for one model version. If several training processes are to be executed in parallel, you have to work with different model versions (see above `dq0 model set --version [VERSION]`).*
+*Note: only one training or prediction process can be executed at a time for one model version. If several training processes are to be executed in parallel, you have to work with different model versions (see above `dq0 model set-version [VERSION]`).*
 
 
 ## Model Predict
