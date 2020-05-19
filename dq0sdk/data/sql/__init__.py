@@ -11,6 +11,7 @@ from .mysql import MySQL
 from .oracle import Oracle
 from .postgresql import PostgreSQL
 from .redshift import Redshift
+from .sap_hana import SAPHana
 from .snowflake import Snowflake
 from .sqlite import SQLite
 
@@ -22,6 +23,7 @@ __all__ = [
     'Oracle',
     'PostgreSQL',
     'Redshift',
+    'SAPHana',
     'Snowflake',
     'SQLite'
 ]
