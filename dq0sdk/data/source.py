@@ -26,6 +26,7 @@ class Source(ABC):
     Attributes:
         uuid (:obj:`str`): The universally unique identifier of the data source.
         name (:obj:`str`): The data source's name
+        type (:obj:`str`): The data source's distinct type (e.g. 'csv')
         description (:obj:`str`): The data source's description
         types: json object containing column type description
         data (:obj:`pandas.DataFrame`): The loaded data
@@ -35,7 +36,7 @@ class Source(ABC):
         stats_allowed (bool): True if this source provides statistics
         sample_allowed (bool): True if there is sample data for this source
         path (:obj:`str`): Path to the data
-        sample_path (:obj:`str`): Absolute path to the CSV file containing sample data.
+        sample_path (:obj:`str`): Absolute path to the file containing sample data.
     """
     def __init__(self, path=None):
         super().__init__()
@@ -90,7 +91,7 @@ class Source(ABC):
 
         return {
             "name": self.name,
-            "type": 'csv',
+            "type": self.type,
             "description": self.description,
             "filepath": self.path,
             "samplepath": self.sample_path,

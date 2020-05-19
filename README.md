@@ -208,7 +208,7 @@ from user_model import UserModel
 if __name__ == '__main__':
 
     # init input data source
-    data_source = dq0sdk.data.csv.CSVSource('path/to/source')
+    data_source = dq0sdk.data.text.CSV('path/to/source')
 
     # create model
     model = UserModel('notebooks/saved_model/')

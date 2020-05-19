@@ -14,12 +14,12 @@ Copyright 2020, Gradient Zero
 All rights reserved
 """
 
-from dq0sdk.data.image import ImageSource
+from dq0sdk.data.image import Image
 
 import tensorflow as tf
 
 
-class Cifar10Source(ImageSource):
+class Cifar10(Image):
     """Data Source for CIFAR10 dataset.
 
     From the CIFAR description: The CIFAR-10 dataset consists of 60000 32x32

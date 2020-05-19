@@ -24,13 +24,14 @@ import pandas as pd
 from sklearn.datasets import fetch_20newsgroups
 
 
-class NewsgroupsSource(Source):
+class Newsgroups(Source):
     """Data Source for 20Newsgroups.
 
     Newsgroups posts on 20 topics from scikit-learn.
     """
     def __init__(self):
         super().__init__()
+        self.type = 'newsgroups'
 
     def read(self):
         """Read the 20newsgroups data source

@@ -5,13 +5,14 @@ This package contains the data connector abstract classes and
 implementing subclasses.
 """
 
-from . import csv, image, newsgroups, utils
+from . import binary, image, newsgroups, text, utils
 from .source import Source
 
 __all__ = [
     'Source',
-    'csv',
+    'binary',
     'image',
     'newsgroups',
+    'text',
     'utils'
 ]

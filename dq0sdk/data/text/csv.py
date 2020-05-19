@@ -7,17 +7,12 @@ Copyright 2020, Gradient Zero
 All rights reserved
 """
 
-import logging
-import os
-
 from dq0sdk.data.source import Source
 
 import pandas as pd
 
-logger = logging.getLogger()
 
-
-class CSVSource(Source):
+class CSV(Source):
     """Data Source for CSV data.
 
     Provides function to read in csv data.
@@ -27,6 +22,7 @@ class CSVSource(Source):
     """
     def __init__(self, path):
         super().__init__(path)
+        self.type = 'csv'
 
     def read(self, **kwargs):
         """Read CSV data sources
@@ -36,12 +32,5 @@ class CSVSource(Source):
 
         Returns:
             CSV data as pandas dataframe
-
-        Raises:
-            IOError: if file was not found
         """
-        path = self.path
-        if not os.path.exists(path) or not os.path.isfile(path):
-            raise IOError('Could not read csv data.'
-                          'File not found {}'.format(path))
-        return pd.read_csv(path, **kwargs)
+        return pd.read_csv(self.path, **kwargs)

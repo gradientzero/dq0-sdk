@@ -2,8 +2,8 @@
 """DQ0 SDK Image Data Sources dataset package.
 """
 
-from .image_source import ImageSource
+from .image import Image
 
 __all__ = [
-    'ImageSource'
+    'Image'
 ]
