@@ -108,11 +108,6 @@ class ImageSource(Source):
             plt.xlabel(self.class_names[y_train_np_a[i][0]])
         plt.show()
 
-    def preprocess(self, X_train_np_a, X_test_np_a, y_train_np_a, y_test_np_a,
-                   force=False):
-        """Preprocess the loaded data."""
-        pass
-
     def to_json(self):
         """Returns a json representation of this data sources information.
 

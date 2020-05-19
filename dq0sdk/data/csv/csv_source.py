@@ -56,18 +56,6 @@ class CSVSource(Source):
                           'File not found {}'.format(path))
         return pd.read_csv(path, **kwargs)
 
-    def preprocess(self):
-        """Preprocess the data
-
-        This function should be used by child classes to perform certain
-        preprocessing steps to prepare the data for later use.
-
-        Returns:
-            preprocessed data
-        """
-        self.preprocessed_data = self.data
-        return self.preprocessed_data
-
     def to_json(self, epsilon=0.1):  # noqa: C901
         """Returns a json representation of this data sources information.
 

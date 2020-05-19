@@ -21,35 +21,33 @@ class Source(ABC):
     provide a data reader for the underlying source.
 
     Args:
-        input_folder (:obj:`str`, optional): Path to the data
+        path (:obj:`str`, optional): Path to the data
 
     Attributes:
         uuid (:obj:`str`): The universally unique identifier of the data source.
         name (:obj:`str`): The data source's name
         description (:obj:`str`): The data source's description
         data (:obj:`pandas.DataFrame`): The loaded data
-        preprocessed_data (:obj:`pandas.DataFrame`): The preprocessed data
         read_allowed (bool): True if this source can be read
         meta_allowed (bool): True if this source provides meta information
         types_allowed (bool): True if this source provides data type information
         stats_allowed (bool): True if this source provides statistics
         sample_allowed (bool): True if there is sample data for this source
-        input_folder (:obj:`str`): Path to the data
+        path (:obj:`str`): Path to the data
 
     """
-    def __init__(self, input_folder=None):
+    def __init__(self, path=None):
         super().__init__()
         self.uuid = uuid.uuid1()  # UUID for this data source. Will be set at runtime.
         self.name = ''
         self.description = ''
         self.data = None
-        self.preprocessed_data = None
         self.read_allowed = False
         self.meta_allowed = False
         self.types_allowed = False
         self.stats_allowed = False
         self.sample_allowed = False
-        self.input_folder = input_folder
+        self.path = path
 
     @abstractmethod
     def read(self, **kwargs):
@@ -63,18 +61,6 @@ class Source(ABC):
 
         Returns:
             data read from the data source.
-        """
-        raise NotImplementedError()
-
-    @abstractmethod
-    def preprocess(self):
-        """Preprocess the data
-
-        This function should be used by child classes to perform certain
-        preprocessing steps to prepare the data for later use.
-
-        Returns:
-            preprocessed data
         """
         raise NotImplementedError()
 
