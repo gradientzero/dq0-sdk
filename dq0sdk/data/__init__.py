@@ -6,11 +6,9 @@ implementing subclasses.
 """
 
 from . import csv, image, newsgroups, utils
-from .connector import Connector
 from .source import Source
 
 __all__ = [
-    'Connector',
     'Source',
     'csv',
     'image',

@@ -27,6 +27,7 @@ class Source(ABC):
         uuid (:obj:`str`): The universally unique identifier of the data source.
         name (:obj:`str`): The data source's name
         description (:obj:`str`): The data source's description
+        types: json object containing column type description
         data (:obj:`pandas.DataFrame`): The loaded data
         read_allowed (bool): True if this source can be read
         meta_allowed (bool): True if this source provides meta information
@@ -34,13 +35,14 @@ class Source(ABC):
         stats_allowed (bool): True if this source provides statistics
         sample_allowed (bool): True if there is sample data for this source
         path (:obj:`str`): Path to the data
-
+        sample_path (:obj:`str`): Absolute path to the CSV file containing sample data.
     """
     def __init__(self, path=None):
         super().__init__()
         self.uuid = uuid.uuid1()  # UUID for this data source. Will be set at runtime.
         self.name = ''
         self.description = ''
+        self.types = ''
         self.data = None
         self.read_allowed = False
         self.meta_allowed = False
@@ -48,6 +50,7 @@ class Source(ABC):
         self.stats_allowed = False
         self.sample_allowed = False
         self.path = path
+        self.sample_path = None
 
     @abstractmethod
     def read(self, **kwargs):
@@ -64,16 +67,32 @@ class Source(ABC):
         """
         raise NotImplementedError()
 
-    @abstractmethod
-    def to_json(self, epsilon=0.1):
+    def to_json(self):  # noqa: C901
         """Returns a json representation of this data sources information.
-
-        Args:
-            epsilon (float): Differential Privacy epsilon value. When called
-                inside the quarantine (from dq0-main) this value will always
-                be set to 0.1
 
         Returns:
             data source description as json.
         """
-        raise NotImplementedError()
+        if not self.meta_allowed:
+            return {}
+
+        permissions = []
+        if self.read_allowed:
+            permissions.append('read')
+        if self.meta_allowed:
+            permissions.append('meta')
+        if self.types_allowed:
+            permissions.append('types')
+        if self.stats_allowed:
+            permissions.append('stats')
+        if self.sample_allowed:
+            permissions.append('sample')
+
+        return {
+            "name": self.name,
+            "type": 'csv',
+            "description": self.description,
+            "filepath": self.path,
+            "samplepath": self.sample_path,
+            "types": self.types
+        }
