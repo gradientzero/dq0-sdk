@@ -56,6 +56,8 @@ class UserModel(NeuralNetworkClassification):
             #    self.regularization_param)
         }
 
+        self.loss = tf.keras.losses.SparseCategoricalCrossentropy()
+
         print('Setting up a multilayer neural network...')
         self.model = self._get_mlnn_model()
 
