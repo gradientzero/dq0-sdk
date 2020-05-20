@@ -95,5 +95,6 @@ class Source(ABC):
             "description": self.description,
             "filepath": self.path,
             "samplepath": self.sample_path,
+            "permissions": permissions,
             "types": self.types
         }
