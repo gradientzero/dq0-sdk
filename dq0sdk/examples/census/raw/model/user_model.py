@@ -398,3 +398,4 @@ class UserModel(NeuralNetworkClassification):
         self.num_microbatches = 250
         self.verbose = 0
         self.metrics = ['accuracy', 'mse']
+        self.loss = tf.keras.losses.SparseCategoricalCrossentropy()

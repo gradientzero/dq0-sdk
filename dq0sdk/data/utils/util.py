@@ -464,7 +464,7 @@ def concatenate_train_test_datasets(X_train, X_test, y_train, y_test):
         y_test: Numpy (also non-dimensional) array or Pandas Series
 
     Returns:
-        Concetentated X and y
+        Concatenated X and y
     """
     if isinstance(X_train, pd.DataFrame):
         X, y = concatenate_train_test_datasets_pd_Dataframes(
