@@ -2,8 +2,8 @@
 """DQ0 SDK CIFAR Image Data Sources package.
 """
 
-from .cifar10_source import Cifar10Source
+from .cifar10 import Cifar10
 
 __all__ = [
-    'Cifar10Source'
+    'Cifar10'
 ]

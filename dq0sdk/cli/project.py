@@ -8,7 +8,7 @@ Project reads and writes the .meta file in the current project directory.
 
 Project wraps the following CLI commands:
     * dq0 project info
-    * dq0 project create --name [NAME]
+    * dq0 project create [NAME]
     * dq0 project deploy
     * dq0 data list
     * dq0 data attach

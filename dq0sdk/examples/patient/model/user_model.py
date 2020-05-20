@@ -8,7 +8,7 @@ Copyright 2020, Gradient Zero
 
 import logging
 
-from dq0sdk.models.tf.neural_network_regression import NeuralNetworkRegression
+from dq0sdk.models.tf import NeuralNetworkRegression
 
 import pandas as pd
 

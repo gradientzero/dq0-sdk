@@ -6,7 +6,6 @@ Neural network model definition
 Example:
     >>> ./dq0 project create --name demo # doctest: +SKIP
     >>> cd demo # doctest: +SKIP
-    >>> copy user_source.py to demo/data/ # doctest: +SKIP
     >>> copy user_model.py to demo/model/ # doctest: +SKIP
     >>> ../dq0 data list # doctest: +SKIP
     >>> ../dq0 model attach --id <dataset id> # doctest: +SKIP
@@ -22,7 +21,7 @@ All rights reserved
 
 import logging
 
-from dq0sdk.models.tf.neural_network_classification import NeuralNetworkClassification
+from dq0sdk.models.tf import NeuralNetworkClassification
 
 logger = logging.getLogger()
 

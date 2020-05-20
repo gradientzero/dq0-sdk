@@ -6,17 +6,17 @@ Basic tensorflow neural network implementation using Keras.
 This can be used as a base class for UserModel definitions.
 
 Example:
-    >>> import dq0sdk.models.tf.NeuralNetwork # doctest: +SKIP
+    >>> import dq0sdk.models.tf.NeuralNetworkClassification # doctest: +SKIP
     >>>
     >>> class MyAwsomeModel(NeuralNetwork): # doctest: +SKIP
-    >>>     def init(): # doctest: +SKIP
-    >>>         self.learning_rate = 0.3 # doctest: +SKIP
+    >>>     def __init__(self, model_path): # doctest: +SKIP
+    >>>         super().__init__(model_path) # doctest: +SKIP
     >>>
-    >>>     def setup_data(): # doctest: +SKIP
+    >>>     def setup_data(self): # doctest: +SKIP
     >>>         # do something
     >>>         pass # doctest: +SKIP
     >>>
-    >>>     def setup_model(): # doctest: +SKIP
+    >>>     def setup_model(self): # doctest: +SKIP
     >>>         # freely deinfe the tf / keras model
     >>>         pass # doctest: +SKIP
     >>>

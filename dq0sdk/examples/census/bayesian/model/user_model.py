@@ -269,8 +269,8 @@ class UserModel(Model):
 
         data_type = 'test' if test_data else 'train'
 
-        print('\n\n----------------- Testing learnt classifier on ' + data_type
-              + ' data -----------------')
+        print('\n\n----------------- Testing learnt classifier on ' + data_type + ''
+              ' data -----------------')
 
         if isinstance(y, np.ndarray):
             if y.ndim == 2:

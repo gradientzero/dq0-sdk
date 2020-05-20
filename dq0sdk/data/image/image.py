@@ -26,7 +26,7 @@ import numpy as np
 logger = logging.getLogger()
 
 
-class ImageSource(Source):
+class Image(Source):
     """Data Source for image dataset.
 
     Attributes:
@@ -37,6 +37,7 @@ class ImageSource(Source):
         super().__init__()
         self.class_names = ['airplane', 'automobile', 'bird', 'cat', 'deer',
                             'dog', 'frog', 'horse', 'ship', 'truck']
+        self.type = 'image'
 
     def read(self, num_instances_to_load=None, num_images_to_plot=None):
         """Read the image data.
@@ -107,11 +108,6 @@ class ImageSource(Source):
             # which is why you need the extra index
             plt.xlabel(self.class_names[y_train_np_a[i][0]])
         plt.show()
-
-    def preprocess(self, X_train_np_a, X_test_np_a, y_train_np_a, y_test_np_a,
-                   force=False):
-        """Preprocess the loaded data."""
-        pass
 
     def to_json(self):
         """Returns a json representation of this data sources information.
