@@ -1,19 +1,20 @@
 # -*- coding: utf-8 -*-
-"""Image Data Source.
+"""CIFAR10 Image Data Source.
 
-This is a data source implementation for image data sets.
+This is a data source implementation for the CIFAR10 data set.
 
-One example would be the CIFAR10 data set.
+More information on CIFAR10: https://www.cs.toronto.edu/~kriz/cifar.html
 
-Implementing child classes must override the _load_data function to
-actually fetch the image data.
+Installation notes:
+    It loads the data set via `tf.keras.datasets.cifar10.load_data()` therefore
+    requiring an active internet connection. Once the data is downloaded it is
+    cached in the user's home directory.
 
 Copyright 2020, Gradient Zero
 All rights reserved
 """
 
 import logging
-from abc import abstractmethod
 
 from dq0sdk.data.preprocessing import preprocessing
 from dq0sdk.data.source import Source
@@ -23,11 +24,13 @@ from matplotlib import pyplot as plt
 
 import numpy as np
 
+import tensorflow.compat.v1 as tf
+
 logger = logging.getLogger()
 
 
-class ImageSource(Source):
-    """Data Source for image dataset.
+class Cifar10(Source):
+    """Data Source for CIFAR10 dataset.
 
     Attributes:
         class_names (:obj:`list`): List of class names to use
@@ -37,6 +40,7 @@ class ImageSource(Source):
         super().__init__()
         self.class_names = ['airplane', 'automobile', 'bird', 'cat', 'deer',
                             'dog', 'frog', 'horse', 'ship', 'truck']
+        self.type = 'image'
 
     def read(self, num_instances_to_load=None, num_images_to_plot=None):
         """Read the image data.
@@ -79,11 +83,8 @@ class ImageSource(Source):
 
         return X_np_a, y_np_a
 
-    @abstractmethod
     def _load_data(self):
-        """Loads the image data.
-
-        Child classes need to implement this function!
+        """Loads the CIFAR10 data.
 
         Returns:
             X_train_np_a (:obj:`numpy.ndarray`): X train data
@@ -91,7 +92,9 @@ class ImageSource(Source):
             y_train_np_a (:obj:`numpy.ndarray`): y train data
             y_test_np_a (:obj:`numpy.ndarray`): y test data
         """
-        pass
+        (X_train_np_a, y_train_np_a), (X_test_np_a, y_test_np_a) = \
+            tf.keras.datasets.cifar10.load_data()
+        return X_train_np_a, X_test_np_a, y_train_np_a, y_test_np_a
 
     def _plot_first_few_images(self, X_train_np_a, y_train_np_a,
                                num_images_to_plot):
@@ -107,11 +110,6 @@ class ImageSource(Source):
             # which is why you need the extra index
             plt.xlabel(self.class_names[y_train_np_a[i][0]])
         plt.show()
-
-    def preprocess(self, X_train_np_a, X_test_np_a, y_train_np_a, y_test_np_a,
-                   force=False):
-        """Preprocess the loaded data."""
-        pass
 
     def to_json(self):
         """Returns a json representation of this data sources information.

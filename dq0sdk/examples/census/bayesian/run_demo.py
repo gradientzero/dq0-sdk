@@ -24,7 +24,7 @@ if __name__ == '__main__':
         os.path.abspath(__file__)), path)
 
     # init data source
-    data_source = dq0sdk.data.csv.CSVSource(filepath)
+    data_source = dq0sdk.data.text.CSV(filepath)
 
     # create model
     model = UserModel('notebooks/saved_model/')

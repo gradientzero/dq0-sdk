@@ -11,5 +11,4 @@ Submodules
 
 .. toctree::
 
-   dq0sdk.utils.managed_classes
    dq0sdk.utils.utils

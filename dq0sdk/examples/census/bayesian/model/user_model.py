@@ -18,7 +18,6 @@ import pandas as pd
 
 from sklearn import metrics
 from sklearn.naive_bayes import GaussianNB
-from sklearn.preprocessing import LabelEncoder
 
 
 logger = logging.getLogger()
@@ -34,7 +33,7 @@ class UserModel(Model):
     """
     def __init__(self, model_path):
         super().__init__(model_path)
-        self.model_type = 'IBM_Diffpriv'
+        self.model_type = 'bayes'
         self.label_encoder = None
 
     def to_string(self):
@@ -89,9 +88,9 @@ class UserModel(Model):
 
         # LabelEncoder() encodes target labels with value between 0 and
         # n_classes - 1
-        self.label_encoder = LabelEncoder()
-        y_train_ts = self.label_encoder.fit_transform(y_train_ts)
-        y_test_ts = self.label_encoder.fit_transform(y_test_ts)
+        # self.label_encoder = LabelEncoder()
+        # y_train_ts = self.label_encoder.fit_transform(y_train_ts)
+        # y_test_ts = self.label_encoder.transform(y_test_ts)
 
         # back to column vector. Transform one-dimensional array into column
         # vector via newaxis
@@ -220,11 +219,11 @@ class UserModel(Model):
 
         # label target
         y_ts = dataset[target_feature]
-        le = sklearn.preprocessing.LabelEncoder()
-        y_bin_nb = le.fit_transform(y_ts)
-        y_bin = pd.Series(index=y_ts.index, data=y_bin_nb)
+        self.label_encoder = sklearn.preprocessing.LabelEncoder()
+        y_enc = self.label_encoder.fit_transform(y_ts)
+        y_enc = pd.Series(index=y_ts.index, data=y_enc)
         dataset.drop([target_feature], axis=1, inplace=True)
-        dataset[target_feature] = y_bin
+        dataset[target_feature] = y_enc
 
         return dataset
 

@@ -24,13 +24,14 @@ import pandas as pd
 from sklearn.datasets import fetch_20newsgroups
 
 
-class NewsgroupsSource(Source):
+class Newsgroups(Source):
     """Data Source for 20Newsgroups.
 
     Newsgroups posts on 20 topics from scikit-learn.
     """
     def __init__(self):
         super().__init__()
+        self.type = 'newsgroups'
 
     def read(self):
         """Read the 20newsgroups data source
@@ -95,7 +96,7 @@ class NewsgroupsSource(Source):
             technique_for_feat_sel = 'chi-squared test'  # 'mutual information'
 
         params_dict = {
-            'data_home': self.input_folder,
+            'data_home': self.path,
             'subset': 'train',
             'shuffle': True,
             'random_state': 42,  # for reproducible output across multiple
@@ -171,9 +172,6 @@ class NewsgroupsSource(Source):
 
         return tr_dataset_df, test_dataset_df, categorical_features_list, \
             quantitative_features_list, target_feature
-
-    def preprocess(self, force=False, **kwargs):
-        pass
 
     def to_json(self):
         """Returns a json representation of this data sources information.
