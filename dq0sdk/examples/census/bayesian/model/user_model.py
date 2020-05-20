@@ -33,7 +33,7 @@ class UserModel(Model):
     """
     def __init__(self, model_path):
         super().__init__(model_path)
-        self.model_type = 'IBM_Diffpriv'
+        self.model_type = 'bayes'
         self.label_encoder = None
 
     def to_string(self):
