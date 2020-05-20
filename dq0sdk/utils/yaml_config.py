@@ -36,6 +36,7 @@ class YamlConfig():
                  custom_objects=custom_objects):
         self.yaml_str = None
         self.yaml_path = yaml_path
+        self.custom_objects = custom_objects
         if yaml_dict is None:
             self.read_yaml_file()
         else:

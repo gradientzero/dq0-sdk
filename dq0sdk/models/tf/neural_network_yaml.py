@@ -54,19 +54,16 @@ class NeuralNetworkYaml(Model):
         try:
             self.graph_dict = self.yaml_dict['MODEL']['GRAPH']
             self.optimizer_dict = self.yaml_dict['MODEL']['OPTIMIZER']
-            self.dp_optimizer_dict = self.yaml_dict['MODEL']['DP_OPTIMIZER']
             self.loss_dict = self.yaml_dict['MODEL']['LOSS']
             self.metrics = self.yaml_dict['MODEL']['METRICS']
 
             self.epochs = self.yaml_dict['FIT']['epochs']
-            self.dp_epochs = self.yaml_dict['FIT_DP']['epochs']
         except Exception as e:
             logger.error('YAML config is missing key {}'.format(e))
             sys.exit(1)
 
         try:
             self.optimizer = optimizers[self.optimizer_dict['optimizer']](**self.optimizer_dict['kwargs'])
-            self.dp_optimizer = optimizers[self.dp_optimizer_dict['optimizer']](**self.dp_optimizer_dict['kwargs'])
             self.loss = losses[self.loss_dict['loss']](**self.loss_dict['kwargs'])
         except Exception as e:
             logger.error('optimizer or loss is not in managed list or specified in yaml {}'.format(e))
@@ -76,10 +73,6 @@ class NeuralNetworkYaml(Model):
             self.fit_kwargs = self.yaml_dict['FIT']['kwargs']
         except Exception:
             self.fit_kwargs = {}
-        try:
-            self.fit_dp_kwargs = self.yaml_dict['FIT_DP']['kwargs']
-        except Exception:
-            self.fit_dp_kwargs = {}
 
         self.X_train = None
         self.y_train = None
@@ -177,9 +170,6 @@ class NeuralNetworkYaml(Model):
 
         Returns:
             yhat: numerical matrix containing the predicted responses.
-
-        TODO:
-            add option to include class labels
         """
         return self.model.predict(x)
 
@@ -285,6 +275,6 @@ class NeuralNetworkYaml(Model):
             compile=True)
 
         if self.model.optimizer is None:
-            self.model.compile(optimizer=self.dp_optimizer,
+            self.model.compile(optimizer=self.optimizer,
                                loss=self.loss,
                                metrics=self.metrics)
