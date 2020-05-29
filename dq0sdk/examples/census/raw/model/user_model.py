@@ -393,7 +393,17 @@ class UserModel(NeuralNetworkClassification):
             tf.keras.layers.Dense(10, activation='tanh'),
             tf.keras.layers.Dense(2, activation='softmax')])
         self.optimizer = 'Adam'
-        self.learning_rate = 0.015
+        #
+        # self.learning_rate = 0.015  Outdated way to pass parameters!!
+        #
+        # To set optimizer params, self.optimizer = optimizer instance
+        # rather than string, with params values passed as input to the class
+        # constructor. E.g.:
+        #
+        #   import tensorflow
+        #   self.optimizer = tensorflow.keras.optimizers.Adam(
+        #       learning_rate=0.015)
+        #
         self.epochs = 10
         self.num_microbatches = 250
         self.verbose = 0
