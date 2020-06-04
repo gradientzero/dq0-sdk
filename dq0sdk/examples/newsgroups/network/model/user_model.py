@@ -40,9 +40,11 @@ class UserModel(NeuralNetworkClassification):
     def setup_model(self):
 
         self.optimizer = 'Adam'
-        self.learning_rate = 0.001  # 0.15
+        # As an alternative:
+        #   self.optimizer = tensorflow.keras.optimizers.Adam(
+        #   learning_rate=0.015)
 
-        self.epochs = 50  # 50 in ML-leaks paper
+        self.epochs = 50
         self.num_microbatches = 250
         self.verbose = 2
         self.metrics = ['accuracy']
@@ -57,6 +59,7 @@ class UserModel(NeuralNetworkClassification):
         }
 
         self.loss = tf.keras.losses.SparseCategoricalCrossentropy()
+        # As an alternative, define the loss function with a string
 
         print('Setting up a multilayer neural network...')
         self.model = self._get_mlnn_model()

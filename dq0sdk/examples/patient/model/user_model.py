@@ -93,9 +93,7 @@ class UserModel(NeuralNetworkRegression):
         """
         import tensorflow.compat.v1 as tf
 
-        self.optimizer = 'Adam'
-        self.learning_rate = 0.001
-
+        self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
         self.epochs = 10
         self.loss = tf.keras.losses.MeanSquaredError()
 

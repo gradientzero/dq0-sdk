@@ -87,8 +87,10 @@ class UserModel(NeuralNetworkClassification):
         Define the CNN model.
         """
 
-        self.learning_rate = 0.001
         self.optimizer = 'Adam'
+        # As an alternative:
+        #   self.optimizer = tensorflow.keras.optimizers.Adam(
+        #   learning_rate=0.001)
 
         self.epochs = 50
         self.num_microbatches = 250
@@ -105,6 +107,7 @@ class UserModel(NeuralNetworkClassification):
         }
 
         self.loss = tf.keras.losses.SparseCategoricalCrossentropy()
+        # As an alternative, define the loss function with a string
 
         print('Setting up a convolution neural network...')
         self.model = self._get_cnn_model()
