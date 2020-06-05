@@ -47,19 +47,7 @@ class NeuralNetwork(Model):
         when executed inside the DQ0 quarantine instance.
 
     Attributes:
-        model_type (:obj:`str`): type of this model instance. Options: 'keras'.
         model_path (:obj:`str`): path of model (save / load)
-        learning_rate (float): Learning rate for model fitting.
-        epochs (int): Number of epochs for model fitting.
-        num_microbatches (int): Number of microbatches in training.
-        verbose (int): Set greater than 0 to print output.
-        metrics (:obj:`list`): List of evaluation metrics.
-        model (:obj:`tf.Keras.Sequential`): the actual keras model.
-        X_train (:obj:`numpy.ndarray`): X training data
-        y_train (:obj:`numpy.ndarray`): y training data
-        X_test (:obj:`numpy.ndarray`, optional): X test data
-        y_test (:obj:`numpy.ndarray`, optional): y test data
-        input_dim (int): Number of input neurons.
     """
     def __init__(self, model_path):
         super().__init__(model_path)
@@ -70,56 +58,6 @@ class NeuralNetwork(Model):
         self.y_train = None
         self.y_test = None
 
-    def setup_data(self):
-        """Setup data function
-
-        This function can be used by child classes to prepare data or perform
-        other tasks that dont need to be repeated for every training run.
-        """
-
-        self.input_dim = None
-        pass
-
-    def setup_model(self):
-        """Setup model function
-
-        Implementing child classes can use this method to define the
-        Keras model.
-        """
-
-        self.optimizer = None
-
-        self.epochs = 10
-        self.num_microbatches = 250
-        self.verbose = 0
-        self.metrics = ['accuracy', 'mse']
-
-        self.model = tf.keras.Sequential([
-            tf.keras.layers.Input(self.input_dim),
-            tf.keras.layers.Dense(10, activation='tanh'),
-            tf.keras.layers.Dense(10, activation='tanh'),
-            tf.keras.layers.Dense(2, activation='softmax')]
-        )
-
-    def fit(self):
-        """Model fit function.
-        """
-        x = self.X_train
-        y = self.y_train
-        steps_per_epoch = self.X_train.shape[0] // self.num_microbatches
-        x = x[:steps_per_epoch * self.num_microbatches]
-        y = y[:steps_per_epoch * self.num_microbatches]
-
-        loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
-        self.model.compile(optimizer=self.optimizer,
-                           loss=loss,
-                           metrics=self.metrics)
-        self.model.fit(x,
-                       y,
-                       batch_size=self.num_microbatches,
-                       epochs=self.epochs,
-                       verbose=self.verbose)
-
     def predict(self, x):
         """Model predict function.
 
@@ -129,30 +67,6 @@ class NeuralNetwork(Model):
             yhat: numerical matrix containing the predicted responses.
         """
         return self.model.predict(x)
-
-    def evaluate(self, test_data=True, verbose=0):
-        """Model predict and evluate.
-
-        This method is final. Signature will be checked at runtime!
-
-        Args:
-            test_data (bool): False to use train data instead of test
-                Default is True.
-            verbose (int): Verbose level, Default is 0
-
-        Returns:
-            evaluation metrics
-        """
-        x = self.X_test if test_data else self.X_train
-        y = self.y_test if test_data else self.y_train
-        steps_per_epoch = x.shape[0] // self.num_microbatches
-        x = x[:steps_per_epoch * self.num_microbatches]
-        y = y[:steps_per_epoch * self.num_microbatches]
-        return self.model.evaluate(
-            x=x,
-            y=y,
-            batch_size=self.num_microbatches,
-            verbose=verbose)
 
     def save(self, name, version):
         """Saves the model.

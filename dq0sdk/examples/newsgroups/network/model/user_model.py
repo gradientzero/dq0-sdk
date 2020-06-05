@@ -45,9 +45,12 @@ class UserModel(NeuralNetworkClassification):
         #   learning_rate=0.015)
 
         self.epochs = 50
-        self.num_microbatches = 250
+        self.batch_size = 250
         self.verbose = 2
         self.metrics = ['accuracy']
+        self.loss = tf.keras.losses.SparseCategoricalCrossentropy()
+        # As an alternative, define the loss function with a string
+
         self.regularization_param = 1e-3
         self.regularizer_dict = {
             'kernel_regularizer': tf.keras.regularizers.l2(
@@ -57,10 +60,6 @@ class UserModel(NeuralNetworkClassification):
             # 'bias_regularizer': tf.keras.regularizers.l2(
             #    self.regularization_param)
         }
-
-        self.loss = tf.keras.losses.SparseCategoricalCrossentropy()
-        # As an alternative, define the loss function with a string
-
         print('Setting up a multilayer neural network...')
         self.model = self._get_mlnn_model()
 

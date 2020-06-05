@@ -49,7 +49,6 @@ class UserModel(NeuralNetworkRegression):
 
         self.input_dim = X.shape[1]
         self.batch_size = X.shape[0]
-        self.num_microbatches = self.batch_size
 
         X_train, X_test, y_train, y_test = train_test_split(X, y)
 
@@ -94,7 +93,10 @@ class UserModel(NeuralNetworkRegression):
         import tensorflow.compat.v1 as tf
 
         self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
+
         self.epochs = 10
+        self.batch_size = 250
+        self.verbose = 2
         self.loss = tf.keras.losses.MeanSquaredError()
 
         self.model = tf.keras.Sequential([
