@@ -6,24 +6,20 @@ All rights reserved
 """
 
 import logging
-import os
-import pickle
 
-from dq0sdk.data.utils import util
-from dq0sdk.models.model import Model
+from dq0sdk.models.bayes.naive_bayesian_model import NaiveBayesianModel
 
 import numpy as np
 
 import pandas as pd
 
-from sklearn import metrics
 from sklearn.naive_bayes import GaussianNB
 
 
 logger = logging.getLogger()
 
 
-class UserModel(Model):
+class UserModel(NaiveBayesianModel):
     """Naive Bayesian classifier for the "Adult Census Income" dataset
 
     SDK users instantiate this class to create and train the model.
@@ -33,11 +29,7 @@ class UserModel(Model):
     """
     def __init__(self, model_path):
         super().__init__(model_path)
-        self.model_type = 'bayes'
         self.label_encoder = None
-
-    def to_string(self):
-        print('\nModel type is: ', self.model_type)
 
     def setup_model(self):
         """Setup model function
@@ -226,102 +218,3 @@ class UserModel(Model):
         dataset[target_feature] = y_enc
 
         return dataset
-
-    def fit(self):
-        """Model fit function learning a model from training data
-        """
-        # Check for valid model setup
-        if not hasattr(self, 'X_train'):
-            raise ValueError('Missing argument in model: X_train')
-        if not hasattr(self, 'y_train'):
-            raise ValueError('Missing argument in model: y_train')
-
-        if isinstance(self.y_train, np.ndarray):
-            if self.y_train.ndim == 2:
-                # make 1-dimensional array
-                self.y_train = np.ravel(self.y_train)
-
-        print('\n\n-------------------- ' + self._classifier_type + ' '
-              'classifier learning ---------------------')
-        print('\nPercentage freq. of target labels in train dataset:')
-        util.estimate_freq_of_labels(self.y_train)
-
-        self.model.fit(self.X_train, self.y_train)
-        print('\nLearned a ' + self._classifier_type + ' model from',
-              self.X_train.shape[0], 'examples')
-
-    def evaluate(self, test_data=True, verbose=0):
-        """Model predict and evaluate.
-
-        Test learnt classifier over a test set
-        This method is final. Signature will be checked at runtime!
-
-        Args:
-            test_data (bool): False to use train data instead of test
-                Default is True.
-            verbose (int): Verbose level, Default is 0
-
-        Returns:
-            accuracy score over test set
-        """
-        X = self.X_test if test_data else self.X_train
-        y = self.y_test if test_data else self.y_train
-
-        data_type = 'test' if test_data else 'train'
-
-        print('\n\n----------------- Testing learnt classifier on ' + data_type + ''
-              ' data -----------------')
-
-        if isinstance(y, np.ndarray):
-            if y.ndim == 2:
-                # make 1-dimensional arrays
-                y = np.ravel(y)
-
-        y_pred_np_a = self.model.predict(X)
-
-        print(
-            '\nPercentage freq. of target labels in ' + data_type + ' dataset '
-            '(baseline for classification performance):')
-        util.estimate_freq_of_labels(y)
-
-        accuracy_score = metrics.accuracy_score(y, y_pred_np_a)
-        print('\nModel accuracy on ' + data_type + ' data:', round(
-            accuracy_score, 2))
-        print('\n', metrics.classification_report(y, y_pred_np_a))
-
-        return accuracy_score
-
-    def save(self, name, version):
-        """Saves the model.
-
-        Save the model in binary format on local storage.
-
-        Args:
-            name (str): The name of the model
-            version (int): The version of the model
-        """
-
-        file_path = '{}/{}/{}.pickle'.format(self.model_path, version, name)
-        # create target directory and all intermediate directories if not
-        # existing
-        file_path_dirs = os.path.dirname(file_path)
-        if not os.path.exists(file_path_dirs):
-            os.makedirs(file_path_dirs)
-
-        with open(file_path, 'wb') as f:
-            pickle.dump(self._classifier, f)
-
-    def load(self, name, version):
-        """Loads the model.
-
-        Load the model from local storage.
-
-        Args:
-            name (str): The name of the model
-            version (int): The version of the model
-        """
-
-        file_path = '{}/{}/{}.pickle'.format(self.model_path, version, name)
-
-        with open(file_path, 'rb') as file:
-            self._classifier = pickle.load(file)
