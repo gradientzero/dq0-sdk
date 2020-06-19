@@ -11,7 +11,7 @@ import os
 import dq0sdk
 from dq0sdk.examples.medical_insurance.model.user_model import UserModel
 
-from dq0.runtime.wrapper_for_sdk_demos import SdkDemo
+from dq0sdk.examples.wrapper_for_sdk_demos import SdkDemo
 
 if __name__ == '__main__':
 
