@@ -11,28 +11,7 @@ import os
 import dq0sdk
 from dq0sdk.examples.medical_insurance.model.user_model import UserModel
 
-from dq0.runtime.models.tf.neural_network_trainer_regression import \
-    NeuralNetworkTrainerRegression
-
-
-def print_evaluation_res(res, dataset_type, model_metrics):
-    """
-    Print the results of call of trainer.evaluate()
-
-    Args:
-        res (:obj:`dict`): Results returned by trainer.evaluate()
-        dataset_type (:obj:`str`): string with two possible values:
-        "training" or "test"
-        model_metrics (:obj:`list`): list of metrics specified in user model
-
-    """
-    if type(model_metrics) != list:
-        model_metrics = [model_metrics]
-
-    for metric in model_metrics:
-        print('\t' + metric.replace('_', ' ') + ' on ' + dataset_type
-              + ' set: %.2f %%' % (100 * res[metric]))
-
+from dq0.runtime.wrapper_for_sdk_demos import SdkDemo
 
 if __name__ == '__main__':
 
@@ -56,26 +35,9 @@ if __name__ == '__main__':
     # setup model
     model.setup_model()
 
-    # setup model trainer
-    disable_DP = False
-    if not disable_DP:
-        DP_SGD_params_dict = {
-            'l2_norm_clip': 1.0,
-            'noise_multiplier': 1.1,
-            'num_microbatches': 250
-        }
-    else:
-        DP_SGD_params_dict = None
-
-    trainer = NeuralNetworkTrainerRegression(
-        model, disable_DP, DP_SGD_params_dict
-    )
-
     # fit the model
-    trainer.fit()
+    sdk_demo = SdkDemo(model)
+    sdk_demo.fit_model()
 
-    print('\nModel performance:')
-    res_tr = trainer.evaluate(test_data=False)
-    print_evaluation_res(res_tr, 'training', model.metrics)
-    res_te = trainer.evaluate()
-    print_evaluation_res(res_te, 'test', model.metrics)
+    # evaluate the model
+    sdk_demo.evaluate_model()
