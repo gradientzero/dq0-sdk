@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Adult dataset example.
 
-Run script to test the exeuction locally.
+Run script to test the execution locally.
 
 Copyright 2020, Gradient Zero
 All rights reserved
