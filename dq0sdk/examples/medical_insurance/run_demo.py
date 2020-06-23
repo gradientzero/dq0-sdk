@@ -10,10 +10,14 @@ import os
 
 import dq0sdk
 from dq0sdk.examples.medical_insurance.model.user_model import UserModel
-
 from dq0sdk.examples.wrapper_for_sdk_demos import SdkDemo
+from dq0sdk.data.utils import util
+
 
 if __name__ == '__main__':
+
+    # set seed of random number generator to ensure reproducibility of results
+    util.initialize_rnd_numbers_generators_state(seed=1)
 
     # path to input
     path = './_data/datasets_13720_18513_insurance.csv'
