@@ -119,6 +119,7 @@ class NaiveBayesianModel(Model):
         self.y_test = None
         self.model = None
         self.model_path = None
+        self.data_source = None
 
         # model clone
         # new_model = self.__class__(model_path=None)
