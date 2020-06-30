@@ -22,8 +22,8 @@ import logging
 
 from dq0sdk.models.tf import NeuralNetworkRegression
 
-from sklearn.preprocessing import OneHotEncoder
 from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import OrdinalEncoder
 from sklearn.preprocessing import minmax_scale
 

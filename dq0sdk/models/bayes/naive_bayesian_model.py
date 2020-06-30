@@ -5,14 +5,14 @@ Copyright 2020, Gradient Zero
 All rights reserved
 """
 
+import copy
 import logging
 import os
 import pickle
-import copy
-import sklearn
-
 
 from dq0sdk.models.model import Model
+
+import sklearn
 
 
 logger = logging.getLogger()

@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+"""SDK Runtime helper
+
+Copyright 2020, Gradient Zero
+All rights reserved
+"""
 
 from dq0.runtime.runtime import Runtime
 
@@ -45,8 +51,8 @@ class SdkDemo:
         if model_metrics is None:
             # user_model is a Scikit model
             for metric in res.keys():
-                print('\t' + metric.replace('_', ' ') + ' on ' + dataset_type
-                      + ' set: %.2f %%' % (100 * res[metric]))
+                print('\t' + metric.replace('_', ' ') + ' on ' + dataset_type + ''
+                      ' set: %.2f %%' % (100 * res[metric]))
 
         else:
             # user_model is a Tensorflow model
@@ -54,8 +60,8 @@ class SdkDemo:
                 model_metrics = [model_metrics]
 
             for metric in model_metrics:
-                print('\t' + metric.replace('_', ' ') + ' on ' + dataset_type
-                      + ' set: %.2f %%' % (100 * res[fix_metric_names(metric)]))
+                print('\t' + metric.replace('_', ' ') + ' on ' + dataset_type + ''
+                      ' set: %.2f %%' % (100 * res[fix_metric_names(metric)]))
 
 
 def fix_metric_names(metric):

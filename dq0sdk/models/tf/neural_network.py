@@ -35,8 +35,9 @@ import copy
 
 from dq0sdk.models.model import Model
 
-import tensorflow.compat.v1 as tf
 import numpy as np
+
+import tensorflow.compat.v1 as tf
 
 
 class NeuralNetwork(Model):
