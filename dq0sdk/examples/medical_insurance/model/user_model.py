@@ -1,7 +1,19 @@
 # -*- coding: utf-8 -*-
-"""Neural network Model class for patient dataset:
+"""Neural network Model for the medical insurance dataset
 
-https://synthea.mitre.org/downloads
+https://github.com/stedy/Machine-Learning-with-R-datasets/blob/master/insurance.csv
+
+1338 examples of beneficiaries in the insurance plan.
+Task: predict total medical expenses charged to the plan based on six
+attributes of the beneficiary:
+    age
+    sex: gender, female / male
+    bmi: body mass index (kg / m ^ 2), ratio of person’s weight in kilograms
+         and height in meters squared. Ideally from 18.5 to 24.9
+    children: number of children covered by health insurance
+    smoker: yes / no
+    region: beneficiary's residential area in the US: northeast, southeast,
+    southwest, northwest.
 
 Copyright 2020, Gradient Zero
 """
@@ -10,11 +22,10 @@ import logging
 
 from dq0sdk.models.tf import NeuralNetworkRegression
 
-import pandas as pd
-
-from sklearn.preprocessing import LabelEncoder
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import OrdinalEncoder
 from sklearn.preprocessing import minmax_scale
-
 
 logger = logging.getLogger()
 
@@ -47,9 +58,6 @@ class UserModel(NeuralNetworkRegression):
         data = self.data_source.read()
         X, y = self._prepare_data(data)
 
-        self.input_dim = X.shape[1]
-        self.batch_size = X.shape[0]
-
         X_train, X_test, y_train, y_test = train_test_split(X, y)
 
         # set attributes
@@ -58,27 +66,21 @@ class UserModel(NeuralNetworkRegression):
         self.X_test = X_test
         self.y_test = y_test
 
-    def _prepare_data(self, data):
+    def _prepare_data(self, data_df):
         """Helper function to prepare the input data."""
-        le = LabelEncoder()
-        data['GENDER_NUM'] = le.fit_transform(data['GENDER'])
-        data['BIRTHPLACE_NUM'] = le.fit_transform(data['BIRTHPLACE'])
-        data['CITY_NUM'] = le.fit_transform(data['CITY'])
-        data['STATE_NUM'] = le.fit_transform(data['STATE'])
-        data['COUNTY_NUM'] = le.fit_transform(data['COUNTY'])
 
-        data['BIRTHDATE'] = [pd.Timestamp(ts) for ts in data['BIRTHDATE']]
-        data['BIRTHDATE_UNIX'] = data['BIRTHDATE'].astype(int) / 10**9
+        y = data_df['charges'].values
+        X_df = data_df.drop(labels=['charges'], axis=1)
 
-        target_col = 'BIRTHDATE_UNIX'
-        col_selecion = ['GENDER_NUM', 'BIRTHPLACE_NUM', 'CITY_NUM', 'STATE_NUM', 'COUNTY_NUM',
-                        'ZIP', 'LAT', 'LON', 'HEALTHCARE_EXPENSES', 'HEALTHCARE_COVERAGE']
-
-        X_df = data[col_selecion].fillna(0.)
-        y_df = data[target_col]
-
-        X = X_df.values
-        y = y_df.values
+        # apply different transformations to subsets of the columns
+        columnTransformer = ColumnTransformer(
+            transformers=[
+                ('one_hot_encoder', OneHotEncoder(), ['region']),
+                ('binary_encoder', OrdinalEncoder(), ['sex', 'smoker'])
+            ],
+            remainder='passthrough'
+        )
+        X = columnTransformer.fit_transform(X_df)
 
         X_scale = minmax_scale(X)
         y_scale = minmax_scale(y)
@@ -92,13 +94,13 @@ class UserModel(NeuralNetworkRegression):
         """
         import tensorflow.compat.v1 as tf
 
+        input_dim = self.X_train.shape[1]
         self.model = tf.keras.Sequential([
-            tf.keras.layers.Input(self.input_dim),
-            tf.keras.layers.Dense(1000, activation='tanh'),
-            tf.keras.layers.Dense(1000, activation='tanh'),
+            tf.keras.layers.Input(input_dim),
+            tf.keras.layers.Dense(3, activation='sigmoid'),
             tf.keras.layers.Dense(1, activation='linear')]
         )
-        self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
+        self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.01)
         # To set optimizer params, self.optimizer = optimizer instance
         # rather than string, with params values passed as input to the class
         # constructor. E.g.:
@@ -107,8 +109,9 @@ class UserModel(NeuralNetworkRegression):
         #   self.optimizer = tensorflow.keras.optimizers.Adam(
         #       learning_rate=0.015)
         #
-        self.epochs = 10
+        self.epochs = 20
         self.batch_size = 250
         self.verbose = 2
-        self.loss = tf.keras.losses.MeanSquaredError()
+        self.metrics = ['mean_absolute_error']
+        self.loss = tf.keras.losses.MeanAbsoluteError()
         # As an alternative, define the loss function with a string

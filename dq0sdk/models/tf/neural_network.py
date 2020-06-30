@@ -31,7 +31,11 @@ Copyright 2020, Gradient Zero
 All rights reserved
 """
 
+import copy
+
 from dq0sdk.models.model import Model
+
+import numpy as np
 
 import tensorflow.compat.v1 as tf
 
@@ -93,3 +97,64 @@ class NeuralNetwork(Model):
             '{}/{}/{}.h5'.format(
                 self.model_path, version, name),
             compile=False)
+
+    def get_clone(self, trained=False):
+        """
+        Generates a new model with the same parameters, if they are not fit on
+        the training data.
+
+        Generates a deep copy of the model without actually
+        copying any attached dataset. It yields a new model with the same
+        parameters that has not been fit on any data. Parameters fit to
+        the training data like, e.g., model weights, are re-initialized in the
+        clone.
+
+        Args:
+            trained: if `True`, maintains current state including trained model
+                weights, etc. Otherwise, returns an unfitted model with the same
+                initialization params.
+
+        Returns:
+            deep copy of model
+
+        """
+
+        # "clone_model" creates new layers (and thus new weights) for the clone
+        new_keras_model = tf.keras.models.clone_model(self.model)
+        if trained:
+            new_keras_model.set_weights(self.model.get_weights())
+
+        # check
+        all_close = all(
+            [np.allclose(self.model.get_weights()[lc],
+                         new_keras_model.get_weights()[lc]) for lc in range(
+                len(self.model.get_weights()))]
+        )
+        if trained:
+            assert all_close
+        else:
+            assert not all_close
+
+        # performance boosting: do not (deep) copy any data that will be
+        # discarded immediately after deep copying
+        tmp_storage = {'model': self.model, 'X_train': self.X_train,
+                       'y_train': self.y_train, 'X_test': self.X_test,
+                       'y_test': self.y_test, 'model_path': self.model_path}
+        self.X_train = None
+        self.X_test = None
+        self.y_train = None
+        self.y_test = None
+        self.model = None
+        self.model_path = None
+        self.data_source = None
+
+        # model clone
+        # new_model = self.__class__(model_path=None)
+        new_model = copy.deepcopy(self)
+        new_model.model = new_keras_model
+
+        # recover attributes temporarily removed for efficient deep copying
+        for key, value in tmp_storage.items():
+            self.__setattr__(key, value)
+
+        return new_model

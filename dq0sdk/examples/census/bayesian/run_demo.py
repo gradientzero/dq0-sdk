@@ -10,20 +10,22 @@ All rights reserved
 import os
 
 import dq0sdk
+from dq0sdk.data.utils import util
 from dq0sdk.examples.census.bayesian.model.user_model import UserModel
-
-import numpy as np
+from dq0sdk.examples.wrapper_for_sdk_demos import SdkDemo
 
 
 if __name__ == '__main__':
-    np.random.seed(seed=1)
 
-    # input path
+    # set seed of random number generator to ensure reproducibility of results
+    util.initialize_rnd_numbers_generators_state(seed=1)
+
+    # path to input
     path = '../_data/adult_with_rand_names.csv'
     filepath = os.path.join(os.path.dirname(
         os.path.abspath(__file__)), path)
 
-    # init data source
+    # init input data source
     data_source = dq0sdk.data.text.CSV(filepath)
 
     # create model
@@ -39,10 +41,8 @@ if __name__ == '__main__':
     model.setup_model()
 
     # fit the model
-    model.fit()
+    sdk_demo = SdkDemo(model)
+    sdk_demo.fit_model()
 
-    # evaluate
-    acc_tr = model.evaluate(test_data=False)
-    acc_te = model.evaluate()
-    print('Train Acc: %.2f %%' % (100 * acc_tr))
-    print('Test  Acc: %.2f %%' % (100 * acc_te))
+    # evaluate the model
+    sdk_demo.evaluate_model()

@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 """Adult dataset example.
 
-Run script to test the data preprocessing exeuction locally.
+Run script to test the execution locally.
 
 Copyright 2020, Gradient Zero
 All rights reserved
 """
-
 import os
 
 import dq0sdk
 from dq0sdk.data.utils import util
-from dq0sdk.examples.census.raw.model.user_model import UserModel
+from dq0sdk.examples.medical_insurance.model.user_model import UserModel
+from dq0sdk.examples.wrapper_for_sdk_demos import SdkDemo
+
 
 if __name__ == '__main__':
 
@@ -19,7 +20,7 @@ if __name__ == '__main__':
     util.initialize_rnd_numbers_generators_state(seed=1)
 
     # path to input
-    path = '../_data/adult_with_rand_names.csv'
+    path = './_data/datasets_13720_18513_insurance.csv'
     filepath = os.path.join(os.path.dirname(
         os.path.abspath(__file__)), path)
 
@@ -32,8 +33,15 @@ if __name__ == '__main__':
     # attach data source
     model.attach_data_source(data_source)
 
-    # execute preprocessing
-    dataset = model.preprocess()
+    # prepare data
+    model.setup_data()
 
-    # save the resulting dataset
-    dataset.to_csv('out.csv')
+    # setup model
+    model.setup_model()
+
+    # fit the model
+    sdk_demo = SdkDemo(model)
+    sdk_demo.fit_model()
+
+    # evaluate the model
+    sdk_demo.evaluate_model()

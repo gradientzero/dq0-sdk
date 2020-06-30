@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Adult dataset example.
 
-Run script to test the exeuction locally.
+Run script to test the execution locally.
 
 Copyright 2020, Gradient Zero
 All rights reserved
@@ -10,10 +10,16 @@ All rights reserved
 import os
 
 import dq0sdk
+from dq0sdk.data.utils import util
 from dq0sdk.examples.census.raw.model.user_model import UserModel
+from dq0sdk.examples.wrapper_for_sdk_demos import SdkDemo
 
 
 if __name__ == '__main__':
+
+    # set seed of random number generator to ensure reproducibility of results
+    util.initialize_rnd_numbers_generators_state(seed=1)
+
     # path to input
     path = '../_data/adult_with_rand_names.csv'
     filepath = os.path.join(os.path.dirname(
@@ -35,10 +41,8 @@ if __name__ == '__main__':
     model.setup_model()
 
     # fit the model
-    model.fit()
+    sdk_demo = SdkDemo(model)
+    sdk_demo.fit_model()
 
-    # evaluate
-    loss_tr, acc_tr, mse_te = model.evaluate(test_data=False)
-    loss_te, acc_te, mse_te = model.evaluate()
-    print('Train Acc: %.2f %%' % (100 * acc_tr))
-    print('Test  Acc: %.2f %%' % (100 * acc_te))
+    # evaluate the model
+    sdk_demo.evaluate_model()

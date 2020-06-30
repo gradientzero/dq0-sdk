@@ -99,6 +99,23 @@ class Model(ABC):
         """
         pass
 
+    @abstractmethod
+    def get_clone(self):
+        """
+        Generates a new model with the same parameters, if they are not fit on
+        the training data.
+
+        Generates a deep copy of the model without actually
+        copying any attached dataset. It yields a new model with the same
+        parameters that has not been fit on any data. Parameters fit to
+        the training data like, e.g., model weights, are re-initialized in the
+        clone.
+
+        Returns:
+            deep copy of model
+
+        """
+
     def preprocess(self):
         """Preprocess the data
 

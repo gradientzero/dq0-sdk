@@ -13,6 +13,8 @@ class NeuralNetworkClassification(NeuralNetwork):
     """
     def __init__(self, model_path):
         super().__init__(model_path)
+
+        # to instantiate the suitable model checker from dq0-core.dq0.util
         self.model_type = 'NeuralNetworkClassification'
 
     def to_string(self):
