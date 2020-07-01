@@ -390,8 +390,12 @@ def estimate_freq_of_labels(y):
     else:
         assert isinstance(y, np.ndarray)
         # print(pd.Series(y).value_counts(normalize=True) * 100)
-        print('Value     percentage freq.')
-        pretty_print_dict(get_percentage_freq_of_values(y))
+
+        # print('Label     percentage freq.')
+        # pretty_print_dict(get_percentage_freq_of_values(y))
+
+        for key, value in get_percentage_freq_of_values(y).items():
+            print('  label "' + str(key) + '": %.1f%%' % value)
 
 
 def compute_features_bounds(X):
@@ -682,3 +686,54 @@ def manage_rnd_num_generators_state(action):
         else:
             raise RuntimeError('cannot restore rnd numbers generators state! '
                                'No state previously saved! ')
+
+
+def print_evaluation_res(res, dataset_type, model_metrics=None):
+    """
+    Print the results of call of trainer.evaluate()
+
+    Args:
+        res (:obj:`dict`): Results returned by trainer.evaluate()
+        dataset_type (:obj:`str`): string with two possible values:
+        "training" or "test"
+        model_metrics (:obj:`list`): list of metrics specified in user model
+
+    """
+
+    if model_metrics is None:
+        # user_model is a Scikit model
+        for metric in res.keys():
+            print('Model ' + metric.replace('_', ' ') + ' on ' +
+                  dataset_type + ' set: %.1f%%' % (100 * res[metric]))
+
+    else:
+        # user_model is a Tensorflow model
+        if type(model_metrics) != list:
+            model_metrics = [model_metrics]
+
+        for metric in model_metrics:
+            print('Model ' + metric.replace('_', ' ') + ' on ' +
+                  dataset_type + ' set: %.1f%%' % (
+                          100 * res[_fix_metric_names(metric)])
+                  )
+
+
+def _fix_metric_names(metric):
+    """
+    In Tensorflow there is a mismatch between the metric names that a user can
+    specify and the metric names used internally.
+
+    Args:
+            metric (:obj:`str`): name given by user
+
+    Returns:
+        Metric name used internally by Tensorflow corresponding to the
+        metric name specified by the user
+    """
+
+    if metric.lower() == 'accuracy':
+        metric = 'acc'
+    elif metric.lower() == 'mse':
+        metric = 'mean_squared_error'
+
+    return metric

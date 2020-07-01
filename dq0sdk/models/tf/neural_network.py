@@ -32,12 +32,17 @@ All rights reserved
 """
 
 import copy
+import logging
 
 from dq0sdk.models.model import Model
+from dq0sdk.data.utils import util
 
 import numpy as np
 
 import tensorflow.compat.v1 as tf
+
+
+logger = logging.getLogger()
 
 
 class NeuralNetwork(Model):
@@ -56,11 +61,19 @@ class NeuralNetwork(Model):
     def __init__(self, model_path):
         super().__init__(model_path)
 
+        # child classes must set following attributes
         self.model = None
         self.X_train = None
         self.X_test = None
         self.y_train = None
         self.y_test = None
+
+        self.optimizer = None
+        self.loss = None
+        self.metrics = None
+        self.batch_size = None
+        self.epochs = None
+        self.verbose = None
 
     def predict(self, x):
         """Model predict function.
@@ -158,3 +171,119 @@ class NeuralNetwork(Model):
             self.__setattr__(key, value)
 
         return new_model
+
+    def fit(self):
+        """
+        Model fit function learning a model from training data
+        """
+        if self.model is None:
+            logger.fatal('No TensorFlow model provided!')
+
+        self.X_train, self.y_train = \
+            fix_limitation_of_Keras_fit_and_predict_functions(
+                self.X_train, self.y_train, self.batch_size
+            )
+
+        self.model.compile(optimizer=self.optimizer,
+                           loss=self.loss,
+                           metrics=self.metrics)
+
+        self.model.fit(self.X_train,
+                       self.y_train,
+                       epochs=self.epochs,
+                       verbose=self.verbose,
+                       batch_size=self.batch_size)
+
+        if hasattr(self, '_classifier_type'):
+            partial_str = ' ' + self._classifier_type
+        else:
+            partial_str = ''
+        print('\nLearned a' + partial_str + ' model from',
+              self.X_train.shape[0], 'examples.')
+
+    def evaluate(self, test_data=True, verbose=0):
+        """Model evaluate implementation.
+
+        Args:
+            test_data (bool): False to use train data instead of test
+                Default is True.
+            verbose (int): Verbose level, Default is 0
+        """
+
+        if self.model is None:
+            logger.fatal('No  TensorFlow model provided!')
+
+        # Check for valid model setup
+        if not test_data and not hasattr(self, 'X_train'):
+            logger.fatal('Missing argument in model: X_train')
+            return
+        if not test_data and not hasattr(self, 'y_train'):
+            logger.fatal('Missing argument in model: y_train')
+            return
+        if test_data and not hasattr(self, 'X_test'):
+            logger.fatal('Missing argument in model: X_test')
+            return
+        if test_data and not hasattr(self, 'y_test'):
+            logger.fatal('Missing argument in model: y_test')
+            return
+        if not hasattr(self, 'batch_size'):
+            logger.fatal('Missing argument in model: batch_size')
+            return
+
+        X = self.X_test if test_data else self.X_train
+        y = self.y_test if test_data else self.y_train
+
+        # If all the data to be predicted do not fit in the CPU/GPU RAM at
+        # the same time, predictions are done in batches.
+        X, y = fix_limitation_of_Keras_fit_and_predict_functions(
+            X, y, self.batch_size
+        )
+
+        result = self.model.evaluate(x=X,
+                                     y=y,
+                                     batch_size=self.batch_size,
+                                     verbose=verbose)
+
+        util.print_evaluation_res(
+            dict(zip(self.model.metrics_names, result)),
+            'test' if test_data else 'training',
+            model_metrics=self.metrics
+        )
+
+        return dict(zip(self.model.metrics_names, result))
+
+
+def fix_limitation_of_Keras_fit_and_predict_functions(X, y, batch_size):
+    """
+    Fix limitation of Keras "fit", "predict" and "evaluate" functions.
+
+    Limitation of Keras "fit" function: size of training dataset (
+    i.e., number of training samples) must be divisible by the minibatch
+    size ("batch_size" parameter).
+
+    This function removes above limitation by making training robust for
+    any number of minibatches.
+
+    The same limitation holds for Keras "evaluate" and "predict" functions,
+    too. In the case of "evaluate" and "predict", if all the data to be
+    predicted do not fit in the CPU/GPU RAM at the same time, predictions
+    are done in batches.
+    Args:
+        X: data matrix
+        y: learning signal
+        batch_size: batch size set in user model
+
+    Returns:
+        X, y
+    """
+
+    tr_dataset_size = X.shape[0]
+    # floor division
+    num_minibatches = tr_dataset_size // batch_size
+    if num_minibatches <= 0:
+        num_minibatches = 1
+
+    X = X[:num_minibatches * batch_size]
+    y = y[:num_minibatches * batch_size]
+
+    return X, y
