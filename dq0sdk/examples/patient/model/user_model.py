@@ -109,6 +109,5 @@ class UserModel(NeuralNetworkRegression):
         #
         self.epochs = 10
         self.batch_size = 250
-        self.verbose = 2
         self.loss = tf.keras.losses.MeanSquaredError()
         # As an alternative, define the loss function with a string

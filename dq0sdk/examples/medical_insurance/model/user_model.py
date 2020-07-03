@@ -111,7 +111,6 @@ class UserModel(NeuralNetworkRegression):
         #
         self.epochs = 20
         self.batch_size = 250
-        self.verbose = 2
         self.metrics = ['mean_absolute_error']
         self.loss = tf.keras.losses.MeanAbsoluteError()
         # As an alternative, define the loss function with a string

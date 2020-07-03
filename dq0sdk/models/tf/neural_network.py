@@ -73,7 +73,6 @@ class NeuralNetwork(Model):
         self.metrics = None
         self.batch_size = None
         self.epochs = None
-        self.verbose = None
 
     def predict(self, x):
         """Model predict function.
@@ -172,7 +171,7 @@ class NeuralNetwork(Model):
 
         return new_model
 
-    def fit(self):
+    def fit(self, verbose=0):
         """
         Model fit function learning a model from training data
         """
@@ -191,7 +190,7 @@ class NeuralNetwork(Model):
         self.model.fit(self.X_train,
                        self.y_train,
                        epochs=self.epochs,
-                       verbose=self.verbose,
+                       verbose=verbose,
                        batch_size=self.batch_size)
 
         if hasattr(self, '_classifier_type'):

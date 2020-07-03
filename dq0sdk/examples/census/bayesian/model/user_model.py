@@ -14,7 +14,7 @@ import numpy as np
 import pandas as pd
 
 from sklearn.naive_bayes import GaussianNB
-
+from tensorflow.keras import metrics
 
 logger = logging.getLogger()
 
@@ -40,7 +40,10 @@ class UserModel(NaiveBayesianModel):
         # printings
 
         self.model = GaussianNB()
-        print('Setting up a ' + self._classifier_type + ' classifier...')
+
+        self.metrics = ['accuracy', metrics.Precision()]
+
+        print('Set up a ' + self._classifier_type + ' classifier.')
 
     def setup_data(self):
         """Setup data function

@@ -39,6 +39,8 @@ class NaiveBayesianModel(Model):
         self.y_train = None
         self.y_test = None
 
+        self.metrics = None
+
     def to_string(self):
         print('\nModel type is: ', self.model_type)
 
@@ -90,8 +92,8 @@ class NaiveBayesianModel(Model):
 
         Args:
             trained: if `True`, maintains current state including trained model
-                weights, etc. Otherwise, returns an unfitted model with the same
-                initialization params.
+                weights, etc. Otherwise, returns an unfitted model with the
+                same initialization params.
 
         Returns:
             deep copy of model
@@ -177,7 +179,6 @@ class NaiveBayesianModel(Model):
         Args:
             test_data (bool): False to use train data instead of test
                 Default is True.
-            verbose (int): Verbose level, Default is 0
         """
         if self.model is None:
             logger.fatal('No Scikit-learn model provided!')
@@ -205,11 +206,21 @@ class NaiveBayesianModel(Model):
                 y = np.ravel(y)
 
         y_pred_np_a = self.model.predict(X)
-        accuracy = sklearn.metrics.accuracy_score(y, y_pred_np_a)
 
+        # accuracy = sklearn.metrics.accuracy_score(y, y_pred_np_a)
+        #
+        # evaluation_res = {'accuracy': accuracy}
+        # util.print_evaluation_res(
+        #     evaluation_res,
+        #     'test' if test_data else 'training'
+        # )
+
+        self.metrics = util.instantiate_metrics_from_name(self.metrics)
+        evaluation_res = util.compute_metrics_scores(y, y_pred_np_a,
+                                                     self.metrics)
         util.print_evaluation_res(
-            {'accuracy': accuracy},
+            evaluation_res,
             'test' if test_data else 'training'
         )
 
-        return {'accuracy': accuracy}
+        return evaluation_res

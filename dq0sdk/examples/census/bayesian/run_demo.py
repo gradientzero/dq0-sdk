@@ -13,6 +13,10 @@ import dq0sdk
 from dq0sdk.data.utils import util
 from dq0sdk.examples.census.bayesian.model.user_model import UserModel
 
+import tensorflow as tf
+# At program startup, activate eager execution in order to call
+# "tensor.numpy()" with Tf 1.0
+tf.enable_eager_execution()
 
 if __name__ == '__main__':
 

@@ -10,6 +10,7 @@ import pickle
 import random
 import shutil
 import sys
+import inspect
 
 import numpy as np
 
@@ -714,7 +715,7 @@ def print_evaluation_res(res, dataset_type, model_metrics=None):
         for metric in model_metrics:
             print('Model ' + metric.replace('_', ' ') + ' on ' +
                   dataset_type + ' set: %.1f%%' % (
-                          100 * res[_fix_metric_names(metric)])
+                      100 * res[_fix_metric_names(metric)])
                   )
 
 
@@ -737,3 +738,102 @@ def _fix_metric_names(metric):
         metric = 'mean_squared_error'
 
     return metric
+
+
+def instantiate_metrics_from_name(metrics_list):
+    """
+    Instantiate a metric class from tensorflow.keras.metrics
+
+    Iterate through metrics_list and replace each string (each string contains
+    a metric name) with an instance of the corresponding metric class.
+
+    Args:
+        metrics_list: list of metrics defined by user. It may contain
+            objects of metric classes or strings with metric names.
+
+    Returns:
+        modified metrics_list
+
+    """
+
+    # get every class defined in the tensorflow.keras.metrics module
+    keras_metric_classes_l = [m[1] for m in inspect.getmembers(
+        tf.keras.metrics, inspect.isclass)]
+    # print(keras_metric_classes_l)
+
+    for pos, metric in enumerate(metrics_list):
+        if type(metric) == str:
+            found = False
+            for km_class in keras_metric_classes_l:
+                if case_insensitive_str_comparison(km_class.__name__, metric):
+                    found = True
+                    metrics_list[pos] = km_class()
+                    break
+
+            if not found:
+                raise RuntimeWarning('Metric ' + metric + ' ignored since ' +
+                                     'it is not a valid Keras metric')
+
+    return metrics_list
+
+
+def compute_metrics_scores(y, y_pred_np_a, metrics_list):
+    """
+    Iterate through metrics_list and compute each metric in the list. Each
+    list item is expected to be an instance of a tensorflow.keras.metrics
+    class. So this function call must be preceded by the call to function
+    instantiate_metrics_from_name must.
+
+    Args:
+        y: vector with actual classification labels or regression scores
+        y_pred_np_a: vector with predicted classification labels or regression
+            scores
+        metrics_list: list of instances of metric classes
+    Returns:
+        dictionary with (metric name, metric score) pairs
+    """
+
+    res = {}
+    for metric in metrics_list:
+        _ = metric.update_state(y, y_pred_np_a)
+        # metric_name = metric.name if metric.name is not None \
+        #    else metric.__class__.__name__
+        metric_name = metric.__class__.__name__.lower()
+
+        # convert tensor to array and update dict
+        res.update({metric_name: metric.result().numpy()})
+        metric.reset_states()
+
+    return res
+
+
+def copy_obj_attributes(obj_from, obj_to, attributes_l=None):
+    """
+    Copy attributes of class instance (object) "obj_from" to class instance
+    (object) "obj_to". The two objects are assumed to be instances of the
+    same class.
+
+    Args:
+        obj_from: class instance (object) to copy from
+        obj_to: class instance (object) to copy to
+        attributes_l: list of attributes to be copied. If none, a
+        blind copy is performed, where all attributes of obj_from are copied
+        to obj_to.
+
+    Returns:
+        obj_to
+    """
+
+    assert isinstance(obj_from, obj_to.__class__)
+
+    if attributes_l is None:
+        # blind copy: copy all attributes of obj_from
+        obj_to.__dict__.update(obj_from.__dict__)
+    else:
+        # copy selected attributes only
+        for attr in attributes_l:
+            if hasattr(obj_from, attr):
+                value = getattr(obj_from, attr)
+                setattr(obj_to, attr, value)
+
+    return obj_to
