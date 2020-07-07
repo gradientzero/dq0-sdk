@@ -67,7 +67,7 @@ class Runner(ABC):
         """
         pass
 
-    def _get_state(self, route, id):
+    def _get_state(self, route, uuid):
         """Gets the current state of the running model or data experiment.
 
         Helper function called by both DataRunner.get_state() and
@@ -75,12 +75,12 @@ class Runner(ABC):
 
         Args:
             route (:obj:`str`): The API route for either data or model state
-            id (int): The ID of the project or data source for the API call
+            uuid (int): The UUID of the project or data source for the API call
 
         Returns:
             The state in JSON format
         """
-        response = self.project.client.get(route, id=id)
+        response = self.project.client.get(route, uuid=uuid)
         checkSDKResponse(response)
         self.state.update(response)
         return self.state.results
@@ -101,7 +101,7 @@ class Runner(ABC):
         """Cancels the experiment run"""
         pass
 
-    def _cancel(self, route, id):
+    def _cancel(self, route, uuid):
         """Cancels the experiment run. Model or data.
 
         Args:
@@ -109,7 +109,7 @@ class Runner(ABC):
                 interrupted. Default is false where the job gracefully
                 gets signalled to halt.
         """
-        response = self.project.client.post(route, id=id)
+        response = self.project.client.post(route, uuid=uuid)
         checkSDKResponse(response)
         print(response['message'])
 

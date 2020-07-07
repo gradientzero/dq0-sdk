@@ -86,7 +86,7 @@ class Experiment:
         response = self.project._deploy()
         checkSDKResponse(response)
 
-        response = self.project.client.post(routes.model.train, id=self.project.model_uuid)
+        response = self.project.client.post(routes.model.train, uuid=self.project.project_uuid)
         checkSDKResponse(response)
         print(response['message'])
         return ModelRunner(self.project)
