@@ -11,6 +11,9 @@ import os
 import pickle
 
 from dq0sdk.models.model import Model
+from dq0sdk.data.utils import util
+
+import numpy as np
 
 import sklearn
 
@@ -35,6 +38,8 @@ class NaiveBayesianModel(Model):
         self.X_test = None
         self.y_train = None
         self.y_test = None
+
+        self.metrics = None
 
     def to_string(self):
         print('\nModel type is: ', self.model_type)
@@ -87,8 +92,8 @@ class NaiveBayesianModel(Model):
 
         Args:
             trained: if `True`, maintains current state including trained model
-                weights, etc. Otherwise, returns an unfitted model with the same
-                initialization params.
+                weights, etc. Otherwise, returns an unfitted model with the
+                same initialization params.
 
         Returns:
             deep copy of model
@@ -131,3 +136,91 @@ class NaiveBayesianModel(Model):
             self.__setattr__(key, value)
 
         return new_model
+
+    def fit(self):
+        """
+        Model fit function learning a model from training data
+        """
+
+        if self.model is None:
+            logger.fatal('No Scikit-learn model provided!')
+
+        # Check for valid model setup
+        if not hasattr(self, 'X_train'):
+            raise ValueError('Missing argument in model: X_train')
+        if not hasattr(self, 'y_train'):
+            raise ValueError('Missing argument in model: y_train')
+
+        if isinstance(self.y_train, np.ndarray):
+            if self.y_train.ndim == 2:
+                # make 1-dimensional array
+                self.y_train = np.ravel(self.y_train)
+
+        if hasattr(self, '_classifier_type'):
+            print('\n' + self._classifier_type + ' classifier learning...')
+        else:
+            print('\nClassifier learning...')
+
+        print('\nPercentage frequency of target labels in the training '
+              'dataset:')
+        util.estimate_freq_of_labels(self.y_train)
+
+        self.model.fit(self.X_train, self.y_train)
+        if hasattr(self, '_classifier_type'):
+            partial_str = ' ' + self._classifier_type
+        else:
+            partial_str = ''
+        print('\nLearned a' + partial_str + ' model from',
+              self.X_train.shape[0], 'examples.')
+
+    def evaluate(self, test_data=True):
+        """Model evaluate implementation.
+
+        Args:
+            test_data (bool): False to use train data instead of test
+                Default is True.
+        """
+        if self.model is None:
+            logger.fatal('No Scikit-learn model provided!')
+
+        # Check for valid model setup
+        if not test_data and not hasattr(self, 'X_train'):
+            logger.fatal('Missing argument in model: X_train')
+            return
+        if not test_data and not hasattr(self, 'y_train'):
+            logger.fatal('Missing argument in model: y_train')
+            return
+        if test_data and not hasattr(self, 'X_test'):
+            logger.fatal('Missing argument in model: X_test')
+            return
+        if test_data and not hasattr(self, 'y_test'):
+            logger.fatal('Missing argument in model: y_test')
+            return
+
+        X = self.X_test if test_data else self.X_train
+        y = self.y_test if test_data else self.y_train
+
+        if isinstance(y, np.ndarray):
+            if y.ndim == 2:
+                # Make 1-dimensional arrays
+                y = np.ravel(y)
+
+        y_pred_np_a = self.model.predict(X)
+
+        # accuracy = sklearn.metrics.accuracy_score(y, y_pred_np_a)
+        #
+        # evaluation_res = {'accuracy': accuracy}
+        # util.print_evaluation_res(
+        #     evaluation_res,
+        #     'test' if test_data else 'training'
+        # )
+
+        self.metrics = util.instantiate_metrics_from_name(self.metrics)
+        evaluation_res = util.compute_metrics_scores(y, y_pred_np_a,
+                                                     self.metrics)
+        util.print_evaluation_res(
+            evaluation_res,
+            'test' if test_data else 'training'
+        )
+
+        return evaluation_res

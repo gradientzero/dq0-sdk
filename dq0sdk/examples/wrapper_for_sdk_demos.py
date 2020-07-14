@@ -6,6 +6,7 @@ All rights reserved
 """
 
 from dq0.runtime.runtime import Runtime
+from dq0sdk.data.utils import util
 
 
 class SdkDemo:
@@ -29,57 +30,50 @@ class SdkDemo:
         self.trainer.fit()
 
     def evaluate_model(self):
-        print('\nModel performance:')
-        res_tr = self.trainer.evaluate(test_data=False)
-        SdkDemo._print_evaluation_res(res_tr, 'training', self.model_metrics)
+        # print('\nModel performance:')
         res_te = self.trainer.evaluate()
-        SdkDemo._print_evaluation_res(res_te, 'test', self.model_metrics)
+        util.print_evaluation_res(res_te, 'test', self.model_metrics)
 
-    @staticmethod
-    def _print_evaluation_res(res, dataset_type, model_metrics):
-        """
-        Print the results of call of trainer.evaluate()
-
-        Args:
-            res (:obj:`dict`): Results returned by trainer.evaluate()
-            dataset_type (:obj:`str`): string with two possible values:
-            "training" or "test"
-            model_metrics (:obj:`list`): list of metrics specified in user model
-
-        """
-
-        if model_metrics is None:
-            # user_model is a Scikit model
-            for metric in res.keys():
-                print('\t' + metric.replace('_', ' ') + ' on ' + dataset_type + ''
-                      ' set: %.2f %%' % (100 * res[metric]))
-
-        else:
-            # user_model is a Tensorflow model
-            if type(model_metrics) != list:
-                model_metrics = [model_metrics]
-
-            for metric in model_metrics:
-                print('\t' + metric.replace('_', ' ') + ' on ' + dataset_type + ''
-                      ' set: %.2f %%' % (100 * res[fix_metric_names(metric)]))
+        res_tr = self.trainer.evaluate(test_data=False)
+        util.print_evaluation_res(res_tr, 'training', self.model_metrics)
 
 
-def fix_metric_names(metric):
-    """
-    In Tensorflow there is a mismatch between the metric names that a user can
-    specify and the metric names used internally.
+if __name__ == '__main__':
+    #
+    # Example of SdkDemo class usage
+    #
 
-    Args:
-            metric (:obj:`str`): name given by user
+    import os
 
-    Returns:
-        Metric name used internally by Tensorflow corresponding to the
-        metric name specified by the user
-    """
+    import dq0sdk
+    from dq0sdk.examples.census.raw.model.user_model import UserModel
 
-    if metric.lower() == 'accuracy':
-        metric = 'acc'
-    elif metric.lower() == 'mse':
-        metric = 'mean_squared_error'
+    # set seed of random number generator to ensure reproducibility of results
+    util.initialize_rnd_numbers_generators_state(seed=1)
 
-    return metric
+    # path to input
+    path = './census/_data/adult_with_rand_names.csv'
+    filepath = os.path.join(os.path.dirname(
+        os.path.abspath(__file__)), path)
+
+    # init input data source
+    data_source = dq0sdk.data.text.CSV(filepath)
+
+    # create model
+    model = UserModel('notebooks/saved_model/')
+
+    # attach data source
+    model.attach_data_source(data_source)
+
+    # prepare data
+    model.setup_data()
+
+    # setup model
+    model.setup_model()
+
+    # fit the model
+    sdk_demo = SdkDemo(model)
+    sdk_demo.fit_model()
+
+    # evaluate the model
+    sdk_demo.evaluate_model()

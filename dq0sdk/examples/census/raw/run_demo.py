@@ -12,13 +12,14 @@ import os
 import dq0sdk
 from dq0sdk.data.utils import util
 from dq0sdk.examples.census.raw.model.user_model import UserModel
-from dq0sdk.examples.wrapper_for_sdk_demos import SdkDemo
 
 
 if __name__ == '__main__':
 
+    print('\nRunning demo for the "Census" dataset\n')
+
     # set seed of random number generator to ensure reproducibility of results
-    util.initialize_rnd_numbers_generators_state(seed=1)
+    util.initialize_rnd_numbers_generators_state()
 
     # path to input
     path = '../_data/adult_with_rand_names.csv'
@@ -41,8 +42,10 @@ if __name__ == '__main__':
     model.setup_model()
 
     # fit the model
-    sdk_demo = SdkDemo(model)
-    sdk_demo.fit_model()
+    model.fit()
 
     # evaluate the model
-    sdk_demo.evaluate_model()
+    model.evaluate()
+    model.evaluate(test_data=False)
+
+    print('\nDemo run successfully!\n')

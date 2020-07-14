@@ -44,7 +44,9 @@ class UserModel(NaiveBayesianModel):
         # set smoothing prior
         self.model.set_params(alpha=.01)
 
-        print('Setting up a ' + self._classifier_type + ' classifier...')
+        self.metrics = ['accuracy']
+
+        print('Set up a ' + self._classifier_type + ' classifier.')
 
     def setup_data(self):
         """Setup data function
