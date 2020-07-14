@@ -34,8 +34,8 @@ All rights reserved
 import copy
 import logging
 
-from dq0sdk.models.model import Model
 from dq0sdk.data.utils import util
+from dq0sdk.models.model import Model
 
 import numpy as np
 

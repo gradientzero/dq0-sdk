@@ -5,12 +5,12 @@ Copyright 2020, Gradient Zero
 All rights reserved
 """
 
+import inspect
 import os
 import pickle
 import random
 import shutil
 import sys
-import inspect
 
 import numpy as np
 
@@ -704,8 +704,8 @@ def print_evaluation_res(res, dataset_type, model_metrics=None):
     if model_metrics is None:
         # user_model is a Scikit model
         for metric in res.keys():
-            print('Model ' + metric.replace('_', ' ') + ' on ' +
-                  dataset_type + ' set: %.1f%%' % (100 * res[metric]))
+            print('Model ' + metric.replace('_', ' ') + ' on '
+                  '' + dataset_type + ' set: %.1f%%' % (100 * res[metric]))
 
     else:
         # user_model is a Tensorflow model
@@ -713,8 +713,8 @@ def print_evaluation_res(res, dataset_type, model_metrics=None):
             model_metrics = [model_metrics]
 
         for metric in model_metrics:
-            print('Model ' + metric.replace('_', ' ') + ' on ' +
-                  dataset_type + ' set: %.1f%%' % (
+            print('Model ' + metric.replace('_', ' ') + ' on '
+                  '' + dataset_type + ' set: %.1f%%' % (
                       100 * res[_fix_metric_names(metric)])
                   )
 
@@ -771,7 +771,7 @@ def instantiate_metrics_from_name(metrics_list):
                     break
 
             if not found:
-                raise RuntimeWarning('Metric ' + metric + ' ignored since ' +
+                raise RuntimeWarning('Metric ' + metric + ' ignored since '
                                      'it is not a valid Keras metric')
 
     return metrics_list

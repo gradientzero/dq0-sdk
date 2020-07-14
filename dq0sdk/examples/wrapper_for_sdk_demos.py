@@ -6,6 +6,7 @@ All rights reserved
 """
 
 from dq0.runtime.runtime import Runtime
+
 from dq0sdk.data.utils import util
 
 

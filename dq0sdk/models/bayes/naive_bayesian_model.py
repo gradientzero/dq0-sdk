@@ -10,8 +10,8 @@ import logging
 import os
 import pickle
 
-from dq0sdk.models.model import Model
 from dq0sdk.data.utils import util
+from dq0sdk.models.model import Model
 
 import numpy as np
 
