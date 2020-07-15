@@ -14,6 +14,14 @@ And install dependencies
 pip install -r requirements.txt
 ```
 
+## Run tests
+
+Use pytest for testings dq0sdk completely:
+```bash
+pytest
+```
+
+
 ## Generate sphinx documentation
 
 Generate modules .rst files first automatically:
