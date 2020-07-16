@@ -16,7 +16,7 @@ pip install -r requirements-dev.txt
 
 ## Run tests
 
-Use pytest for testings dq0sdk completely:
+Use pytest for testings dq0-sdk completely:
 ```bash
 pytest
 ```
@@ -26,7 +26,7 @@ pytest
 
 Generate modules .rst files first automatically:
 ```bash
-sphinx-apidoc -M -o ./docs/source/generated ./dq0sdk -f -e
+sphinx-apidoc -M -o ./docs/source ./dq0 -f -e --implicit-namespaces
 ```
 This will (re-)generate multiple .rst file for each module / submodule and class.
 

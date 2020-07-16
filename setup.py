@@ -6,13 +6,13 @@ All rights reserved
 """
 
 import os
-from setuptools import find_packages, setup
+from setuptools import find_packages, find_namespace_packages, setup
 from setuptools_cythonize import get_cmdclass
 
 
 # meta information
 VERSION = '1.1.0'
-NAME = 'dq0sdk'
+NAME = 'dq0-sdk'
 DESCRIPTION = 'DQ0 SDK Runtime'
 
 # Get the long description from the README file
@@ -31,7 +31,7 @@ SETUP_REQUIRES = [
     'flake8-import-order~=0.18.1',
 ]
 
-PACKAGES = find_packages()
+PACKAGES = find_namespace_packages(include=['dq0.*']) #find_packages()
 
 # Requirements
 INSTALL_REQUIRES = []
