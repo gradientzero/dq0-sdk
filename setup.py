@@ -11,7 +11,13 @@ from setuptools_cythonize import get_cmdclass
 
 
 # meta information
-VERSION = '1.1.0'
+VERSION = '1.0.0'
+try:
+    import dq0.sdk
+    VERSION = dq0.sdk.version
+except ImportError:
+    pass
+
 NAME = 'dq0-sdk'
 DESCRIPTION = 'DQ0 SDK Runtime'
 
