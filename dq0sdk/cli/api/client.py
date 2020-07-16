@@ -62,7 +62,7 @@ class Client:
         if verbose:
             print('New connection string: {}'.format(self.api))
 
-    def get(self, route, id=None, data=None):
+    def get(self, route, uuid=None, data=None):
         """Make an HTTP GET request.
 
         Calles the DQ0 CLI API with a GET request on the given route.
@@ -72,19 +72,19 @@ class Client:
 
         Args:
             route (:obj:`str`): The API route to request.
-            id (:obj:`str`): If set this value will replace route's ':id' placeholder
+            uuid (:obj:`str`): If set this value will replace route's ':uuid' placeholder
             data (optional, dict): GET data to pass.
 
         Returns:
             The HTTP response in JSON format
         """
-        if id is not None:
-            route = route.replace(':id', id)
+        if uuid is not None:
+            route = route.replace(':uuid', uuid)
         response = requests.get('{}{}'.format(self.api, route), data=data)
         response_json = self._parse_response(response)
         return response_json
 
-    def post(self, route, id=None, data=None):
+    def post(self, route, uuid=None, data=None):
         """Make an HTTP POST request.
 
         Calles the DQ0 CLI API with a POST request on the given route.
@@ -94,14 +94,14 @@ class Client:
 
         Args:
             route (:obj:`str`): The API route to request.
-            id (:obj:`str`): If set this value will replace route's ':id' placeholder
+            uuid (:obj:`str`): If set this value will replace route's ':uuid' placeholder
             data (:obj:`dict`, optional): POST data to pass.
 
         Returns:
             The HTTP response in JSON format
         """
-        if id is not None:
-            route = route.replace(':id', id)
+        if uuid is not None:
+            route = route.replace(':uuid', uuid)
         header = {"content-type": "application/json"}
         response = requests.post('{}{}'.format(self.api, route), data=json.dumps(data), headers=header)
         response_json = self._parse_response(response)

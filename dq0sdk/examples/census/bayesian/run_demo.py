@@ -10,20 +10,27 @@ All rights reserved
 import os
 
 import dq0sdk
+from dq0sdk.data.utils import util
 from dq0sdk.examples.census.bayesian.model.user_model import UserModel
 
-import numpy as np
-
+import tensorflow as tf
+# At program startup, activate eager execution in order to call
+# "tensor.numpy()" with Tf 1.0
+tf.enable_eager_execution()
 
 if __name__ == '__main__':
-    np.random.seed(seed=1)
 
-    # input path
+    print('\nRunning demo for the "Census" dataset\n')
+
+    # set seed of random number generator to ensure reproducibility of results
+    util.initialize_rnd_numbers_generators_state()
+
+    # path to input
     path = '../_data/adult_with_rand_names.csv'
     filepath = os.path.join(os.path.dirname(
         os.path.abspath(__file__)), path)
 
-    # init data source
+    # init input data source
     data_source = dq0sdk.data.text.CSV(filepath)
 
     # create model
@@ -41,8 +48,8 @@ if __name__ == '__main__':
     # fit the model
     model.fit()
 
-    # evaluate
-    acc_tr = model.evaluate(test_data=False)
-    acc_te = model.evaluate()
-    print('Train Acc: %.2f %%' % (100 * acc_tr))
-    print('Test  Acc: %.2f %%' % (100 * acc_te))
+    # evaluate the model
+    model.evaluate()
+    model.evaluate(test_data=False)
+
+    print('\nDemo run successfully!\n')

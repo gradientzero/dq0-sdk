@@ -5,6 +5,7 @@ Copyright 2020, Gradient Zero
 All rights reserved
 """
 
+import inspect
 import os
 import pickle
 import random
@@ -390,8 +391,12 @@ def estimate_freq_of_labels(y):
     else:
         assert isinstance(y, np.ndarray)
         # print(pd.Series(y).value_counts(normalize=True) * 100)
-        print('Value     percentage freq.')
-        pretty_print_dict(get_percentage_freq_of_values(y))
+
+        # print('Label     percentage freq.')
+        # pretty_print_dict(get_percentage_freq_of_values(y))
+
+        for key, value in get_percentage_freq_of_values(y).items():
+            print('  label "' + str(key) + '": %.1f%%' % value)
 
 
 def compute_features_bounds(X):
@@ -682,3 +687,153 @@ def manage_rnd_num_generators_state(action):
         else:
             raise RuntimeError('cannot restore rnd numbers generators state! '
                                'No state previously saved! ')
+
+
+def print_evaluation_res(res, dataset_type, model_metrics=None):
+    """
+    Print the results of call of trainer.evaluate()
+
+    Args:
+        res (:obj:`dict`): Results returned by trainer.evaluate()
+        dataset_type (:obj:`str`): string with two possible values:
+        "training" or "test"
+        model_metrics (:obj:`list`): list of metrics specified in user model
+
+    """
+
+    if model_metrics is None:
+        # user_model is a Scikit model
+        for metric in res.keys():
+            print('Model ' + metric.replace('_', ' ') + ' on '
+                  '' + dataset_type + ' set: %.1f%%' % (100 * res[metric]))
+
+    else:
+        # user_model is a Tensorflow model
+        if type(model_metrics) != list:
+            model_metrics = [model_metrics]
+
+        for metric in model_metrics:
+            print('Model ' + metric.replace('_', ' ') + ' on '
+                  '' + dataset_type + ' set: %.1f%%' % (
+                      100 * res[_fix_metric_names(metric)])
+                  )
+
+
+def _fix_metric_names(metric):
+    """
+    In Tensorflow there is a mismatch between the metric names that a user can
+    specify and the metric names used internally.
+
+    Args:
+            metric (:obj:`str`): name given by user
+
+    Returns:
+        Metric name used internally by Tensorflow corresponding to the
+        metric name specified by the user
+    """
+
+    if metric.lower() == 'accuracy':
+        metric = 'acc'
+    elif metric.lower() == 'mse':
+        metric = 'mean_squared_error'
+
+    return metric
+
+
+def instantiate_metrics_from_name(metrics_list):
+    """
+    Instantiate a metric class from tensorflow.keras.metrics
+
+    Iterate through metrics_list and replace each string (each string contains
+    a metric name) with an instance of the corresponding metric class.
+
+    Args:
+        metrics_list: list of metrics defined by user. It may contain
+            objects of metric classes or strings with metric names.
+
+    Returns:
+        modified metrics_list
+
+    """
+
+    # get every class defined in the tensorflow.keras.metrics module
+    keras_metric_classes_l = [m[1] for m in inspect.getmembers(
+        tf.keras.metrics, inspect.isclass)]
+    # print(keras_metric_classes_l)
+
+    for pos, metric in enumerate(metrics_list):
+        if type(metric) == str:
+            found = False
+            for km_class in keras_metric_classes_l:
+                if case_insensitive_str_comparison(km_class.__name__, metric):
+                    found = True
+                    metrics_list[pos] = km_class()
+                    break
+
+            if not found:
+                raise RuntimeWarning('Metric ' + metric + ' ignored since '
+                                     'it is not a valid Keras metric')
+
+    return metrics_list
+
+
+def compute_metrics_scores(y, y_pred_np_a, metrics_list):
+    """
+    Iterate through metrics_list and compute each metric in the list. Each
+    list item is expected to be an instance of a tensorflow.keras.metrics
+    class. So this function call must be preceded by the call to function
+    instantiate_metrics_from_name must.
+
+    Args:
+        y: vector with actual classification labels or regression scores
+        y_pred_np_a: vector with predicted classification labels or regression
+            scores
+        metrics_list: list of instances of metric classes
+    Returns:
+        dictionary with (metric name, metric score) pairs
+    """
+
+    res = {}
+    for metric in metrics_list:
+        _ = metric.update_state(y, y_pred_np_a)
+        # metric_name = metric.name if metric.name is not None \
+        #    else metric.__class__.__name__
+        metric_name = metric.__class__.__name__.lower()
+
+        # convert tensor to array and update dict
+        res.update({metric_name: metric.result().numpy()})
+        metric.reset_states()
+
+    return res
+
+
+def copy_obj_attributes(obj_from, obj_to, attributes_l=None):
+    """
+    Copy attributes of class instance (object) "obj_from" to class instance
+    (object) "obj_to". The two objects are assumed to be instances of the
+    same class.
+
+    Args:
+        obj_from: class instance (object) to copy from
+        obj_to: class instance (object) to copy to
+        attributes_l: list of attributes to be copied. If none, a
+        blind copy is performed, where all attributes of obj_from are copied
+        to obj_to.
+
+    Returns:
+        obj_to
+    """
+
+    assert isinstance(obj_from, obj_to.__class__)
+
+    if attributes_l is None:
+        # blind copy: copy all attributes of obj_from
+        obj_to.__dict__.update(obj_from.__dict__)
+    else:
+        # copy selected attributes only
+        for attr in attributes_l:
+            if hasattr(obj_from, attr):
+                value = getattr(obj_from, attr)
+                setattr(obj_to, attr, value)
+
+    return obj_to

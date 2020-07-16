@@ -9,7 +9,7 @@ from setuptools import find_packages, setup
 
 
 # Version
-VERSION = '1.0.1'
+VERSION = '1.1.0'
 
 # Requirements
 with open("requirements.txt") as f:

@@ -11,4 +11,4 @@ Submodules
 
 .. toctree::
 
-   dq0sdk.data.newsgroups.newsgroups_source
+   dq0sdk.data.newsgroups.newsgroups

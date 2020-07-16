@@ -49,7 +49,6 @@ class UserModel(NeuralNetworkRegression):
 
         self.input_dim = X.shape[1]
         self.batch_size = X.shape[0]
-        self.num_microbatches = self.batch_size
 
         X_train, X_test, y_train, y_test = train_test_split(X, y)
 
@@ -93,15 +92,22 @@ class UserModel(NeuralNetworkRegression):
         """
         import tensorflow.compat.v1 as tf
 
-        self.optimizer = 'Adam'
-        self.learning_rate = 0.001
-
-        self.epochs = 10
-        self.loss = tf.keras.losses.MeanSquaredError()
-
         self.model = tf.keras.Sequential([
             tf.keras.layers.Input(self.input_dim),
             tf.keras.layers.Dense(1000, activation='tanh'),
             tf.keras.layers.Dense(1000, activation='tanh'),
             tf.keras.layers.Dense(1, activation='linear')]
         )
+        self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
+        # To set optimizer params, self.optimizer = optimizer instance
+        # rather than string, with params values passed as input to the class
+        # constructor. E.g.:
+        #
+        #   import tensorflow
+        #   self.optimizer = tensorflow.keras.optimizers.Adam(
+        #       learning_rate=0.015)
+        #
+        self.epochs = 10
+        self.batch_size = 250
+        self.loss = tf.keras.losses.MeanSquaredError()
+        # As an alternative, define the loss function with a string

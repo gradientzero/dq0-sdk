@@ -11,4 +11,15 @@ Subpackages
 
 .. toctree::
 
-   dq0sdk.examples.adult_dataset
+   dq0sdk.examples.census
+   dq0sdk.examples.cifar
+   dq0sdk.examples.medical_insurance
+   dq0sdk.examples.newsgroups
+   dq0sdk.examples.patient
+
+Submodules
+----------
+
+.. toctree::
+
+   dq0sdk.examples.wrapper_for_sdk_demos

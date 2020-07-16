@@ -31,9 +31,18 @@ Copyright 2020, Gradient Zero
 All rights reserved
 """
 
+import copy
+import logging
+
+from dq0sdk.data.utils import util
 from dq0sdk.models.model import Model
 
+import numpy as np
+
 import tensorflow.compat.v1 as tf
+
+
+logger = logging.getLogger()
 
 
 class NeuralNetwork(Model):
@@ -47,78 +56,23 @@ class NeuralNetwork(Model):
         when executed inside the DQ0 quarantine instance.
 
     Attributes:
-        model_type (:obj:`str`): type of this model instance. Options: 'keras'.
         model_path (:obj:`str`): path of model (save / load)
-        learning_rate (float): Learning rate for model fitting.
-        epochs (int): Number of epochs for model fitting.
-        num_microbatches (int): Number of microbatches in training.
-        verbose (int): Set greater than 0 to print output.
-        metrics (:obj:`list`): List of evaluation metrics.
-        model (:obj:`tf.Keras.Sequential`): the actual keras model.
-        X_train (:obj:`numpy.ndarray`): X training data
-        y_train (:obj:`numpy.ndarray`): y training data
-        X_test (:obj:`numpy.ndarray`, optional): X test data
-        y_test (:obj:`numpy.ndarray`, optional): y test data
-        input_dim (int): Number of input neurons.
     """
     def __init__(self, model_path):
         super().__init__(model_path)
 
+        # child classes must set following attributes
         self.model = None
         self.X_train = None
         self.X_test = None
         self.y_train = None
         self.y_test = None
 
-    def setup_data(self):
-        """Setup data function
-
-        This function can be used by child classes to prepare data or perform
-        other tasks that dont need to be repeated for every training run.
-        """
-
-        self.input_dim = None
-        pass
-
-    def setup_model(self):
-        """Setup model function
-
-        Implementing child classes can use this method to define the
-        Keras model.
-        """
-
         self.optimizer = None
-
-        self.epochs = 10
-        self.num_microbatches = 250
-        self.verbose = 0
-        self.metrics = ['accuracy', 'mse']
-
-        self.model = tf.keras.Sequential([
-            tf.keras.layers.Input(self.input_dim),
-            tf.keras.layers.Dense(10, activation='tanh'),
-            tf.keras.layers.Dense(10, activation='tanh'),
-            tf.keras.layers.Dense(2, activation='softmax')]
-        )
-
-    def fit(self):
-        """Model fit function.
-        """
-        x = self.X_train
-        y = self.y_train
-        steps_per_epoch = self.X_train.shape[0] // self.num_microbatches
-        x = x[:steps_per_epoch * self.num_microbatches]
-        y = y[:steps_per_epoch * self.num_microbatches]
-
-        loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
-        self.model.compile(optimizer=self.optimizer,
-                           loss=loss,
-                           metrics=self.metrics)
-        self.model.fit(x,
-                       y,
-                       batch_size=self.num_microbatches,
-                       epochs=self.epochs,
-                       verbose=self.verbose)
+        self.loss = None
+        self.metrics = None
+        self.batch_size = None
+        self.epochs = None
 
     def predict(self, x):
         """Model predict function.
@@ -129,30 +83,6 @@ class NeuralNetwork(Model):
             yhat: numerical matrix containing the predicted responses.
         """
         return self.model.predict(x)
-
-    def evaluate(self, test_data=True, verbose=0):
-        """Model predict and evluate.
-
-        This method is final. Signature will be checked at runtime!
-
-        Args:
-            test_data (bool): False to use train data instead of test
-                Default is True.
-            verbose (int): Verbose level, Default is 0
-
-        Returns:
-            evaluation metrics
-        """
-        x = self.X_test if test_data else self.X_train
-        y = self.y_test if test_data else self.y_train
-        steps_per_epoch = x.shape[0] // self.num_microbatches
-        x = x[:steps_per_epoch * self.num_microbatches]
-        y = y[:steps_per_epoch * self.num_microbatches]
-        return self.model.evaluate(
-            x=x,
-            y=y,
-            batch_size=self.num_microbatches,
-            verbose=verbose)
 
     def save(self, name, version):
         """Saves the model.
@@ -179,3 +109,180 @@ class NeuralNetwork(Model):
             '{}/{}/{}.h5'.format(
                 self.model_path, version, name),
             compile=False)
+
+    def get_clone(self, trained=False):
+        """
+        Generates a new model with the same parameters, if they are not fit on
+        the training data.
+
+        Generates a deep copy of the model without actually
+        copying any attached dataset. It yields a new model with the same
+        parameters that has not been fit on any data. Parameters fit to
+        the training data like, e.g., model weights, are re-initialized in the
+        clone.
+
+        Args:
+            trained: if `True`, maintains current state including trained model
+                weights, etc. Otherwise, returns an unfitted model with the same
+                initialization params.
+
+        Returns:
+            deep copy of model
+
+        """
+
+        # "clone_model" creates new layers (and thus new weights) for the clone
+        new_keras_model = tf.keras.models.clone_model(self.model)
+        if trained:
+            new_keras_model.set_weights(self.model.get_weights())
+
+        # check
+        all_close = all(
+            [np.allclose(self.model.get_weights()[lc],
+                         new_keras_model.get_weights()[lc]) for lc in range(
+                len(self.model.get_weights()))]
+        )
+        if trained:
+            assert all_close
+        else:
+            assert not all_close
+
+        # performance boosting: do not (deep) copy any data that will be
+        # discarded immediately after deep copying
+        tmp_storage = {'model': self.model, 'X_train': self.X_train,
+                       'y_train': self.y_train, 'X_test': self.X_test,
+                       'y_test': self.y_test, 'model_path': self.model_path}
+        self.X_train = None
+        self.X_test = None
+        self.y_train = None
+        self.y_test = None
+        self.model = None
+        self.model_path = None
+        self.data_source = None
+
+        # model clone
+        # new_model = self.__class__(model_path=None)
+        new_model = copy.deepcopy(self)
+        new_model.model = new_keras_model
+
+        # recover attributes temporarily removed for efficient deep copying
+        for key, value in tmp_storage.items():
+            self.__setattr__(key, value)
+
+        return new_model
+
+    def fit(self, verbose=0):
+        """
+        Model fit function learning a model from training data
+        """
+        if self.model is None:
+            logger.fatal('No TensorFlow model provided!')
+
+        self.X_train, self.y_train = \
+            fix_limitation_of_Keras_fit_and_predict_functions(
+                self.X_train, self.y_train, self.batch_size
+            )
+
+        self.model.compile(optimizer=self.optimizer,
+                           loss=self.loss,
+                           metrics=self.metrics)
+
+        self.model.fit(self.X_train,
+                       self.y_train,
+                       epochs=self.epochs,
+                       verbose=verbose,
+                       batch_size=self.batch_size)
+
+        if hasattr(self, '_classifier_type'):
+            partial_str = ' ' + self._classifier_type
+        else:
+            partial_str = ''
+        print('\nLearned a' + partial_str + ' model from',
+              self.X_train.shape[0], 'examples.')
+
+    def evaluate(self, test_data=True, verbose=0):
+        """Model evaluate implementation.
+
+        Args:
+            test_data (bool): False to use train data instead of test
+                Default is True.
+            verbose (int): Verbose level, Default is 0
+        """
+
+        if self.model is None:
+            logger.fatal('No  TensorFlow model provided!')
+
+        # Check for valid model setup
+        if not test_data and not hasattr(self, 'X_train'):
+            logger.fatal('Missing argument in model: X_train')
+            return
+        if not test_data and not hasattr(self, 'y_train'):
+            logger.fatal('Missing argument in model: y_train')
+            return
+        if test_data and not hasattr(self, 'X_test'):
+            logger.fatal('Missing argument in model: X_test')
+            return
+        if test_data and not hasattr(self, 'y_test'):
+            logger.fatal('Missing argument in model: y_test')
+            return
+        if not hasattr(self, 'batch_size'):
+            logger.fatal('Missing argument in model: batch_size')
+            return
+
+        X = self.X_test if test_data else self.X_train
+        y = self.y_test if test_data else self.y_train
+
+        # If all the data to be predicted do not fit in the CPU/GPU RAM at
+        # the same time, predictions are done in batches.
+        X, y = fix_limitation_of_Keras_fit_and_predict_functions(
+            X, y, self.batch_size
+        )
+
+        result = self.model.evaluate(x=X,
+                                     y=y,
+                                     batch_size=self.batch_size,
+                                     verbose=verbose)
+
+        util.print_evaluation_res(
+            dict(zip(self.model.metrics_names, result)),
+            'test' if test_data else 'training',
+            model_metrics=self.metrics
+        )
+
+        return dict(zip(self.model.metrics_names, result))
+
+
+def fix_limitation_of_Keras_fit_and_predict_functions(X, y, batch_size):
+    """
+    Fix limitation of Keras "fit", "predict" and "evaluate" functions.
+
+    Limitation of Keras "fit" function: size of training dataset (
+    i.e., number of training samples) must be divisible by the minibatch
+    size ("batch_size" parameter).
+
+    This function removes above limitation by making training robust for
+    any number of minibatches.
+
+    The same limitation holds for Keras "evaluate" and "predict" functions,
+    too. In the case of "evaluate" and "predict", if all the data to be
+    predicted do not fit in the CPU/GPU RAM at the same time, predictions
+    are done in batches.
+    Args:
+        X: data matrix
+        y: learning signal
+        batch_size: batch size set in user model
+
+    Returns:
+        X, y
+    """
+
+    tr_dataset_size = X.shape[0]
+    # floor division
+    num_minibatches = tr_dataset_size // batch_size
+    if num_minibatches <= 0:
+        num_minibatches = 1
+
+    X = X[:num_minibatches * batch_size]
+    y = y[:num_minibatches * batch_size]
+
+    return X, y

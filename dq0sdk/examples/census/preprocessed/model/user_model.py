@@ -89,11 +89,11 @@ class UserModel(NeuralNetworkClassification):
             tf.keras.layers.Dense(10, activation='tanh'),
             tf.keras.layers.Dense(2, activation='softmax')])
         self.optimizer = 'Adam'
-        self.learning_rate = 0.015
-
+        # As an alternative:
+        #   self.optimizer = tensorflow.keras.optimizers.Adam(
+        #   learning_rate=0.001)
         self.epochs = 10
-        self.num_microbatches = 250
-        self.verbose = 0
+        self.batch_size = 250
         self.metrics = ['accuracy']
-
         self.loss = tf.keras.losses.SparseCategoricalCrossentropy()
+        # As an alternative, define the loss function with a string

@@ -10,10 +10,14 @@ All rights reserved
 import os
 
 import dq0sdk
+from dq0sdk.data.utils import util
 from dq0sdk.examples.census.raw.model.user_model import UserModel
 
-
 if __name__ == '__main__':
+
+    # set seed of random number generator to ensure reproducibility of results
+    util.initialize_rnd_numbers_generators_state(seed=1)
+
     # path to input
     path = '../_data/adult_with_rand_names.csv'
     filepath = os.path.join(os.path.dirname(

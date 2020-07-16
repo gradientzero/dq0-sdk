@@ -15,12 +15,12 @@ _routes = {
     'project': {
         '_base': 'projects/',
         'create': '',
-        'info': ':id/',
-        'deploy': ':id/deploy/',
-        'attach': ':id/attach/'
+        'info': ':uuid/',
+        'deploy': ':uuid/deploy/',
+        'attach': ':uuid/attach/'
     },
     'model': {
-        '_base': 'models/:id/',
+        '_base': 'models/:uuid/',
         'train': 'train/',
         'predict': 'predict/',
         'state': 'state/',
@@ -29,12 +29,12 @@ _routes = {
     'data': {
         '_base': 'data/',
         'list': '',
-        'get': ':id/',
-        'preprocess': ':id/preprocess/',
-        'state': ':id/state/',
-        'info': ':id/',
-        'sample': ':id/sample/',
-        'cancel': ':id/cancel/'
+        'get': ':uuid/',
+        'preprocess': ':uuid/preprocess/',
+        'state': ':uuid/state/',
+        'info': ':uuid/',
+        'sample': ':uuid/sample/',
+        'cancel': ':uuid/cancel/'
     }
 }
 

@@ -11,14 +11,12 @@ Subpackages
 
 .. toctree::
 
-   dq0sdk.data.adult
-   dq0sdk.data.census_data
-   dq0sdk.data.cifar10
-   dq0sdk.data.csv
-   dq0sdk.data.google_flowers
+   dq0sdk.data.binary
+   dq0sdk.data.image
    dq0sdk.data.newsgroups
    dq0sdk.data.preprocessing
-   dq0sdk.data.user
+   dq0sdk.data.sql
+   dq0sdk.data.text
    dq0sdk.data.utils
 
 Submodules
@@ -26,5 +24,4 @@ Submodules
 
 .. toctree::
 
-   dq0sdk.data.connector
    dq0sdk.data.source

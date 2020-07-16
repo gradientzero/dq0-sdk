@@ -6,10 +6,8 @@ All rights reserved
 """
 
 import logging
-import os
-import pickle
 
-from dq0sdk.models.model import Model
+from dq0sdk.models.bayes.naive_bayesian_model import NaiveBayesianModel
 
 import numpy as np
 
@@ -22,7 +20,7 @@ from sklearn.preprocessing import LabelEncoder
 logger = logging.getLogger()
 
 
-class UserModel(Model):
+class UserModel(NaiveBayesianModel):
     """Multinomial Naive Bayesian classifier for the "20 Newsgroups" dataset
 
     SDK users instantiate this class to create and train the model.
@@ -32,11 +30,7 @@ class UserModel(Model):
     """
     def __init__(self, model_path):
         super().__init__(model_path)
-        self.model_type = 'bayes'
         self.label_encoder = None
-
-    def to_string(self):
-        print('\nModel type is: ', self.model_type)
 
     def setup_model(self):
         """Setup model.
@@ -50,7 +44,9 @@ class UserModel(Model):
         # set smoothing prior
         self.model.set_params(alpha=.01)
 
-        print('Setting up a ' + self._classifier_type + ' classifier...')
+        self.metrics = ['accuracy']
+
+        print('Set up a ' + self._classifier_type + ' classifier.')
 
     def setup_data(self):
         """Setup data function
@@ -117,46 +113,3 @@ class UserModel(Model):
             print('\nAttached test dataset to user model. Feature matrix '
                   'shape:', self.X_test.shape)
             print('Class-labels vector shape:', self.y_test.shape)
-
-    def fit(self):
-        """Train model on a dataset passed as input.
-
-        Args:
-            kwargs (:obj:`dict`): dictionary of optional arguments
-        """
-        pass
-
-    def save(self, name, version):
-        """Saves the model.
-
-        Save the model in binary format on local storage.
-
-        Args:
-            name (str): The name of the model
-            version (int): The version of the model
-        """
-
-        file_path = '{}/{}/{}.pickle'.format(self.model_path, version, name)
-        # create target directory and all intermediate directories if not
-        # existing
-        file_path_dirs = os.path.dirname(file_path)
-        if not os.path.exists(file_path_dirs):
-            os.makedirs(file_path_dirs)
-
-        with open(file_path, 'wb') as f:
-            pickle.dump(self._classifier, f)
-
-    def load(self, name, version):
-        """Loads the model.
-
-        Load the model from local storage.
-
-        Args:
-            name (str): The name of the model
-            version (int): The version of the model
-        """
-
-        file_path = '{}/{}/{}.pickle'.format(self.model_path, version, name)
-
-        with open(file_path, 'rb') as file:
-            self._classifier = pickle.load(file)

@@ -98,17 +98,18 @@ class Project:
         with open('.meta') as f:
             meta = json.load(f)
 
-        project = Project(name=meta['name'], create=False)
-        project.model_uuid = meta['id']
-        project.data_source_uuid = meta['data_source_uuid']
-        project.version = meta['version']
+        project = Project(name=meta['project_name'], create=False)
+        project.project_uuid = meta['project_uuid']
+        project.model_uuid = meta['model_uuid']
+        project.data_source_uuid = meta['data_uuid']
+        project.version = meta['model_name']
 
         return project
 
     def _create_new(self, name):
         """Creates a new project.
 
-        First, calls the API to creat a new project with the given name.
+        First, calls the API to create a new project with the given name.
         Then sets the UUID property read from the new .meta file.
 
         Note:
@@ -127,7 +128,7 @@ class Project:
 
         with open('{}/.meta'.format(name)) as f:
             meta = json.load(f)
-        self.model_uuid = meta['id']
+        self.model_uuid = meta['model_uuid']
 
         # change the working directory to the new project
         os.chdir(name)
@@ -141,7 +142,7 @@ class Project:
         Returns:
             Project info in JSON format
         """
-        return self.client.get(routes.project.info, id=self.model_uuid)
+        return self.client.get(routes.project.info, uuid=self.model_uuid)
 
     def get_latest_model(self):
         """Returns the currently active model of this project.
@@ -176,7 +177,7 @@ class Project:
         Returns:
             The data source information in JSON format
         """
-        response = self.client.get(routes.data.get, id=data_uuid)
+        response = self.client.get(routes.data.get, uuid=data_uuid)
         checkSDKResponse(response)
         return response
 
@@ -192,7 +193,7 @@ class Project:
         Returns:
             The data source sample data
         """
-        response = self.client.get(routes.data.sample, id=data_uuid)
+        response = self.client.get(routes.data.sample, uuid=data_uuid)
         checkSDKResponse(response)
         if 'sample' in response:
             try:
@@ -209,7 +210,7 @@ class Project:
         """
         response = self.client.post(
             routes.project.attach,
-            id=self.model_uuid,
+            uuid=self.model_uuid,
             data={'data_source_uuid': data_source_uuid})
         checkSDKResponse(response)
         print(response['message'])
@@ -222,7 +223,7 @@ class Project:
         Returns:
             The API response in JSON format
         """
-        return self.client.post(routes.project.deploy, id=self.model_uuid)
+        return self.client.post(routes.project.deploy, uuid=self.project_uuid)
 
     def set_connection(self, host='localhost', port=9000):
         """Updates the connection string for the API communication.
