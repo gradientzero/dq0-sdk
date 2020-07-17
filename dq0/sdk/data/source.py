@@ -38,6 +38,7 @@ class Source(ABC):
         path (:obj:`str`): Path to the data
         sample_path (:obj:`str`): Absolute path to the file containing sample data.
     """
+
     def __init__(self, path=None):
         super().__init__()
         self.uuid = uuid.uuid1()  # UUID for this data source. Will be set at runtime.

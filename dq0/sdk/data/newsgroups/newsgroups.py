@@ -29,6 +29,7 @@ class Newsgroups(Source):
 
     Newsgroups posts on 20 topics from scikit-learn.
     """
+
     def __init__(self):
         super().__init__()
         self.type = 'newsgroups'

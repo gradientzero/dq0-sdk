@@ -20,6 +20,7 @@ class Stata(Source):
     Args:
         path (:obj:`str`): Absolute path to the stata file.
     """
+
     def __init__(self, path):
         super().__init__(path)
         self.type = 'stata'

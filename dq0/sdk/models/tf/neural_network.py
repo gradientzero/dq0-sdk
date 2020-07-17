@@ -58,6 +58,7 @@ class NeuralNetwork(Model):
     Attributes:
         model_path (:obj:`str`): path of model (save / load)
     """
+
     def __init__(self, model_path):
         super().__init__(model_path)
 

@@ -52,6 +52,7 @@ class Runner(ABC):
         state (:obj:`dq0.sdk.cli.runner.State`) The runner's state
 
     """
+
     def __init__(self, project):
         if project is None:
             raise ValueError('You need to provide a valid project instance')

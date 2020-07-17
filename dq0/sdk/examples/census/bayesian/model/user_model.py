@@ -28,6 +28,7 @@ class UserModel(NaiveBayesianModel):
     Args:
         model_path (str): Path to the model save destination.
     """
+
     def __init__(self, model_path):
         super().__init__(model_path)
         self.label_encoder = None

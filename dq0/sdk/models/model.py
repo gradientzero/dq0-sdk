@@ -32,6 +32,7 @@ class Model(ABC):
         data_source (:obj:`dq0.sdk.data.Source`): dict of attached data sources.
 
     """
+
     def __init__(self, model_path):
         super().__init__()
         # data source, model path and uuid will be set at runtime

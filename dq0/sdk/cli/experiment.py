@@ -46,6 +46,7 @@ class Experiment:
         name (:obj:`str`): The of the experiment
 
     """
+
     def __init__(self, project=None, name=None):
         if project is None:
             raise ValueError('You need to provide the "project" argument')

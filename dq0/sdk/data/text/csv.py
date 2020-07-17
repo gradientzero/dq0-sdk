@@ -20,6 +20,7 @@ class CSV(Source):
     Args:
         path (:obj:`str`): Absolute path to the CSV file.
     """
+
     def __init__(self, path):
         super().__init__(path)
         self.type = 'csv'

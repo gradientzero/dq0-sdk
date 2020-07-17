@@ -36,6 +36,7 @@ class Client:
     Attributes:
         api (:obj:`str`): The complete API URL, host + port
     """
+
     def __init__(self, host='localhost', port=9000):
         self.api = 'http://localhost:9000/api/'
         self.set_connection(host, port, False)

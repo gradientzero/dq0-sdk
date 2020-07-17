@@ -36,6 +36,7 @@ class Cifar10(Source):
         class_names (:obj:`list`): List of class names to use
 
     """
+
     def __init__(self):
         super().__init__()
         self.class_names = ['airplane', 'automobile', 'bird', 'cat', 'deer',

@@ -27,6 +27,7 @@ class Redshift(SQL):
         query (:obj:`str`): SQL query.
         connection (:obj:`str`): The redshift connection string.
     """
+
     def __init__(self, query, connection):
         super().__init__(query, connection)
         self.type = 'redshift'

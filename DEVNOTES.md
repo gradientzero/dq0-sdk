@@ -18,7 +18,16 @@ pip install -r requirements-dev.txt
 
 Use pytest for testings dq0-sdk completely:
 ```bash
-pytest
+# important not to use 'pytest .' only
+# explicitly use your current python environment
+python -m pytest
+```
+
+## Format code
+
+Use autopep8 to auto format code:
+```bash
+python -m autopep8 --in-place --aggressive --aggressive -r dq0
 ```
 
 

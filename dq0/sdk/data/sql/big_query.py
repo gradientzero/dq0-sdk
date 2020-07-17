@@ -23,6 +23,7 @@ class BigQuery(SQL):
         query (:obj:`str`): SQL query.
         project_id (:obj:`str`): The BigQuery project.
     """
+
     def __init__(self, query, project_id):
         super().__init__(query, project_id)
         self.type = 'bigquery'

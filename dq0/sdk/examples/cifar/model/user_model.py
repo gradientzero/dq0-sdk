@@ -38,6 +38,7 @@ class UserModel(NeuralNetworkClassification):
         label_encoder (:obj:`sklearn.preprocessing.LabelEncoder`): sklearn
         class label encoder.
     """
+
     def __init__(self, model_path):
         super().__init__(model_path)
         self._classifier_type = 'cnn'
@@ -50,7 +51,7 @@ class UserModel(NeuralNetworkClassification):
             model = tf.keras.Sequential()
             # create the convolutional base
             model.add(tf.keras.layers.Conv2D(32, (5, 5), activation='relu',
-                      input_shape=(32, 32, 3), **self.regularizer_dict))
+                                             input_shape=(32, 32, 3), **self.regularizer_dict))
             model.add(tf.keras.layers.MaxPooling2D((2, 2)))
             model.add(tf.keras.layers.Conv2D(32, (5, 5), activation='relu',
                                              **self.regularizer_dict))
@@ -67,7 +68,7 @@ class UserModel(NeuralNetworkClassification):
             model = tf.keras.Sequential()
             # create the convolutional base
             model.add(tf.keras.layers.Conv2D(32, (3, 3), activation='relu',
-                      input_shape=(32, 32, 3)))
+                                             input_shape=(32, 32, 3)))
             model.add(tf.keras.layers.MaxPooling2D((2, 2)))
             model.add(tf.keras.layers.Conv2D(64, (3, 3), activation='relu'))
             model.add(tf.keras.layers.MaxPooling2D((2, 2)))

@@ -27,6 +27,7 @@ class SAPHana(SQL):
         query (:obj:`str`): SQL query.
         connection (:obj:`str`): The saphana connection string.
     """
+
     def __init__(self, query, connection):
         super().__init__(query, connection)
         self.type = 'saphana'

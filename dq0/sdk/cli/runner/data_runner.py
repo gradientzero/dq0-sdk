@@ -42,6 +42,7 @@ class DataRunner(Runner):
             this runner belongs to
 
     """
+
     def __init__(self, project):
         super().__init__(project)
 

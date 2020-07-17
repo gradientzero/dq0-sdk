@@ -709,7 +709,7 @@ def print_evaluation_res(res, dataset_type, model_metrics=None):
 
     else:
         # user_model is a Tensorflow model
-        if type(model_metrics) != list:
+        if not isinstance(model_metrics, list):
             model_metrics = [model_metrics]
 
         for metric in model_metrics:
@@ -762,7 +762,7 @@ def instantiate_metrics_from_name(metrics_list):
     # print(keras_metric_classes_l)
 
     for pos, metric in enumerate(metrics_list):
-        if type(metric) == str:
+        if isinstance(metric, str):
             found = False
             for km_class in keras_metric_classes_l:
                 if case_insensitive_str_comparison(km_class.__name__, metric):

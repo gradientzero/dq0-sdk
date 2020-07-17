@@ -55,6 +55,7 @@ class Model:
             convenience. The actual allowance check is done by dq0-main.
 
     """
+
     def __init__(self, project=None):
         if project is None:
             raise ValueError('You need to provide the "project" argument')

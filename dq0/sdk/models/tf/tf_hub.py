@@ -22,6 +22,7 @@ class TFHub(NeuralNetworkYaml):
     Uses NeuralNetworkYaml to read a TF Hub Yaml config
     to define the model.
     """
+
     def __init__(self, model_path=None, tf_hub_url=None):
         yaml_path = hub_models_dict[tf_hub_url]['yaml_path']
         super().__init__(model_path, yaml_path)

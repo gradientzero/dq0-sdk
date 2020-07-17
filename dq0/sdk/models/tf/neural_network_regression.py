@@ -14,6 +14,7 @@ class NeuralNetworkRegression(NeuralNetwork):
     """Neural Network model implementation.
 
     """
+
     def __init__(self, model_path):
         super().__init__(model_path)
 

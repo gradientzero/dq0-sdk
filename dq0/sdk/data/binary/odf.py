@@ -20,6 +20,7 @@ class ODF(Excel):
     Args:
         path (:obj:`str`): Absolute path to the Open Document file.
     """
+
     def __init__(self, path):
         super().__init__(path)
         self.type = 'odf'

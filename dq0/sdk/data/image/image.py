@@ -21,6 +21,7 @@ class Image(Source):
         folderpath (:obj:`string`): path or url to folder containing the images to load.
 
     """
+
     def __init__(self, folderpath):
         super().__init__()
         self.type = 'image'

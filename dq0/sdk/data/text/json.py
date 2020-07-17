@@ -20,6 +20,7 @@ class JSON(Source):
     Args:
         path (:obj:`str`): Absolute path to the JSON file.
     """
+
     def __init__(self, path):
         super().__init__(path)
         self.type = 'json'

@@ -19,6 +19,7 @@ class SQL(Source):
         query (:obj:`str`): SQL query.
         connection (:obj:`str`): General purpose SQL data source connection string.
     """
+
     def __init__(self, query, connection):
         super().__init__('')
         self.query = query

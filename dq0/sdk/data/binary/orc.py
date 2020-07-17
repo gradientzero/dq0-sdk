@@ -20,6 +20,7 @@ class ORC(Source):
     Args:
         path (:obj:`str`): Absolute path to the orc file.
     """
+
     def __init__(self, path):
         super().__init__(path)
         self.type = 'orc'

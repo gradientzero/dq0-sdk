@@ -59,6 +59,7 @@ class Project:
         version (:obj:`str`): A version number of the project.
 
     """
+
     def __init__(self, name=None, create=True):
         if name is None:
             raise ValueError('You need to set the "name" argument')

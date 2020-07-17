@@ -30,6 +30,7 @@ class State:
         results (:obj:`dict`): The run's state once finished.
 
     """
+
     def __init__(self):
         self.finished = False
         self.message = ''

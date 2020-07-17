@@ -27,6 +27,7 @@ class SQLite(SQL):
         query (:obj:`str`): SQL query.
         connection (:obj:`str`): The sqlite connection string.
     """
+
     def __init__(self, query, connection):
         super().__init__(query, connection)
         self.type = 'sqlite'

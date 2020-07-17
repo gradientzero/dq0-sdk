@@ -42,6 +42,7 @@ class NeuralNetworkYaml(Model):
         custom_objects (:obj:`dict`): A dictionary of additional model objects.
 
     """
+
     def __init__(self, model_path=None, yaml_path=None):
         super().__init__(model_path)
         self.model_type = 'keras'

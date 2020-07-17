@@ -20,6 +20,7 @@ class SAS(Source):
     Args:
         path (:obj:`str`): Absolute path to the SAS file.
     """
+
     def __init__(self, path):
         super().__init__(path)
         self.type = 'sas'

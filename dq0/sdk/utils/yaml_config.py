@@ -30,6 +30,7 @@ class YamlConfig():
 
     Yaml parser class for tf.Keras config files.
     """
+
     def __init__(self,
                  yaml_path,
                  yaml_dict=None,
