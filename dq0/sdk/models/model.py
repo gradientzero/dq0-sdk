@@ -11,12 +11,14 @@ All rights reserved
 
 import logging
 import uuid
-from abc import ABC, abstractmethod
+from abc import abstractmethod
+
+from dq0.sdk.projects import Project
 
 logger = logging.getLogger()
 
 
-class Model(ABC):
+class Model(Project):
     """Abstract base class for all models available through the SDK.
 
     Model classes provide a setup method as well as the fit and predict
@@ -40,17 +42,6 @@ class Model(ABC):
         self.model_path = model_path
         self.uuid = uuid.uuid1()
         self.model_type = ''
-
-    def attach_data_source(self, data_source):
-        """Add a data source to the model.
-
-        This function needs to be called at least once. All data
-        operations will use one of the attached data sources.
-
-        Args:
-            data_source (:obj:`dq0.sdk.data.Source`): The new data source to add
-        """
-        self.data_source = data_source
 
     @abstractmethod
     def setup_data(self):
