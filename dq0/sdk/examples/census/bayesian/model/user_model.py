@@ -103,7 +103,8 @@ class UserModel(NaiveBayesianModel):
     def preprocess(self):
         """Preprocess the data
 
-        Preprocess the data set. The input data is read from the attached source.
+        Preprocess the data set. The input data is read from the attached
+        source.
 
         At runtime the selected datset is attached to this model. It
         is available as the `data_source` attribute.
@@ -117,6 +118,7 @@ class UserModel(NaiveBayesianModel):
             preprocessed data
         """
         from dq0.sdk.data.preprocessing import preprocessing
+        from dq0.sdk.data.utils import util
         import sklearn.preprocessing
         import pandas as pd
 
@@ -162,57 +164,61 @@ class UserModel(NaiveBayesianModel):
                 'occupation': '?'}
         )
 
-        # drop unused columns
-        dataset.drop(['lastname', 'firstname'], axis=1, inplace=True)
-        column_names_list.remove('lastname')
-        column_names_list.remove('firstname')
-
         # define target feature
         target_feature = 'income'
 
-        # get categorical features
-        categorical_features_list = [
-            col for col in dataset.columns
-            if col != target_feature and dataset[col].dtype == 'object']
+        categorical_features_list, quantitative_features_list = \
+            util.get_categorical_and_quantitative_features_list(
+                dataset, target_feature)
 
-        # List difference. Warning: in below operation, set does not preserve
-        # the order. If order matters, use, e.g., list comprehension.
-        quantitative_features_list =\
-            list(set(column_names_list) - set(categorical_features_list) - {
-                target_feature})
+        # Continuous variable "fnlwgt" is the "final weight",
+        # the number of units in the target population that the responding unit
+        # represents.
+        #
+        # Variable "education_num" contains the total number of years of
+        # education. It is basically a continuous representation of the
+        # categorical variable "education".
+        #
+        # The variable "relationship" represents the person role in his own
+        # family.
+        #
+        # "capital_gain" and "capital_loss" are incomes from investment
+        # sources other than wage/salary.
+        features_to_drop_list = ['lastname', 'firstname', 'fnlwgt']
 
-        # get arguments
+        # Gaussian Naive Bayes is designed for continuous data.
+        # In detail, it assumes IID features, with each feature following a
+        # Gaussian Distribution (although it can perform decently
+        # even if this assumption is violated).
+        #
+        # We ignore the assumption of Gaussian distribution here (just
+        # verify it with the Shapiro-Wilkes test) and drop categorical
+        # variables.
+
+        features_to_drop_list.extend(
+            x for x in categorical_features_list if x not in features_to_drop_list)
+
+        if features_to_drop_list is not None:
+            dataset.drop(features_to_drop_list, axis=1, inplace=True)
+
+        # update lists
+        categorical_features_list, quantitative_features_list = \
+            util.get_categorical_and_quantitative_features_list(
+                dataset, target_feature
+            )
+
+        # handle missing data
         approach_for_missing_feature = 'imputation'
         imputation_method_for_cat_feats = 'unknown'
         imputation_method_for_quant_feats = 'median'
-        features_to_drop_list = None
-
-        # handle missing data
         dataset = preprocessing.handle_missing_data(
             dataset,
             mode=approach_for_missing_feature,
             imputation_method_for_cat_feats=imputation_method_for_cat_feats,
             imputation_method_for_quant_feats=imputation_method_for_quant_feats,  # noqa: E501
             categorical_features_list=categorical_features_list,
-            quantitative_features_list=quantitative_features_list)
-
-        if features_to_drop_list is not None:
-            dataset.drop(features_to_drop_list, axis=1, inplace=True)
-
-        # Investigate whether ordinal features are present
-        # (Weak) assumption: for each categorical feature, its values in the
-        # test set is already present in the training set.
-        dataset = pd.get_dummies(dataset, columns=categorical_features_list)
-        # dummy_na=True => add a column to indicate NaNs. False => NaNs are
-        # ignored.
-        # Rather than get_dummies, it would be better as follows ...
-        # enc = OneHotEncoder(handle_unknown='ignore', sparse=False)
-        # enc.fit(X_df[categorical_features_list])
-
-        # Scale values to the range from 0 to 1 to be precessed by the
-        # neural network
-        dataset[quantitative_features_list] = sklearn.preprocessing.\
-            minmax_scale(dataset[quantitative_features_list])
+            quantitative_features_list=quantitative_features_list
+        )
 
         # label target
         y_ts = dataset[target_feature]
@@ -221,5 +227,7 @@ class UserModel(NaiveBayesianModel):
         y_enc = pd.Series(index=y_ts.index, data=y_enc)
         dataset.drop([target_feature], axis=1, inplace=True)
         dataset[target_feature] = y_enc
+
+        util.print_dataset_info(dataset, 'Census dataset')
 
         return dataset

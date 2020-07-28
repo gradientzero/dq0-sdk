@@ -142,6 +142,43 @@ def print_summary_stats(ts, percentiles, s_col):
     print("\n\n")
 
 
+def get_categorical_and_quantitative_features_list(dataset, target_feature):
+    """
+    Define list of categorical and quantitative features of the input dataset.
+
+    Naming convention:
+        "categorical" features:	self-explanatory name
+        "quantitative" features: continuous, discrete or ordinal values. The
+                                 term "quantitative" is preferred to
+                                 "numerical" because also category labels
+                                 can be numerical values.
+        "target" feature: it contains the learning signal (e.g., labels for
+                          a classification problem)
+
+    Args:
+        dataset: Pandas DataFrame
+        target_feature: feature containing the learning signal (e.g.,
+            labels for a classification problem)
+
+    Returns:
+        Python list of categorical and quantitative features
+    """
+    column_names_list = dataset.columns
+
+    # get categorical features
+    categorical_features_list = [
+        col for col in dataset.columns
+        if col != target_feature and dataset[col].dtype == 'object']
+
+    # List difference. Warning: in below operation, set does not preserve
+    # the order. If order matters, use, e.g., list comprehension.
+    quantitative_features_list = \
+        list(set(column_names_list) - set(categorical_features_list) - {
+            target_feature})
+
+    return categorical_features_list, quantitative_features_list
+
+
 def sparse_scipy_matrix_to_Pandas_df(sp_matr, sparse_representation=True,
                                      columns_names_list=None):
     """
