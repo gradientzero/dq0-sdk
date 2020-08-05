@@ -15,8 +15,8 @@ class NeuralNetworkRegression(NeuralNetwork):
 
     """
 
-    def __init__(self, model_path):
-        super().__init__(model_path)
+    def __init__(self):
+        super().__init__()
 
         # to instantiate the suitable model checker from dq0-core.dq0.util
         self.model_type = 'NeuralNetworkRegression'

@@ -28,13 +28,10 @@ class UserModel(NeuralNetworkClassification):
 
     SDK users instantiate this class to create and train Keras models or
     subclass this class to define custom neural networks.
-
-    Args:
-        model_path (str): Path to the model save destination.
     """
 
-    def __init__(self, model_path):
-        super().__init__(model_path)
+    def __init__(self):
+        super().__init__()
         self._classifier_type = 'mlnn'
         self.label_encoder = None
 

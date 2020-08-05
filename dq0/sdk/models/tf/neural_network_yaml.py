@@ -30,26 +30,23 @@ class NeuralNetworkYaml(Model):
         when executed inside the DQ0 quarantine instance.
 
     Args:
-        model_path (:obj:`str`): path of model (save / load)
         yaml_path (:obj:`str`): path to the model definition file.
 
     Attributes:
         model_type (:obj:`str`): type of this model instance. Options: 'keras'.
         yaml_config (:obj:`dq0.sdk.utils.YamlConfig`): yaml config reader
         yaml_dict (:obj:`dict`): Parsed yaml config dictionary.
-        model_path (:obj:`str`): path of model (save / load)
         model (:obj:`tf.keras.Sequential`): the actual keras model.
         custom_objects (:obj:`dict`): A dictionary of additional model objects.
 
     """
 
-    def __init__(self, model_path=None, yaml_path=None):
-        super().__init__(model_path)
+    def __init__(self, yaml_path=None):
+        super().__init__()
         self.model_type = 'keras'
         self.yaml_config = YamlConfig(yaml_path)
         self.yaml_dict = self.yaml_config.yaml_dict
 
-        self.model_path = model_path
         self.model = None
         self.custom_objects = custom_objects
         try:
@@ -169,34 +166,25 @@ class NeuralNetworkYaml(Model):
             else:
                 print('Test {}: {}'.format(self.metrics[i - 1], metric))
 
-    def save(self, name='model', version=1):
+    def save(self, path='model'):
         """Saves the model.
 
         Save the model in binary format on local storage.
 
         Args:
-            name (:obj:`str`): The name of the model
-            version (int): The version of the model
+            path (:obj:`str`): The model path
         """
-        self.model.save(
-            '{}/{}/{}.h5'.format(
-                self.model_path, version, name),
-            include_optimizer=True)
+        self.model.save(path, include_optimizer=True)
 
-    def load(self, name='model', version=1):
+    def load(self, path='model'):
         """Loads the model.
 
         Load the model from local storage.
 
         Args:
-            name (:obj:`str`): The name of the model
-            version (int): The version of the model
+            path (:obj:`str`): The model path
         """
-        self.model = tf.keras.models.load_model(
-            '{}/{}/{}.h5'.format(
-                self.model_path, version, name),
-            custom_objects=self.custom_objects,
-            compile=True)
+        self.model = tf.keras.models.load_model(path, custom_objects=self.custom_objects, compile=True)
 
         if self.model.optimizer is None:
             self.model.compile(optimizer=self.optimizer,

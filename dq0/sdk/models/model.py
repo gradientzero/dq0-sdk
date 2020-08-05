@@ -24,22 +24,17 @@ class Model(Project):
     Model classes provide a setup method as well as the fit and predict
     ML model functions.
 
-    Args:
-        model_path (:obj:`str`): Path to the model save destination.
-
     Attributes:
         model_type (:obj:`str`): type of this model instance. Options: 'keras'.
-        model_path (:obj:`str`): path of model (save / load)
         uuid (:obj:`str`): UUID of this model.
         data_source (:obj:`dq0.sdk.data.Source`): dict of attached data sources.
 
     """
 
-    def __init__(self, model_path):
+    def __init__(self):
         super().__init__()
         # data source, model path and uuid will be set at runtime
         self.data_source = None
-        self.model_path = model_path
         self.uuid = uuid.uuid1()
         self.model_type = ''
 
@@ -66,28 +61,26 @@ class Model(Project):
         pass
 
     @abstractmethod
-    def save(self, name, version):
+    def save(self, path):
         """Saves the model.
 
         Implementing child classes should use this function to save the
         model in binary format on local storage.
 
         Args:
-            name (:obj:`str`): The name of the model
-            version (int): The version of the model
+            path (:obj:`str`): The model path
         """
         pass
 
     @abstractmethod
-    def load(self, name, version):
+    def load(self, path):
         """Loads the model.
 
         Implementing child classes should use this function to load the
         model from local storage.
 
         Args:
-            name (:obj:`str`): The name of the model
-            version (int): The version of the model
+            path (:obj:`str`): The model path
         """
         pass
 

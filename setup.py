@@ -6,8 +6,12 @@ All rights reserved
 """
 
 import os
-from setuptools import find_packages, find_namespace_packages, setup
+
+from setuptools import find_namespace_packages, setup
+
 from setuptools_cythonize import get_cmdclass
+
+from typings import Dict, List
 
 
 # meta information
@@ -40,12 +44,12 @@ SETUP_REQUIRES = [
 PACKAGES = find_namespace_packages(include=['dq0.*']) #find_packages()
 
 # Requirements
-INSTALL_REQUIRES = []
+INSTALL_REQUIRES: List[str]
 with open('requirements.txt') as f:
     INSTALL_REQUIRES = [line for line in f.read().splitlines()
                         if line and not line.startswith('#')]
 
-ENTRY_POINTS = {}
+ENTRY_POINTS: Dict[str, List[str]] = {}
 
 
 # Setup

@@ -24,13 +24,10 @@ class UserModel(NaiveBayesianModel):
     """Multinomial Naive Bayesian classifier for the "20 Newsgroups" dataset
 
     SDK users instantiate this class to create and train the model.
-
-    Args:
-        model_path (str): Path to the model save destination.
     """
 
-    def __init__(self, model_path):
-        super().__init__(model_path)
+    def __init__(self):
+        super().__init__()
         self.label_encoder = None
 
     def setup_model(self):

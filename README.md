@@ -211,7 +211,7 @@ if __name__ == '__main__':
     data_source = dq0.sdk.data.text.CSV('path/to/source')
 
     # create model
-    model = UserModel('notebooks/saved_model/')
+    model = UserModel()
 
     # attach data source
     model.attach_data_source(data_source)
@@ -264,12 +264,9 @@ class UserModel(NeuralNetworkClassification):
 
     Model classes provide a setup method for data and model
     definitions.
-
-    Args:
-        model_path (str): Path to the model save destination.
     """
-    def __init__(self, model_path):
-        super().__init__(model_path)
+    def __init__(self):
+        super().__init__()
 
     def setup_data(self):
         """Setup data function

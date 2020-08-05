@@ -9,8 +9,8 @@ Example:
     >>> import dq0.sdk.models.tf.NeuralNetworkClassification # doctest: +SKIP
     >>>
     >>> class MyAwsomeModel(NeuralNetwork): # doctest: +SKIP
-    >>>     def __init__(self, model_path): # doctest: +SKIP
-    >>>         super().__init__(model_path) # doctest: +SKIP
+    >>>     def __init__(self): # doctest: +SKIP
+    >>>         super().__init__() # doctest: +SKIP
     >>>
     >>>     def setup_data(self): # doctest: +SKIP
     >>>         # do something
@@ -54,13 +54,10 @@ class NeuralNetwork(Model):
     Note:
         fit, predict, and evaluate functions will be overriden at runtime
         when executed inside the DQ0 quarantine instance.
-
-    Attributes:
-        model_path (:obj:`str`): path of model (save / load)
     """
 
-    def __init__(self, model_path):
-        super().__init__(model_path)
+    def __init__(self):
+        super().__init__()
 
         # child classes must set following attributes
         self.model = None
@@ -85,31 +82,25 @@ class NeuralNetwork(Model):
         """
         return self.model.predict(x)
 
-    def save(self, name, version):
+    def save(self, path):
         """Saves the model.
 
         Save the model in binary format on local storage.
 
         Args:
-            name (:obj:`str`): The name of the model
-            version (int): The version of the model
+            path (:obj:`str`): The model path
         """
-        self.model.save('{}/{}/{}.h5'.format(self.model_path, version, name),
-                        include_optimizer=False)
+        self.model.save(path, include_optimizer=False)
 
-    def load(self, name, version):
+    def load(self, path):
         """Loads the model.
 
         Load the model from local storage.
 
         Args:
-            name (:obj:`str`): The name of the model
-            version (int): The version of the model
+            path (:obj:`str`): The model path
         """
-        self.model = tf.keras.models.load_model(
-            '{}/{}/{}.h5'.format(
-                self.model_path, version, name),
-            compile=False)
+        self.model = tf.keras.models.load_model(path, compile=False)
 
     def get_clone(self, trained=False):
         """
@@ -152,17 +143,16 @@ class NeuralNetwork(Model):
         # discarded immediately after deep copying
         tmp_storage = {'model': self.model, 'X_train': self.X_train,
                        'y_train': self.y_train, 'X_test': self.X_test,
-                       'y_test': self.y_test, 'model_path': self.model_path}
+                       'y_test': self.y_test}
         self.X_train = None
         self.X_test = None
         self.y_train = None
         self.y_test = None
         self.model = None
-        self.model_path = None
         self.data_source = None
 
         # model clone
-        # new_model = self.__class__(model_path=None)
+        # new_model = self.__class__()
         new_model = copy.deepcopy(self)
         new_model.model = new_keras_model
 

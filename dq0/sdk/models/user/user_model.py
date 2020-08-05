@@ -18,13 +18,10 @@ class UserModel(Model):
 
     Model classes provide a setup method for data and model
     definitions.
-
-    Args:
-        model_path (:obj:`str`): Path to the model save destination.
     """
 
-    def __init__(self, model_path):
-        super().__init__(model_path)
+    def __init__(self):
+        super().__init__()
 
     def setup_data(self):
         """Setup data function
@@ -77,24 +74,22 @@ class UserModel(Model):
         """
         pass
 
-    def save(self, name, version):
+    def save(self, path):
         """Saves the model.
 
         Save the model in binary format on local storage.
 
         Args:
-            name (:obj:`str`): The name of the model
-            version (int): The version of the model
+            path (:obj:`str`): The model path
         """
         pass
 
-    def load(self, name, version):
+    def load(self, path):
         """Loads the model.
 
         Load the model from local storage.
 
         Args:
-            name (:obj:`str`): The name of the model
-            version (int): The version of the model
+            path (:obj:`str`): The model path
         """
         pass

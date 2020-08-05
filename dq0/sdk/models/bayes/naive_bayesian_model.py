@@ -27,8 +27,8 @@ class NaiveBayesianModel(Model):
     Simple model representing a Bayesian classifier.
     """
 
-    def __init__(self, model_path):
-        super().__init__(model_path)
+    def __init__(self):
+        super().__init__()
 
         # to instantiate the suitable model checker from dq0-core.dq0.util
         self.model_type = 'NaiveBayesianClassifier'
@@ -44,39 +44,33 @@ class NaiveBayesianModel(Model):
     def to_string(self):
         print('\nModel type is: ', self.model_type)
 
-    def save(self, name, version):
+    def save(self, path):
         """Saves the model.
 
         Save the model in binary format on local storage.
 
         Args:
-            name (str): The name of the model
-            version (int): The version of the model
+            path (str): The model path
         """
 
-        file_path = '{}/{}/{}.pickle'.format(self.model_path, version, name)
         # create target directory and all intermediate directories if not
         # existing
-        file_path_dirs = os.path.dirname(file_path)
+        file_path_dirs = os.path.dirname(path)
         if not os.path.exists(file_path_dirs):
             os.makedirs(file_path_dirs)
 
-        with open(file_path, 'wb') as f:
+        with open(path, 'wb') as f:
             pickle.dump(self.model, f)
 
-    def load(self, name, version):
+    def load(self, path):
         """Loads the model.
 
         Load the model from local storage.
 
         Args:
-            name (str): The name of the model
-            version (int): The version of the model
+            path (str): The model path
         """
-
-        file_path = '{}/{}/{}.pickle'.format(self.model_path, version, name)
-
-        with open(file_path, 'rb') as file:
+        with open(path, 'rb') as file:
             self.model = pickle.load(file)
 
     def get_clone(self, trained=False):
@@ -117,17 +111,16 @@ class NaiveBayesianModel(Model):
         # discarded immediately after deep copying
         tmp_storage = {'model': self.model, 'X_train': self.X_train,
                        'y_train': self.y_train, 'X_test': self.X_test,
-                       'y_test': self.y_test, 'model_path': self.model_path}
+                       'y_test': self.y_test}
         self.X_train = None
         self.X_test = None
         self.y_train = None
         self.y_test = None
         self.model = None
-        self.model_path = None
         self.data_source = None
 
         # model clone
-        # new_model = self.__class__(model_path=None)
+        # new_model = self.__class__()
         new_model = copy.deepcopy(self)
         new_model.model = new_scikit_model
 

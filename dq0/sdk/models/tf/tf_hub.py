@@ -23,9 +23,9 @@ class TFHub(NeuralNetworkYaml):
     to define the model.
     """
 
-    def __init__(self, model_path=None, tf_hub_url=None):
+    def __init__(self, tf_hub_url=None):
         yaml_path = hub_models_dict[tf_hub_url]['yaml_path']
-        super().__init__(model_path, yaml_path)
+        super().__init__(yaml_path)
         self.task = hub_models_dict[tf_hub_url]['task']
 
         try:

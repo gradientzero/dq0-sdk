@@ -31,13 +31,10 @@ class UserModel(NeuralNetworkClassification):
 
     Model classes provide a setup method for data and model
     definitions.
-
-    Args:
-        model_path (:obj:`str`): Path to the model save destination.
     """
 
-    def __init__(self, model_path):
-        super().__init__(model_path)
+    def __init__(self):
+        super().__init__()
 
     def setup_data(self):
         """Setup data function
