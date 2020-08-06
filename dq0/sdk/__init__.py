@@ -8,7 +8,7 @@ from . import data
 from . import models
 
 # dq0 sdk version
-version = '1.2'
+version = '1.2.0'
 
 __all__ = [
     'version',
