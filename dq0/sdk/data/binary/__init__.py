@@ -11,6 +11,7 @@ from .odf import ODF
 from .orc import ORC
 from .parquet import Parquet
 from .sas import SAS
+from .spss import SPSS
 from .stata import Stata
 
 __all__ = [
@@ -21,5 +22,6 @@ __all__ = [
     'ORC',
     'Parquet',
     'SAS',
+    'SPSS',
     'Stata'
 ]

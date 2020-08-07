@@ -29,7 +29,7 @@ if __name__ == '__main__':
     data_source = dq0.sdk.data.text.CSV(filepath)
 
     # create model
-    model = UserModel('notebooks/saved_model/')
+    model = UserModel()
 
     # attach data source
     model.attach_data_source(data_source)

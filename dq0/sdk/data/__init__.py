@@ -5,7 +5,7 @@ This package contains the data connector abstract classes and
 implementing subclasses.
 """
 
-from . import binary, image, newsgroups, text, utils
+from . import binary, image, newsgroups, sql, text, utils
 from .source import Source
 
 __all__ = [
@@ -13,6 +13,7 @@ __all__ = [
     'binary',
     'image',
     'newsgroups',
+    'sql',
     'text',
     'utils'
 ]

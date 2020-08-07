@@ -9,7 +9,7 @@ All rights reserved
 
 import os
 
-import dq0.sdk
+import dq0.sdk.data as data
 from dq0.sdk.data.utils import util
 from dq0.sdk.examples.census.bayesian.model.user_model import UserModel
 
@@ -31,10 +31,10 @@ if __name__ == '__main__':
         os.path.abspath(__file__)), path)
 
     # init input data source
-    data_source = dq0.sdk.data.text.CSV(filepath)
+    data_source = data.text.CSV(filepath)
 
     # create model
-    model = UserModel('notebooks/saved_model/')
+    model = UserModel()
 
     # attach data source
     model.attach_data_source(data_source)
