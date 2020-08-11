@@ -105,5 +105,9 @@ venv.bak/
 .mypy_cache/
 
 .DS_Store
+
+# Python notebooks
 *.ipynb_checkpoints/
-.idea
+
+# PyCharm
+.idea/

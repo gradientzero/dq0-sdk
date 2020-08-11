@@ -4,6 +4,7 @@
 Copyright 2020, Gradient Zero
 All rights reserved
 """
+import logging
 
 from matplotlib import pyplot as plt
 
@@ -15,6 +16,9 @@ import seaborn as sns
 
 from sklearn import metrics, tree
 from sklearn.utils.multiclass import unique_labels
+
+
+logging.getLogger("matplotlib").setLevel(logging.WARNING)
 
 
 def plot_confusion_matrix_for_scikit_classifier(classifier,

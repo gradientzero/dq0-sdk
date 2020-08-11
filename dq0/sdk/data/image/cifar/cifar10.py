@@ -26,6 +26,8 @@ import numpy as np
 
 import tensorflow.compat.v1 as tf
 
+logging.getLogger("matplotlib").setLevel(logging.WARNING)
+
 logger = logging.getLogger()
 
 
