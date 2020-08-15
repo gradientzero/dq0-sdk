@@ -240,9 +240,19 @@ def pretty_diplay_string_on_terminal(s):
 
 def print_full_df(df_dataset):
     """Print whole dataframe. By default, just reduced output is printed"""
-    pd.set_option('display.max_rows', len(df_dataset))
+
+    # to display full contents of dataframe without any kind of truncation:
+    pd.set_option('display.max_rows', None)
+    pd.set_option('display.max_columns', None)
+    pd.set_option('display.width', None)
+    pd.set_option('display.max_colwidth', -1)
+
     print(df_dataset)
+
     pd.reset_option('display.max_rows')
+    pd.reset_option('display.max_columns')
+    pd.reset_option('display.width')
+    pd.reset_option('display.max_colwidth')
 
 
 def missing_values_table(df):
