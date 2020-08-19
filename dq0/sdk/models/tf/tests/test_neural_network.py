@@ -17,6 +17,6 @@ class ConcreteClass(NeuralNetworkClassification):
 
 
 def test_set_params():
-    neural_network = ConcreteClass('')
+    neural_network = ConcreteClass()
     neural_network.learning_rate = 0.3
     assert neural_network.learning_rate == 0.3

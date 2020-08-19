@@ -22,6 +22,7 @@ logging.getLogger("matplotlib").setLevel(logging.WARNING)
 logging.getLogger("pyplot").setLevel(logging.WARNING)
 logging.getLogger("seaborn").setLevel(logging.WARNING)
 
+
 def plot_confusion_matrix_for_scikit_classifier(classifier,
                                                 X_test_np_a,
                                                 y_test_np_a,
