@@ -7,8 +7,12 @@ conda create -n dq0 python=3.7
 source activate dq0
 ```
 
-And install dependencies
+Install postgresql dependency for psycopg2:
+```bash
+brew install postgresql
+```
 
+And now install dependencies
 ```bash
 pip install -r requirements.txt
 pip install -r requirements-dev.txt
