@@ -161,7 +161,7 @@ def extract_count_features_from_text_corpus(tr_data_list, test_data_list):
     util.print_human_readable_elapsed_time_value(
         elapsed_cpu_time_sec=time() - t0,
         s_tmp='Done in')
-    print('n_samples: %d, n_features: %d' % X_train_sp_matr.shape)
+    print('n_samples: %d, n_features: %d' % X_test_sp_matr.shape)
     print()
 
     return X_train_sp_matr, X_test_sp_matr, feature_names_list
