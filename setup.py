@@ -11,8 +11,6 @@ from setuptools import find_namespace_packages, setup
 
 from setuptools_cythonize import get_cmdclass
 
-from typings import Dict, List
-
 
 # meta information
 VERSION = '1.0.0'
@@ -44,12 +42,10 @@ SETUP_REQUIRES = [
 PACKAGES = find_namespace_packages(include=['dq0.*']) #find_packages()
 
 # Requirements
-INSTALL_REQUIRES: List[str]
+INSTALL_REQUIRES: []
 with open('requirements.txt') as f:
     INSTALL_REQUIRES = [line for line in f.read().splitlines()
                         if line and not line.startswith('#')]
-
-ENTRY_POINTS: Dict[str, List[str]] = {}
 
 
 # Setup
@@ -57,7 +53,6 @@ setup(
     cmdclass=get_cmdclass(),
     name=NAME,
     version=VERSION,
-    entry_points=ENTRY_POINTS,
     description=DESCRIPTION,
     long_description=LONG_DESCRIPTION,
     long_description_content_type=LONG_DESCRIPTION_CONTENT_TYPE,
