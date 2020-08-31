@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Data Preprocess class.
+"""Data Transform class.
 
 Copyright 2020, Gradient Zero
 """
@@ -11,10 +11,10 @@ from abc import abstractmethod
 from dq0.sdk.projects import Project
 
 
-class Preprocess(Project):
-    """Abstract base class for all preprocessings available through the SDK.
+class Transform(Project):
+    """Abstract base class for all transformations available through the SDK.
 
-    Preprocess classes provide a execute method to transform source data
+    Transform classes provide a execute method to transform source data
 
     Attributes:
         model_type (:obj:`str`): type of this model instance. Options: 'keras'.
@@ -32,7 +32,7 @@ class Preprocess(Project):
 
     @abstractmethod
     def execute(self, dataset=None):
-        """Execute data preprocessing function
+        """Execute transformation function
 
         This function can be used by child classes to prepare data 
         that dont need to be repeated for every training run.

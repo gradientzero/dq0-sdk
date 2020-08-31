@@ -7,11 +7,11 @@ implementing subclasses.
 
 from . import binary, image, newsgroups, sql, text, utils
 from .source import Source
-from .preprocess import Preprocess
+from .transform import Transform
 
 __all__ = [
     'Source',
-    'Preprocess',
+    'Transform',
     'binary',
     'image',
     'newsgroups',
