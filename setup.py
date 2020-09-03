@@ -62,5 +62,6 @@ setup(
     packages=PACKAGES,
     install_requires=INSTALL_REQUIRES,
     setup_requires=SETUP_REQUIRES,
+    include_package_data=True,
 )
 
