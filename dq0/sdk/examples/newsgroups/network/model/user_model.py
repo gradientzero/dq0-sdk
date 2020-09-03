@@ -9,6 +9,7 @@ All rights reserved
 import logging
 
 from dq0.sdk.data.utils import util
+from dq0.sdk.data.preprocessing import preprocessing
 from dq0.sdk.models.tf import NeuralNetworkClassification
 
 import numpy as np
@@ -16,6 +17,7 @@ import numpy as np
 import pandas as pd
 
 from sklearn.preprocessing import LabelEncoder
+from sklearn.model_selection import train_test_split
 
 import tensorflow.compat.v1 as tf
 
@@ -102,52 +104,79 @@ class UserModel(NeuralNetworkClassification):
 
         Use `self.data_source.read()` to read the attached data.
         """
+        # Set the number of features for feature extraction
+        ### WARNING 20k Takes more than an hour to DP fit ###
+        num_top_ranked_feats_to_keep = int(
+            5e3)  # set to 'all' to skip feat sel.
+        if str(num_top_ranked_feats_to_keep).lower() != 'all':
+            technique_for_feat_sel = 'chi-squared test'  # 'mutual information'
+
         # get the input dataset
         if self.data_source is None:
             logger.error('No data source found')
             return
 
-        X, y = self.data_source.read()
+        dataset_df = self.data_source.read()
 
-        # check data format
-        if isinstance(X, pd.DataFrame):
-            X = X.values
-        else:
-            if not isinstance(X, np.ndarray):
-                raise Exception('X is not np.ndarray')
+        X = dataset_df.iloc[:,0]
+        y = dataset_df.iloc[:,1]
+        
+        # fillna with empty strings (exist in original)
+        X.fillna("", inplace=True)
 
-        if isinstance(y, pd.Series):
-            y = y.values
-        else:
-            if not isinstance(y, np.ndarray):
-                raise Exception('y is not np.ndarray')
+        # Split for preprocessing
+        X_train_df, X_test_df, y_train_np_a, y_test_np_a =\
+            train_test_split(X, y,
+                            test_size=0.33,
+                            random_state=42)
+        
+        X_train_sp_matr, X_test_sp_matr, feature_names_list = \
+                preprocessing.extract_count_features_from_text_corpus(
+                    X_train_df.values.tolist(),
+                    X_test_df.values.tolist()
+                )
 
-        # prepare data
-        if y.ndim == 2:
-            # make non-dimensional array (just to avoid Warnings by Sklearn)
-            y = np.ravel(y)
+        if str(num_top_ranked_feats_to_keep).lower() != 'all':
+            X_train_sp_matr, X_test_sp_matr, feature_names_list = \
+                preprocessing.univariate_feature_selection(
+                    num_top_ranked_feats_to_keep,
+                    X_train_sp_matr,
+                    y_train_np_a,
+                    X_test_sp_matr,
+                    technique=technique_for_feat_sel,
+                    feature_names_list=feature_names_list
+                )
 
-        self._num_features = X.shape[1]
-
-        # WARNING: np.nan, np.Inf in y are counted as classes by np.unique
-        self._num_classes = len(np.unique(y))  # np.ravel(y)
+        """Data structure helper function."""
+        sparse_representation=False
+        X_train = util.sparse_scipy_matrix_to_Pandas_df(
+            X_train_sp_matr,
+            sparse_representation,
+            columns_names_list=feature_names_list)
+        
+        X_test = util.sparse_scipy_matrix_to_Pandas_df(
+            X_test_sp_matr,
+            sparse_representation,
+            columns_names_list=feature_names_list)
 
         # LabelEncoder() encodes target labels with value between 0 and
         # n_classes - 1
         # if self.label_encoder is None:
         #   print('Retraining')
-        self.label_encoder = LabelEncoder()
-        y = self.label_encoder.fit_transform(y)
-
-        # back to column vector. Transform one-dimensional array into column
-        # vector via newaxis
-        y = y[:, np.newaxis]
+        label_encoder = LabelEncoder()
+        le_model = label_encoder.fit(y_train_np_a)
+        y_train_np_a = le_model.transform(y_train_np_a)
+        y_test_np_a = le_model.transform(y_test_np_a)
 
         # set attributes
-        self.X_train = X
-        self.y_train = y
-        self.X_test = None
-        self.y_test = None
+        self.X_train = X_train
+        self.y_train = y_train_np_a
+        self.X_test = X_test
+        self.y_test = y_test_np_a
+        self._num_features = self.X_train.shape[1]
+        # WARNING: np.nan, np.Inf in y are counted as classes by np.unique
+        self._num_classes = len(np.unique(self.y_train))
+
 
         print('\nAttached train dataset to user model. Feature matrix '
               'shape:',
