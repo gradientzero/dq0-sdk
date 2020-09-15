@@ -173,9 +173,8 @@ class UserModel(NeuralNetworkClassification):
         # Split for preprocessing
         X_train_df, X_test_df, y_train_np_a, y_test_np_a =\
             train_test_split(X, y,
-                            test_size=10000,
-                            train_size=10000,
-                            random_state=42)
+                             test_size=10000,
+                             train_size=10000)
 
         # set attributes
         self.X_train = X_train_df

@@ -20,10 +20,6 @@ from dq0.sdk.examples.cifar.model.user_model import UserModel
 
 import numpy as np
 
-import sklearn
-
-# import pytest
-
 
 def test_cnn_and_data_setup():
     """

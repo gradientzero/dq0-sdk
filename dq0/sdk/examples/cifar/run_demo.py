@@ -12,7 +12,6 @@ import dq0.sdk
 from dq0.sdk.data.utils import util
 from dq0.sdk.examples.cifar.model.user_model import UserModel
 
-import sklearn
 
 if __name__ == '__main__':
 

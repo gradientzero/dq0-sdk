@@ -829,7 +829,7 @@ def compute_metrics_scores(y, y_pred_np_a, metrics_list):
     Iterate through metrics_list and compute each metric in the list. Each
     list item is expected to be an instance of a tensorflow.keras.metrics
     class. So this function call must be preceded by the call to function
-    instantiate_metrics_from_name must.
+    instantiate_metrics_from_name.
 
     Args:
         y: vector with actual classification labels or regression scores

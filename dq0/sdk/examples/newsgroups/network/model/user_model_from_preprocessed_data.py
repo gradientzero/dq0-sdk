@@ -110,8 +110,8 @@ class UserModel(NeuralNetworkClassification):
 
         dataset_df = self.data_source.read()
 
-        X = dataset_df.iloc[:,:-1]
-        y = dataset_df.iloc[:,-1]
+        X = dataset_df.iloc[:, :-1]
+        y = dataset_df.iloc[:, -1]
 
         # check data format
         if isinstance(X, pd.DataFrame):
@@ -146,11 +146,11 @@ class UserModel(NeuralNetworkClassification):
         # back to column vector. Transform one-dimensional array into column
         # vector via newaxis
         y = y[:, np.newaxis]
-        
+
         X_train_df, X_test_df, y_train_ts, y_test_ts =\
             train_test_split(X, y,
-                             test_size=0.33,
-                             random_state=42)
+                             test_size=0.33
+                             )
 
         # set attributes
         self.X_train = X_train_df

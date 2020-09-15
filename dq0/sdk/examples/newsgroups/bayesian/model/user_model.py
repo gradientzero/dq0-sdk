@@ -13,8 +13,6 @@ from dq0.sdk.models.bayes.naive_bayesian_model import NaiveBayesianModel
 
 import numpy as np
 
-import pandas as pd
-
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
@@ -76,23 +74,21 @@ class UserModel(NaiveBayesianModel):
 
         dataset_df = self.data_source.read()
 
-        X = dataset_df.iloc[:,0]
-        y = dataset_df.iloc[:,1]
-        
+        X = dataset_df.iloc[:, 0]
+        y = dataset_df.iloc[:, 1]
+
         # fillna with empty strings (exist in original)
         X.fillna("", inplace=True)
 
         # Split for preprocessing
         X_train_df, X_test_df, y_train_np_a, y_test_np_a =\
-            train_test_split(X, y,
-                            test_size=0.33,
-                            random_state=42)
-        
+            train_test_split(X, y, test_size=0.33)
+
         X_train_sp_matr, X_test_sp_matr, feature_names_list = \
-                preprocessing.extract_count_features_from_text_corpus(
-                    X_train_df.values.tolist(),
-                    X_test_df.values.tolist()
-                )
+            preprocessing.extract_count_features_from_text_corpus(
+                X_train_df.values.tolist(),
+                X_test_df.values.tolist()
+            )
 
         if str(num_top_ranked_feats_to_keep).lower() != 'all':
             X_train_sp_matr, X_test_sp_matr, feature_names_list = \
@@ -106,12 +102,12 @@ class UserModel(NaiveBayesianModel):
                 )
 
         """Data structure helper function."""
-        sparse_representation=False
+        sparse_representation = False
         X_train = util.sparse_scipy_matrix_to_Pandas_df(
             X_train_sp_matr,
             sparse_representation,
             columns_names_list=feature_names_list)
-        
+
         X_test = util.sparse_scipy_matrix_to_Pandas_df(
             X_test_sp_matr,
             sparse_representation,
@@ -134,7 +130,6 @@ class UserModel(NaiveBayesianModel):
         self._num_features = self.X_train.shape[1]
         # WARNING: np.nan, np.Inf in y are counted as classes by np.unique
         self._num_classes = len(np.unique(self.y_train))
-
 
         print('\nAttached train dataset to user model. Feature matrix '
               'shape:',
