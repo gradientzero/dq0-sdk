@@ -720,11 +720,12 @@ def datasets_are_equal(d1, d2):
                             'with a ' + type(d2))
 
 
-def initialize_rnd_numbers_generators_state(seed=1):
+def initialize_rnd_numbers_generators_state(seed=1, verbose=True):
     """Initialize tf random generator.
 
     Args:
-        seed (int, optional): Random seed. Default is 1.
+        seed (int, optional): random seed. Default is 1.
+        verbose (bool, optional): Boolean flag to print seed used.
     """
     # get Tensorflow version (first number only)
     tf_version = int(tf.__version__.split('.')[0])
@@ -739,6 +740,9 @@ def initialize_rnd_numbers_generators_state(seed=1):
 
     sp.random.seed(seed)
     random.seed(seed)
+
+    if verbose:
+        print('\n\nPRNG seeded with value ', seed, '\n')
 
 
 def manage_rnd_num_generators_state(action):
