@@ -142,21 +142,20 @@ class UserModel(NeuralNetworkClassification):
         #   print('Retraining')
         self.label_encoder = LabelEncoder()
         y = self.label_encoder.fit_transform(y)
+        # y is a one-dimensional np.ndarray at this point
 
         # back to column vector. Transform one-dimensional array into column
         # vector via newaxis
         y = y[:, np.newaxis]
 
-        X_train_df, X_test_df, y_train_ts, y_test_ts =\
+        # set attributes
+        # If the input is sparse, the output of "train_test_split" will be a
+        # scipy.sparse.csr_matrix. Otherwise, output type is the same as the
+        # input type.
+        self.X_train, self.X_test, self.y_train, self.y_test =\
             train_test_split(X, y,
                              test_size=0.33
                              )
-
-        # set attributes
-        self.X_train = X_train_df
-        self.y_train = y_train_ts
-        self.X_test = X_test_df
-        self.y_test = y_test_ts
 
         print('\nAttached train dataset to user model. Feature matrix '
               'shape:',
@@ -167,3 +166,7 @@ class UserModel(NeuralNetworkClassification):
             print('\nAttached test dataset to user model. Feature matrix '
                   'shape:', self.X_test.shape)
             print('Class-labels vector shape:', self.y_test.shape)
+
+        # useful (optional) check
+        util.check_data_structure_type_consistency(self.X_train, self.X_test,
+                                                   self.y_train, self.y_test)

@@ -81,7 +81,9 @@ class UserModel(NaiveBayesianModel):
         X.fillna("", inplace=True)
 
         # Split for preprocessing
-        X_train_df, X_test_df, y_train_np_a, y_test_np_a =\
+        # If the input is sparse, the output will be a scipy.sparse.csr_matrix.
+        # Otherwise, output type is the same as the input type.
+        X_train_df, X_test_df, y_train_se, y_test_se =\
             train_test_split(X, y, test_size=0.33)
 
         X_train_sp_matr, X_test_sp_matr, feature_names_list = \
@@ -95,7 +97,7 @@ class UserModel(NaiveBayesianModel):
                 preprocessing.univariate_feature_selection(
                     num_top_ranked_feats_to_keep,
                     X_train_sp_matr,
-                    y_train_np_a,
+                    y_train_se,
                     X_test_sp_matr,
                     technique=technique_for_feat_sel,
                     feature_names_list=feature_names_list
@@ -103,12 +105,12 @@ class UserModel(NaiveBayesianModel):
 
         """Data structure helper function."""
         sparse_representation = False
-        X_train = util.sparse_scipy_matrix_to_Pandas_df(
+        X_train_df = util.sparse_scipy_matrix_to_Pandas_df(
             X_train_sp_matr,
             sparse_representation,
             columns_names_list=feature_names_list)
 
-        X_test = util.sparse_scipy_matrix_to_Pandas_df(
+        X_test_df = util.sparse_scipy_matrix_to_Pandas_df(
             X_test_sp_matr,
             sparse_representation,
             columns_names_list=feature_names_list)
@@ -118,14 +120,21 @@ class UserModel(NaiveBayesianModel):
         # if self.label_encoder is None:
         #   print('Retraining')
         label_encoder = LabelEncoder()
-        le_model = label_encoder.fit(y_train_np_a)
-        y_train_np_a = le_model.transform(y_train_np_a)
-        y_test_np_a = le_model.transform(y_test_np_a)
+        le_model = label_encoder.fit(y_train_se)
+        # transform() returns one-dimensional numpy.ndarray even if input type
+        # is Pandas.Series
+        y_train_np_a = le_model.transform(y_train_se)
+        y_test_np_a = le_model.transform(y_test_se)
 
-        # set attributes
-        self.X_train = X_train
+        # back to column vector. Transform one-dimensional array into column
+        # vector via newaxis
+        y_train_np_a = y_train_np_a[:, np.newaxis]
+        y_test_np_a = y_test_np_a[:, np.newaxis]
+
+        # set attributes: get numpy.ndarray objects if not yet
+        self.X_train = X_train_df.values
         self.y_train = y_train_np_a
-        self.X_test = X_test
+        self.X_test = X_test_df.values
         self.y_test = y_test_np_a
         self._num_features = self.X_train.shape[1]
         # WARNING: np.nan, np.Inf in y are counted as classes by np.unique
