@@ -111,3 +111,6 @@ venv.bak/
 
 # PyCharm
 .idea/
+
+# data file
+**/newsgroups/_data/preprocessed_dataset.csv
