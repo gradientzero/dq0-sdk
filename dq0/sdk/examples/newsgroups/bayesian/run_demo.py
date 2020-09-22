@@ -15,8 +15,10 @@ from dq0.sdk.examples.newsgroups.bayesian.model.user_model import UserModel
 import tensorflow as tf
 # At program startup, activate eager execution in order to call
 # "tensor.numpy()" with Tf 1.0
-tf.enable_eager_execution()
-
+tf.compat.v1.enable_eager_execution()
+#
+# When switching back to TensorFlow 2.x above command should be removed, since
+# in TensorFlow 2.x eager execution is enabled by default.
 
 if __name__ == '__main__':
 
