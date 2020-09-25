@@ -64,8 +64,8 @@ class UserModel(NeuralNetworkClassification):
         X_train_df, X_test_df, y_train_ts, y_test_ts =\
             train_test_split(data.iloc[:, :-1],
                              data.iloc[:, -1],
-                             test_size=0.33,
-                             random_state=42)
+                             test_size=0.33
+                             )
         self.input_dim = X_train_df.shape[1]
 
         # set data attributes

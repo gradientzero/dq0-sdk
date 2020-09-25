@@ -11,11 +11,10 @@ Test DQ0 NN example for the 20 Newsgroups dataset.
 Copyright 2019, Gradient Zero
 All rights reserved
 """
-
 import os
 import pickle
 
-from dq0.sdk.data.newsgroups import Newsgroups
+import dq0.sdk
 from dq0.sdk.data.utils import util
 from dq0.sdk.examples.newsgroups.network.model.user_model import UserModel
 
@@ -35,8 +34,13 @@ def test_nn_and_data_setup():
     # set seed of random number generator to ensure reproducibility of results
     util.initialize_rnd_numbers_generators_state()
 
+    # path to input
+    path = '../_data/20newsgroups_text_label_df.csv'
+    filepath = os.path.join(os.path.dirname(
+        os.path.abspath(__file__)), path)
+
     # init input data source
-    data_source = Newsgroups()
+    data_source = dq0.sdk.data.text.CSV(filepath)
 
     # create model
     model = UserModel()

@@ -506,6 +506,47 @@ def save_preprocessed_tr_and_te_datasets(X_train, X_test, y_train, y_test,
                    y_test, delimiter=',')
 
 
+def check_data_structure_type_consistency(X_train, X_test, y_train, y_test):
+    """Check for type consistency among train and test X, y.
+
+    Type consistency is achieved iff:
+        - all X and y must are Pandas objects
+        - all X and y must are Numpy objects
+        - y_train, y_test must have the same number of dimensions
+    Mixture of Pandas and Numpy objects is not allowed.
+
+    Args:
+        X_train: Numpy array or Pandas DataFrame
+        X_test: Numpy array or Pandas DataFrame
+        y_train: Numpy (also non-dimensional) array or Pandas Series
+        y_test: Numpy (also non-dimensional) array or Pandas Series
+
+    """
+    assert (isinstance(X_train, pd.DataFrame) or
+            isinstance(X_train, np.ndarray))
+
+    assert isinstance(y_train, pd.Series) or isinstance(y_train, np.ndarray)
+
+    if isinstance(X_train, pd.DataFrame):
+        if not isinstance(y_train, pd.Series):
+            raise Exception('ERROR! Expected y_train type pd.Series, '
+                            'but found np.ndarray')
+
+    if isinstance(X_train, np.ndarray):
+        if not isinstance(y_train, np.ndarray):
+            raise Exception('ERROR! Expected y_train type np.ndarray, '
+                            'but found pd.Series')
+
+    if X_test is None:
+        assert y_test is None
+    else:
+        assert y_test is not None
+        assert type(X_train) == type(X_test)
+        assert type(y_train) == type(y_test)
+        if isinstance(y_train, np.ndarray):
+            assert y_train.ndim == y_test.ndim
+
+
 def concatenate_train_test_datasets(X_train, X_test, y_train, y_test):
     """Concetenates train and test datasets
 
@@ -679,11 +720,12 @@ def datasets_are_equal(d1, d2):
                             'with a ' + type(d2))
 
 
-def initialize_rnd_numbers_generators_state(seed=1):
+def initialize_rnd_numbers_generators_state(seed=1, verbose=True):
     """Initialize tf random generator.
 
     Args:
-        seed (int, optional): Random seed. Default is 1.
+        seed (int, optional): random seed. Default is 1.
+        verbose (bool, optional): Boolean flag to print seed used.
     """
     # get Tensorflow version (first number only)
     tf_version = int(tf.__version__.split('.')[0])
@@ -698,6 +740,9 @@ def initialize_rnd_numbers_generators_state(seed=1):
 
     sp.random.seed(seed)
     random.seed(seed)
+
+    if verbose:
+        print('\n\nPRNG seeded with value ', seed, '\n')
 
 
 def manage_rnd_num_generators_state(action):
@@ -829,7 +874,7 @@ def compute_metrics_scores(y, y_pred_np_a, metrics_list):
     Iterate through metrics_list and compute each metric in the list. Each
     list item is expected to be an instance of a tensorflow.keras.metrics
     class. So this function call must be preceded by the call to function
-    instantiate_metrics_from_name must.
+    instantiate_metrics_from_name.
 
     Args:
         y: vector with actual classification labels or regression scores

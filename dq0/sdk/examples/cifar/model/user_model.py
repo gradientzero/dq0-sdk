@@ -17,6 +17,7 @@ import numpy as np
 import pandas as pd
 
 from sklearn.preprocessing import LabelEncoder
+from sklearn.model_selection import train_test_split
 
 import tensorflow.compat.v1 as tf
 
@@ -125,7 +126,19 @@ class UserModel(NeuralNetworkClassification):
             logger.error('No data source found')
             return
 
-        X, y = self.data_source.read()  # num_instances_to_load=10000
+        _ = self.data_source.read()  # num_instances_to_load=10000
+
+        # Load data straight into UserModel
+        (X_train_np_a, y_train_np_a), (X_test_np_a, y_test_np_a) = \
+            tf.keras.datasets.cifar10.load_data()
+
+        X = np.vstack([X_train_np_a, X_test_np_a])
+        y = np.vstack([y_train_np_a, y_test_np_a])
+
+        X = X / 255
+        X = X.astype('float32')
+        y = y.astype('int32')
+        print('X shape {}, y shape {}'.format(X.shape, y.shape))
 
         # check data format
         if isinstance(X, pd.DataFrame):
@@ -157,8 +170,8 @@ class UserModel(NeuralNetworkClassification):
         # vector via newaxis
         y = y[:, np.newaxis]
 
-        # set attributes
-        self.X_train = X
-        self.y_train = y
-        self.X_test = None
-        self.y_test = None
+        # split for preprocessing and set attributes
+        self.X_train, self.X_test, self.y_train, self.y_test =\
+            train_test_split(X, y,
+                             test_size=20000,
+                             train_size=10000)

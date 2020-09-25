@@ -36,6 +36,8 @@ if __name__ == '__main__':
 
     # prepare data
     model.setup_data()
+    import numpy as np
+    print(np.hstack([model.y_train, model.y_test]))
 
     # setup model
     model.setup_model()

@@ -6,12 +6,12 @@ Run script to test the execution locally.
 Copyright 2020, Gradient Zero
 All rights reserved
 """
+import os
 
-from dq0.sdk.data.newsgroups import Newsgroups
+import dq0.sdk
 from dq0.sdk.data.utils import util
 from dq0.sdk.examples.newsgroups.network.model.user_model import UserModel
 
-import sklearn
 
 if __name__ == '__main__':
 
@@ -20,8 +20,13 @@ if __name__ == '__main__':
     # set seed of random number generator to ensure reproducibility of results
     util.initialize_rnd_numbers_generators_state()
 
+    # path to input
+    path = '../_data/20newsgroups_text_label_df.csv'
+    filepath = os.path.join(os.path.dirname(
+        os.path.abspath(__file__)), path)
+
     # init input data source
-    data_source = Newsgroups()
+    data_source = dq0.sdk.data.text.CSV(filepath)
 
     # create model
     model = UserModel()
@@ -31,12 +36,6 @@ if __name__ == '__main__':
 
     # prepare data
     model.setup_data()
-
-    model.X_train, model.X_test, model.y_train, model.y_test = \
-        sklearn.model_selection.train_test_split(
-            model.X_train, model.y_train, test_size=0.33,
-            stratify=model.y_train
-        )
 
     # setup model
     model.setup_model()
