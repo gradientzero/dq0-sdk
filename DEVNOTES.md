@@ -1,24 +1,37 @@
-
 ## Dev Setup
 
 Create a suitable virtual environment:
 
 ```bash
-conda create -n dq0-sdk python=3.6
-source activate dq0-sdk
+conda create -n dq0 python=3.7
+source activate dq0
 ```
 
-And install dependencies
+Install postgresql dependency for psycopg2:
+```bash
+brew install postgresql
+```
 
+And now install dependencies
 ```bash
 pip install -r requirements.txt
+pip install -r requirements-dev.txt
 ```
 
 ## Run tests
 
-Use pytest for testings dq0sdk completely:
+Use pytest for testings dq0-sdk completely:
 ```bash
-pytest
+# important not to use 'pytest .' only
+# explicitly use your current python environment
+python -m pytest
+```
+
+## Format code
+
+Use autopep8 to auto format code:
+```bash
+python -m autopep8 --in-place --aggressive --aggressive -r dq0
 ```
 
 
@@ -26,7 +39,7 @@ pytest
 
 Generate modules .rst files first automatically:
 ```bash
-sphinx-apidoc -M -o ./docs/source/generated ./dq0sdk -f -e
+sphinx-apidoc -M -o ./docs/source ./dq0 -f -e --implicit-namespaces
 ```
 This will (re-)generate multiple .rst file for each module / submodule and class.
 
@@ -41,32 +54,15 @@ generate pdf:
 ```
 
 
-
-## Dev Guide
-
-This repository contains production-grade software. Thus, strict enterprise software development guidelines are to be respected.
-The git workflow looks like this:
-
-![git workflow](git.png)
-
-Feature branches are merged to the development branch via pull requests and prior code review.
-Continuous integration is implemented via github actions for both development and master branch.
-
-### Code style and documentation
-
-Python code styles follows the PEP 8 style guide and is inforced by flake8. CI builds will fail if flake8 produces errors.
-
-Code documentation follows the python google docstring format: [https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html](https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html)
-
-Code documentation is generated with the included sphinx library and makefile in the doc subdirectory.
-
-
 ## Installation
 
 Install in setup tools development mode:
 
 ```bash
 pip install -e git+https://github.com/gradientzero/dq0-sdk.git
+
+# or from source
+pip install .
 ````
 
 Production / binary installation TBD
@@ -76,6 +72,3 @@ Production / binary installation TBD
 python setup.py sdist bdist_wheel
 ```
 it will create at least two files in "dist".
-
-## Usage
-for a detailed description of how to setup, train and test and new mode see [dq0sdk/examples/yaml/readme.md](dq0sdk/examples/yaml/readme.md)

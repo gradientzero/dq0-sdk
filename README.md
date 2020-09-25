@@ -6,7 +6,7 @@ DQ0 is a platform for secure data storage and processing. It provides tools to p
 
 
 ## Jupyter Notebook - DQ0 SDK
-The DQ0-SDK contains a sample notebook named [DQ0SDK-Demo.ipynb](./dq0sdk/cli/DQ0SDK-Quickstart.ipynb). Please navigate to this notebook to learn more about the DQ0 SDK usage.
+The DQ0-SDK contains a sample notebook named [DQ0SDK-Demo.ipynb](./dq0/sdk/notebooks/DQ0SDK-Quickstart.ipynb). Please navigate to this notebook to learn more about the DQ0 SDK usage.
 
 
 ## Prerequisites
@@ -23,7 +23,7 @@ You can install the DQ0 SDK with the pip package manager. Use an appropriate vir
 conda activate dq0
 
 # install dq0 sdk
-pip install git+git://github.com/gradientzero/dq0-sdk.git#egg=dq0sdk
+pip install git+git://github.com/gradientzero/dq0-sdk.git#egg=dq0-sdk
 
 # or clone git repository...
 git clone git@github.com:gradientzero/dq0-sdk.git
@@ -208,10 +208,10 @@ from user_model import UserModel
 if __name__ == '__main__':
 
     # init input data source
-    data_source = dq0sdk.data.text.CSV('path/to/source')
+    data_source = dq0.sdk.data.text.CSV('path/to/source')
 
     # create model
-    model = UserModel('notebooks/saved_model/')
+    model = UserModel()
 
     # attach data source
     model.attach_data_source(data_source)
@@ -254,22 +254,19 @@ All rights reserved
 
 import logging
 
-from dq0sdk.models.tf import NeuralNetworkClassification
+from dq0.sdk.models.tf import NeuralNetworkClassification
 
 logger = logging.getLogger()
 
 
 class UserModel(NeuralNetworkClassification):
-    """Derived from dq0sdk.models.tf.NeuralNetworkClassification class
+    """Derived from dq0.sdk.models.tf.NeuralNetworkClassification class
 
     Model classes provide a setup method for data and model
     definitions.
-
-    Args:
-        model_path (str): Path to the model save destination.
     """
-    def __init__(self, model_path):
-        super().__init__(model_path)
+    def __init__(self):
+        super().__init__()
 
     def setup_data(self):
         """Setup data function
@@ -332,11 +329,11 @@ In the setup_data() function, an assigned data source is first fetched in order 
 setup_model() defines the model.
 
 To define different models, the UserModel class can be derived from existing model classes in the DQ0 SDK. These include:
-- `dq0sdk.models.tf.NeuralNetworkClassification` for Neural Networks for classification with Tensorflow and Keras.
-- `dq0sdk.models.tf.NeuralNetworkMulticlassClassification` for Neural Networks for multiclass classification with Tensorflow and Keras.
-- `dq0sdk.models.tf.NeuralNetworkRegression` for Neural Networks for regression tasks with Tensorflow and Keras.
-- `dq0sdk.models.tf.NeuralNetworkYaml` for Neural Networks that will be defined by Yaml-files. These types of models can also be used for Tensorflow Hub integrations.
-- `dq0sdk.models.bayes.NaiveBayesianModel` for Naïve Bayes models.
+- `dq0.sdk.models.tf.NeuralNetworkClassification` for Neural Networks for classification with Tensorflow and Keras.
+- `dq0.sdk.models.tf.NeuralNetworkMulticlassClassification` for Neural Networks for multiclass classification with Tensorflow and Keras.
+- `dq0.sdk.models.tf.NeuralNetworkRegression` for Neural Networks for regression tasks with Tensorflow and Keras.
+- `dq0.sdk.models.tf.NeuralNetworkYaml` for Neural Networks that will be defined by Yaml-files. These types of models can also be used for Tensorflow Hub integrations.
+- `dq0.sdk.models.bayes.NaiveBayesianModel` for Naïve Bayes models.
 
 
 ## Model Deployment and Training

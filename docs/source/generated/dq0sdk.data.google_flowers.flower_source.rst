@@ -1,7 +1,0 @@
-dq0sdk.data.google\_flowers.flower\_source module
-=================================================
-
-.. automodule:: dq0sdk.data.google_flowers.flower_source
-   :members:
-   :undoc-members:
-   :show-inheritance:
