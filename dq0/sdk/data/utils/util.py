@@ -11,6 +11,7 @@ import pickle
 import random
 import shutil
 import sys
+import warnings
 
 import numpy as np
 
@@ -718,6 +719,41 @@ def datasets_are_equal(d1, d2):
         else:
             raise Exception('Comparing for equality a ' + type(d1) + ''
                             'with a ' + type(d2))
+
+
+def check_matrices_for_element_wise_equality(X_1, X_2, threshold=1e-5,
+                                             raise_error=False):
+    """
+    Sanity check: compare X_1, X_2 matrices for element-wise equality of
+    numeric values, raise error or warning if equality is not satisfied.
+
+    Args:
+        X_1: (n, c) numpy.ndarray
+        X_2: (n, c) numpy.ndarray
+        threshold (float): threshold for equality of float values
+        raise_error: Boolean flag to raise and error rather than a warning
+    """
+
+    abs_diff = np.abs(X_2 - X_1)
+    element_wise_comp = abs_diff < threshold
+    all_close = element_wise_comp.all()
+
+    if not all_close:
+        num_els = element_wise_comp.size
+        differing_entries = abs_diff[np.logical_not(element_wise_comp)]
+
+        msg = 'Out of ' + str(num_els) + ' comparisons, ' + \
+              str(num_els - np.sum(element_wise_comp)) + \
+              ' inequalities. About them,' + \
+              ' mean diff: ' + str(np.mean(differing_entries)) + \
+              ', median diff: ' + str(np.median(differing_entries)) + \
+              ', max diff: ' + str(np.max(differing_entries)) + \
+              ', min diff: ' + str(np.min(differing_entries))
+
+        if raise_error:
+            raise RuntimeError(msg)
+        else:
+            warnings.warn(msg)
 
 
 def initialize_rnd_numbers_generators_state(seed=1, verbose=True):
