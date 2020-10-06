@@ -928,8 +928,12 @@ def compute_metrics_scores(y, y_pred_np_a, metrics_list):
         #    else metric.__class__.__name__
         metric_name = metric.__class__.__name__.lower()
 
-        # convert tensor to array and update dict
-        res.update({metric_name: metric.result().numpy()})
+        # convert tensor to array
+        metric_result = tensorflow_tensor_to_numpy_ndarray(metric.result())
+        # metric_result = metric.result().numpy()
+
+        # update dict
+        res.update({metric_name: metric_result})
         metric.reset_states()
 
     return res
@@ -965,3 +969,44 @@ def copy_obj_attributes(obj_from, obj_to, attributes_l=None):
                 setattr(obj_to, attr, value)
 
     return obj_to
+
+
+def tensorflow_tensor_to_numpy_ndarray(*args):
+    """
+    
+    Convert input tensorflow tensors into numpy.ndarray arrays.
+
+    Args:
+        args: tensorflow tensors
+    Returns:
+        np_arrays, a list of numpy.ndarray arrays. Order matters: np_arrays[i]
+        is the conversion of args[i]. If np_arrays contains a single item,
+        the item is returned rather than a list with just one item inside.
+
+    """
+
+    eager_execution_enabled = tf.executing_eagerly()
+    # In TensorFlow 2 eager execution is activated by default.
+    #
+    # In TensorFlow 1 eager execution is DE-activated by default. Explicitly
+    # activating eager execution In TensorFlow 1 by command
+    # "tf.enable_eager_execution()" is NOT possible if TensorFlow Privacy is
+    # is used.
+    #
+    # With above setting, migration to TensorFlow 2 should be accomplishable
+    # without modifying below code.
+
+    np_arrays = [None] * len(args)  # list where each position is set to None
+
+    for i, tf_tensor in enumerate(args):
+        np_arrays[i] = tf_tensor.numpy() if eager_execution_enabled else\
+            tf.keras.backend.eval(tf_tensor)
+
+    # sanity check
+    assert all([x is not None for x in np_arrays])
+
+    if len(np_arrays) == 1:
+        # return item rather than list with just one item inside
+        np_arrays = np_arrays[0]
+
+    return np_arrays
