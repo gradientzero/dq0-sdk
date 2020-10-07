@@ -523,8 +523,8 @@ def check_data_structure_type_consistency(X_train, X_test, y_train, y_test):
         y_test: Numpy (also non-dimensional) array or Pandas Series
 
     """
-    assert (isinstance(X_train, pd.DataFrame) or
-            isinstance(X_train, np.ndarray))
+    assert (isinstance(X_train, pd.DataFrame) or isinstance(X_train,
+            np.ndarray))
 
     assert isinstance(y_train, pd.Series) or isinstance(y_train, np.ndarray)
 
@@ -973,7 +973,7 @@ def copy_obj_attributes(obj_from, obj_to, attributes_l=None):
 
 def tensorflow_tensor_to_numpy_ndarray(*args):
     """
-    
+
     Convert input tensorflow tensors into numpy.ndarray arrays.
 
     Args:
