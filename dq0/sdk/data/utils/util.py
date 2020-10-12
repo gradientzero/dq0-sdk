@@ -6,6 +6,7 @@ All rights reserved
 """
 
 import inspect
+import math
 import os
 import pickle
 import random
@@ -1010,3 +1011,39 @@ def tensorflow_tensor_to_numpy_ndarray(*args):
         np_arrays = np_arrays[0]
 
     return np_arrays
+
+
+def format_float_lower_than_1(float_value, abs_tol=1e-8):
+    """
+    Generate a string representation for the input float number with the 0
+    value of the unit being removed if the absolute value of the float
+    number is smaller than one. E.g, 0.234 is converted into ".234".
+
+    Args:
+        float_value (float): input float number
+        abs_tol (float): tolerance value for equality to zero
+    Returns:
+        str representation of the input float number with redundant 0 for
+        unit removed (if any).
+
+    """
+
+    if not math.isfinite(float_value):
+        raise RuntimeError(
+            'finite value expected. Found: ' + str(float_value)
+        )
+
+    if abs(float_value) < abs_tol:
+        return str(0)
+
+    if type(float_value) != str:
+        res = str(float_value)
+
+    # TODO replace below naive solution with suitable regex expression
+
+    if res.startswith('0.'):
+        res = res[1:]
+    if res.startswith('-0.'):
+        res = '-' + res[2:]
+
+    return res
