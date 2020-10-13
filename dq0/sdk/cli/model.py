@@ -45,11 +45,11 @@ class Model:
 
     Args:
         project (:obj:`dq0.sdk.cli.Project`): The project
-            this experiment belongs to
+            this model belongs to
 
     Attributes:
         project (:obj:`dq0.sdk.cli.Project`): The project
-            this experiment belongs to
+            this model belongs to
         predict_allowed (bool): True if the model was checked by DQ0
             and flagged as safe. Note that this attribute is here for
             convenience. The actual allowance check is done by dq0-main.

@@ -31,6 +31,8 @@ from dq0.sdk.cli.utils.code import (
 )
 from dq0.sdk.errors import DQ0SDKError, checkSDKResponse
 
+import yaml
+
 
 class Project:
     """A user project
@@ -64,9 +66,9 @@ class Project:
         if name is None:
             raise ValueError('You need to set the "name" argument')
         self.name = name
-        self.model_uuid = ''
-        self.data_source_uuid = ''
-        self.version = '1'
+        self.deployment_uuid = ''
+        self.datasets = []
+        self.experiment_name = ''
 
         # create API client instance
         self.client = Client()
@@ -97,13 +99,13 @@ class Project:
                                     'in current directory')
 
         with open('.meta') as f:
-            meta = json.load(f)
+            meta = yaml.load(f, Loader=yaml.FullLoader)
 
         project = Project(name=meta['project_name'], create=False)
         project.project_uuid = meta['project_uuid']
-        project.model_uuid = meta['model_uuid']
-        project.data_source_uuid = meta['data_uuid']
-        project.version = meta['model_name']
+        project.deployment_uuid = meta['deployment_uuid']
+        project.experiment_name = meta['experiment_name']
+        project.datasets = meta['datasets']
 
         return project
 
