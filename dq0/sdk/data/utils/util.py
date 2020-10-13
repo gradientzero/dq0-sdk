@@ -1047,3 +1047,20 @@ def format_float_lower_than_1(float_value, abs_tol=1e-8):
         res = '-' + res[2:]
 
     return res
+
+
+def perform_stratified_random_sampling(df, col_name, sample_size):
+    """
+    Generate stratified sample of size "sample_size" where the
+    proportion of instances with value "A" for "col_name"
+    in the stratified sample matches the proportion of instances
+    with value "A" for "col_name" in the larger DataFrame. This
+    holds for every distinct value "A" of "col_name".
+
+    """
+
+    sample_df = df.groupby(col_name, group_keys=False).apply(
+        lambda x: x.sample(int(np.rint(sample_size * len(x) / len(df))))
+    ).sample(frac=1).reset_index(drop=True)
+
+    return sample_df
