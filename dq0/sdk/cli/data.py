@@ -55,9 +55,6 @@ class Data:
 
         Args:
             cols: list of columns in the dataset to include. None for all available columns
-
-        Returns:
-            New instance of the ModelRunner class representing the prediction run.
         """
         # TODO
         pass
@@ -67,18 +64,16 @@ class Data:
 
         Args:
             cols: list of columns in the dataset to include. None for all available columns
-
-        Returns:
-            New instance of the ModelRunner class representing the prediction run.
         """
+        import os
         import time
         from IPython.display import Image
 
         time.sleep(2.5)
 
-        path = '/Users/jona/Downloads/RESULTS_Census/eda/age.png'
+        path = os.environ['DQ0_DISTRI']
         if self.where_clause is not None:
-            path = '/Users/jona/Downloads/RESULTS_Census/eda/age_filtered.png'
+            path = os.environ['DQ0_DISTRI_F']
         pil_img = Image(filename=path)
 
         display(pil_img)  # noqa: F821
