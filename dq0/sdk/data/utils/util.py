@@ -96,7 +96,7 @@ def print_details_about_df_columns(df_dataset):
         df_dataset: data frame to inspect.
     """
     if isinstance(df_dataset, pd.DataFrame):
-        _print_feats(df_dataset.columns.values.tolist(), "\tfeatures")
+        _print_feats(df_dataset.columns.values.tolist(), "features")
         print("\nfeatures type:")
         _print_dataframe_cols_grouped_by_type(df_dataset)
 

@@ -19,81 +19,199 @@ from matplotlib import pyplot as plt
 import numpy as np
 
 
-def visualize_categorical_distributions(df_cat):
+def get_dataset():
+
+    # path to input
+    path = '../_data/adult_with_rand_names.csv'
+    filepath = os.path.join(os.path.dirname(
+        os.path.abspath(__file__)), path)
+
+    # init input data source
+    data_source = dq0.sdk.data.text.CSV(filepath)
+
+    column_names_list = [
+        'lastname',
+        'firstname',
+        'age',
+        'workclass',
+        'fnlwgt',
+        'education',
+        'education-num',
+        'marital-status',
+        'occupation',
+        'relationship',
+        'race',
+        'sex',
+        'capital-gain',
+        'capital-loss',
+        'hours-per-week',
+        'native-country',
+        'income'
+    ]
+
+    # read the data via the attached input data source
+    dataset = data_source.read(
+        names=column_names_list,
+        sep=',',
+        skiprows=1,
+        index_col=None,
+        skipinitialspace=True,
+        na_values={
+            'capital-gain': 99999,
+            'capital-loss': 99999,
+            'hours-per-week': 99,
+            'workclass': '?',
+            'native-country': '?',
+            'occupation': '?'}
+    )
+
+    # drop unused columns
+    dataset.drop(['lastname', 'firstname'], axis=1, inplace=True)
+    column_names_list.remove('lastname')
+    column_names_list.remove('firstname')
+
+    return dataset
+
+
+def eda(dataset, output_folder):
     """
-
-
+    Perform exploratory data analysis over the input dataset
 
     Args:
-        df_cat:
+        dataset (pandas.DataFrame): dataset to be investigated
 
     """
 
+    print('\nExploratory data analysis (EDA)\n')
+
+    util.print_details_about_df_columns(dataset)
+    print('\n')
+
+    categorical_feature_types = ['object', 'category']
+
+    df_cat = dataset.select_dtypes(include=categorical_feature_types)
     for feature in df_cat.columns:
+        visualize_categorical_distribution(df_cat[feature], output_folder)
 
-        counts_se = df_cat[feature].value_counts(normalize=True)
-        bar_heights = counts_se.values
-        bar_labels = counts_se.index.values.tolist()
-        bar_colors = select_bar_colors(bar_heights)
+    df_quant = dataset.select_dtypes(exclude=categorical_feature_types)
+    for feature in df_quant.columns:
+        visualize_continuous_distribution(df_quant[feature], output_folder)
 
-        if len(bar_heights) > 5:
-            x_labels_rotation_degr = 90
-        else:
-            x_labels_rotation_degr = 45
+    cols = ['age']
+    conditions = [(30, 50)]  # list of conditions, one tuple per column
+    for counter, feature in enumerate(cols):
+        visualize_filtered_data(dataset[feature], conditions[counter], output_folder)
 
-        plot_bars(
-            bar_heights=bar_heights,
-            bar_labels=bar_labels,
-            bar_colors=bar_colors,
-            tick_label_length_threshold_for_rotation=4,
-            x_labels_rotation_degr=x_labels_rotation_degr,
-            y_lim=(0, 1),
-            y_label='proportion',
-            color_transparency_level=.8,
-            show_bar_heights=True,
-            threshold=None,
-            graph_title='distribution of ' + feature,
-            file_with_fig=output_folder + feature + '.png'
-        )
+    print('\nEDA run successfully!\n')
 
 
-def visualize_continuous_distributions(df_quant):
+def visualize_categorical_distribution(series, output_folder, **kwargs):
     """
 
 
 
     Args:
-        df_quant:
+        series (pandas.Series):
+        output_folder:
+    """
+
+    fn_suffix = kwargs.get('fn_suffix', '')
+
+    counts_se = series.value_counts(normalize=True)
+    bar_heights = counts_se.values
+    bar_labels = counts_se.index.values.tolist()
+    bar_colors = select_bar_colors(bar_heights)
+
+    if len(bar_heights) > 5:
+        x_labels_rotation_degr = 90
+    else:
+        x_labels_rotation_degr = 45
+
+    plot_bars(
+        bar_heights=bar_heights,
+        bar_labels=bar_labels,
+        bar_colors=bar_colors,
+        tick_label_length_threshold_for_rotation=4,
+        x_labels_rotation_degr=x_labels_rotation_degr,
+        y_lim=(0, 1),
+        y_label='proportion',
+        color_transparency_level=.8,
+        show_bar_heights=True,
+        threshold=None,
+        graph_title='distribution of ' + series.name,
+        file_with_fig=output_folder + series.name + fn_suffix + '.png'
+    )
+
+
+def visualize_continuous_distribution(series, output_folder, **kwargs):
+    """
+
+
+
+    Args:
+        series:
+        output_folder:
+    """
+
+    fn_suffix = kwargs.get('fn_suffix', '')
+    binning = kwargs.get('binning', 10)  # 'auto'
+    graph_title = kwargs.get('graph_title', 'distribution of ' + series.name)
+
+    vals = series.values
+    bool_mask = np.isnan(vals)
+    num_nans = sum(bool_mask)
+    if num_nans > 0:
+        wrn_str = 'feature ' + series.name + ' has ' + str(num_nans) +\
+                  ' NaN values ignored when computing the histogram!'
+        warnings.warn(wrn_str)
+
+    # drop Nan values. Otherwise the range parameter of the histogram is
+    # not finite.
+    vals = vals[np.logical_not(bool_mask)]
+
+    bin_heights, bin_edges = np.histogram(vals, bins=binning, density=False)
+
+    # normalize s.t. the sum of heights is one
+    bin_heights = bin_heights / bin_heights.sum()
+
+    plot_hist(bin_edges, bin_heights,
+              x_label=series.name,
+              y_label='proportion',
+              y_lim=(0, 1),
+              color_transparency_level=.8,
+              graph_title=graph_title,
+              file_with_fig=output_folder + series.name + fn_suffix + '.png')
+
+
+def visualize_filtered_data(series, conditions, output_folder):
+    """
+
+    Args:
+        series (pandas.Series): data
+        conditions (tuple): (lb, ub)
+        output_folder (str): path to output folder
 
     """
 
-    for feature in df_quant.columns:
+    # boolean filters
+    filter_lb = series >= conditions[0]
+    filter_ub = series <= conditions[1]
 
-        vals = df_quant[feature].values
-        bool_mask = np.isnan(vals)
-        num_nans = sum(bool_mask)
-        if num_nans > 0:
-            wrn_str = 'feature ' + feature + ' has ' + str(num_nans) +\
-                      ' NaN values ignored when computing the histogram!'
-            warnings.warn(wrn_str)
+    # filtering data on basis of filters
+    series_filt = series.loc[filter_lb & filter_ub]
 
-        # drop Nan values. Otherwise the range parameter of the histogram is
-        # not finite.
-        vals = vals[np.logical_not(bool_mask)]
-
-        binning = 10  # 'auto'
-        bin_heights, bin_edges = np.histogram(vals, bins=binning, density=False)
-
-        # normalize s.t. the sum of heights is one
-        bin_heights = bin_heights / bin_heights.sum()
-
-        plot_hist(bin_edges, bin_heights,
-                  x_label=feature,
-                  y_label='proportion',
-                  y_lim=(0, 1),
-                  color_transparency_level=.8,
-                  graph_title='distribution of ' + feature,
-                  file_with_fig=output_folder + feature + '.png')
+    if series_filt.dtype == 'object':
+        visualize_categorical_distribution(
+            series_filt, output_folder, fn_suffix='_filtered'
+        )
+    else:
+        visualize_continuous_distribution(
+            series_filt, output_folder,
+            binning=10, fn_suffix='_filtered',
+            graph_title='distribution of ' + series.name + ' in '
+                        '[' + str(conditions[0]) + ',' +
+                        str(conditions[1]) + ']'
+        )
 
 
 def plot_hist(bin_edges, bin_heights, **kwargs):
@@ -160,10 +278,10 @@ def plot_hist(bin_edges, bin_heights, **kwargs):
     if log_y_scale:
         plt.yscale('log')
 
-    # plt.tick_params(axis='both', which='major', labelsize=fontsize[
-    #     'major_axes_tick:'])
-    # plt.tick_params(axis='both', which='minor', labelsize=fontsize[
-    #     'minor_axes_tick:'])
+    plt.tick_params(axis='both', which='major', labelsize=fontsize[
+        'major_axes_tick:'])
+    plt.tick_params(axis='both', which='minor', labelsize=fontsize[
+        'minor_axes_tick:'])
 
     if remove_grid:
         plt.grid(None)  # remove grid
@@ -186,74 +304,12 @@ def plot_hist(bin_edges, bin_heights, **kwargs):
 
 if __name__ == '__main__':
 
-    print('\nExploratory data analysis for the "Census" dataset\n')
-
     # set seed of random number generator to ensure reproducibility of results
     # util.initialize_rnd_numbers_generators_state()
 
     output_folder = './output/eda/'
     util.empty_folder(output_folder)
 
-    # path to input
-    path = '../_data/adult_with_rand_names.csv'
-    filepath = os.path.join(os.path.dirname(
-        os.path.abspath(__file__)), path)
+    dataset = get_dataset()
 
-    # init input data source
-    data_source = dq0.sdk.data.text.CSV(filepath)
-
-    column_names_list = [
-        'lastname',
-        'firstname',
-        'age',
-        'workclass',
-        'fnlwgt',
-        'education',
-        'education-num',
-        'marital-status',
-        'occupation',
-        'relationship',
-        'race',
-        'sex',
-        'capital-gain',
-        'capital-loss',
-        'hours-per-week',
-        'native-country',
-        'income'
-    ]
-
-    # read the data via the attached input data source
-    dataset = data_source.read(
-        names=column_names_list,
-        sep=',',
-        skiprows=1,
-        index_col=None,
-        skipinitialspace=True,
-        na_values={
-            'capital-gain': 99999,
-            'capital-loss': 99999,
-            'hours-per-week': 99,
-            'workclass': '?',
-            'native-country': '?',
-            'occupation': '?'}
-    )
-
-    # drop unused columns
-    dataset.drop(['lastname', 'firstname'], axis=1, inplace=True)
-    column_names_list.remove('lastname')
-    column_names_list.remove('firstname')
-
-    # define target feature
-    # target_feature = 'income'
-
-    util.print_details_about_df_columns(dataset)
-
-    categorical_feature_types = ['object', 'category']
-
-    df_cat = dataset.select_dtypes(include=categorical_feature_types)
-    visualize_categorical_distributions(df_cat)
-
-    df_quant = dataset.select_dtypes(exclude=categorical_feature_types)
-    visualize_continuous_distributions(df_quant)
-
-    print('\nEDA run successfully!\n')
+    eda(dataset, output_folder)
