@@ -33,20 +33,52 @@ class Data:
 
     """
 
-    def __init__(self, project=None):
-        if project is None:
-            raise ValueError('You need to provide the "project" argument')
+    def __init__(self, source, project=None):
+        if source is None:
+            raise ValueError('You need to provide the "source" argument')
+        self.source = source
         self.project = project
+        self.where_clause = None
 
-    def mean(self, cols=None, query=None):
+    def where(self, *args):
+        """Where filter. TBD."""
+        self.where_clause = args
+        return self
+
+    def all(self, *args):
+        """All reset filter."""
+        self.where_clause = None
+        return self
+
+    def mean(self, cols=None):
         """Gets the differential private mean value of the given columns
 
         Args:
-            cols: list of columns in the dataset to include. None for all available columns.
-            query: optional additional query to run against the dataset before calculating the mean.
+            cols: list of columns in the dataset to include. None for all available columns
 
         Returns:
             New instance of the ModelRunner class representing the prediction run.
         """
         # TODO
         pass
+
+    def distribution(self, cols=None):
+        """Gets the differential private mean value of the given columns
+
+        Args:
+            cols: list of columns in the dataset to include. None for all available columns
+
+        Returns:
+            New instance of the ModelRunner class representing the prediction run.
+        """
+        import time
+        from IPython.display import Image
+
+        time.sleep(2.5)
+
+        path = '/Users/jona/Downloads/RESULTS_Census/eda/age.png'
+        if self.where_clause is not None:
+            path = '/Users/jona/Downloads/RESULTS_Census/eda/age_filtered.png'
+        pil_img = Image(filename=path)
+
+        display(pil_img)  # noqa: F821
