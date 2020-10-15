@@ -13,11 +13,11 @@ Copyright 2020, Gradient Zero
 All rights reserved
 """
 
-from sklearn.datasets import fetch_20newsgroups
-
 import numpy as np
 
 import pandas as pd
+
+from sklearn.datasets import fetch_20newsgroups
 
 
 def _dump_text_and_labels_to_csv(
