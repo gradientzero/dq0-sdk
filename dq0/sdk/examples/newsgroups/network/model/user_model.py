@@ -8,14 +8,14 @@ All rights reserved
 
 import logging
 
-from dq0.sdk.data.utils import util
 from dq0.sdk.data.preprocessing import preprocessing
+from dq0.sdk.data.utils import util
 from dq0.sdk.models.tf import NeuralNetworkClassification
 
 import numpy as np
 
-from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
 
 import tensorflow.compat.v1 as tf
 
