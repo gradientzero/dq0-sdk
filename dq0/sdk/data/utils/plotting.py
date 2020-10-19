@@ -358,7 +358,7 @@ def select_bar_colors(bar_heights, evenly_spaced_interval=False):
     return bar_colors
 
 
-def plot_bars(bar_heights, **kwargs):
+def plot_bars(bar_heights, **kwargs):  # noqa: C901
     """
     Generate a bar plot.
 
