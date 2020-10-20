@@ -65,14 +65,19 @@ class UserModel(NeuralNetworkClassification):
         X_train_df, X_test_df, y_train_ts, y_test_ts =\
             train_test_split(dataset_df.iloc[:, :-1],
                              dataset_df.iloc[:, -1],
-                             test_size=0.33,
+                             test_size=500,
+                             train_size=500,
                              stratify=dataset_df.iloc[:, -1])
-        
+
         # set data attributes
         self.X_train = X_train_df
         self.X_test = X_test_df
         self.y_train = y_train_ts
         self.y_test = y_test_ts
+
+        self.input_dim = self.X_train.shape[1]
+        self.output_dim = len(self.y_train.unique())
+        
 
     def preprocess(self):
         """Preprocess the data
@@ -130,11 +135,11 @@ class UserModel(NeuralNetworkClassification):
         import tensorflow.compat.v1 as tf
 
         self.model = tf.keras.Sequential([
-            tf.keras.layers.Input(self.X_train.shape[1]),
-            tf.keras.layers.Dense(int(0.8 * self.X_train.shape[1]), activation='relu'),
-            tf.keras.layers.Dense(int(0.8 * self.X_train.shape[1]), activation='relu'),
-            tf.keras.layers.Dense(int(0.8 * self.X_train.shape[1]), activation='relu'),
-            tf.keras.layers.Dense(len(self.y_train.unique()), activation='softmax')])
+            tf.keras.layers.Input(self.input_dim),
+            tf.keras.layers.Dense(int(0.8 * self.input_dim), activation='relu'),
+            # tf.keras.layers.Dense(int(0.8 * self.input_dim), activation='relu'),
+            # tf.keras.layers.Dense(int(0.8 * self.input_dim), activation='relu'),
+            tf.keras.layers.Dense(self.output_dim, activation='softmax')])
         self.optimizer = 'Adam'
         # To set optimizer params, self.optimizer = optimizer instance
         # rather than string, with params values passed as input to the class
@@ -144,7 +149,7 @@ class UserModel(NeuralNetworkClassification):
         #   self.optimizer = tensorflow.keras.optimizers.Adam(
         #       learning_rate=0.015)
         #
-        self.epochs = 30
+        self.epochs = 1000
         self.batch_size = 250
         self.metrics = ['accuracy']
         self.loss = tf.keras.losses.SparseCategoricalCrossentropy()
