@@ -136,7 +136,7 @@ class UserModel(NeuralNetworkClassification):
 
         self.model = tf.keras.Sequential([
             tf.keras.layers.Input(self.input_dim),
-            tf.keras.layers.Dense(int(0.8 * self.input_dim), activation='relu'),
+            tf.keras.layers.Dense(128, activation='relu'),
             # tf.keras.layers.Dense(int(0.8 * self.input_dim), activation='relu'),
             # tf.keras.layers.Dense(int(0.8 * self.input_dim), activation='relu'),
             tf.keras.layers.Dense(self.output_dim, activation='softmax')])
