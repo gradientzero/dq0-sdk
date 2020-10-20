@@ -112,13 +112,17 @@ class UserModel(NeuralNetworkClassification):
         X = dataset.drop('class', axis=1).copy()
         y = dataset['class']
 
-        # Convert cat to dummies
         dtypes = X.dtypes
         cat_cals = dtypes.loc[dtypes=='O'].index
+        num_cols = dtypes.loc[dtypes!='O'].index
 
+        # Convert cat to dummies
         for col in cat_cals:
             X = X.join(pd.get_dummies(X[col], drop_first=True))
             X.drop(col, axis=1, inplace=True)
+
+        # Standardize numeric
+        # X[num_cols] = sklearn.preprocessing.StandardScaler().fit_transform(X[num_cols])
 
         # LE class
         y = sklearn.preprocessing.LabelEncoder().fit_transform(y)
