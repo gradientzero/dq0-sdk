@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Adult dataset example.
+"""Human Activity Recognition dataset example.
 
 Run script to test the execution locally.
 
@@ -16,7 +16,7 @@ from dq0.sdk.examples.har.model.user_model import UserModel
 
 if __name__ == '__main__':
 
-    print('\nRunning demo for the "Census" dataset\n')
+    print('\nRunning demo for the "Human Activity Recognition" dataset\n')
 
     # set seed of random number generator to ensure reproducibility of results
     util.initialize_rnd_numbers_generators_state()
