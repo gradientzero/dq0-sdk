@@ -13,7 +13,6 @@ import os
 import logging
 import uuid
 import cloudpickle
-import mlflow.pyfunc
 
 from abc import abstractmethod
 from tempfile import TemporaryFile, TemporaryDirectory
@@ -23,7 +22,7 @@ from dq0.sdk.projects import Project
 logger = logging.getLogger()
 
 
-class Model(Project, mlflow.pyfunc.PythonModel):
+class Model(Project):
     """Abstract base class for all models available through the SDK.
 
     Model classes provide a setup method as well as the fit and predict
@@ -43,11 +42,10 @@ class Model(Project, mlflow.pyfunc.PythonModel):
         self.uuid = uuid.uuid1()
         self.model_type = ''
 
-
     def __getstate__(self):
         """Return data representation for pickled object
 
-        Overrides pickling behavior for this class by storing 
+        Overrides pickling behavior for this class by storing
         the underlying model attribute by serializing it into
         a binary format and applying to new attribute ``_model_binary_data_``
         """
@@ -73,7 +71,7 @@ class Model(Project, mlflow.pyfunc.PythonModel):
                 if binary_data is not None:
                     try:
                         state['_model_binary_data_'] = cloudpickle.dumps(binary_data)
-                    except:
+                    except BaseException:
                         logger.error('Could not pickle binary_data of length: {}'.format(len(binary_data)))
 
             # remove model from state to make this class pickelable
@@ -84,7 +82,7 @@ class Model(Project, mlflow.pyfunc.PythonModel):
     def __setstate__(self, state):
         """Restore object state from data representation generated
 
-        Overrides pickling behavior for this class by loading 
+        Overrides pickling behavior for this class by loading
         the underlying model attribute by deserializing it from
         a pickled binary format stored in attribute ``_model_binary_data_``
         """
@@ -102,21 +100,14 @@ class Model(Project, mlflow.pyfunc.PythonModel):
         if model_binary_data is not None:
             with TemporaryDirectory() as temp_dir:
                 path_to_model_file = os.path.join(temp_dir, 'model_file')
-                
+
                 # write binary data to temporary file
                 binary_file = open(path_to_model_file, "wb")
                 binary_file.write(model_binary_data)
                 binary_file.close()
-                
+
                 # load model and assign to self
                 self.load(path_to_model_file)
-
-    def load_context(self, context):
-        super().load_context(context)
-
-    def predict(self, context, model_input):
-        pass
-
 
     @abstractmethod
     def setup_data(self):
