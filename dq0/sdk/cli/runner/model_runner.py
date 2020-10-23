@@ -52,7 +52,7 @@ class ModelRunner(Runner):
         Returns:
             The state in JSON format
         """
-        return super()._get_state(routes.model.state, self.project.model_uuid)
+        return super()._get_state(routes.model.state, self.project.project_uuid)
 
     def cancel(self, force=False):
         """Cancels the experiment run.
@@ -62,4 +62,4 @@ class ModelRunner(Runner):
                 interrupted. Default is false where the job gracefully
                 gets signalled to halt.
         """
-        return super()._cancel(routes.model.cancel, self.project.model_uuid)
+        return super()._cancel(routes.model.cancel, self.project.project_uuid)
