@@ -34,12 +34,22 @@ class State:
     def __init__(self):
         self.finished = False
         self.message = ''
+        self.run_id = ''
+        self.progress = 0
         self.results = {}
 
     def update(self, response):
         """Updates the state representation"""
-        self.message = response['message']
+        self.message = response['job_state']
         self.results = response
-        state_id = int(response['state_id'])
-        if state_id == 3 or state_id == 4:
+        try:
+            self.run_id = response['job_params'].split('=')[-1]
+        except Exception:
+            pass
+        try:
+            self.progress = int(response['job_progress'])
+        except Exception:
+            pass
+        if self.progress == 1:
             self.finished = True
+            # TODO: get Results via /runs/:run_id request

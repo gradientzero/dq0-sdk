@@ -21,13 +21,16 @@ _routes = {
     },
     'model': {
         '_base': 'models/:uuid/',
-        'predict': 'predict/',
-        'state': 'state/',
-        'cancel': 'cancel/'
+        'predict': 'predict/'
     },
     'runs': {
         '_base': 'runs/',
         'create': ''
+    },
+    'job': {
+        '_base': 'jobs/:uuid/',
+        'state': '',
+        'cancel': 'delete/'
     },
     'data': {
         '_base': 'data/',

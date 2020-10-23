@@ -16,7 +16,7 @@ All rights reserved
 
 from dq0.sdk.cli.api import routes
 from dq0.sdk.cli.runner import DataRunner, ModelRunner
-from dq0.sdk.errors import checkSDKResponse
+from dq0.sdk.errors import DQ0SDKError, checkSDKResponse
 
 
 class Experiment:
@@ -98,7 +98,11 @@ class Experiment:
         response = self.project.client.post(routes.runs.create, data=data)
         checkSDKResponse(response)
         print(response['message'])
-        return ModelRunner(self.project)
+        try:
+            job_uuid = response['message'].split(' ')[-1]
+        except Exception:
+            raise DQ0SDKError('Could not parse new commit uuid')
+        return ModelRunner(self.project, job_uuid)
 
     def preprocess(self):
         """Starts a preprocessing run
