@@ -169,17 +169,21 @@ class NeuralNetwork(Model):
         if self.model is None:
             logger.fatal('No TensorFlow model provided!')
 
-        self.X_train, self.y_train = \
-            fix_limitation_of_Keras_fit_and_predict_functions(
-                self.X_train, self.y_train, self.batch_size
-            )
-
         self.model.compile(optimizer=self.optimizer,
                            loss=self.loss,
                            metrics=self.metrics)
 
-        self.model.fit(self.X_train,
-                       self.y_train,
+        # work on deep copy of data because
+        # "fix_limitation_of_Keras_fit_and_predict_functions" modifies the
+        # dataset is gets as input
+        tmp_X_train = copy.deepcopy(self.X_train)
+        tmp_y_train = copy.deepcopy(self.y_train)
+        tmp_X_train, tmp_y_train = \
+            fix_limitation_of_Keras_fit_and_predict_functions(
+                tmp_X_train, tmp_y_train, self.batch_size
+            )
+        self.model.fit(tmp_X_train,
+                       tmp_y_train,
                        epochs=self.epochs,
                        verbose=verbose,
                        batch_size=self.batch_size)
@@ -220,8 +224,13 @@ class NeuralNetwork(Model):
             logger.fatal('Missing argument in model: batch_size')
             return
 
-        X = self.X_test if test_data else self.X_train
-        y = self.y_test if test_data else self.y_train
+        # work on deep copy of data because
+        # "fix_limitation_of_Keras_fit_and_predict_functions" modifies the
+        # dataset is gets as input
+        X = copy.deepcopy(self.X_test) if test_data else copy.deepcopy(
+            self.X_train)
+        y = copy.deepcopy(self.y_test) if test_data else copy.deepcopy(
+            self.y_train)
 
         # If all the data to be predicted do not fit in the CPU/GPU RAM at
         # the same time, predictions are done in batches.

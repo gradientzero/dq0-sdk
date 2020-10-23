@@ -6,6 +6,7 @@ All rights reserved
 """
 
 import inspect
+import math
 import os
 import pickle
 import random
@@ -95,7 +96,7 @@ def print_details_about_df_columns(df_dataset):
         df_dataset: data frame to inspect.
     """
     if isinstance(df_dataset, pd.DataFrame):
-        _print_feats(df_dataset.columns.values.tolist(), "\tfeatures")
+        _print_feats(df_dataset.columns.values.tolist(), "features")
         print("\nfeatures type:")
         _print_dataframe_cols_grouped_by_type(df_dataset)
 
@@ -523,8 +524,8 @@ def check_data_structure_type_consistency(X_train, X_test, y_train, y_test):
         y_test: Numpy (also non-dimensional) array or Pandas Series
 
     """
-    assert (isinstance(X_train, pd.DataFrame) or
-            isinstance(X_train, np.ndarray))
+    assert (isinstance(X_train, pd.DataFrame) or isinstance(X_train,
+            np.ndarray))
 
     assert isinstance(y_train, pd.Series) or isinstance(y_train, np.ndarray)
 
@@ -928,8 +929,12 @@ def compute_metrics_scores(y, y_pred_np_a, metrics_list):
         #    else metric.__class__.__name__
         metric_name = metric.__class__.__name__.lower()
 
-        # convert tensor to array and update dict
-        res.update({metric_name: metric.result().numpy()})
+        # convert tensor to array
+        metric_result = tensorflow_tensor_to_numpy_ndarray(metric.result())
+        # metric_result = metric.result().numpy()
+
+        # update dict
+        res.update({metric_name: metric_result})
         metric.reset_states()
 
     return res
@@ -965,3 +970,97 @@ def copy_obj_attributes(obj_from, obj_to, attributes_l=None):
                 setattr(obj_to, attr, value)
 
     return obj_to
+
+
+def tensorflow_tensor_to_numpy_ndarray(*args):
+    """
+
+    Convert input tensorflow tensors into numpy.ndarray arrays.
+
+    Args:
+        args: tensorflow tensors
+    Returns:
+        np_arrays, a list of numpy.ndarray arrays. Order matters: np_arrays[i]
+        is the conversion of args[i]. If np_arrays contains a single item,
+        the item is returned rather than a list with just one item inside.
+
+    """
+
+    eager_execution_enabled = tf.executing_eagerly()
+    # In TensorFlow 2 eager execution is activated by default.
+    #
+    # In TensorFlow 1 eager execution is DE-activated by default. Explicitly
+    # activating eager execution In TensorFlow 1 by command
+    # "tf.enable_eager_execution()" is NOT possible if TensorFlow Privacy is
+    # is used.
+    #
+    # With above setting, migration to TensorFlow 2 should be accomplishable
+    # without modifying below code.
+
+    np_arrays = [None] * len(args)  # list where each position is set to None
+
+    for i, tf_tensor in enumerate(args):
+        np_arrays[i] = tf_tensor.numpy() if eager_execution_enabled else\
+            tf.keras.backend.eval(tf_tensor)
+
+    # sanity check
+    assert all([x is not None for x in np_arrays])
+
+    if len(np_arrays) == 1:
+        # return item rather than list with just one item inside
+        np_arrays = np_arrays[0]
+
+    return np_arrays
+
+
+def format_float_lower_than_1(float_value, abs_tol=1e-8):
+    """
+    Generate a string representation for the input float number with the 0
+    value of the unit being removed if the absolute value of the float
+    number is smaller than one. E.g, 0.234 is converted into ".234".
+
+    Args:
+        float_value (float): input float number
+        abs_tol (float): tolerance value for equality to zero
+    Returns:
+        str representation of the input float number with redundant 0 for
+        unit removed (if any).
+
+    """
+
+    if not math.isfinite(float_value):
+        raise RuntimeError(
+            'finite value expected. Found: ' + str(float_value)
+        )
+
+    if abs(float_value) < abs_tol:
+        return str(0)
+
+    if type(float_value) != str:
+        res = str(float_value)
+
+    # TODO replace below naive solution with suitable regex expression
+
+    if res.startswith('0.'):
+        res = res[1:]
+    if res.startswith('-0.'):
+        res = '-' + res[2:]
+
+    return res
+
+
+def perform_stratified_random_sampling(df, col_name, sample_size):
+    """
+    Generate stratified sample of size "sample_size" where the
+    proportion of instances with value "A" for "col_name"
+    in the stratified sample matches the proportion of instances
+    with value "A" for "col_name" in the larger DataFrame. This
+    holds for every distinct value "A" of "col_name".
+
+    """
+
+    sample_df = df.groupby(col_name, group_keys=False).apply(
+        lambda x: x.sample(int(np.rint(sample_size * len(x) / len(df))))
+    ).sample(frac=1).reset_index(drop=True)
+
+    return sample_df

@@ -5,6 +5,9 @@ Copyright 2020, Gradient Zero
 All rights reserved
 """
 import logging
+import warnings
+
+from dq0.sdk.data.utils import util
 
 from matplotlib import pyplot as plt
 
@@ -23,13 +26,15 @@ logging.getLogger("pyplot").setLevel(logging.WARNING)
 logging.getLogger("seaborn").setLevel(logging.WARNING)
 
 
-def plot_confusion_matrix_for_scikit_classifier(classifier,
-                                                X_test_np_a,
-                                                y_test_np_a,
-                                                class_names=None,
-                                                xticks_rotation='horizontal',  # 'vertical', 'horizontal', float
-                                                part_of_fn_describing_matrix='',
-                                                output_folder='../data/output/'):
+def plot_confusion_matrix_for_scikit_classifier(
+    classifier,
+    X_test_np_a,
+    y_test_np_a,
+    class_names=None,
+    xticks_rotation='horizontal',  # 'vertical', 'horizontal', float
+    part_of_fn_describing_matrix='',
+    output_folder='../data/output/'
+):
     """Plots a confusion matrix for the scikit classifier.
 
     Args:
@@ -76,7 +81,8 @@ def _save_plotted_cm(part_of_fn_describing_matrix, title, output_folder):
     Args:
         part_of_fn_describing_matrix (:obj:`str`): File part description
         title (:obj:`str`): Title of the matrix
-        output_folder (:obj:`str`): Path to the output folder for the matrix png image.
+        output_folder (:obj:`str`): Path to the output folder for the matrix
+            png image.
     """
     if part_of_fn_describing_matrix != '':
         if not part_of_fn_describing_matrix.startswith('_for_'):
@@ -314,6 +320,382 @@ def get_param_configuration_for_publication_quality_plot():
     dpi = 300
 
     return linewidth, markersize, figsize, fontsize, dpi
+
+
+def select_bar_colors(bar_heights, evenly_spaced_interval=False):
+    """
+    Define a color for each bar in a bar-plot.
+
+    Args:
+        bar_heights (np.ndarray): list of heights of the bars. Order
+            matters: bar_heights[0] refers to the height of the leftmost bar.
+        evenly_spaced_interval (bool): Boolean flag. If False, bar coloring
+            based on height of bins. If true, bar coloring by order of the
+            bins: the selected colors are equally spaced in the color map.
+            The latter option may be useful if the bins are ordered by their
+            height and the color map is sequential or diverging.
+
+    Returns:
+        list of colors
+    """
+
+    # color_map = plt.cm.get_cmap('GnBu')
+    color_map = plt.cm.get_cmap('RdYlBu_r')
+    # to get a color, call the colormap with a value between 0 and 1
+    if evenly_spaced_interval:
+        # coloring by order of the bins (useful if bins are ordered,
+        # e.g., from highest to lowest)
+        selected_colors = np.linspace(0, 1, len(bar_heights))
+    else:
+        # coloring by height of the bins
+        # scale bar heights into [0, 1]
+        selected_colors = (bar_heights - bar_heights.min()) / \
+                          (bar_heights.max() - bar_heights.min())
+
+    # colormap maps numbers to colors in a 1-D array of (e.g., RGB) colors.
+    bar_colors = [color_map(x) for x in selected_colors]
+
+    return bar_colors
+
+
+def plot_bars(bar_heights, **kwargs):  # noqa: C901
+    """
+    Generate a bar plot.
+
+    Args:
+        bar_heights (list): heights of the bars.
+        **kwargs:
+
+    Returns:
+
+    """
+
+    bar_locations = kwargs.get('bar_locations', None)
+    bar_width = kwargs.get('bar_width', 1.0)
+    bar_labels = kwargs.get('bar_labels', None)
+    bar_colors = kwargs.get('bar_colors', None)
+    x_label = kwargs.get('x_label', None)
+    y_label = kwargs.get('y_label', None)
+    tick_label_length_threshold_for_rotation = kwargs.get(
+        'tick_label_length_threshold_for_rotation', None)
+    x_labels_rotation_degr = kwargs.get('x_labels_rotation_degr', 45)
+    x_lim = kwargs.get('x_lim', None)
+    y_lim = kwargs.get('y_lim', None)
+    log_y_scale = kwargs.get('log_y_scale', False)
+    graph_title = kwargs.get('graph_title', None)
+    show_legend = kwargs.get('show_legend', False)
+
+    num_bars = len(bar_heights)
+    show_bar_heights = False if num_bars > 20 else kwargs.get(
+        'show_bar_heights', False)  # if too many bars, forced to False to
+    # avoid cluttering
+
+    threshold = kwargs.get('threshold', None)
+    remove_grid = kwargs.get('remove_grid', True)
+    file_with_fig = kwargs.get('file_with_fig', None)
+
+    linewidth, markersize, figsize, fontsize, dpi = \
+        get_param_configuration_for_publication_quality_plot()
+    # set opacity. If set to None, colors are NOT transparent at all.
+    color_transparency_level = kwargs.get('color_transparency_level', .4)
+
+    plt.style.use('seaborn-darkgrid')
+
+    # fig, ax = plt.subplots()
+    fig = plt.figure(figsize=figsize)
+    ax = fig.gca()
+
+    if bar_locations is None and bar_width == 1.0:
+        bar_locations = np.arange(num_bars)
+
+    tmp = bar_width
+    bar_width *= 0.9  # avoid overlapping edges
+
+    # set a margin to avoid that right (left) edge of last (first) bar
+    # overlaps with figure edge
+    bar_edge_to_fig_edge_margin = tmp - bar_width
+
+    # alignment of the bars to the x coordinates: bars are centered on the
+    # "bar_locations" values
+    rects = ax.bar(
+        bar_locations,
+        bar_heights,
+        width=bar_width,
+        # label='',
+        color=bar_colors,
+        linewidth=linewidth,
+        linestyle='-',
+        alpha=color_transparency_level
+    )
+
+    if threshold is not None:
+        # plot horizontal line y = threshold value
+        plt.axhline(y=threshold,
+                    linestyle='--', color='k',
+                    linewidth=linewidth - 2,
+                    label='decision threshold',
+                    alpha=color_transparency_level)
+        show_legend = True
+
+    if x_lim is not None:
+        ax.set_xlim(x_lim)
+    else:
+        xlb = bar_locations[0] - bar_width * .5 - bar_edge_to_fig_edge_margin
+        xub = bar_locations[-1] + bar_width * .5 + bar_edge_to_fig_edge_margin
+        ax.set_xlim(xlb, xub)
+    if y_lim is not None:
+        ax.set_ylim(y_lim)
+
+    if x_label is not None:
+        ax.set_xlabel(x_label, fontsize=fontsize['axes_label'])
+    if y_label is not None:
+        ax.set_ylabel(y_label, fontsize=fontsize['axes_label'])
+    if log_y_scale:
+        plt.yscale('log')
+
+    plt.tick_params(axis='both', which='major', labelsize=fontsize[
+        'major_axes_tick:'])
+    plt.tick_params(axis='both', which='minor', labelsize=fontsize[
+        'minor_axes_tick:'])
+    ax.set_xticks(bar_locations)
+    if bar_labels is not None:
+
+        rotation = None
+        if tick_label_length_threshold_for_rotation is not None:
+            max_length = max([len(x) for x in bar_labels])
+            if max_length >= tick_label_length_threshold_for_rotation:
+                rotation = x_labels_rotation_degr
+
+        ax.set_xticklabels(bar_labels, rotation=rotation)
+
+    if show_legend:
+        # handles with labels to put in legend must have been defined above
+        # (by, e.g., setting "label=..." in each plot command)
+        #
+        # loc='upper right', loc='upper center'
+        #
+        ax.legend(loc='best', ncol=2, fontsize=fontsize['legend'])
+
+    if remove_grid:
+        plt.grid(None)  # remove grid
+
+    if graph_title is not None:
+        plt.title(graph_title, fontsize=fontsize['legend'])
+
+    if show_bar_heights:
+        _autolabel(rects, ax, fontsize=fontsize['major_axes_tick:'])
+
+    # clean up whitespace padding
+    plt.tight_layout()
+
+    if file_with_fig is not None:
+        fig.savefig(file_with_fig, dpi=dpi)
+    else:
+        plt.show()
+
+    # do not leave fig in RAM...
+    plt.close(fig)
+    # return fig
+
+
+def _autolabel(rects, ax, **kwargs):
+    """
+    Attach a text label above each bar in *rects*, displaying its height.
+
+    Args:
+        rects: heights of the bar
+        ax: Matplotlib Axes object where labels will be generated.
+    """
+
+    fontsize = kwargs.get('fontsize', None)
+    number_decimals = kwargs.get('number_decimals', 2)
+
+    for rect in rects:
+        height = rect.get_height()
+
+        height_str = util.format_float_lower_than_1(
+            round(height, number_decimals)
+        )
+
+        ax.annotate(height_str,  # '{}'.format(height)
+                    xy=(rect.get_x() + rect.get_width() / 2, height),
+                    xytext=(0, 3),  # 3 points vertical offset
+                    textcoords="offset points",
+                    ha='center', va='bottom',
+                    fontsize=fontsize)
+
+
+def plot_hist(bin_edges, bin_heights, **kwargs):
+    """
+    Plot a histogram. By default, the bins are coloured based on their heights.
+    Coloring is based on a diverging colormap where highest bins are given
+    reddish colors, while lower bins are given bluish colors.
+
+    Args:
+        bin_edges (list): edges of the bins. List lengths is number of bins
+            plus one.
+        bin_heights (list): heights of the bins.
+        **kwargs:
+
+    """
+
+    width_factor = kwargs.get('width_factor', 1.0)  # decrease to avoid
+    # overlapping edges
+    bar_colors = kwargs.get('bar_colors', None)
+    x_label = kwargs.get('x_label', None)
+    y_label = kwargs.get('y_label', None)
+    x_lim = kwargs.get('x_lim', None)
+    y_lim = kwargs.get('y_lim', None)
+    log_y_scale = kwargs.get('log_y_scale', False)
+    graph_title = kwargs.get('graph_title', None)
+    remove_grid = kwargs.get('remove_grid', True)
+    file_with_fig = kwargs.get('file_with_fig', None)
+    # set opacity. If set to None, colors are NOT transparent at all.
+    color_transparency_level = kwargs.get('color_transparency_level', .4)
+
+    if bar_colors is None:
+        bar_colors = select_bar_colors(bin_heights)
+
+    linewidth, markersize, figsize, fontsize, dpi = \
+        get_param_configuration_for_publication_quality_plot()
+
+    bin_width = width_factor * (bin_edges[1] - bin_edges[0])
+    bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
+
+    plt.style.use('seaborn-darkgrid')
+    # fig, ax = plt.subplots()
+    fig = plt.figure(figsize=figsize)
+    ax = fig.gca()
+
+    plt.bar(
+        bin_centers, bin_heights, align='center',
+        width=bin_width,
+        color=bar_colors,
+        alpha=color_transparency_level
+        # linewidth=linewidth,
+        # linestyle='-',
+    )
+
+    if x_lim is not None:
+        ax.set_xlim(x_lim)
+
+    if y_lim is not None:
+        ax.set_ylim(y_lim)
+
+    if x_label is not None:
+        ax.set_xlabel(x_label, fontsize=fontsize['axes_label'])
+    if y_label is not None:
+        ax.set_ylabel(y_label, fontsize=fontsize['axes_label'])
+    if log_y_scale:
+        plt.yscale('log')
+
+    plt.tick_params(axis='both', which='major', labelsize=fontsize[
+        'major_axes_tick:'])
+    plt.tick_params(axis='both', which='minor', labelsize=fontsize[
+        'minor_axes_tick:'])
+
+    if remove_grid:
+        plt.grid(None)  # remove grid
+
+    if graph_title is not None:
+        plt.title(graph_title, fontsize=fontsize['legend'])
+
+    # clean up whitespace padding
+    plt.tight_layout()
+
+    if file_with_fig is not None:
+        fig.savefig(file_with_fig, dpi=dpi)
+    else:
+        plt.show()
+
+    # do not leave fig in RAM...
+    plt.close(fig)
+    # return fig
+
+
+def visualize_categorical_distribution(series, output_folder, **kwargs):
+    """
+    Show the proportion of observations in each category using bars. Basically,
+    it visualizes the discrete distribution of the data and the resulting
+    plot can be interpreted as an histogram across a categorical, instead of
+    quantitative, variable.
+
+
+    Args:
+        series (pandas.Series): categorical (aka discrete) data to be
+            visualized.
+        output_folder: path to folder where the generated figure will be
+            saved.
+    """
+
+    fn_suffix = kwargs.get('fn_suffix', '')
+
+    counts_se = series.value_counts(normalize=True)
+    bar_heights = counts_se.values
+    bar_labels = counts_se.index.values.tolist()
+    bar_colors = select_bar_colors(bar_heights)
+
+    if len(bar_heights) > 6:
+        x_labels_rotation_degr = 90
+    else:
+        x_labels_rotation_degr = 45
+
+    plot_bars(
+        bar_heights=bar_heights,
+        bar_labels=bar_labels,
+        bar_colors=bar_colors,
+        tick_label_length_threshold_for_rotation=4,
+        x_labels_rotation_degr=x_labels_rotation_degr,
+        y_lim=(0, 1),
+        y_label='proportion',
+        color_transparency_level=.8,
+        show_bar_heights=True,
+        threshold=None,
+        graph_title='distribution of ' + series.name,
+        file_with_fig=output_folder + series.name + fn_suffix + '.png'
+    )
+
+
+def visualize_continuous_distribution(series, output_folder, **kwargs):
+    """
+    Generate univariate histogram showing the data distribution.
+    Histogram bars show the proportions of observations falling in each
+    bin.
+
+    Args:
+        series (pandas.Series): quantitative data to be visualized.
+        output_folder: path to folder where the generated figure will be
+            saved.
+    """
+
+    fn_suffix = kwargs.get('fn_suffix', '')
+    binning = kwargs.get('binning', 10)  # 'auto'
+    graph_title = kwargs.get('graph_title', 'distribution of ' + series.name)
+
+    vals = series.values
+    bool_mask = np.isnan(vals)
+    num_nans = sum(bool_mask)
+    if num_nans > 0:
+        wrn_str = 'feature ' + series.name + ' has ' + str(num_nans) +\
+                  ' NaN values ignored when computing the histogram!'
+        warnings.warn(wrn_str)
+
+    # drop Nan values. Otherwise the range parameter of the histogram is
+    # not finite.
+    vals = vals[np.logical_not(bool_mask)]
+
+    bin_heights, bin_edges = np.histogram(vals, bins=binning, density=False)
+
+    # normalize s.t. the sum of heights is one
+    bin_heights = bin_heights / bin_heights.sum()
+
+    plot_hist(bin_edges, bin_heights,
+              x_label=series.name,
+              y_label='proportion',
+              y_lim=(0, 1),
+              color_transparency_level=.8,
+              graph_title=graph_title,
+              file_with_fig=output_folder + series.name + fn_suffix + '.png')
 
 
 if __name__ == '__main__':

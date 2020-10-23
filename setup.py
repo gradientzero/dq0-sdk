@@ -11,6 +11,8 @@ from setuptools import find_namespace_packages, setup
 
 from setuptools_cythonize import get_cmdclass
 
+from typings import List
+
 
 # meta information
 VERSION = '1.0.0'
@@ -39,10 +41,10 @@ SETUP_REQUIRES = [
     'flake8-import-order~=0.18.1',
 ]
 
-PACKAGES = find_namespace_packages(include=['dq0.*']) #find_packages()
+PACKAGES = find_namespace_packages(include=['dq0.*'])  # find_packages()
 
 # Requirements
-INSTALL_REQUIRES: []
+INSTALL_REQUIRES: List['']
 with open('requirements.txt') as f:
     INSTALL_REQUIRES = [line for line in f.read().splitlines()
                         if line and not line.startswith('#')]
@@ -64,4 +66,3 @@ setup(
     setup_requires=SETUP_REQUIRES,
     include_package_data=True,
 )
-

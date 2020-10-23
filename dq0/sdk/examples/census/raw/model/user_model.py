@@ -324,7 +324,7 @@ class UserModel(NeuralNetworkClassification):
             col['name'] for col in columns_types_list
             if col['type'] == 'string']
 
-        # get categorical features
+        # get quantitative features
         quantitative_features_list = [
             col['name'] for col in columns_types_list
             if col['type'] == 'int' or col['type'] == 'float']

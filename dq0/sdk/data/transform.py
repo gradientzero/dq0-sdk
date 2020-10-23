@@ -5,7 +5,6 @@ Copyright 2020, Gradient Zero
 """
 
 import uuid
-
 from abc import abstractmethod
 
 from dq0.sdk.projects import Project
@@ -34,7 +33,7 @@ class Transform(Project):
     def execute(self, dataset=None):
         """Execute transformation function
 
-        This function can be used by child classes to prepare data 
+        This function can be used by child classes to prepare data
         that dont need to be repeated for every training run.
         """
         pass

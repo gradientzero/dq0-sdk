@@ -7,15 +7,15 @@ All rights reserved
 
 import logging
 
-from dq0.sdk.data.utils import util
 from dq0.sdk.data.preprocessing import preprocessing
+from dq0.sdk.data.utils import util
 from dq0.sdk.models.bayes.naive_bayesian_model import NaiveBayesianModel
 
 import numpy as np
 
+from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.preprocessing import LabelEncoder
-from sklearn.model_selection import train_test_split
 
 
 logger = logging.getLogger()
