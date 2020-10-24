@@ -25,7 +25,8 @@ _routes = {
     },
     'runs': {
         '_base': 'runs/',
-        'create': ''
+        'create': '',
+        'get': ':uuid/'
     },
     'job': {
         '_base': 'jobs/:uuid/',

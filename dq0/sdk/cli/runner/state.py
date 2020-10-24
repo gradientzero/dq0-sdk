@@ -36,12 +36,11 @@ class State:
         self.message = ''
         self.run_id = ''
         self.progress = 0
-        self.results = {}
+        self.results = None
 
     def update(self, response):
         """Updates the state representation"""
         self.message = response['job_state']
-        self.results = response
         try:
             self.run_id = response['job_params'].split('=')[-1]
         except Exception:
@@ -52,4 +51,7 @@ class State:
             pass
         if self.progress == 1:
             self.finished = True
-            # TODO: get Results via /runs/:run_id request
+
+    def set_results(self, results):
+        """Update parsed run results"""
+        self.results = results
