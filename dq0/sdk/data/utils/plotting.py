@@ -75,7 +75,8 @@ def plot_confusion_matrix_for_scikit_classifier(
         print('\n' + title + ' saved in file ' + file_path)
 
 
-def _save_plotted_cm(part_of_fn_describing_matrix, title, output_folder):
+def _save_plotted_cm(part_of_fn_describing_matrix, title, output_folder,
+                     dpi=200):
     """Saves the confusion matrix as PNG image.
 
     Args:
@@ -90,7 +91,7 @@ def _save_plotted_cm(part_of_fn_describing_matrix, title, output_folder):
                                            part_of_fn_describing_matrix
     file_path = output_folder + title.replace(' ', '_') + \
         part_of_fn_describing_matrix + '.png'
-    plt.savefig(file_path, bbox_inches='tight', dpi=200)
+    plt.savefig(file_path, bbox_inches='tight', dpi=dpi)
 
     return file_path
 
@@ -98,7 +99,7 @@ def _save_plotted_cm(part_of_fn_describing_matrix, title, output_folder):
 def plot_confusion_matrix(y_true,
                           y_pred,
                           output_folder,
-                          xticks_rotation='horizontal',
+                          ticks_rotation='horizontal',
                           cmap=plt.cm.Blues,
                           part_of_fn_describing_matrix=''):
     """Print and plot the confusion matrix.
@@ -107,12 +108,16 @@ def plot_confusion_matrix(y_true,
         y_true (:obj:`numpy.ndarray`): target y values.
         y_pred (:obj:`numpy.ndarray`): predicted y values.
         output_folder (:obj:`str`): Path to the output folder for the matrix png image.
-        xticks_rotation: can be 'horizontal', 'vertical' or float
+        ticks_rotation: can be 'horizontal', 'vertical' or float
         cmap: Matplotlib color map.
         part_of_fn_describing_matrix (:obj:`str`): function description for matrix.
     """
     titles_options = [('Confusion matrix', None),
                       ('Normalized confusion matrix', 'true')]
+
+    _, _, _, fontsize, dpi = \
+        get_param_configuration_for_publication_quality_plot()
+
     for title, normalize in titles_options:
 
         cm, labels_list = compute_confusion_matrix(y_true, y_pred, normalize)
@@ -126,8 +131,9 @@ def plot_confusion_matrix(y_true,
         fig, ax = plt.subplots()
         # cmap='Greens'
         if len(labels_list) > 10:
-            annot_kws = {'size': 6}  # reduce font size to avoid cluttering
-            xticks_rotation = '45'  # must be a string due to below call of
+            # reduce font size to avoid cluttering
+            annot_kws = {'size': fontsize['major_axes_tick:']}  # 6
+            ticks_rotation = '45'  # must be a string due to below call of
             # "lower()"
         else:
             annot_kws = None
@@ -140,23 +146,28 @@ def plot_confusion_matrix(y_true,
         #
 
         # labels, title and ticks
-        ax.set_xlabel('Predicted labels')
-        ax.set_ylabel('Actual labels')
-        ax.set_title(title)
+        ax.set_xlabel('Predicted labels', fontsize=fontsize['axes_label'])
+        ax.set_ylabel('Actual labels', fontsize=fontsize['axes_label'])
+        ax.set_title(title, fontsize=fontsize['title'])
+
+        plt.tick_params(axis='both', which='major', labelsize=fontsize[
+            'major_axes_tick:'])
+        plt.tick_params(axis='both', which='minor', labelsize=fontsize[
+            'minor_axes_tick:'])
         ax.xaxis.set_ticklabels(labels_list)
         ax.yaxis.set_ticklabels(labels_list)
 
         ax.grid(False)
 
         # rotate the tick labels and set their alignment
-        if xticks_rotation.lower() != 'horizontal'.lower():
+        if ticks_rotation.lower() != 'horizontal'.lower():
             for c_ax in [ax.get_xticklabels(), ax.get_yticklabels()]:
                 plt.setp(c_ax, rotation=45, ha="right", rotation_mode="anchor")
 
         fig.tight_layout()
 
         file_path = _save_plotted_cm(part_of_fn_describing_matrix, title,
-                                     output_folder)
+                                     output_folder, dpi=dpi)
         plt.close(fig)
         print('\n' + title + ' saved in file ' + file_path)
 
@@ -303,7 +314,8 @@ def get_param_configuration_for_publication_quality_plot():
     fontsize = {'axes_label': 15,
                 'major_axes_tick:': 13,
                 'minor_axes_tick:': 12,
-                'legend': 13
+                'legend': 13,
+                'title': 13
                 }
 
     #
@@ -480,7 +492,7 @@ def plot_bars(bar_heights, **kwargs):  # noqa: C901
         plt.grid(None)  # remove grid
 
     if graph_title is not None:
-        plt.title(graph_title, fontsize=fontsize['legend'])
+        plt.title(graph_title, fontsize=fontsize['title'])
 
     if show_bar_heights:
         _autolabel(rects, ax, fontsize=fontsize['major_axes_tick:'])
@@ -598,7 +610,7 @@ def plot_hist(bin_edges, bin_heights, **kwargs):
         plt.grid(None)  # remove grid
 
     if graph_title is not None:
-        plt.title(graph_title, fontsize=fontsize['legend'])
+        plt.title(graph_title, fontsize=fontsize['title'])
 
     # clean up whitespace padding
     plt.tight_layout()
