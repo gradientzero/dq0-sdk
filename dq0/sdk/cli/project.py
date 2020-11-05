@@ -21,7 +21,6 @@ import inspect
 import json
 import os
 
-from dq0.sdk.cli import Model
 from dq0.sdk.cli.api import Client, routes
 from dq0.sdk.cli.utils.code import (
     add_function,
@@ -146,14 +145,6 @@ class Project:
             Project info in JSON format
         """
         return self.client.get(routes.project.info, uuid=self.project_uuid)
-
-    def get_latest_model(self):
-        """Returns the currently active model of this project.
-
-        Returns:
-            The currently active model of this project.
-        """
-        return Model(project=self)
 
     def get_available_data_sources(self):
         """Returns a list of available data sources.

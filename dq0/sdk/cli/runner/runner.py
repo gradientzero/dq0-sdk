@@ -144,4 +144,3 @@ class Runner(ABC):
                 print(self.state.message)
         if verbose:
             print('Job completed.')
-            print(self.state.message)

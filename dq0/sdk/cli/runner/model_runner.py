@@ -16,6 +16,7 @@ All rights reserved
 """
 
 from dq0.sdk.cli.api import routes
+from dq0.sdk.cli.model import Model
 from dq0.sdk.cli.runner.runner import Runner
 
 
@@ -64,3 +65,11 @@ class ModelRunner(Runner):
                 gets signalled to halt.
         """
         return super()._cancel(routes.job.cancel, self.job_uuid)
+
+    def get_model(self):
+        """Returns a model instance for the given run.
+
+        Returns:
+            The model instance
+        """
+        return Model(project=self.project, run_id=self.state.run_id)

@@ -20,8 +20,9 @@ _routes = {
         'attach': ':uuid/attach/'
     },
     'model': {
-        '_base': 'models/:uuid/',
-        'predict': 'predict/'
+        '_base': 'models/',
+        'predict': ':uuid/predict/',
+        'register': 'register/'
     },
     'runs': {
         '_base': 'runs/',

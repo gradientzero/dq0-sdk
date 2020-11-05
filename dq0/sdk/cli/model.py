@@ -16,7 +16,6 @@ All rights reserved
 import os
 
 from dq0.sdk.cli.api import routes
-from dq0.sdk.cli.runner import ModelRunner
 from dq0.sdk.errors import checkSDKResponse
 
 import numpy as np
@@ -56,14 +55,45 @@ class Model:
 
     """
 
-    def __init__(self, project=None):
+    def __init__(self, project=None, run_id=None):
         if project is None:
             raise ValueError('You need to provide the "project" argument')
         self.project = project
+        self.run_id = run_id
+        self.model_uuid = ''
         self.predict_allowed = False
 
         # TODO: get model info and set predict allowed
         self.predict_allowed = True
+
+    def register(self, run_id=None, model_path=None):
+        """Registers the model (to be later used for predict)
+
+        It calls the CLI command `model register`
+
+        If the run_id and model_path arguments are omitted, the SDK assumes a
+        DQ0 secured training run and uses the hard coded default values.
+
+        Args:
+            run_id: the ID of the run containing the model artifact
+            model_path: the relative path to the model artifact
+        """
+        # check args
+        if run_id is None:
+            run_id = self.run_id
+        if model_path is None:
+            model_path = 'pyfunc_model'
+
+        # call register
+        data = {
+            'run_id': run_id,
+            'model_path': model_path
+        }
+        response = self.project.client.post(
+            routes.model.register, data=data)
+        checkSDKResponse(response)
+        self.model_uuid = response['model_uuid']
+        print('model with uuid {} registered successfully'.format(self.model_uuid))
 
     def predict(self, test_data):
         """Starts a prediction run
@@ -87,7 +117,8 @@ class Model:
         data = {'input_path': os.path.abspath('predict_data.npy')}
 
         response = self.project.client.post(
-            routes.model.predict, id=self.project.model_uuid, data=data)
+            routes.model.predict, uuid=self.model_uuid, data=data)
         checkSDKResponse(response)
         print(response['message'])
+        from dq0.sdk.cli.runner.model_runner import ModelRunner
         return ModelRunner(self.project)
