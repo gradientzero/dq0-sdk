@@ -19,6 +19,7 @@ class Project(ABC):
     Attributes:
         data_source (:obj:`dq0.sdk.data.Source`): attached data source.
     """
+
     def __init__(self, data_source=None):
         super().__init__()
         self.data_source = None
