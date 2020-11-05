@@ -114,3 +114,4 @@ venv.bak/
 
 # data file
 **/newsgroups/_data/preprocessed_dataset.csv
+output/eda/
