@@ -12,11 +12,10 @@ Model wraps the following CLI commands:
 Copyright 2020, Gradient Zero
 All rights reserved
 """
-
-import os
+import json
 
 from dq0.sdk.cli.api import routes
-from dq0.sdk.errors import checkSDKResponse
+from dq0.sdk.errors import DQ0SDKError, checkSDKResponse
 
 import numpy as np
 
@@ -113,12 +112,23 @@ class Model:
         checkSDKResponse(response)
 
         # save predict data
-        np.save('predict_data.npy', test_data)
-        data = {'input_path': os.path.abspath('predict_data.npy')}
+        # np.save('predict_data.npy', test_data)
+        # data = {
+        #     'input_path': os.path.abspath('predict_data.npy')
+        # }
+        data = {
+            'model_uuid': self.model_uuid,
+            'input_data': json.dumps(test_data.tolist()),
+            'input_type': 'json'
+        }
 
         response = self.project.client.post(
             routes.model.predict, uuid=self.model_uuid, data=data)
         checkSDKResponse(response)
         print(response['message'])
+        try:
+            job_uuid = response['message'].split(' ')[-1]
+        except Exception:
+            raise DQ0SDKError('Could not parse new predict job uuid')
         from dq0.sdk.cli.runner.model_runner import ModelRunner
-        return ModelRunner(self.project)
+        return ModelRunner(self.project, job_uuid)
