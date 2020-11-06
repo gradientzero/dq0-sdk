@@ -11,7 +11,9 @@ All rights reserved
 
 from dq0.sdk.data.sql.sql import SQL
 
-import pandas_gbq
+from google.cloud import bigquery
+
+import pandas as pd
 
 
 class BigQuery(SQL):
@@ -21,20 +23,61 @@ class BigQuery(SQL):
 
     Args:
         query (:obj:`str`): SQL query.
-        project_id (:obj:`str`): The BigQuery project.
+        connection (:obj:`str`): The BigQuery project.
     """
 
-    def __init__(self, query, project_id):
-        super().__init__(query, project_id)
+    def __init__(self, query, connection):
+        super().__init__(query, connection)
         self.type = 'bigquery'
 
-    def read(self, **kwargs):
-        """Read BigQuery data sources
+    def execute(self, query=None, **kwargs):
+        """Execute SQL query
 
         Args:
+            query: SQL Query to execute
             kwargs: keyword arguments
 
         Returns:
-            BigQuery data as pandas dataframe
+            SQL ResultSet as pandas dataframe
         """
-        return pandas_gbq.read_gbq(self.query, project_id=self.connection, **kwargs)
+        # Construct a BigQuery client object.
+        self.client = bigquery.Client()
+
+        # make an API request
+        query_job = self.client.query(self.query)
+
+        # waits for query to complete
+        query_job.result()
+
+        # get the destination table for the query results
+        destination = query_job.destination
+
+        # Get the schema (and other properties) for the destination table.
+        destination = self.client.get_table(destination)
+
+        # details: https://github.com/googleapis/python-bigquery/blob/35627d145a41d57768f19d4392ef235928e00f72/google/cloud/bigquery/client.py
+        rows = self.client.list_rows(
+            destination,
+            selected_fields=None,
+            max_results=None,
+            page_token=None,
+            start_index=None,
+            page_size=None,
+        )
+
+        # TODO: convert to pandas dataframe
+        names = []
+        totals = []
+        for row in rows:
+
+            name = row[0]
+            total = row['total_people']
+            # ...
+
+            names.append(name)
+            totals.append(total)
+
+        d = {'name': names, 'totel_people': totals}
+        df = pd.DataFrame(data=d)
+
+        return df

@@ -33,14 +33,15 @@ class SQLite(SQL):
         self.type = 'sqlite'
         self.engine = sqlalchemy.create_engine(connection)
 
-    def read(self, **kwargs):
-        """Read sqlite data sources
+    def execute(self, query=None, **kwargs):
+        """Execute SQL query
 
         Args:
+            query: SQL Query to execute
             kwargs: keyword arguments
 
         Returns:
-            sqlite data as pandas dataframe
+            SQL ResultSet as pandas dataframe
         """
         connection = self.engine.connect()
-        return pd.read_sql_query(self.query, connection, **kwargs)
+        return pd.read_sql_query(query, connection, **kwargs)
