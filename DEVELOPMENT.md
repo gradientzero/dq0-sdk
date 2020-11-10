@@ -18,6 +18,12 @@ pip install -r requirements.txt
 pip install -r requirements-dev.txt
 ```
 
+Helper to resolve dependency conflicts:
+```bash
+# pip install pipdeptree
+pipdeptree
+```
+
 ## Run tests
 
 Use pytest for testings dq0-sdk completely:

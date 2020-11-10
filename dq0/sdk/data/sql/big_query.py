@@ -65,19 +65,8 @@ class BigQuery(SQL):
             page_size=None,
         )
 
-        # TODO: convert to pandas dataframe
-        names = []
-        totals = []
-        for row in rows:
+        # either create temporary table or return result set as dataframe
+        df = rows.to_dataframe(create_bqstorage_client=False)
 
-            name = row[0]
-            total = row['total_people']
-            # ...
-
-            names.append(name)
-            totals.append(total)
-
-        d = {'name': names, 'totel_people': totals}
-        df = pd.DataFrame(data=d)
-
+        # return pandas dataframe
         return df

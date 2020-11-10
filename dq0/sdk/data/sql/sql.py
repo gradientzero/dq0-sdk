@@ -22,7 +22,7 @@ class SQL(Source):
     """
 
     def __init__(self, query, connection):
-        super().__init__('')
+        super().__init__(connection)
         self.query = query
         self.connection = connection
         self.engine = None
