@@ -20,11 +20,12 @@ from dq0.sdk.examples.newsgroups.network.model.user_model import UserModel
 
 import numpy as np
 
+import pytest
+
 import sklearn
 
-# import pytest
 
-
+@pytest.mark.slow
 def test_nn_and_data_setup():
     """
     Test DQ0 NN example for the 20 Newsgroups dataset.
@@ -35,7 +36,7 @@ def test_nn_and_data_setup():
     util.initialize_rnd_numbers_generators_state()
 
     # path to input
-    path = '../_data/20newsgroups_text_label_df.csv'
+    path = '../../../dq0/sdk/examples/newsgroups/_data/20newsgroups_text_label_df.csv'
     filepath = os.path.join(os.path.dirname(
         os.path.abspath(__file__)), path)
 

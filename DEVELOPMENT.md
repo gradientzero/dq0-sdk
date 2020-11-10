@@ -33,6 +33,22 @@ Use pytest for testings dq0-sdk completely:
 python -m pytest
 ```
 
+To test "slow" marked tests only, use:
+```bash
+python -m pytest -m slow
+```
+
+To test all non "slow" marked tests only, use:
+```bash
+python -m pytest -m "not slow"
+```
+
+Or one specific method:
+```bash
+# ignore setup.cfg with parameter "c"
+python -m pytest -c /dev/null tests/test_dummies.py::test_slow
+```
+
 ## Format code
 
 Use autopep8 to auto format code:

@@ -14,7 +14,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        python-version: [3.6, 3.7]
+        python-version: [3.7]
 
     steps:
     - uses: actions/checkout@v1
@@ -33,4 +33,4 @@ jobs:
     - name: Run pytest
       run: |
         pip install pytest
-        python -m pytest
+        python -m pytest -m "not slow"

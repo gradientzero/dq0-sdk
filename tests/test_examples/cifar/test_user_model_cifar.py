@@ -20,7 +20,10 @@ from dq0.sdk.examples.cifar.model.user_model import UserModel
 
 import numpy as np
 
+import pytest
 
+
+@pytest.mark.slow
 def test_cnn_and_data_setup():
     """
     Test DQ0 CNN example for the CIFAR-10 dataset.
@@ -31,7 +34,7 @@ def test_cnn_and_data_setup():
     util.initialize_rnd_numbers_generators_state()
 
     # path to input
-    path = '../_data/cifar_dummy.csv'
+    path = '../../../dq0/sdk/examples/cifar/_data/cifar_dummy.csv'
     filepath = os.path.join(os.path.dirname(
         os.path.abspath(__file__)), path)
 
