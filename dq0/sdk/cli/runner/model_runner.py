@@ -16,6 +16,7 @@ All rights reserved
 """
 
 from dq0.sdk.cli.api import routes
+from dq0.sdk.cli.model import Model
 from dq0.sdk.cli.runner.runner import Runner
 
 
@@ -43,8 +44,9 @@ class ModelRunner(Runner):
 
     """
 
-    def __init__(self, project):
+    def __init__(self, project, job_uuid):
         super().__init__(project)
+        self.job_uuid = job_uuid
 
     def get_state(self):
         """Gets the current state of the running model experiment.
@@ -52,7 +54,7 @@ class ModelRunner(Runner):
         Returns:
             The state in JSON format
         """
-        return super()._get_state(routes.model.state, self.project.model_uuid)
+        return super()._get_state(routes.job.state, self.job_uuid)
 
     def cancel(self, force=False):
         """Cancels the experiment run.
@@ -62,4 +64,12 @@ class ModelRunner(Runner):
                 interrupted. Default is false where the job gracefully
                 gets signalled to halt.
         """
-        return super()._cancel(routes.model.cancel, self.project.model_uuid)
+        return super()._cancel(routes.job.cancel, self.job_uuid)
+
+    def get_model(self):
+        """Returns a model instance for the given run.
+
+        Returns:
+            The model instance
+        """
+        return Model(project=self.project, run_id=self.state.run_id)

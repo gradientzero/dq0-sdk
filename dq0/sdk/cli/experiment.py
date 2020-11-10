@@ -16,7 +16,7 @@ All rights reserved
 
 from dq0.sdk.cli.api import routes
 from dq0.sdk.cli.runner import DataRunner, ModelRunner
-from dq0.sdk.errors import checkSDKResponse
+from dq0.sdk.errors import DQ0SDKError, checkSDKResponse
 
 
 class Experiment:
@@ -75,7 +75,7 @@ class Experiment:
         """
         return DataRunner(self.project)
 
-    def train(self):
+    def run(self, entry_point='train_use_dq0_makedp', args=''):
         """Starts a training run
 
         It calls the CLI command `model train` and returns
@@ -86,11 +86,23 @@ class Experiment:
         """
         response = self.project._deploy()
         checkSDKResponse(response)
+        self.project.update_commit_uuid(response['message'])
 
-        response = self.project.client.post(routes.model.train, uuid=self.project.project_uuid)
+        data = {
+            'project_uuid': self.project.project_uuid,
+            'commit_uuid': self.project.commit_uuid,
+            'ml_project_entry_point': entry_point,
+            'args': args
+        }
+
+        response = self.project.client.post(routes.runs.create, data=data)
         checkSDKResponse(response)
         print(response['message'])
-        return ModelRunner(self.project)
+        try:
+            job_uuid = response['message'].split(' ')[-1]
+        except Exception:
+            raise DQ0SDKError('Could not parse new commit uuid')
+        return ModelRunner(self.project, job_uuid)
 
     def preprocess(self):
         """Starts a preprocessing run

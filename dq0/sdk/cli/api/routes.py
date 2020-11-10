@@ -20,11 +20,19 @@ _routes = {
         'attach': ':uuid/attach/'
     },
     'model': {
-        '_base': 'models/:uuid/',
-        'train': 'train/',
-        'predict': 'predict/',
-        'state': 'state/',
-        'cancel': 'cancel/'
+        '_base': 'models/',
+        'predict': ':uuid/predict/',
+        'register': 'register/'
+    },
+    'runs': {
+        '_base': 'runs/',
+        'create': '',
+        'get': ':uuid/'
+    },
+    'job': {
+        '_base': 'jobs/:uuid/',
+        'state': '',
+        'cancel': 'delete/'
     },
     'data': {
         '_base': 'data/',

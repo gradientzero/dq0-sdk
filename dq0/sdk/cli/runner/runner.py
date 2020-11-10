@@ -20,8 +20,9 @@ All rights reserved
 import time
 from abc import ABC, abstractmethod
 
+from dq0.sdk.cli.api import routes
 from dq0.sdk.cli.runner.state import State
-from dq0.sdk.errors import checkSDKResponse
+from dq0.sdk.errors import DQ0SDKError, checkSDKResponse
 
 
 class Runner(ABC):
@@ -94,8 +95,18 @@ class Runner(ABC):
             has not finished yet.
         """
         if self.state.finished:
+            if self.state.results is None:
+                self._get_run_results()
             return self.state.results
         return {}
+
+    def _get_run_results(self):
+        """Helper function to get the run details after the job completed"""
+        if len(self.state.run_id) < 1:
+            raise DQ0SDKError('could net get run details, run_id not set')
+        response = self.project.client.get(routes.runs.get, uuid=self.state.run_id)
+        checkSDKResponse(response)
+        self.state.set_results(response)
 
     @abstractmethod
     def cancel(self, force=False):
@@ -133,4 +144,3 @@ class Runner(ABC):
                 print(self.state.message)
         if verbose:
             print('Job completed.')
-            print(self.state.message)

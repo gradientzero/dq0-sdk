@@ -21,7 +21,6 @@ import inspect
 import json
 import os
 
-from dq0.sdk.cli import Model
 from dq0.sdk.cli.api import Client, routes
 from dq0.sdk.cli.utils.code import (
     add_function,
@@ -30,6 +29,8 @@ from dq0.sdk.cli.utils.code import (
     replace_model_parent_class,
 )
 from dq0.sdk.errors import DQ0SDKError, checkSDKResponse
+
+import yaml
 
 
 class Project:
@@ -52,8 +53,8 @@ class Project:
 
     Attributes:
         name (:obj:`str`): The name of the project
-        model_uuid (:obj:`str`): The universally unique identifier of
-            the project's model
+        project_uuid (:obj:`str`): The universally unique identifier of
+            the project
         data_source_uuid (:obj:`str`): The universally unique identifier of
             the project's currently attached data source
         version (:obj:`str`): A version number of the project.
@@ -64,9 +65,9 @@ class Project:
         if name is None:
             raise ValueError('You need to set the "name" argument')
         self.name = name
-        self.model_uuid = ''
-        self.data_source_uuid = ''
-        self.version = '1'
+        self.commit_uuid = ''
+        self.datasets = []
+        self.experiment_name = ''
 
         # create API client instance
         self.client = Client()
@@ -97,13 +98,13 @@ class Project:
                                     'in current directory')
 
         with open('.meta') as f:
-            meta = json.load(f)
+            meta = yaml.load(f, Loader=yaml.FullLoader)
 
         project = Project(name=meta['project_name'], create=False)
         project.project_uuid = meta['project_uuid']
-        project.model_uuid = meta['model_uuid']
-        project.data_source_uuid = meta['data_uuid']
-        project.version = meta['model_name']
+        project.commit_uuid = meta['commit_uuid']
+        project.experiment_name = meta['experiment_name']
+        project.datasets = meta['datasets']
 
         return project
 
@@ -128,8 +129,8 @@ class Project:
         os.chdir(working_dir)
 
         with open('{}/.meta'.format(name)) as f:
-            meta = json.load(f)
-        self.model_uuid = meta['model_uuid']
+            meta = yaml.load(f, Loader=yaml.FullLoader)
+        self.project_uuid = meta['project_uuid']
 
         # change the working directory to the new project
         os.chdir(name)
@@ -143,15 +144,7 @@ class Project:
         Returns:
             Project info in JSON format
         """
-        return self.client.get(routes.project.info, uuid=self.model_uuid)
-
-    def get_latest_model(self):
-        """Returns the currently active model of this project.
-
-        Returns:
-            The currently active model of this project.
-        """
-        return Model(project=self)
+        return self.client.get(routes.project.info, uuid=self.project_uuid)
 
     def get_available_data_sources(self):
         """Returns a list of available data sources.
@@ -203,16 +196,17 @@ class Project:
                 pass
         return response
 
-    def attach_data_source(self, data_source_uuid):
+    def attach_data_source(self, data_source_uuid, data_name):
         """Attaches a new data source to the project.
 
         Args:
-            data_source (:obj:`str`) The UUID of the new source to attach
+            data_source_uuid (:obj:`str`): The UUID of the new source to attach
+            data_name (:obj:`str`): The name of the new source to attach
         """
         response = self.client.post(
             routes.project.attach,
-            uuid=self.model_uuid,
-            data={'data_source_uuid': data_source_uuid})
+            uuid=self.project_uuid,
+            data={'data_uuid': data_source_uuid, 'data_name': data_name})
         checkSDKResponse(response)
         print(response['message'])
 
@@ -225,6 +219,17 @@ class Project:
             The API response in JSON format
         """
         return self.client.post(routes.project.deploy, uuid=self.project_uuid)
+
+    def update_commit_uuid(self, message):
+        """Updates the latest commit uuid from the given response message.
+
+        Args:
+            message (:obj:`str`): The response message after deploy.
+        """
+        try:
+            self.commit_uuid = message.split(' ')[-1]
+        except Exception:
+            raise DQ0SDKError('Could not parse new commit uuid')
 
     def set_connection(self, host='localhost', port=9000):
         """Updates the connection string for the API communication.
@@ -280,8 +285,8 @@ class Project:
         if setup_data_code is None and setup_model_code is None and preprocess_code is None:
             return
 
-        # replace in user_model.py
-        with open('models/user_model.py', 'r') as f:
+        # replace in my_model.py
+        with open('my_model.py', 'r') as f:
             lines = f.readlines()
         if setup_data_code is not None:
             lines = replace_function(lines, setup_data_code)
@@ -308,7 +313,7 @@ class Project:
                 raise DQ0SDKError('DQ0SDK only allows one of {}'
                                   ' as parent_class_name!'.format(allowed_class_names))
             lines = replace_model_parent_class(lines, parent_class_name)
-        with open('models/user_model.py', 'w') as f:
+        with open('my_model.py', 'w') as f:
             f.writelines(lines)
 
         print('Successfully set model code.')
