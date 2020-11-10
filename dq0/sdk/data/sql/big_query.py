@@ -11,9 +11,11 @@ All rights reserved
 
 from dq0.sdk.data.sql.sql import SQL
 
-from google.cloud import bigquery
-
-import pandas as pd
+try:
+    from google.cloud import bigquery
+    big_query_available = True
+except ImportError:
+    big_query_available = False
 
 
 class BigQuery(SQL):
@@ -41,6 +43,9 @@ class BigQuery(SQL):
             SQL ResultSet as pandas dataframe
         """
         # Construct a BigQuery client object.
+        if not big_query_available:
+            raise ImportError('big_query dependencies must be installed first')
+
         self.client = bigquery.Client()
 
         # make an API request

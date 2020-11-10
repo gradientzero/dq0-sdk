@@ -8,14 +8,13 @@ Implementing subclasses have to define setup_data and setup_model functions.
 Copyright 2020, Gradient Zero
 All rights reserved
 """
-
-import os
 import logging
+import os
 import uuid
-import cloudpickle
-
 from abc import abstractmethod
-from tempfile import TemporaryFile, TemporaryDirectory
+from tempfile import TemporaryDirectory
+
+import cloudpickle
 
 from dq0.sdk.projects import Project
 
@@ -52,7 +51,8 @@ class Model(Project):
         state = self.__dict__.copy()
 
         if 'model' in state:
-            m = state['model']
+            # use m if needed
+            # m = state['model']
 
             with TemporaryDirectory() as temp_dir:
                 # store model in flavor format (binary)
