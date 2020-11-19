@@ -49,7 +49,7 @@ class State:
             self.progress = int(response['job_progress'])
         except Exception:
             pass
-        if self.progress == 1:
+        if self.progress == 1 or self.message == 'error':
             self.finished = True
 
     def set_results(self, results):

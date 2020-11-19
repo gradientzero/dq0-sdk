@@ -43,6 +43,13 @@ _routes = {
         'info': ':uuid/',
         'sample': ':uuid/sample/',
         'cancel': ':uuid/cancel/'
+    },
+    'query': {
+        '_base': 'queries/',
+        'list': '',
+        'info': ':uuid/',
+        'cancel': ':uuid/cancel/',
+        'create': ''
     }
 }
 
