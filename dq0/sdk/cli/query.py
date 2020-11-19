@@ -8,7 +8,6 @@ All rights reserved
 """
 from dq0.sdk.cli.api import Client, routes
 from dq0.sdk.errors import DQ0SDKError, checkSDKResponse
-from dq0.sdk.cli.utils import is_valid_uuid
 from dq0.sdk.cli.runner import QueryRunner
 from dq0.sdk.cli.data import Data
 
@@ -83,7 +82,7 @@ class Query:
             :obj:`dq0.sdk.cli.runner.QueryRunner` instance
         """
         if not self.datasets_used:
-            return DQ0SDKError('Please specify which datasets to use for query')
+            raise DQ0SDKError('Please specify which datasets to use for query')
         response = self.client.post(
             route=routes.query.create,
             data={'query': query,
