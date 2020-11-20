@@ -17,7 +17,8 @@ _routes = {
         'create': '',
         'info': ':uuid/',
         'deploy': ':uuid/deploy/',
-        'attach': ':uuid/attach/'
+        'attach': ':uuid/attach/',
+        'detach': ':uuid/detach/'
     },
     'model': {
         '_base': 'models/',

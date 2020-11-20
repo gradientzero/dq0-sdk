@@ -61,10 +61,57 @@ class Data:
         else:
             raise ValueError("Please provide either UUID/Name of dataset or a dictionary of it")
         self.uuid = data.pop('data_uuid')
-        self.name = data.pop('data_name')
-        self.type = data.pop('data_type')
+        self.name = data.pop('data_name', None)
+        self.type = data.pop('data_type', None)
+        self.description = data.pop('data_description', None)
+        self.permissions = data.pop('data_permissions', None)
+        self.privacy_masks = data.pop('privacy_masks', None)
+        self.privacy_budget = data.pop('privacy_budget', None)
+        self.privacy_thresholds = data.pop('privacy_thresholds', None)
+        self.location = None
+        self.size = 0
         # extract other dataset props
         self.__dict__.update(data)
+
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return self.name
+
+    def as_dict(self):
+        """Returns data source representation as dictionary"""
+        return {
+            'data_uuid': self.uuid,
+            'data_name': self.name,
+            'data_type': self.type,
+            'description': self.description,
+            'permissions': self.permissions,
+            'privacy_masks': self.privacy_masks,
+            'privacy_budget': self.privacy_budget,
+            'privacy_thresholds': self.privacy_thresholds,
+            'location': self.location,
+            'size': self.size,
+        }
+
+    def refresh(self):
+        """Reloads data source information from database. Useful when instantiating from incomplete dictionaries or when
+        the data has changed"""
+        if self.uuid:
+            response = self.client.get(routes.data.info, uuid=self.uuid)
+            checkSDKResponse(response)
+            self.uuid = response.pop('data_uuid')
+            self.name = response.pop('data_name')
+            self.type = response.pop('data_type')
+            self.description = response.pop('data_description')
+            self.permissions = response.pop('data_permissions')
+            self.privacy_masks = response.pop('privacy_masks', None)
+            self.privacy_budget = response.pop('privacy_budget', None)
+            self.privacy_thresholds = response.pop('privacy_thresholds', None)
+            self.location = None
+            self.size = 0
+            # extract other dataset props
+            self.__dict__.update(response)
 
     def _load_dataset(self):
         if is_valid_uuid(self.source):

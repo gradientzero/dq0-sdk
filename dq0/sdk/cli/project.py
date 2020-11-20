@@ -22,6 +22,7 @@ import json
 import os
 
 from dq0.sdk.cli.api import Client, routes
+from dq0.sdk.cli import Data
 from dq0.sdk.cli.utils.code import (
     add_function,
     check_signature,
@@ -100,11 +101,17 @@ class Project:
         with open('.meta') as f:
             meta = yaml.load(f, Loader=yaml.FullLoader)
 
+        def _load_datasets_from_meta(metasets):
+            datasets = []
+            for key in metasets:
+                datasets.append(Data({'data_uuid': metasets[key], 'data_name': key}))
+            return datasets
+
         project = Project(name=meta['project_name'], create=False)
         project.project_uuid = meta['project_uuid']
         project.commit_uuid = meta['commit_uuid']
         project.experiment_name = meta['experiment_name']
-        project.datasets = meta['datasets']
+        project.datasets = _load_datasets_from_meta(meta.get('datasets', {}))
 
         return project
 
@@ -156,9 +163,9 @@ class Project:
         """
         response = self.client.get(routes.data.list)
         checkSDKResponse(response)
-        return response['items']
+        return [Data(d) for d in response['items']]
 
-    def get_data_info(self, data_uuid):
+    def get_data_info(self, data=None, data_uuid=None):
         """Returns info of a given data source.
 
         The returned dict contains information about the
@@ -166,28 +173,41 @@ class Project:
         the data owner.
 
         Args:
-            data_uuid (:obj:`str`): The UUID of the requested data source
+            data (:obj:`dq0.sdk.cli.Data`): Data instance of the requested data source
+            data_uuid (:obj:`str`): optional; The UUID of the requested data source
 
         Returns:
             The data source information in JSON format
         """
-        response = self.client.get(routes.data.get, uuid=data_uuid)
+        if data and isinstance(data, Data):
+            response = self.client.get(routes.data.get, uuid=data.uuid)
+        elif data_uuid:
+            response = self.client.get(routes.data.get, uuid=data_uuid)
+        else:
+            raise ValueError('Missing required parameter: data (Data instance) or data_uuid')
         checkSDKResponse(response)
         return response
 
-    def get_sample_data(self, data_uuid):
+    def get_sample_data(self, data=None, data_uuid=None):
         """Returns sample data for a given data source.
 
         Sample data is provided manually and is not available
         for every data source.
 
         Args:
-            data_uuid (:obj:`str`): The UUID of the requested data source
+            data (:obj:`dq0.sdk.cli.Data`): Data instance of the requested data source
+            data_uuid (:obj:`str`): optional; The UUID of the requested data source
 
         Returns:
             The data source sample data
         """
-        response = self.client.get(routes.data.sample, uuid=data_uuid)
+        if data and isinstance(data, Data):
+            response = self.client.get(routes.data.sample, uuid=data.uuid)
+        elif data_uuid:
+            response = self.client.get(routes.data.sample, uuid=data_uuid)
+        else:
+            raise ValueError('Missing required parameter: data (Data instance) or data_uuid')
+
         checkSDKResponse(response)
         if 'sample' in response:
             try:
@@ -196,18 +216,60 @@ class Project:
                 pass
         return response
 
-    def attach_data_source(self, data_source_uuid, data_name):
+    def attach_data_source(self, data=None, data_uuid=None, data_name=None):
         """Attaches a new data source to the project.
 
         Args:
-            data_source_uuid (:obj:`str`): The UUID of the new source to attach
-            data_name (:obj:`str`): The name of the new source to attach
+            data (:obj:`dq0.sdk.cli.Data`): Data instance of the data source to attach
+            data_uuid (:obj:`str`): optional; The UUID of the new source to attach
+            data_name (:obj:`str`): optional; The name of the new source to attach
         """
-        response = self.client.post(
-            routes.project.attach,
-            uuid=self.project_uuid,
-            data={'data_uuid': data_source_uuid, 'data_name': data_name})
-        checkSDKResponse(response)
+        if data and isinstance(data, Data):
+            response = self.client.post(
+                routes.project.attach,
+                uuid=self.project_uuid,
+                data={'data_uuid': data.uuid, 'data_name': data.name})
+            checkSDKResponse(response)
+            self.datasets.append(data)
+
+        elif data_uuid and data_name:
+            response = self.client.post(
+                routes.project.attach,
+                uuid=self.project_uuid,
+                data={'data_uuid': data_uuid, 'data_name': data_name})
+            checkSDKResponse(response)
+            self.datasets.append(Data({'data_uuid': data_uuid, 'data_name': data_name}))
+        else:
+            raise ValueError('Missing required parameter: data (Data instance) or data_uuid and data_name')
+
+        print(response['message'])
+
+    def detach_data_source(self, data=None, data_uuid=None, data_name=None):
+        """Detaches a new data source to the project.
+
+        Args:
+            data (:obj:`dq0.sdk.cli.Data`): Data instance of the data source to attach
+            data_uuid (:obj:`str`): optional; The UUID of the new source to attach
+            data_name (:obj:`str`): optional; The name of the new source to attach
+        """
+        if data and isinstance(data, Data):
+            response = self.client.post(
+                routes.project.detach,
+                uuid=self.project_uuid,
+                data={'data_uuid': data.uuid, 'data_name': data.name})
+            checkSDKResponse(response)
+            self.datasets.remove(data)
+
+        elif data_uuid and data_name:
+            response = self.client.post(
+                routes.project.detach,
+                uuid=self.project_uuid,
+                data={'data_uuid': data_uuid, 'data_name': data_name})
+            checkSDKResponse(response)
+            self.datasets.remove(Data({'data_uuid': data_uuid, 'data_name': data_name}))
+        else:
+            raise ValueError('Missing required parameter: data (Data instance) or data_uuid and data_name')
+
         print(response['message'])
 
     def _deploy(self):
