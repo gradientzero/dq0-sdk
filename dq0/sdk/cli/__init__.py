@@ -9,11 +9,13 @@ from .data import Data
 from .experiment import Experiment
 from .model import Model
 from .project import Project
+from .query import Query
 
 
 __all__ = [
     'Experiment',
     'Model',
     'Project',
-    'Data'
+    'Data',
+    'Query'
 ]
