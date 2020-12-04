@@ -26,24 +26,25 @@ description: 'some description'
 type: 'tabular'
 privacy_budget: 1000
 privacy_budget_interval_days: 30
-database:
-    Table1:
-        row_privacy: true
-        rows: 1000
-        max_ids: 1
-        sample_max_ids: true
-        censor_dims: false
-        user_id:
-            private_id: true
-            type: int
-        weight:
-            type: float
-            lower: 0.0
-            upper: 100.0
-        name:
-            type: string
-            hide: true
-        email:
-            type: string
-            mask: '(.*)@(.*).{3}$'
+Database:
+    Database1:
+        Table1:
+            row_privacy: true
+            rows: 1000
+            max_ids: 1
+            sample_max_ids: true
+            censor_dims: false
+            user_id:
+                private_id: true
+                type: int
+            weight:
+                type: float
+                lower: 0.0
+                upper: 100.0
+            name:
+                type: string
+                hide: true
+            email:
+                type: string
+                mask: '(.*)@(.*).{3}$'
 ```

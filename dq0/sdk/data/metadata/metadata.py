@@ -23,7 +23,7 @@ class Metadata:
         type: parsed type propertey.
         privacy_budget: parsed privacy budget property.
         privacy_budget_interval_days: parsed privacy budget reset interval in days.
-        tables: parsed database metadata.
+        databases: parsed database metadata.
     """
 
     def __init__(self, filename=None):
@@ -31,7 +31,7 @@ class Metadata:
         self.name = None
         self.description = None
         self.type = None
-        self.tables = None
+        self.databases = None
         self.privacy_budget = None
         self.privacy_budget_interval_days = None
         if filename is not None:
@@ -56,41 +56,70 @@ class Metadata:
         self.privacy_budget = int(meta["privacy_budget"]) if "privacy_budget" in meta else None
         self.privacy_budget_interval_days = int(meta["privacy_budget_interval_days"]) if "privacy_budget_interval_days" else None
 
-        if "database" in meta:
-            db = meta["database"]
-            tables = []
-            for table in db.keys():
-                tables.append(Table.from_meta(table, db[table]))
-            self.tables = tables
+        if "Database" in meta:
+            db = meta["Database"]
+            databases = []
+            for database in db.keys():
+                databases.append(Database.from_meta(database, db[database]))
+            self.databases = databases
 
-    def to_dict(self):
+    def to_dict(self, smartnoise=False):
         """Returns a dict representation of this class."""
         meta = {}
-        if self.name is not None:
-            meta["name"] = self.name
-        if self.description is not None:
-            meta["description"] = self.description
-        if self.type is not None:
-            meta["type"] = self.type
-        if self.tables is not None and len(self.tables) > 0:
-            meta["database"] = {}
-            for table in self.tables:
-                meta["database"][table.name] = table.to_dict()
-        if self.privacy_budget is not None:
-            meta["privacy_budget"] = self.privacy_budget
-        if self.privacy_budget_interval_days is not None:
-            meta["privacy_budget_interval_days"] = self.privacy_budget_interval_days
+        if not smartnoise:
+            if self.name is not None:
+                meta["name"] = self.name
+            if self.description is not None:
+                meta["description"] = self.description
+            if self.type is not None:
+                meta["type"] = self.type
+            if self.privacy_budget is not None:
+                meta["privacy_budget"] = self.privacy_budget
+            if self.privacy_budget_interval_days is not None:
+                meta["privacy_budget_interval_days"] = self.privacy_budget_interval_days
+        if self.databases is not None and len(self.databases) > 0:
+            meta["Database"] = {}
+            for database in self.databases:
+                meta["Database"][database.name] = database.to_dict(smartnoise=smartnoise)
         return meta
 
-    def write_to_yaml(self, filename):
+    def write_to_yaml(self, filename, smartnoise=False):
         """Writes metadata to a yaml file at the given path.
 
         Args:
             filename: the path to the yaml file.
         """
-        meta = self.to_dict()
+        meta = self.to_dict(smartnoise=smartnoise)
         with open(filename, 'w') as outfile:
             yaml.dump(meta, outfile)
+
+
+class Database():
+    """Database represents a db definition inside the metadata."""
+    def __init__(self, name, tables=None):
+        """Create a new database object.
+
+        Args:
+            name: the name of the table
+            tables: tables of the database
+        """
+        self.name = name
+        self.tables = tables
+
+    @staticmethod
+    def from_meta(database, meta):
+        """Create a database instance from the meta yaml part."""
+        tables = []
+        for table in meta.keys():
+            tables.append(Table.from_meta(table, meta[table]))
+        return Database(database, tables=tables)
+
+    def to_dict(self, smartnoise=False):
+        """Returns a dict representation of this class."""
+        meta = {}
+        for table in self.tables:
+            meta[table.name] = table.to_dict(smartnoise=smartnoise)
+        return meta
 
 
 class Table():
@@ -151,11 +180,9 @@ class Table():
             columns=columns
         )
 
-    def to_dict(self):
+    def to_dict(self, smartnoise=False):
         """Returns a dict representation of this class."""
         meta = {}
-        if self.name is not None:
-            meta["name"] = self.name
         if self.row_privacy is not None:
             meta["row_privacy"] = self.row_privacy
         if self.rows is not None:
@@ -164,16 +191,16 @@ class Table():
             meta["max_ids"] = self.max_ids
         if self.sample_max_ids is not None:
             meta["sample_max_ids"] = self.sample_max_ids
-        if self.use_dpsu is not None:
+        if not smartnoise and self.use_dpsu is not None:
             meta["use_dpsu"] = self.use_dpsu
-        if self.clamp_counts is not None:
+        if not smartnoise and self.clamp_counts is not None:
             meta["clamp_counts"] = self.clamp_counts
-        if self.clamp_columns is not None:
+        if not smartnoise and self.clamp_columns is not None:
             meta["clamp_columns"] = self.clamp_columns
-        if self.censor_dims is not None:
+        if not smartnoise and self.censor_dims is not None:
             meta["censor_dims"] = self.censor_dims
         for column in self.columns:
-            meta[column.name] = column.to_dict()
+            meta[column.name] = column.to_dict(smartnoise=smartnoise)
         return meta
 
 
@@ -230,7 +257,7 @@ class Column():
             mask=mask
         )
 
-    def to_dict(self):
+    def to_dict(self, smartnoise=False):
         """Returns a dict representation of this class."""
         meta = {}
         if self.type is not None:
@@ -243,8 +270,8 @@ class Column():
             meta["cardinality"] = self.cardinality
         if self.private_id is not None:
             meta["private_id"] = self.private_id
-        if self.hide is not None:
+        if not smartnoise and self.hide is not None:
             meta["hide"] = self.hide
-        if self.mask is not None:
+        if not smartnoise and self.mask is not None:
             meta["mask"] = self.mask
         return meta
