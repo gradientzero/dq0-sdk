@@ -72,7 +72,7 @@ class Metadata:
                 tables.append(Table.from_meta(table, db[table]))
             self.tables = tables
 
-    def to_dict(self):
+    def to_dict(self):  # noqa: C901
         """Returns a dict representation of this class."""
         meta = {}
         if self.name is not None:
@@ -166,7 +166,7 @@ class Table():
             columns=columns
         )
 
-    def to_dict(self):
+    def to_dict(self):  # noqa: C901
         """Returns a dict representation of this class."""
         meta = {}
         if self.name is not None:
@@ -273,7 +273,7 @@ class Column():
             mask=mask
         )
 
-    def to_dict(self):
+    def to_dict(self):  # noqa: C901
         """Returns a dict representation of this class."""
         meta = {}
         if self.type is not None:
