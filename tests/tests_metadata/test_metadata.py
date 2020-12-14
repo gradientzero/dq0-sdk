@@ -23,17 +23,26 @@ database:
         rows: 2000
         max_ids: 1
         sample_max_ids: true
-        censor_dims: false
+        censor_dims: true
+        use_dpsu: true
+        clamp_counts: true
+        clamp_columns: true
         user_id:
             private_id: true
             type: int
         weight:
             type: float
+            bounded: true
             lower: 0.0
             upper: 100.5
+            selectable: true
+        height:
+            type: float
+            bounded: true
+            use_auto_bounds: true
+            auto_bounds_prob: 0.8
         name:
             type: string
-            hide: true
         email:
             type: string
             mask: '(.*)@(.*).{3}$'
@@ -56,21 +65,30 @@ database:
     assert metadata.tables[0].rows == 2000
     assert metadata.tables[0].max_ids == 1
     assert metadata.tables[0].sample_max_ids is True
-    assert metadata.tables[0].censor_dims is False
-    assert len(metadata.tables[0].columns) == 4
+    assert metadata.tables[0].censor_dims is True
+    assert metadata.tables[0].use_dpsu is True
+    assert metadata.tables[0].clamp_counts is True
+    assert metadata.tables[0].clamp_columns is True
+    assert len(metadata.tables[0].columns) == 5
     assert metadata.tables[0].columns[0].name == "user_id"
     assert metadata.tables[0].columns[1].name == "weight"
-    assert metadata.tables[0].columns[2].name == "name"
-    assert metadata.tables[0].columns[3].name == "email"
+    assert metadata.tables[0].columns[2].name == "height"
+    assert metadata.tables[0].columns[3].name == "name"
+    assert metadata.tables[0].columns[4].name == "email"
     assert metadata.tables[0].columns[0].private_id is True
     assert metadata.tables[0].columns[1].private_id is False
     assert metadata.tables[0].columns[0].type == "int"
+    assert metadata.tables[0].columns[1].bounded is True
+    assert metadata.tables[0].columns[1].use_auto_bounds is False
     assert metadata.tables[0].columns[1].lower == 0.0
     assert metadata.tables[0].columns[1].upper == 100.5
-    assert metadata.tables[0].columns[2].hide is True
-    assert metadata.tables[0].columns[3].hide is False
-    assert metadata.tables[0].columns[3].type == "string"
-    assert metadata.tables[0].columns[3].mask == "(.*)@(.*).{3}$"
+    assert metadata.tables[0].columns[1].selectable is True
+    assert metadata.tables[0].columns[2].bounded is True
+    assert metadata.tables[0].columns[2].use_auto_bounds is True
+    assert metadata.tables[0].columns[2].auto_bounds_prob == 0.8
+    assert metadata.tables[0].columns[4].selectable is False
+    assert metadata.tables[0].columns[4].type == "string"
+    assert metadata.tables[0].columns[4].mask == "(.*)@(.*).{3}$"
 
     # change metadata
     metadata.privacy_budget = 1234

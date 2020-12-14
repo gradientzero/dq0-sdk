@@ -23,27 +23,43 @@ Metadata is stored in DQ0's central database. It can be defined in the web appli
 ```yaml
 name: 'sample data 1'
 description: 'some description'
-type: 'tabular'
+type: 'csv'
+connection: 'user@db'
 privacy_budget: 1000
 privacy_budget_interval_days: 30
+synth_allowed: true
+privacy_level: 2
 database:
     Table1:
         row_privacy: true
         rows: 1000
         max_ids: 1
         sample_max_ids: true
+        use_dpsu: false
+        clamp_counts: true
+        clamp_columns: true
         censor_dims: false
         user_id:
             private_id: true
             type: int
         weight:
             type: float
+            bounded: true
             lower: 0.0
             upper: 100.0
+            selectable: true
+        height:
+            type: float
+            bounded: true
+            use_auto_bounds: true
+            auto_bounds_prob: 0.9
         name:
             type: string
-            hide: true
         email:
             type: string
             mask: '(.*)@(.*).{3}$'
+        occupation:
+            type: string
+            cardinality: 3
+            allowed_values: 's1,s2,s3'
 ```

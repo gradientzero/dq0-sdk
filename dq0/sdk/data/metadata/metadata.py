@@ -20,9 +20,12 @@ class Metadata:
     Attributes:
         name: parsed name property.
         description: parsed description property
+        connection: data source connection URI
         type: parsed type propertey.
         privacy_budget: parsed privacy budget property.
         privacy_budget_interval_days: parsed privacy budget reset interval in days.
+        synth_allowed: true to allow synthesized data for exploration
+        privacy_level: 0, 1, 2 in ascending order of privacy protection (default is 2).
         tables: parsed database metadata.
     """
 
@@ -30,10 +33,13 @@ class Metadata:
         """Create a new Metadata instance"""
         self.name = None
         self.description = None
+        self.connection = None
         self.type = None
         self.tables = None
         self.privacy_budget = None
         self.privacy_budget_interval_days = None
+        self.synth_allowed = False
+        self.privacy_level = 2
         if filename is not None:
             self.read_from_yaml(filename)
 
@@ -52,9 +58,12 @@ class Metadata:
 
         self.name = meta["name"] if "name" in meta else None
         self.description = meta["description"] if "description" in meta else None
+        self.connection = meta["connection"] if "connection" in meta else None
         self.type = meta["type"] if "type" in meta else None
         self.privacy_budget = int(meta["privacy_budget"]) if "privacy_budget" in meta else None
         self.privacy_budget_interval_days = int(meta["privacy_budget_interval_days"]) if "privacy_budget_interval_days" else None
+        self.synth_allowed = bool(meta["synth_allowed"]) if "synth_allowed" in meta else False
+        self.privacy_level = int(meta["privacy_level"]) if "privacy_level" in meta else 2
 
         if "database" in meta:
             db = meta["database"]
@@ -70,6 +79,8 @@ class Metadata:
             meta["name"] = self.name
         if self.description is not None:
             meta["description"] = self.description
+        if self.connection is not None:
+            meta["connection"] = self.connection
         if self.type is not None:
             meta["type"] = self.type
         if self.tables is not None and len(self.tables) > 0:
@@ -80,6 +91,10 @@ class Metadata:
             meta["privacy_budget"] = self.privacy_budget
         if self.privacy_budget_interval_days is not None:
             meta["privacy_budget_interval_days"] = self.privacy_budget_interval_days
+        if self.synth_allowed is not None:
+            meta["synth_allowed"] = self.synth_allowed
+        if self.privacy_level is not None:
+            meta["privacy_level"] = self.privacy_level
         return meta
 
     def write_to_yaml(self, filename):
@@ -179,7 +194,20 @@ class Table():
 
 class Column():
     """Column represents a table column definition inside the metadata."""
-    def __init__(self, name, _type='', lower=None, upper=None, cardinality=0, private_id=False, hide=False, mask=None):
+    def __init__(
+            self,
+            name,
+            _type='',
+            bounded=None,
+            lower=None,
+            upper=None,
+            use_auto_bounds=False,
+            auto_bounds_prob=0.9,
+            cardinality=0,
+            allowed_values=None,
+            private_id=False,
+            selectable=False,
+            mask=None):
         """Create a new table object.
 
         Args:
@@ -188,20 +216,30 @@ class Column():
         """
         self.name = name
         self.type = _type
+        self.bounded = bounded
         self.lower = lower
         self.upper = upper
+        self.use_auto_bounds = use_auto_bounds
+        self.auto_bounds_prob = auto_bounds_prob
         self.cardinality = cardinality
+        self.allowed_values = allowed_values
         self.private_id = private_id
-        self.hide = hide
+        self.selectable = selectable
         self.mask = mask
 
     @staticmethod
     def from_meta(column, meta):
         """Create a column instance from the meta yaml part."""
         _type = meta["type"] if "type" in meta else None
+        bounded = None
         lower = None
         upper = None
         cardinality = 0
+        allowed_values = None
+        mask = None
+        bounded = bool(meta["bounded"]) if "bounded" in meta else False
+        use_auto_bounds = bool(meta["use_auto_bounds"]) if "use_auto_bounds" in meta else False
+        auto_bounds_prob = float(meta["auto_bounds_prob"]) if "auto_bounds_prob" in meta else None
         if _type == "boolean":
             pass
         elif _type == "datetime":
@@ -214,19 +252,24 @@ class Column():
             upper = float(meta["upper"]) if "upper" in meta else None
         elif _type == "string":
             cardinality = int(meta["cardinality"]) if "cardinality" in meta else 0
+            allowed_values = meta["allowed_values"] if "allowed_values" in meta else None
+            mask = meta["mask"] if "mask" in meta else None
         else:
             raise ValueError("Unknown column type for column {}".format(_type))
         private_id = bool(meta["private_id"]) if "private_id" in meta else False
-        hide = bool(meta["hide"]) if "hide" in meta else False
-        mask = meta["mask"] if "mask" in meta else None
+        selectable = bool(meta["selectable"]) if "selectable" in meta else False
         return Column(
             column,
             _type=_type,
+            bounded=bounded,
             lower=lower,
             upper=upper,
+            use_auto_bounds=use_auto_bounds,
+            auto_bounds_prob=auto_bounds_prob,
             cardinality=cardinality,
+            allowed_values=allowed_values,
             private_id=private_id,
-            hide=hide,
+            selectable=selectable,
             mask=mask
         )
 
@@ -235,16 +278,24 @@ class Column():
         meta = {}
         if self.type is not None:
             meta["type"] = self.type
+        if self.bounded is not None:
+            meta["bounded"] = self.bounded
         if self.lower is not None:
             meta["lower"] = self.lower
         if self.upper is not None:
             meta["upper"] = self.upper
+        if self.use_auto_bounds is not None:
+            meta["use_auto_bounds"] = self.use_auto_bounds
+        if self.auto_bounds_prob is not None:
+            meta["auto_bounds_prob"] = self.auto_bounds_prob
         if self.cardinality is not None:
             meta["cardinality"] = self.cardinality
+        if self.allowed_values is not None:
+            meta["allowed_values"] = self.allowed_values
         if self.private_id is not None:
             meta["private_id"] = self.private_id
-        if self.hide is not None:
-            meta["hide"] = self.hide
+        if self.selectable is not None:
+            meta["selectable"] = self.selectable
         if self.mask is not None:
             meta["mask"] = self.mask
         return meta
