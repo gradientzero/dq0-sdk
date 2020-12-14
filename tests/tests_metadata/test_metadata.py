@@ -14,9 +14,12 @@ def test_read_metadata():
     # prepare yaml file
     content = '''name: 'sample data 1'
 description: 'some description'
+connection: 'user@db'
 type: 'tabular'
 privacy_budget: 1000
 privacy_budget_interval_days: 30
+synth_allowed: true
+privacy_level: 1
 database:
     Table1:
         row_privacy: true
@@ -56,9 +59,12 @@ database:
     # test
     assert metadata.name == "sample data 1"
     assert metadata.description == "some description"
+    assert metadata.connection == "user@db"
     assert metadata.type == "tabular"
     assert metadata.privacy_budget == 1000
     assert metadata.privacy_budget_interval_days == 30
+    assert metadata.privacy_level == 1
+    assert metadata.synth_allowed is True
     assert metadata.tables is not None
     assert len(metadata.tables) == 1
     assert metadata.tables[0].row_privacy is True
