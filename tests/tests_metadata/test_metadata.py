@@ -10,7 +10,7 @@ import os
 from dq0.sdk.data.metadata import Metadata
 
 
-def test_read_metadata():
+def test_metadata():
     # prepare yaml file
     content = '''name: 'sample data 1'
 description: 'some description'
@@ -20,7 +20,7 @@ privacy_budget: 1000
 privacy_budget_interval_days: 30
 synth_allowed: true
 privacy_level: 1
-database:
+Database:
     Table1:
         row_privacy: true
         rows: 2000
@@ -54,7 +54,7 @@ database:
         f.write(content)
 
     # load metadata
-    metadata = Metadata('test.yaml')
+    metadata = Metadata(filename='test.yaml')
 
     # test
     assert metadata.name == "sample data 1"
@@ -101,14 +101,41 @@ database:
     metadata.description = 'new description'
 
     # save metadata
-    metadata.write_to_yaml('test2.yaml')
+    metadata.to_yaml_file('test2.yaml')
 
     # reload metadata
-    metadata = Metadata('test2.yaml')
+    metadata = Metadata(filename='test2.yaml')
 
     # test again
     assert metadata.privacy_budget == 1234
     assert metadata.description == "new description"
+
+    # change metadata
+    metadata.privacy_budget = 5678
+    metadata.description = 'new description 2'
+
+    # dump metadata
+    meta_string = metadata.to_yaml()
+
+    # reload metadata
+    metadata = Metadata(yaml=meta_string)
+
+    # test again
+    assert metadata.privacy_budget == 5678
+    assert metadata.description == "new description 2"
+
+    # test to_dict
+    m_dict = metadata.to_dict()
+    assert m_dict['name'] == "sample data 1"
+    assert m_dict['Database']['Table1']['row_privacy'] is True
+    assert m_dict['Database']['Table1']['weight']['selectable'] is True
+
+    # tets to_dict sm
+    sm_dict = metadata.to_dict_sm()
+    assert 'name' not in sm_dict
+    assert sm_dict['Database']['Table1']['row_privacy'] is True
+    assert 'selectable' not in sm_dict['Database']['Table1']['weight']
+    assert sm_dict['Database']['Table1']['weight']['upper'] == 100.5
 
     # clean up
     os.remove('test.yaml')
