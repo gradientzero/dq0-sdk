@@ -18,7 +18,6 @@ connection: 'user@db'
 type: 'CSV'
 privacy_budget: 1000
 privacy_budget_interval_days: 30
-tau: 99
 synth_allowed: true
 privacy_level: 1
 Database:
@@ -31,6 +30,7 @@ Database:
         use_dpsu: true
         clamp_counts: true
         clamp_columns: true
+        tau: 99
         user_id:
             private_id: true
             type: int
@@ -64,7 +64,6 @@ Database:
     assert metadata.type == "CSV"
     assert metadata.privacy_budget == 1000
     assert metadata.privacy_budget_interval_days == 30
-    assert metadata.tau == 99
     assert metadata.privacy_level == 1
     assert metadata.synth_allowed is True
     assert metadata.tables is not None
@@ -77,6 +76,7 @@ Database:
     assert metadata.tables[0].use_dpsu is True
     assert metadata.tables[0].clamp_counts is True
     assert metadata.tables[0].clamp_columns is True
+    assert metadata.tables[0].tau == 99
     assert len(metadata.tables[0].columns) == 5
     assert metadata.tables[0].columns[0].name == "user_id"
     assert metadata.tables[0].columns[1].name == "weight"

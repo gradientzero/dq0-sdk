@@ -25,7 +25,6 @@ class Metadata:
         schema:  name of the database
         privacy_budget: parsed privacy budget property.
         privacy_budget_interval_days: parsed privacy budget reset interval in days.
-        tau: tau value for privacy thresholding
         synth_allowed: true to allow synthesized data for exploration
         privacy_level: 0, 1, 2 in ascending order of privacy protection (default is 2).
         tables: parsed database metadata.
@@ -46,7 +45,6 @@ class Metadata:
         self.tables = None
         self.privacy_budget = None
         self.privacy_budget_interval_days = None
-        self.tau = None
         self.synth_allowed = False
         self.privacy_level = 2
         if filename is not None:
@@ -82,7 +80,6 @@ class Metadata:
         self.schema = 'Database'
         self.privacy_budget = int(meta["privacy_budget"]) if "privacy_budget" in meta else None
         self.privacy_budget_interval_days = int(meta["privacy_budget_interval_days"]) if "privacy_budget_interval_days" else None
-        self.tau = int(meta["tau"]) if "tau" else None
         self.synth_allowed = bool(meta["synth_allowed"]) if "synth_allowed" in meta else False
         self.privacy_level = int(meta["privacy_level"]) if "privacy_level" in meta else 2
 
@@ -125,8 +122,6 @@ class Metadata:
                 meta["privacy_budget"] = self.privacy_budget
             if self.privacy_budget_interval_days is not None:
                 meta["privacy_budget_interval_days"] = self.privacy_budget_interval_days
-            if self.tau is not None:
-                meta["tau"] = self.tau
             if self.synth_allowed is not None:
                 meta["synth_allowed"] = self.synth_allowed
             if self.privacy_level is not None:
@@ -174,11 +169,13 @@ class Table():
             clamp_counts=False,
             clamp_columns=False,
             censor_dims=False,
+            tau=None,
             columns=None):
         """Create a new table object.
 
         Args:
             name: the name of the table
+            tau: tau value for privacy thresholding
             columns: columns of the table
         """
         self.name = name
@@ -190,6 +187,7 @@ class Table():
         self.clamp_counts = clamp_counts
         self.clamp_columns = clamp_columns
         self.censor_dims = censor_dims
+        self.tau = tau
         self.columns = columns
 
     @staticmethod
@@ -203,6 +201,7 @@ class Table():
         clamp_counts = bool(meta.pop("clamp_counts", False))
         clamp_columns = bool(meta.pop("clamp_columns", True))
         censor_dims = bool(meta.pop("censor_dims", False))
+        tau = int(meta.pop("tau")) if 'tau' in meta else None
         columns = []
         for column in meta.keys():
             columns.append(Column.from_meta(column, meta[column]))
@@ -216,6 +215,7 @@ class Table():
             clamp_counts=clamp_counts,
             clamp_columns=clamp_columns,
             censor_dims=censor_dims,
+            tau=tau,
             columns=columns
         )
 
@@ -225,6 +225,8 @@ class Table():
         if not sm:
             if self.name is not None:
                 meta["name"] = self.name
+            if self.tau is not None:
+                meta["tau"] = self.tau
         if self.row_privacy is not None:
             meta["row_privacy"] = self.row_privacy
         if self.rows is not None:
