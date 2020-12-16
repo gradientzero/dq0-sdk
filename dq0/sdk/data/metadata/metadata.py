@@ -22,11 +22,12 @@ class Metadata:
         description: parsed description property
         connection: data source connection URI
         type: parsed type propertey.
+        schema:  name of the database
         privacy_budget: parsed privacy budget property.
         privacy_budget_interval_days: parsed privacy budget reset interval in days.
+        tau: tau value for privacy thresholding
         synth_allowed: true to allow synthesized data for exploration
         privacy_level: 0, 1, 2 in ascending order of privacy protection (default is 2).
-        schema: name of the database
         tables: parsed database metadata.
     """
 
@@ -45,6 +46,7 @@ class Metadata:
         self.tables = None
         self.privacy_budget = None
         self.privacy_budget_interval_days = None
+        self.tau = None
         self.synth_allowed = False
         self.privacy_level = 2
         if filename is not None:
@@ -80,6 +82,7 @@ class Metadata:
         self.schema = 'Database'
         self.privacy_budget = int(meta["privacy_budget"]) if "privacy_budget" in meta else None
         self.privacy_budget_interval_days = int(meta["privacy_budget_interval_days"]) if "privacy_budget_interval_days" else None
+        self.tau = int(meta["tau"]) if "tau" else None
         self.synth_allowed = bool(meta["synth_allowed"]) if "synth_allowed" in meta else False
         self.privacy_level = int(meta["privacy_level"]) if "privacy_level" in meta else 2
 
@@ -122,6 +125,8 @@ class Metadata:
                 meta["privacy_budget"] = self.privacy_budget
             if self.privacy_budget_interval_days is not None:
                 meta["privacy_budget_interval_days"] = self.privacy_budget_interval_days
+            if self.tau is not None:
+                meta["tau"] = self.tau
             if self.synth_allowed is not None:
                 meta["synth_allowed"] = self.synth_allowed
             if self.privacy_level is not None:

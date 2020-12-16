@@ -18,6 +18,7 @@ connection: 'user@db'
 type: 'CSV'
 privacy_budget: 1000
 privacy_budget_interval_days: 30
+tau: 99
 synth_allowed: true
 privacy_level: 1
 Database:
@@ -63,6 +64,7 @@ Database:
     assert metadata.type == "CSV"
     assert metadata.privacy_budget == 1000
     assert metadata.privacy_budget_interval_days == 30
+    assert metadata.tau == 99
     assert metadata.privacy_level == 1
     assert metadata.synth_allowed is True
     assert metadata.tables is not None
