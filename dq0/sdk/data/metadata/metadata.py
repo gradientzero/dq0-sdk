@@ -26,6 +26,7 @@ class Metadata:
         privacy_budget_interval_days: parsed privacy budget reset interval in days.
         synth_allowed: true to allow synthesized data for exploration
         privacy_level: 0, 1, 2 in ascending order of privacy protection (default is 2).
+        schema: name of the database
         tables: parsed database metadata.
     """
 
@@ -40,6 +41,7 @@ class Metadata:
         self.description = None
         self.connection = None
         self.type = None
+        self.schema = None
         self.tables = None
         self.privacy_budget = None
         self.privacy_budget_interval_days = None
@@ -75,17 +77,20 @@ class Metadata:
         self.description = meta["description"] if "description" in meta else None
         self.connection = meta["connection"] if "connection" in meta else None
         self.type = meta["type"] if "type" in meta else None
+        self.schema = 'Database'
         self.privacy_budget = int(meta["privacy_budget"]) if "privacy_budget" in meta else None
         self.privacy_budget_interval_days = int(meta["privacy_budget_interval_days"]) if "privacy_budget_interval_days" else None
         self.synth_allowed = bool(meta["synth_allowed"]) if "synth_allowed" in meta else False
         self.privacy_level = int(meta["privacy_level"]) if "privacy_level" in meta else 2
 
-        if "Database" in meta or "database" in meta:
-            db = meta["database"] if "database" in meta else meta["Database"]
-            tables = []
-            for table in db.keys():
-                tables.append(Table.from_meta(table, db[table]))
-            self.tables = tables
+        for key in meta.keys():
+            if key not in self.__dict__:
+                self.schema = key
+                tables = []
+                for table in meta[key].keys():
+                    tables.append(Table.from_meta(table, meta[key][table]))
+                self.tables = tables
+                break
 
     def to_dict(self, sm=False):  # noqa: C901
         """Returns a dict representation of this class.
@@ -106,10 +111,12 @@ class Metadata:
                 meta["connection"] = self.connection
             if self.type is not None:
                 meta["type"] = self.type
+            if self.schema is not None:
+                meta["schema"] = self.schema
         if self.tables is not None and len(self.tables) > 0:
-            meta["Database"] = {}
+            meta[self.schema] = {}
             for table in self.tables:
-                meta["Database"][table.name] = table.to_dict(sm=sm)
+                meta[self.schema][table.name] = table.to_dict(sm=sm)
         if not sm:
             if self.privacy_budget is not None:
                 meta["privacy_budget"] = self.privacy_budget

@@ -15,7 +15,7 @@ def test_metadata():
     content = '''name: 'sample data 1'
 description: 'some description'
 connection: 'user@db'
-type: 'tabular'
+type: 'CSV'
 privacy_budget: 1000
 privacy_budget_interval_days: 30
 synth_allowed: true
@@ -60,7 +60,7 @@ Database:
     assert metadata.name == "sample data 1"
     assert metadata.description == "some description"
     assert metadata.connection == "user@db"
-    assert metadata.type == "tabular"
+    assert metadata.type == "CSV"
     assert metadata.privacy_budget == 1000
     assert metadata.privacy_budget_interval_days == 30
     assert metadata.privacy_level == 1
@@ -97,16 +97,18 @@ Database:
     assert metadata.tables[0].columns[4].mask == "(.*)@(.*).{3}$"
 
     # change metadata
+    metadata.schema = 'DBO'
     metadata.privacy_budget = 1234
     metadata.description = 'new description'
 
     # save metadata
-    metadata.to_yaml_file('test2.yaml')
+    yaml_string = metadata.to_yaml()
 
     # reload metadata
-    metadata = Metadata(filename='test2.yaml')
+    metadata = Metadata(yaml=yaml_string)
 
     # test again
+    assert metadata.schema == 'DBO'
     assert metadata.privacy_budget == 1234
     assert metadata.description == "new description"
 
@@ -127,16 +129,15 @@ Database:
     # test to_dict
     m_dict = metadata.to_dict()
     assert m_dict['name'] == "sample data 1"
-    assert m_dict['Database']['Table1']['row_privacy'] is True
-    assert m_dict['Database']['Table1']['weight']['selectable'] is True
+    assert m_dict['DBO']['Table1']['row_privacy'] is True
+    assert m_dict['DBO']['Table1']['weight']['selectable'] is True
 
     # tets to_dict sm
     sm_dict = metadata.to_dict_sm()
     assert 'name' not in sm_dict
-    assert sm_dict['Database']['Table1']['row_privacy'] is True
-    assert 'selectable' not in sm_dict['Database']['Table1']['weight']
-    assert sm_dict['Database']['Table1']['weight']['upper'] == 100.5
+    assert sm_dict['DBO']['Table1']['row_privacy'] is True
+    assert 'selectable' not in sm_dict['DBO']['Table1']['weight']
+    assert sm_dict['DBO']['Table1']['weight']['upper'] == 100.5
 
     # clean up
     os.remove('test.yaml')
-    os.remove('test2.yaml')
