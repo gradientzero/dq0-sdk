@@ -66,40 +66,37 @@ Database:
     assert metadata.privacy_budget_interval_days == 30
     assert metadata.privacy_level == 1
     assert metadata.synth_allowed is True
-    assert metadata.tables is not None
-    assert len(metadata.tables) == 1
-    assert metadata.tables[0].row_privacy is True
-    assert metadata.tables[0].rows == 2000
-    assert metadata.tables[0].max_ids == 1
-    assert metadata.tables[0].sample_max_ids is True
-    assert metadata.tables[0].censor_dims is True
-    assert metadata.tables[0].use_dpsu is True
-    assert metadata.tables[0].clamp_counts is True
-    assert metadata.tables[0].clamp_columns is True
-    assert metadata.tables[0].tau == 99
-    assert len(metadata.tables[0].columns) == 5
-    assert metadata.tables[0].columns[0].name == "user_id"
-    assert metadata.tables[0].columns[1].name == "weight"
-    assert metadata.tables[0].columns[2].name == "height"
-    assert metadata.tables[0].columns[3].name == "name"
-    assert metadata.tables[0].columns[4].name == "email"
-    assert metadata.tables[0].columns[0].private_id is True
-    assert metadata.tables[0].columns[1].private_id is False
-    assert metadata.tables[0].columns[0].type == "int"
-    assert metadata.tables[0].columns[1].bounded is True
-    assert metadata.tables[0].columns[1].use_auto_bounds is False
-    assert metadata.tables[0].columns[1].lower == 0.0
-    assert metadata.tables[0].columns[1].upper == 100.5
-    assert metadata.tables[0].columns[1].selectable is True
-    assert metadata.tables[0].columns[2].bounded is True
-    assert metadata.tables[0].columns[2].use_auto_bounds is True
-    assert metadata.tables[0].columns[2].auto_bounds_prob == 0.8
-    assert metadata.tables[0].columns[4].selectable is False
-    assert metadata.tables[0].columns[4].type == "string"
-    assert metadata.tables[0].columns[4].mask == "(.*)@(.*).{3}$"
+    assert metadata.schemas['Database']['Table1'].row_privacy is True
+    assert metadata.schemas['Database']['Table1'].rows == 2000
+    assert metadata.schemas['Database']['Table1'].max_ids == 1
+    assert metadata.schemas['Database']['Table1'].sample_max_ids is True
+    assert metadata.schemas['Database']['Table1'].censor_dims is True
+    assert metadata.schemas['Database']['Table1'].use_dpsu is True
+    assert metadata.schemas['Database']['Table1'].clamp_counts is True
+    assert metadata.schemas['Database']['Table1'].clamp_columns is True
+    assert metadata.schemas['Database']['Table1'].tau == 99
+    assert len(metadata.schemas['Database']['Table1'].columns.keys()) == 5
+    assert metadata.schemas['Database']['Table1'].columns['user_id'].name == "user_id"
+    assert metadata.schemas['Database']['Table1'].columns['weight'].name == "weight"
+    assert metadata.schemas['Database']['Table1'].columns['height'].name == "height"
+    assert metadata.schemas['Database']['Table1'].columns['name'].name == "name"
+    assert metadata.schemas['Database']['Table1'].columns['email'].name == "email"
+    assert metadata.schemas['Database']['Table1'].columns['user_id'].private_id is True
+    assert metadata.schemas['Database']['Table1'].columns['weight'].private_id is False
+    assert metadata.schemas['Database']['Table1'].columns['user_id'].type == "int"
+    assert metadata.schemas['Database']['Table1'].columns['weight'].bounded is True
+    assert metadata.schemas['Database']['Table1'].columns['weight'].use_auto_bounds is False
+    assert metadata.schemas['Database']['Table1'].columns['weight'].lower == 0.0
+    assert metadata.schemas['Database']['Table1'].columns['weight'].upper == 100.5
+    assert metadata.schemas['Database']['Table1'].columns['weight'].selectable is True
+    assert metadata.schemas['Database']['Table1'].columns['height'].bounded is True
+    assert metadata.schemas['Database']['Table1'].columns['height'].use_auto_bounds is True
+    assert metadata.schemas['Database']['Table1'].columns['height'].auto_bounds_prob == 0.8
+    assert metadata.schemas['Database']['Table1'].columns['email'].selectable is False
+    assert metadata.schemas['Database']['Table1'].columns['email'].type == "string"
+    assert metadata.schemas['Database']['Table1'].columns['email'].mask == "(.*)@(.*).{3}$"
 
     # change metadata
-    metadata.schema = 'DBO'
     metadata.privacy_budget = 1234
     metadata.description = 'new description'
 
@@ -110,7 +107,6 @@ Database:
     metadata = Metadata(yaml=yaml_string)
 
     # test again
-    assert metadata.schema == 'DBO'
     assert metadata.privacy_budget == 1234
     assert metadata.description == "new description"
 
@@ -131,15 +127,80 @@ Database:
     # test to_dict
     m_dict = metadata.to_dict()
     assert m_dict['name'] == "sample data 1"
-    assert m_dict['DBO']['Table1']['row_privacy'] is True
-    assert m_dict['DBO']['Table1']['weight']['selectable'] is True
+    assert m_dict['Database']['Table1']['row_privacy'] is True
+    assert m_dict['Database']['Table1']['weight']['selectable'] is True
 
     # tets to_dict sm
     sm_dict = metadata.to_dict_sm()
     assert 'name' not in sm_dict
-    assert sm_dict['DBO']['Table1']['row_privacy'] is True
-    assert 'selectable' not in sm_dict['DBO']['Table1']['weight']
-    assert sm_dict['DBO']['Table1']['weight']['upper'] == 100.5
+    assert sm_dict['Database']['Table1']['row_privacy'] is True
+    assert 'selectable' not in sm_dict['Database']['Table1']['weight']
+    assert sm_dict['Database']['Table1']['weight']['upper'] == 100.5
 
     # clean up
     os.remove('test.yaml')
+
+
+def test_combine_metadata():
+    # prepare yaml file
+    content1 = '''name: 'sample data 1'
+description: 'some description'
+connection: 'user@db'
+type: 'CSV'
+privacy_budget: 1000
+privacy_budget_interval_days: 30
+synth_allowed: true
+privacy_level: 1
+Database1:
+    Table1:
+        row_privacy: true
+        rows: 1000
+        user_id:
+            private_id: true
+            type: int
+    '''
+
+    content2 = '''name: 'sample data 2'
+description: 'some description'
+connection: 'user@db'
+type: 'CSV'
+privacy_budget: 1000
+privacy_budget_interval_days: 30
+synth_allowed: true
+privacy_level: 1
+Database2:
+    Table2:
+        row_privacy: false
+        rows: 2000
+        email:
+            private_id: true
+            type: string
+    '''
+
+    content3 = '''name: 'sample data 3'
+description: 'some description'
+connection: 'user@db'
+type: 'CSV'
+privacy_budget: 1000
+privacy_budget_interval_days: 30
+synth_allowed: true
+privacy_level: 1
+Database1:
+    Table3:
+        row_privacy: false
+        rows: 3000
+        weight:
+            type: int
+    '''
+    # load metadata
+    metadata1 = Metadata(yaml=content1)
+    metadata2 = Metadata(yaml=content2)
+    metadata3 = Metadata(yaml=content3)
+
+    metadata1.combine_with(metadata2)
+    metadata1.combine_with(metadata3)
+
+    assert metadata1.schemas['Database1']['Table1'].row_privacy is True
+    assert metadata1.schemas['Database1']['Table3'].row_privacy is False
+    assert metadata1.schemas['Database2']['Table2'].rows == 2000
+    assert metadata1.schemas['Database2']['Table2'].columns['email'].type == 'string'

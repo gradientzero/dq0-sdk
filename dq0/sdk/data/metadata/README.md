@@ -25,10 +25,8 @@ name: 'sample data 1'
 description: 'some description'
 type: 'CSV'
 connection: 'user@db'
-schema: 'DatabaseSchema'
 privacy_budget: 1000
 privacy_budget_interval_days: 30
-tau: 100
 synth_allowed: true
 privacy_level: 2
 DatabaseSchema:
@@ -41,6 +39,7 @@ DatabaseSchema:
         clamp_counts: true
         clamp_columns: true
         censor_dims: false
+        tau: 100
         user_id:
             private_id: true
             type: int

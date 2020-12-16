@@ -7,6 +7,7 @@ Copyright 2020, Gradient Zero
 All rights reserved
 """
 
+import copy
 import os
 
 import yaml
@@ -41,7 +42,7 @@ class Metadata:
         self.description = None
         self.connection = None
         self.type = None
-        self.schema = None
+        self.schemas = None
         self.tables = None
         self.privacy_budget = None
         self.privacy_budget_interval_days = None
@@ -77,7 +78,7 @@ class Metadata:
         self.description = meta["description"] if "description" in meta else None
         self.connection = meta["connection"] if "connection" in meta else None
         self.type = meta["type"] if "type" in meta else None
-        self.schema = 'Database'
+        self.schemas = {}
         self.privacy_budget = int(meta["privacy_budget"]) if "privacy_budget" in meta else None
         self.privacy_budget_interval_days = int(meta["privacy_budget_interval_days"]) if "privacy_budget_interval_days" else None
         self.synth_allowed = bool(meta["synth_allowed"]) if "synth_allowed" in meta else False
@@ -85,12 +86,9 @@ class Metadata:
 
         for key in meta.keys():
             if key not in self.__dict__:
-                self.schema = key
-                tables = []
+                self.schemas[key] = {}
                 for table in meta[key].keys():
-                    tables.append(Table.from_meta(table, meta[key][table]))
-                self.tables = tables
-                break
+                    self.schemas[key][table] = Table.from_meta(table, meta[key][table])
 
     def to_dict(self, sm=False):  # noqa: C901
         """Returns a dict representation of this class.
@@ -111,12 +109,11 @@ class Metadata:
                 meta["connection"] = self.connection
             if self.type is not None:
                 meta["type"] = self.type
-            if self.schema is not None:
-                meta["schema"] = self.schema
-        if self.tables is not None and len(self.tables) > 0:
-            meta[self.schema] = {}
-            for table in self.tables:
-                meta[self.schema][table.name] = table.to_dict(sm=sm)
+        if self.schemas is not None and len(self.schemas) > 0:
+            for schema in self.schemas.keys():
+                meta[schema] = {}
+                for table in self.schemas[schema].keys():
+                    meta[schema][table] = self.schemas[schema][table].to_dict(sm=sm)
         if not sm:
             if self.privacy_budget is not None:
                 meta["privacy_budget"] = self.privacy_budget
@@ -131,6 +128,26 @@ class Metadata:
     def to_dict_sm(self):
         """Returns a dict representation of this metadata in smartnoise format."""
         return self.to_dict(sm=True)
+
+    def combine_with(self, metadata):
+        """Combines two metadata instances.
+        Adds the first schema of the given metadata object and all of its tables to
+        this metadata object.
+
+        Returns:
+            The combined metadata object (self)
+        """
+        if metadata is None or not isinstance(metadata, Metadata):
+            raise ValueError('you need to pass at a valid Metadata object')
+        for schema in metadata.schemas.keys():
+            if schema not in self.schemas.keys():
+                # different databases, just add it
+                self.schemas[schema] = copy.deepcopy(metadata.schemas[schema])
+            else:
+                # same schema, combine tables
+                for table in metadata.schemas[schema].keys():
+                    self.schemas[schema][table] = copy.deepcopy(metadata.schemas[schema][table])
+        return self
 
     def to_yaml_file(self, filename, sm=False):
         """Writes metadata to a yaml file at the given path.
@@ -202,9 +219,9 @@ class Table():
         clamp_columns = bool(meta.pop("clamp_columns", True))
         censor_dims = bool(meta.pop("censor_dims", False))
         tau = int(meta.pop("tau")) if 'tau' in meta else None
-        columns = []
+        columns = {}
         for column in meta.keys():
-            columns.append(Column.from_meta(column, meta[column]))
+            columns[column] = Column.from_meta(column, meta[column])
         return Table(
             table,
             row_privacy=row_privacy,
@@ -244,7 +261,7 @@ class Table():
         if self.censor_dims is not None:
             meta["censor_dims"] = self.censor_dims
         for column in self.columns:
-            meta[column.name] = column.to_dict(sm=sm)
+            meta[column] = self.columns[column].to_dict(sm=sm)
         return meta
 
 
