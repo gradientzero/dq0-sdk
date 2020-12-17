@@ -80,7 +80,7 @@ class Metadata:
         self.type = meta["type"] if "type" in meta else None
         self.schemas = {}
         self.privacy_budget = int(meta["privacy_budget"]) if "privacy_budget" in meta else None
-        self.privacy_budget_interval_days = int(meta["privacy_budget_interval_days"]) if "privacy_budget_interval_days" else None
+        self.privacy_budget_interval_days = int(meta["privacy_budget_interval_days"]) if "privacy_budget_interval_days" in meta else None
         self.synth_allowed = bool(meta["synth_allowed"]) if "synth_allowed" in meta else False
         self.privacy_level = int(meta["privacy_level"]) if "privacy_level" in meta else 2
 
@@ -338,7 +338,7 @@ class Column():
             allowed_values = meta["allowed_values"] if "allowed_values" in meta else None
             mask = meta["mask"] if "mask" in meta else None
         else:
-            raise ValueError("Unknown column type for column {}".format(_type))
+            raise ValueError("Unknown column type {} for column {}".format(_type, column))
         private_id = bool(meta["private_id"]) if "private_id" in meta else False
         selectable = bool(meta["selectable"]) if "selectable" in meta else False
         return Column(
