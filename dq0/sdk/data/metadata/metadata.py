@@ -240,8 +240,6 @@ class Table():
         """Returns a dict representation of this class."""
         meta = {}
         if not sm:
-            if self.name is not None:
-                meta["name"] = self.name
             if self.tau is not None:
                 meta["tau"] = self.tau
         if self.row_privacy is not None:
