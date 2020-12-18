@@ -24,23 +24,27 @@ class Snowflake(SQL):
     Snowflake connection string: 'snowflake://<user>:<password>@<account>/'
 
     Args:
-        query (:obj:`str`): SQL query.
-        connection (:obj:`str`): The snowflake connection string.
+        connection_string (:obj:`str`): The snowflake connection string.
     """
 
-    def __init__(self, query, connection):
-        super().__init__(query, connection)
+    def __init__(self, connection_string):
+        super().__init__(connection_string)
         self.type = 'snowflake'
-        self.engine = sqlalchemy.create_engine(connection)
+        self.engine = sqlalchemy.create_engine(connection_string)
 
-    def read(self, **kwargs):
-        """Read snowflake data source
+    def execute(self, query, **kwargs):
+        """Execute Snowflake query
 
         Args:
+            query: SQL Query to execute
             kwargs: keyword arguments
 
         Returns:
-            snowflake data as pandas dataframe
+            SQL ResultSet as pandas dataframe
         """
-        connection = self.engine.connect()
-        return pd.read_sql_query(self.query, connection, **kwargs)
+        # check query
+        if query is None:
+            raise ValueError('you need to pass the query')
+
+        connection = self.get_connection()
+        return pd.read_sql_query(query, connection, **kwargs)

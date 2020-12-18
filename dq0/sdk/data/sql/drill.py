@@ -24,23 +24,27 @@ class Drill(SQL):
     Drill connection string: 'drill+sadrill://<username>:<password>@<host>:<port>/<storage_plugin>?use_ssl=True'
 
     Args:
-        query (:obj:`str`): SQL query.
-        connection (:obj:`str`): The drill connection string.
+        connection_string (:obj:`str`): The drill connection string.
     """
 
-    def __init__(self, query, connection):
-        super().__init__(query, connection)
+    def __init__(self, connection_string):
+        super().__init__(connection_string)
         self.type = 'drill'
-        self.engine = sqlalchemy.create_engine(connection)
+        self.engine = sqlalchemy.create_engine(connection_string)
 
-    def read(self, **kwargs):
-        """Read drill data source
+    def execute(self, query, **kwargs):
+        """Execute drill query
 
         Args:
+            query: SQL Query to execute
             kwargs: keyword arguments
 
         Returns:
-            drill data as pandas dataframe
+            SQL ResultSet as pandas dataframe
         """
-        connection = self.engine.connect()
-        return pd.read_sql_query(self.query, connection, **kwargs)
+        # check query
+        if query is None:
+            raise ValueError('you need to pass the query')
+
+        connection = self.get_connection()
+        return pd.read_sql_query(query, connection, **kwargs)
