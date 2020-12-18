@@ -60,7 +60,7 @@ class SQL(Source):
         if self.engine is None:
             raise ValueError('could not find valid engine')
 
-        self.connection = self.engine.connect()
+        self.connection = self.engine.raw_connection()
         return self.connection
 
     def read(self, **kwargs):
