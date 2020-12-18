@@ -43,7 +43,6 @@ class Metadata:
         self.connection = None
         self.type = None
         self.schemas = None
-        self.tables = None
         self.privacy_budget = None
         self.privacy_budget_interval_days = None
         self.synth_allowed = False
@@ -174,6 +173,14 @@ class Metadata:
         """
         meta = self.to_dict(sm=sm)
         return yaml.dump(meta)
+
+    def get_all_tables(self):
+        """Helper function that returns all available tables (across schemas) in this metadata."""
+        tables = []
+        for schema in self.schemas.keys():
+            for table in self.schemas[schema].keys():
+                tables.append(self.schemas[schema][table])
+        return tables
 
 
 class Table():
