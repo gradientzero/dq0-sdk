@@ -123,6 +123,9 @@ class Metadata:
                 meta["synth_allowed"] = self.synth_allowed
             if self.privacy_level is not None:
                 meta["privacy_level"] = self.privacy_level
+        if sm:
+            name = self.name if self.name is not None else 'Collection'
+            meta = {name: meta}
         return meta
 
     def to_dict_sm(self):
