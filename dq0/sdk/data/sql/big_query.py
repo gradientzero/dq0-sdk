@@ -24,15 +24,14 @@ class BigQuery(SQL):
     Provides function to read in BigQuery data.
 
     Args:
-        query (:obj:`str`): SQL query.
-        connection (:obj:`str`): The BigQuery project.
+        connection_string (:obj:`str`): The BigQuery project.
     """
 
-    def __init__(self, query, connection):
-        super().__init__(query, connection)
+    def __init__(self, connection_string):
+        super().__init__(connection_string)
         self.type = 'bigquery'
 
-    def execute(self, query=None, **kwargs):
+    def execute(self, query, **kwargs):
         """Execute SQL query
 
         Args:
@@ -42,6 +41,10 @@ class BigQuery(SQL):
         Returns:
             SQL ResultSet as pandas dataframe
         """
+        # check query
+        if query is None:
+            raise ValueError('you need to pass a query parameter')
+
         # Construct a BigQuery client object.
         if not big_query_available:
             raise ImportError('big_query dependencies must be installed first')
@@ -49,7 +52,7 @@ class BigQuery(SQL):
         self.client = bigquery.Client()
 
         # make an API request
-        query_job = self.client.query(self.query)
+        query_job = self.client.query(query)
 
         # waits for query to complete
         query_job.result()

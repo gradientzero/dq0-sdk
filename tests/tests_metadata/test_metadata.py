@@ -133,9 +133,9 @@ Database:
     # tets to_dict sm
     sm_dict = metadata.to_dict_sm()
     assert 'name' not in sm_dict
-    assert sm_dict['Database']['Table1']['row_privacy'] is True
-    assert 'selectable' not in sm_dict['Database']['Table1']['weight']
-    assert sm_dict['Database']['Table1']['weight']['upper'] == 100.5
+    assert sm_dict['sample data 1']['Database']['Table1']['row_privacy'] is True
+    assert 'selectable' not in sm_dict['sample data 1']['Database']['Table1']['weight']
+    assert sm_dict['sample data 1']['Database']['Table1']['weight']['upper'] == 100.5
 
     # clean up
     os.remove('test.yaml')

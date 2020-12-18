@@ -14,18 +14,21 @@ class SQL(Source):
 
     Attributes:
         query (:obj:`str`): SQL query.
-        connection (:obj:`str`): General purpose SQL data source connection string.
+        connection_string (:obj:`str`): General purpose SQL data source connection string.
+        engine: the used sqlalchemy engine
+        engine_connection: the active sql connection
+        type: the datasource type
 
     Args:
-        query (:obj:`str`): SQL query.
         connection (:obj:`str`): General purpose SQL data source connection string.
     """
 
-    def __init__(self, query, connection):
-        super().__init__(connection)
-        self.query = query
-        self.connection = connection
+    def __init__(self, connection_string):
+        super().__init__(connection_string)
+        self.query = None
+        self.connection_string = connection_string
         self.engine = None
+        self.connection = None
         self.type = 'sql'
 
     @abstractmethod
@@ -42,6 +45,23 @@ class SQL(Source):
             SQL ResultSet as pandas dataframe
         """
         raise NotImplementedError()
+
+    def get_connection(self):
+        """Returns the active sql connection.
+
+        Initiates the connection if not already done.
+
+        Returns:
+            Active sql connection. Throws error if engine is not set.
+        """
+        if self.connection is not None:
+            return self.connection
+
+        if self.engine is None:
+            raise ValueError('could not find valid engine')
+
+        self.connection = self.engine.raw_connection()
+        return self.connection
 
     def read(self, **kwargs):
         """Runs overriden 'execute' method with query parameter
