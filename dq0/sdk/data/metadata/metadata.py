@@ -77,14 +77,16 @@ class Metadata:
         self.description = meta["description"] if "description" in meta else None
         self.connection = meta["connection"] if "connection" in meta else None
         self.type = meta["type"] if "type" in meta else None
+        self.size = int(meta["size"]) if "size" in meta else None
         self.schemas = {}
         self.privacy_budget = int(meta["privacy_budget"]) if "privacy_budget" in meta else None
         self.privacy_budget_interval_days = int(meta["privacy_budget_interval_days"]) if "privacy_budget_interval_days" in meta else None
         self.synth_allowed = bool(meta["synth_allowed"]) if "synth_allowed" in meta else False
         self.privacy_level = int(meta["privacy_level"]) if "privacy_level" in meta else 2
+        self.privacy_column = meta["privacy_column"] if "privacy_column" in meta else None
 
         for key in meta.keys():
-            if key not in self.__dict__:
+            if key not in self.__dict__ and isinstance(meta[key], dict):
                 self.schemas[key] = {}
                 for table in meta[key].keys():
                     self.schemas[key][table] = Table.from_meta(table, meta[key][table])
@@ -108,6 +110,8 @@ class Metadata:
                 meta["connection"] = self.connection
             if self.type is not None:
                 meta["type"] = self.type
+            if self.size is not None:
+                meta["size"] = self.size
         if self.schemas is not None and len(self.schemas) > 0:
             for schema in self.schemas.keys():
                 meta[schema] = {}
@@ -122,6 +126,8 @@ class Metadata:
                 meta["synth_allowed"] = self.synth_allowed
             if self.privacy_level is not None:
                 meta["privacy_level"] = self.privacy_level
+            if self.privacy_column is not None:
+                meta["privacy_column"] = self.privacy_column
         if sm:
             name = self.name if self.name is not None else 'Collection'
             meta = {name: meta}

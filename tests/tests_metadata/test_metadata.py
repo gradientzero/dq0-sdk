@@ -16,10 +16,12 @@ def test_metadata():
 description: 'some description'
 connection: 'user@db'
 type: 'CSV'
+size: 1001
 privacy_budget: 1000
 privacy_budget_interval_days: 30
 synth_allowed: true
 privacy_level: 1
+privacy_column: 'user_id'
 Database:
     Table1:
         row_privacy: true
@@ -62,10 +64,12 @@ Database:
     assert metadata.description == "some description"
     assert metadata.connection == "user@db"
     assert metadata.type == "CSV"
+    assert metadata.size == 1001
     assert metadata.privacy_budget == 1000
     assert metadata.privacy_budget_interval_days == 30
     assert metadata.privacy_level == 1
     assert metadata.synth_allowed is True
+    assert metadata.privacy_column == 'user_id'
     assert metadata.schemas['Database']['Table1'].row_privacy is True
     assert metadata.schemas['Database']['Table1'].rows == 2000
     assert metadata.schemas['Database']['Table1'].max_ids == 1
