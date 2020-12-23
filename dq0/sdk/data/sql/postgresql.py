@@ -30,6 +30,10 @@ class PostgreSQL(SQL):
     def __init__(self, connection_string):
         super().__init__(connection_string)
         self.type = 'postgresql'
+        try:
+            connection_string.index('postgresql+psycopg2://')
+        except ValueError:
+            connection_string = 'postgresql+psycopg2://{}'.format(connection_string)
         self.engine = sqlalchemy.create_engine(connection_string)
 
     def execute(self, query, **kwargs):
