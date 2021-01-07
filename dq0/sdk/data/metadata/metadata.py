@@ -79,7 +79,7 @@ class Metadata:
         self.type = meta["type"] if "type" in meta else None
         self.size = int(meta["size"]) if "size" in meta else None
         self.schemas = {}
-        self.privacy_budget = int(meta["privacy_budget"]) if "privacy_budget" in meta else None
+        self.privacy_budget = float(meta["privacy_budget"]) if "privacy_budget" in meta else None
         self.privacy_budget_interval_days = int(meta["privacy_budget_interval_days"]) if "privacy_budget_interval_days" in meta else None
         self.synth_allowed = bool(meta["synth_allowed"]) if "synth_allowed" in meta else False
         self.privacy_level = int(meta["privacy_level"]) if "privacy_level" in meta else 2
