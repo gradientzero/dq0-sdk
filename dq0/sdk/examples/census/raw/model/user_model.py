@@ -347,6 +347,18 @@ class UserModel(NeuralNetworkClassification):
         if features_to_drop_list is not None:
             dataset.drop(features_to_drop_list, axis=1, inplace=True)
 
+        # create dataset that contains all One-hot-encoding columns
+        empty_ds_all_columns = pd.DataFrame(columns=column_names_list)
+        for cat_col in categorical_features_list:
+            value_ls = [col['values'] for col in columns_types_list if col['name'] == cat_col][0]
+            for i in range(len(value_ls)):
+                empty_ds_all_columns.loc[i, cat_col] = value_ls[i]
+
+        empty_ds_all_columns = pd.get_dummies(empty_ds_all_columns, columns=categorical_features_list, dummy_na=False)
+        empty_ds_all_columns = empty_ds_all_columns.iloc[:0]
+        # add missing columns
+        dataset = pd.DataFrame(data=dataset, columns=empty_ds_all_columns.columns).fillna(0)
+
         # get dummy columns
         dataset = pd.get_dummies(dataset, columns=categorical_features_list, dummy_na=False)
 
@@ -366,12 +378,16 @@ class UserModel(NeuralNetworkClassification):
         dataset = dataset.reindex(sorted(dataset.columns), axis=1)
 
         # Scale values to the range from 0 to 1 to be precessed by the neural network
-        dataset[quantitative_features_list] = sklearn.preprocessing.minmax_scale(dataset[quantitative_features_list])
+        # TODO: Fix this data dependency (this will produce non-sense/ skewed results in the 'predict' case)
+        # dataset[quantitative_features_list] = sklearn.preprocessing.minmax_scale(dataset[quantitative_features_list])
+        data_scaler = [1.36986301e-02, 6.76537347e-07, 6.66666667e-02, 1.00001000e-05, 2.29568411e-04, 1.02040816e-02]
+        dataset[quantitative_features_list] = dataset[quantitative_features_list] * data_scaler
 
         # label target
         y_ts = dataset[target_feature]
         self.label_encoder = sklearn.preprocessing.LabelEncoder()
-        y_bin_nb = self.label_encoder.fit_transform(y_ts)
+        self.label_encoder = self.label_encoder.fit([' <=50K', ' >50K'])
+        y_bin_nb = self.label_encoder.transform(y_ts)
         y_bin = pd.Series(index=y_ts.index, data=y_bin_nb)
         dataset.drop([target_feature], axis=1, inplace=True)
         dataset[target_feature] = y_bin
