@@ -24,6 +24,8 @@ import pytest
 
 import sklearn
 
+just_save_new_expected_results = False
+
 
 @pytest.mark.slow
 def test_nn_and_data_setup():
@@ -60,6 +62,8 @@ def test_nn_and_data_setup():
 
     # setup model
     model.setup_model()
+    model.epochs = 1
+    model.batch_size = 20
 
     # fit the model
     model.fit()
@@ -74,9 +78,12 @@ def test_nn_and_data_setup():
     obs_pred_labels = model.predict(model.X_test)
 
     # test
-    exp_performance_metrics, exp_pred_labels = set_up_expected()
-    check_equality(obs_performance_metrics, obs_pred_labels,
-                   exp_performance_metrics, exp_pred_labels)
+    if not just_save_new_expected_results:
+        exp_performance_metrics, exp_pred_labels = set_up_expected()
+        check_equality(obs_performance_metrics, obs_pred_labels,
+                       exp_performance_metrics, exp_pred_labels)
+    else:
+        save_new_expected_results(obs_performance_metrics, obs_pred_labels)
 
 
 def set_up_expected():
@@ -86,7 +93,6 @@ def set_up_expected():
     Returns:
         Python dictionaries and Numpy nd.arrays with expected results
     """
-
     # get path to folder of this script and "append" suitable sub-folder
     expected_res_folder = os.path.dirname(os.path.abspath(__file__)) + \
         '/_expected_results/'
@@ -98,6 +104,18 @@ def set_up_expected():
         exp_pred_labels = pickle.load(f)
 
     return exp_performance_metrics, exp_pred_labels
+
+
+def save_new_expected_results(obs_performance_metrics, obs_pred_labels):
+    """
+    Save expected results
+    """
+    # get path to folder of this script and "append" suitable sub-folder
+    expected_res_folder = os.path.dirname(os.path.abspath(__file__)) + \
+        '/_expected_results/'
+
+    pickle.dump(obs_performance_metrics, open(expected_res_folder + 'exp_performance_metrics.pkl', 'wb'))
+    pickle.dump(obs_pred_labels, open(expected_res_folder + 'exp_pred_labels.pkl', 'wb'))
 
 
 def check_equality(obs_performance_metrics, obs_pred_labels,
