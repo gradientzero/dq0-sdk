@@ -1,8 +1,8 @@
 requests==2.22.0
-absl-py==0.8.1
+absl-py==0.10.0
 pandas==0.25.3
 scipy==1.4.1
-numpy==1.17.4
+numpy==1.19.2
 h5py==2.10.0
 pyarrow==2.0.0
 xlrd==1.2.0
@@ -15,10 +15,10 @@ sqlalchemy-hana==0.4.0
 sqlalchemy-redshift==0.7.7
 keras==2.3.1
 Keras-Applications==1.0.8
-Keras-Preprocessing==1.1.0
-tensorboard==1.15.0
-tensorflow==1.15.2
-tensorflow-estimator==1.15.1
+Keras-Preprocessing==1.1.2
+tensorboard==2.4.0
+tensorflow==2.4.0
+tensorflow-estimator==2.4.0
 tensorflow_hub==0.7.0
 Pillow==7.0.0
 scikit-learn==0.22.1
