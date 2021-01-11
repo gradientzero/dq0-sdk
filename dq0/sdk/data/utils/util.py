@@ -862,7 +862,13 @@ def _fix_metric_names(metric):
     """
 
     if metric.lower() == 'accuracy':
-        metric = 'acc'
+        # TODO: Do we need this for reasons other than tf1 compat?
+        # Its used above and if its to convert mse to long name then we
+        # add mae, ...
+        if tf.__version__.split('.')[0] == '1':
+            metric = 'acc'
+        else:
+            metric = 'accuracy'
     elif metric.lower() == 'mse':
         metric = 'mean_squared_error'
 

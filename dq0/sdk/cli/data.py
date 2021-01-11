@@ -7,9 +7,9 @@ Copyright 2020, Gradient Zero
 All rights reserved
 """
 from dq0.sdk.cli.api import Client, routes
-from dq0.sdk.errors import DQ0SDKError, checkSDKResponse
 from dq0.sdk.cli.utils import is_valid_uuid
 from dq0.sdk.cli.runner import QueryRunner
+from dq0.sdk.errors import DQ0SDKError, checkSDKResponse
 
 
 class Data:
@@ -190,4 +190,3 @@ class Data:
         if not query_uuid:
             raise DQ0SDKError('Did not receive query in CLI server response')
         return QueryRunner(self.project, query_uuid)
-

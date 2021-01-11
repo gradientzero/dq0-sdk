@@ -21,8 +21,8 @@ import inspect
 import json
 import os
 
-from dq0.sdk.cli.api import Client, routes
 from dq0.sdk.cli import Data
+from dq0.sdk.cli.api import Client, routes
 from dq0.sdk.cli.utils.code import (
     add_function,
     check_signature,
