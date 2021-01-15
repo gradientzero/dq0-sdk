@@ -21,14 +21,9 @@ class Metadata:
     Attributes:
         name: parsed name property.
         description: parsed description property
-        connection: data source connection URI
         type: parsed type propertey.
-        schema:  name of the database
-        privacy_budget: parsed privacy budget property.
-        privacy_budget_interval_days: parsed privacy budget reset interval in days.
-        synth_allowed: true to allow synthesized data for exploration
-        privacy_level: 0, 1, 2 in ascending order of privacy protection (default is 2).
-        tables: parsed database metadata.
+        schemas: parsed schema metadata (see class Schema below)
+        privacy_column: the unique privacy column for this data set
     """
 
     def __init__(self, filename=None, yaml=None):
@@ -40,13 +35,9 @@ class Metadata:
         """
         self.name = None
         self.description = None
-        self.connection = None
         self.type = None
         self.schemas = None
-        self.privacy_budget = None
-        self.privacy_budget_interval_days = None
-        self.synth_allowed = False
-        self.privacy_level = 2
+        self.privacy_column = None
         if filename is not None:
             self.read_from_yaml_file(filename)
         elif yaml is not None:
@@ -75,21 +66,13 @@ class Metadata:
 
         self.name = meta["name"] if "name" in meta else None
         self.description = meta["description"] if "description" in meta else None
-        self.connection = meta["connection"] if "connection" in meta else None
         self.type = meta["type"] if "type" in meta else None
-        self.size = int(meta["size"]) if "size" in meta else None
         self.schemas = {}
-        self.privacy_budget = float(meta["privacy_budget"]) if "privacy_budget" in meta else None
-        self.privacy_budget_interval_days = int(meta["privacy_budget_interval_days"]) if "privacy_budget_interval_days" in meta else None
-        self.synth_allowed = bool(meta["synth_allowed"]) if "synth_allowed" in meta else False
-        self.privacy_level = int(meta["privacy_level"]) if "privacy_level" in meta else 2
         self.privacy_column = meta["privacy_column"] if "privacy_column" in meta else None
 
         for key in meta.keys():
             if key not in self.__dict__ and isinstance(meta[key], dict):
-                self.schemas[key] = {}
-                for table in meta[key].keys():
-                    self.schemas[key][table] = Table.from_meta(table, meta[key][table])
+                self.schemas[key] = Schema.from_meta(key, meta[key])
 
     def to_dict(self, sm=False):  # noqa: C901
         """Returns a dict representation of this class.
@@ -106,31 +89,18 @@ class Metadata:
                 meta["name"] = self.name
             if self.description is not None:
                 meta["description"] = self.description
-            if self.connection is not None:
-                meta["connection"] = self.connection
             if self.type is not None:
                 meta["type"] = self.type
-            if self.size is not None:
-                meta["size"] = self.size
-        if self.schemas is not None and len(self.schemas) > 0:
-            for schema in self.schemas.keys():
-                meta[schema] = {}
-                for table in self.schemas[schema].keys():
-                    meta[schema][table] = self.schemas[schema][table].to_dict(sm=sm)
-        if not sm:
-            if self.privacy_budget is not None:
-                meta["privacy_budget"] = self.privacy_budget
-            if self.privacy_budget_interval_days is not None:
-                meta["privacy_budget_interval_days"] = self.privacy_budget_interval_days
-            if self.synth_allowed is not None:
-                meta["synth_allowed"] = self.synth_allowed
-            if self.privacy_level is not None:
-                meta["privacy_level"] = self.privacy_level
             if self.privacy_column is not None:
                 meta["privacy_column"] = self.privacy_column
+
+        if self.schemas is not None and len(self.schemas) > 0:
+            for schema in self.schemas:
+                meta[schema] = self.schemas[schema].to_dict(sm=sm)
+
         if sm:
-            name = self.name if self.name is not None else 'Collection'
-            meta = {name: meta}
+            meta = {'Collection': meta}
+
         return meta
 
     def to_dict_sm(self):
@@ -147,14 +117,16 @@ class Metadata:
         """
         if metadata is None or not isinstance(metadata, Metadata):
             raise ValueError('you need to pass at a valid Metadata object')
-        for schema in metadata.schemas.keys():
-            if schema not in self.schemas.keys():
+        schema_names = self.get_all_schema_names()
+        for name, schema in metadata.schemas.items():
+            if name not in schema_names:
                 # different databases, just add it
-                self.schemas[schema] = copy.deepcopy(metadata.schemas[schema])
+                self.schemas[name] = copy.deepcopy(schema)
             else:
-                # same schema, combine tables
-                for table in metadata.schemas[schema].keys():
-                    self.schemas[schema][table] = copy.deepcopy(metadata.schemas[schema][table])
+                # same schema, combine tables.
+                # leaves all properties of source schema untouched.
+                for table_name, table in schema.tables.items():
+                    self.schemas[name].tables[table_name] = copy.deepcopy(table)
         return self
 
     def to_yaml_file(self, filename, sm=False):
@@ -182,11 +154,97 @@ class Metadata:
 
     def get_all_tables(self):
         """Helper function that returns all available tables (across schemas) in this metadata."""
+        if self.schemas is None:
+            return []
         tables = []
-        for schema in self.schemas.keys():
-            for table in self.schemas[schema].keys():
-                tables.append(self.schemas[schema][table])
+        for schema in self.schemas.values():
+            if schema is not None:
+                for table in schema.values():
+                    tables.append(table)
         return tables
+
+    def get_all_schema_names(self):
+        """Helper function that returns a list of the names of all schemas in this metadata."""
+        return [] if self.schemas is None else [schema_name for schema_name in self.schemas.keys()]
+
+
+class Schema():
+    """Schema class.
+
+    Describes a data source unit via metadata information.
+
+    Attributes:
+        connection: data source connection URI
+        name: name of the database
+        size: the size of this database
+        privacy_budget: parsed privacy budget property.
+        privacy_budget_interval_days: parsed privacy budget reset interval in days.
+        synth_allowed: true to allow synthesized data for exploration
+        privacy_level: 0, 1, 2 in ascending order of privacy protection (default is 2).
+        tables: parsed database metadata.
+    """
+    def __init__(
+            self,
+            name,
+            size=0,
+            connection='',
+            privacy_budget=0,
+            privacy_budget_interval_days=0,
+            synth_allowed=False,
+            privacy_level=2,
+            tables=None):
+        """Creates a new schema object."""
+        self.name = name
+        self.size = size
+        self.connection = connection
+        self.privacy_budget = privacy_budget
+        self.privacy_budget_interval_days = privacy_budget_interval_days
+        self.synth_allowed = synth_allowed
+        self.privacy_level = privacy_level
+        self.tables = tables
+
+    @staticmethod
+    def from_meta(schema, meta):
+        """Create a schema instance from the meta yaml part."""
+        connection = meta.pop("connection", '')
+        size = int(meta.pop("size", 0))
+        privacy_budget = int(meta.pop("privacy_budget", 0))
+        privacy_budget_interval_days = int(meta.pop("privacy_budget_interval_days", 0))
+        synth_allowed = bool(meta.pop("synth_allowed", False))
+        privacy_level = int(meta.pop("privacy_level", 2))
+        tables = {}
+        for table in meta.keys():
+            tables[table] = Table.from_meta(table, meta[table])
+        return Schema(
+            schema,
+            size=size,
+            connection=connection,
+            privacy_budget=privacy_budget,
+            privacy_budget_interval_days=privacy_budget_interval_days,
+            synth_allowed=synth_allowed,
+            privacy_level=privacy_level,
+            tables=tables
+        )
+
+    def to_dict(self, sm=False):  # noqa: C901
+        """Returns a dict representation of this class."""
+        meta = {}
+        if not sm:
+            if self.connection is not None:
+                meta["connection"] = self.connection
+            if self.size is not None:
+                meta["size"] = self.size
+            if self.privacy_budget is not None:
+                meta["privacy_budget"] = self.privacy_budget
+            if self.privacy_budget_interval_days is not None:
+                meta["privacy_budget_interval_days"] = self.privacy_budget_interval_days
+            if self.synth_allowed is not None:
+                meta["synth_allowed"] = self.synth_allowed
+            if self.privacy_level is not None:
+                meta["privacy_level"] = self.privacy_level
+        for table in self.tables:
+            meta[table] = self.tables[table].to_dict(sm=sm)
+        return meta
 
 
 class Table():
