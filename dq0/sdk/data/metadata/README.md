@@ -7,6 +7,7 @@ The metadata properties include:
 * name
 * description
 * type
+* schemas
 * row level information, if applicable, with
   * row level privacy
 * columns, if applicable, with
@@ -24,12 +25,12 @@ Metadata is stored in DQ0's central database. It can be defined in the web appli
 name: 'sample data 1'
 description: 'some description'
 type: 'CSV'
-connection: 'user@db'
-privacy_budget: 1000
-privacy_budget_interval_days: 30
-synth_allowed: true
-privacy_level: 2
-DatabaseSchema:
+DatabaseSchema1:
+    connection: 'user@db'
+    privacy_budget: 1000
+    privacy_budget_interval_days: 30
+    synth_allowed: true
+    privacy_level: 2
     Table1:
         row_privacy: true
         rows: 1000
