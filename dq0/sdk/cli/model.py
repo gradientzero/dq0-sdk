@@ -70,7 +70,7 @@ class Model:
 
         It calls the CLI command `model register`
 
-        If the run_id and model_path arguments are omitted, the SDK assumes a
+        If the job_uuid and model_path arguments are omitted, the SDK assumes a
         DQ0 secured training run and uses the hard coded default values.
 
         Args:
@@ -85,7 +85,7 @@ class Model:
 
         # call register
         data = {
-            'run_id': run_id,
+            'job_uuid': run_id,
             'model_path': model_path
         }
         response = self.project.client.post(

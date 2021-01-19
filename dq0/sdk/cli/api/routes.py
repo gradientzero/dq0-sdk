@@ -51,6 +51,10 @@ _routes = {
         'info': ':uuid/',
         'cancel': ':uuid/cancel/',
         'create': ''
+    },
+    'artifacts': {
+        '_base': 'artifacts/',
+        'download': 'download'
     }
 }
 
