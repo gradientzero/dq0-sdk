@@ -152,16 +152,23 @@ class Metadata:
         meta = self.to_dict(sm=sm)
         return yaml.dump(meta)
 
-    def get_all_tables(self):
+    def get_all_tables(self, only_names=False):
         """Helper function that returns all available tables (across schemas) in this metadata."""
         if self.schemas is None:
             return []
         tables = []
         for schema in self.schemas.values():
             if schema is not None:
-                for table in schema.values():
-                    tables.append(table)
+                for table in schema.tables.values():
+                    if only_names:
+                        tables.append(table.name)
+                    else:
+                        tables.append(table)
         return tables
+
+    def get_all_table_names(self):
+        """Helper function that returns all available table names (across schemas) in this metadata."""
+        return self.get_all_tables(only_names=True)
 
     def get_all_schema_names(self):
         """Helper function that returns a list of the names of all schemas in this metadata."""
