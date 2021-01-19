@@ -104,7 +104,9 @@ class Runner(ABC):
         """Helper function to get the run details after the job completed"""
         self.get_state()
         if not self.state.finished:
-            return 'Query still running'
+            return 'still running'
+        if self.state.error:
+            return self.state.error
         if len(self.state.job_uuid) < 1:
             raise DQ0SDKError('could net get run details, job_uuid not set')
         response = self.project.client.get(routes.runs.get, uuid=self.state.job_uuid)
@@ -154,3 +156,6 @@ class Runner(ABC):
             time.sleep(5.0)
         if verbose:
             print('Job completed')
+
+    def get_error(self):
+        print(self.state.error)

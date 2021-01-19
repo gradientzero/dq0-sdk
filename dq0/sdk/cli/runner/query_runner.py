@@ -93,6 +93,8 @@ class QueryRunner(Runner):
         self.get_state()
         if not self.state.finished:
             return 'Query still running'
+        if self.state.error:
+            return self.state.error
         if len(self.state.job_uuid) < 1:
             raise DQ0SDKError('could net get run details, job_uuid not set')
         response = self.project.client.get(routes.artifacts.download, data={'run_uuid': self.state.job_uuid,

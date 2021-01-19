@@ -86,6 +86,7 @@ class Model:
         # call register
         data = {
             'job_uuid': run_id,
+            'run_uuid': run_id,
             'model_path': model_path
         }
         response = self.project.client.post(
