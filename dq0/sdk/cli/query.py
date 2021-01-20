@@ -10,16 +10,18 @@ from dq0.sdk.cli.api import Client, routes
 from dq0.sdk.cli.data import Data
 from dq0.sdk.cli.runner import QueryRunner
 from dq0.sdk.errors import DQ0SDKError, checkSDKResponse
+from dq0.sdk.cli import Project
 
 
 class Query:
     """A query source wrapper
 
-    Provides methods to run query jobs. Alternative to using the query method directly from a Data instance.
+    Provides methods to run query jobs. A query always needs to be run in a project context.
+    Alternative to using the query method directly from a Data instance.
     Allows for querying multiple data sources.
 
     Example:
-        >>>  # instantiate query
+        >>>  # instantiate query with its project
         >>>  query = Query(project) # doctest: +SKIP
         >>>
         >>>  # get datasets
@@ -45,7 +47,9 @@ class Query:
 
     """
 
-    def __init__(self, project=None):
+    def __init__(self, project):
+        if project is None or not isinstance(project, Project):
+            raise DQ0SDKError('Please provide a valid project: object of type dq0.sdk.cli.project.Project')
         self.project = project
         self.datasets_used = []
         self.client = Client()
@@ -71,11 +75,14 @@ class Query:
         """Returns used dataset names as a single comma-separated string"""
         return ','.join([dataset.name for dataset in self.datasets_used])
 
-    def execute(self, query, permissions=None, params=None):
+    def execute(self, query, epsilon=1.0, tau=0.0, private_column='', permissions=None, params=None):
         """Run a query on the data sources defined by this Query instance.
 
         Args:
             query: string containing SQL
+            epsilon: float; Epsilon value for differential private query. Default: 1.0
+            tau: float; Tau threshold value for private query. Default: 0.0
+            private_column: string; Private column for this query. Leave empty or omit for default value from metadata.
             permissions: optional; e.g. 'households<75'
             params: optional; e.g. 'p1=123'
         Returns:
@@ -86,13 +93,17 @@ class Query:
         response = self.client.post(
             route=routes.query.create,
             data={'query': query,
-                  'datasets_used': self.get_dataset_names(),
+                  'datasets': self.get_dataset_names(),
+                  'epsilon': epsilon,
+                  'tau': tau,
+                  'private_column': private_column,
                   'permissions': permissions,
-                  'params': params
+                  'params': params,
+                  'project_uuid': self.project.project_uuid
                   }
         )
         checkSDKResponse(response)
-        query_uuid = response.get('query_uuid')
+        query_uuid = response.get('job_uuid')
         if not query_uuid:
-            raise DQ0SDKError('Did not receive query in CLI server response')
+            raise DQ0SDKError('Did not receive job UUID in CLI server response')
         return QueryRunner(self.project, query_uuid)

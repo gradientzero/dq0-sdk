@@ -28,28 +28,34 @@ class State:
             True if the run has finished.
         message (:obj:`str`): The last log message of the run.
         results (:obj:`dict`): The run's state once finished.
-
+        progress (float): Progress.
     """
 
     def __init__(self):
         self.finished = False
         self.message = ''
-        self.run_id = ''
+        self.job_uuid = ''
+        self.state = ''
         self.progress = 0
         self.results = None
+        self.error = ''
+        self.params = ''
+        self._run_status = ''
 
     def update(self, response):
         """Updates the state representation"""
         self.message = response['job_state']
         try:
-            self.run_id = response['job_params'].split('=')[-1]
-        except Exception:
+            self.job_uuid = response.get('job_uuid')
+            self.state = response.get('job_state')
+            self.progress = int(response.get('job_progress', 0))
+            self.params = response.get('run_params')
+            self._run_status = response.get('run_status')
+            self.error = response.get('job_errors')
+
+        except Exception as e:
             pass
-        try:
-            self.progress = int(response['job_progress'])
-        except Exception:
-            pass
-        if self.progress == 1 or self.message == 'error':
+        if self.progress == 1 or self.message == 'error' or self.message == 'finished':
             self.finished = True
 
     def set_results(self, results):

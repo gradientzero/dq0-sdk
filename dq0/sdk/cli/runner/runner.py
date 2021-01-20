@@ -85,7 +85,7 @@ class Runner(ABC):
         response = self.project.client.get(route, uuid=uuid)
         checkSDKResponse(response)
         self.state.update(response)
-        return self.state.results
+        return self.state.state
 
     def get_results(self):
         """Gets the results of the running model or data experiment.
@@ -102,9 +102,14 @@ class Runner(ABC):
 
     def _get_run_results(self):
         """Helper function to get the run details after the job completed"""
-        if len(self.state.run_id) < 1:
-            raise DQ0SDKError('could net get run details, run_id not set')
-        response = self.project.client.get(routes.runs.get, uuid=self.state.run_id)
+        self.get_state()
+        if not self.state.finished:
+            return 'still running'
+        if self.state.error:
+            return self.state.error
+        if len(self.state.job_uuid) < 1:
+            raise DQ0SDKError('could net get run details, job_uuid not set')
+        response = self.project.client.get(routes.runs.get, uuid=self.state.job_uuid)
         checkSDKResponse(response)
         self.state.set_results(response)
 
@@ -146,6 +151,11 @@ class Runner(ABC):
                 break
             if verbose:
                 print(self.state.message)
+            if self.state.finished or self.state == 'finished':
+                break
             time.sleep(5.0)
         if verbose:
             print('Job completed')
+
+    def get_error(self):
+        print(self.state.error)

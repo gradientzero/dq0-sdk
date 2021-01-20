@@ -79,6 +79,45 @@ class Data:
     def __repr__(self):
         return self.name
 
+    @staticmethod
+    def get_available_data_sources():
+        """Returns a list of available data sources.
+
+        The returned Data instances can be used for the attach_data_source method.
+
+        Returns:
+            A list of available data sources.
+        """
+        client = Client()
+        response = client.get(routes.data.list)
+        checkSDKResponse(response)
+        return [Data(d) for d in response['items']]
+
+    @staticmethod
+    def get_data_info(data=None, data_uuid=None):
+        """Returns info of a given data source.
+
+        The returned dict contains information about the
+        data source depending on the source's permissions set by
+        the data owner.
+
+        Args:
+            data (:obj:`dq0.sdk.cli.Data`): Data instance of the requested data source
+            data_uuid (:obj:`str`): optional; The UUID of the requested data source
+
+        Returns:
+            The data source information in JSON format
+        """
+        client = Client()
+        if data and isinstance(data, Data):
+            response = client.get(routes.data.get, uuid=data.uuid)
+        elif data_uuid:
+            response = client.get(routes.data.get, uuid=data_uuid)
+        else:
+            raise ValueError('Missing required parameter: data (Data instance) or data_uuid')
+        checkSDKResponse(response)
+        return response
+
     def as_dict(self):
         """Returns data source representation as dictionary"""
         return {
@@ -127,7 +166,7 @@ class Data:
                     if data.get('data_name') == self.source:
                         return data
             raise DQ0SDKError(f'Dataset {self.source} not found. Please provide a valid UUID or name. Available '
-                              f'datasets can be found by running the Project.get_available_data_sources() method')
+                              f'datasets can be found by running the Data.get_available_data_sources() method')
 
     def where(self, *args):
         """Where filter. TBD."""
@@ -167,26 +206,41 @@ class Data:
 
         display(pil_img)  # noqa: F821
 
-    def query(self, query, permissions=None, params=None):
+    def query(self, query, epsilon=1.0, tau=0.0, private_column='', permissions=None, params=None, project=None):
         """Run a query on this Data instance.
 
         Args:
             query: string containing SQL
             permissions: optional; e.g. 'households<75'
             params: optional; e.g. 'p1=123'
+            epsilon: float; Epsilon value for differential private query. Default: 1.0
+            tau: float; Tau threshold value for private query. Default: 0.0
+            private_column: string; Private column for this query. Leave empty or omit for default value from metadata.
+            project:`dq0.sdk.cli.project.Project` instance.
         Returns:
             :obj:`dq0.sdk.cli.runner.QueryRunner` instance
         """
+        if self.project is None and project is None:
+            raise DQ0SDKError('queries need to be executed in a project context, and no project was assigned. '
+                              'you can pass the project parameter to set the project context for this query.')
+
+        if project is None:
+            project = self.project
+
         response = self.client.post(
             route=routes.query.create,
             data={'query': query,
                   'datasets_used': self.name,
                   'permissions': permissions,
-                  'params': params
+                  'epsilon': epsilon,
+                  'tau': tau,
+                  'private_column': private_column,
+                  'params': params,
+                  'project_uuid': project.uuid
                   }
         )
         checkSDKResponse(response)
-        query_uuid = response.get('query_uuid')
+        query_uuid = response.get('job_uuid')
         if not query_uuid:
-            raise DQ0SDKError('Did not receive query in CLI server response')
-        return QueryRunner(self.project, query_uuid)
+            raise DQ0SDKError('Did not receive job UUID in CLI server response')
+        return QueryRunner(project, query_uuid)

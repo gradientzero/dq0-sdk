@@ -72,4 +72,4 @@ class ModelRunner(Runner):
         Returns:
             The model instance
         """
-        return Model(project=self.project, run_id=self.state.run_id)
+        return Model(project=self.project, run_id=self.state.job_uuid)

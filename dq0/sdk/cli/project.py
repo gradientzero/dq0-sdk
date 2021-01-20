@@ -156,7 +156,7 @@ class Project:
     def get_available_data_sources(self):
         """Returns a list of available data sources.
 
-        The returned UUIDs can be used for the attach_data_source method.
+        The returned Data instances can be used for the attach_data_source method.
 
         Returns:
             A list of available data sources.
@@ -271,6 +271,15 @@ class Project:
             raise ValueError('Missing required parameter: data (Data instance) or data_uuid and data_name')
 
         print(response['message'])
+
+    def get_attached_data_sources(self):
+        pass
+
+    def _get_latest_commit(self):
+        pass
+
+    def commit(self):
+        return self._deploy()
 
     def _deploy(self):
         """Deploys the project to DQ0
