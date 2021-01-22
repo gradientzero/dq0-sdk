@@ -47,8 +47,10 @@ Database:
             bounded: true
             use_auto_bounds: true
             auto_bounds_prob: 0.8
+            synthesizable: false
         name:
             type: string
+            synthesizable: true
         email:
             type: string
             mask: '(.*)@(.*).{3}$'
@@ -83,6 +85,10 @@ Database:
     assert metadata.schemas['Database'].tables['Table1'].columns['user_id'].name == "user_id"
     assert metadata.schemas['Database'].tables['Table1'].columns['weight'].name == "weight"
     assert metadata.schemas['Database'].tables['Table1'].columns['height'].name == "height"
+    assert metadata.schemas['Database'].tables['Table1'].columns['weight'].synthesizable is True
+    assert metadata.schemas['Database'].tables['Table1'].columns['height'].synthesizable is False
+    assert metadata.schemas['Database'].tables['Table1'].columns['name'].synthesizable is True
+    assert metadata.schemas['Database'].tables['Table1'].columns['email'].synthesizable is False
     assert metadata.schemas['Database'].tables['Table1'].columns['name'].name == "name"
     assert metadata.schemas['Database'].tables['Table1'].columns['email'].name == "email"
     assert metadata.schemas['Database'].tables['Table1'].columns['user_id'].private_id is True
