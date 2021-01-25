@@ -361,7 +361,8 @@ class Column():
             allowed_values=None,
             private_id=False,
             selectable=False,
-            mask=None):
+            mask=None,
+            synthesizable=True):
         """Create a new table object.
 
         Args:
@@ -382,6 +383,7 @@ class Column():
         self.private_id = private_id
         self.selectable = selectable
         self.mask = mask
+        self.synthesizable = synthesizable
 
     @staticmethod
     def from_meta(column, meta):
@@ -398,10 +400,13 @@ class Column():
         bounded = bool(meta["bounded"]) if "bounded" in meta else False
         use_auto_bounds = bool(meta["use_auto_bounds"]) if "use_auto_bounds" in meta else False
         auto_bounds_prob = float(meta["auto_bounds_prob"]) if "auto_bounds_prob" in meta else None
+        synthesizable = bool(meta["synthesizable"]) if "synthesizable" in meta else True
         if _type == "boolean":
-            pass
+            if "synthesizable" not in meta:
+                synthesizable = False
         elif _type == "datetime":
-            pass
+            if "synthesizable" not in meta:
+                synthesizable = False
         elif _type == "int":
             lower = int(meta["lower"]) if "lower" in meta else None
             upper = int(meta["upper"]) if "upper" in meta else None
@@ -416,6 +421,8 @@ class Column():
             cardinality = int(meta["cardinality"]) if "cardinality" in meta else 0
             allowed_values = meta["allowed_values"] if "allowed_values" in meta else None
             mask = meta["mask"] if "mask" in meta else None
+            if "synthesizable" not in meta:
+                synthesizable = False
         else:
             raise ValueError("Unknown column type {} for column {}".format(_type, column))
         private_id = bool(meta["private_id"]) if "private_id" in meta else False
@@ -434,7 +441,8 @@ class Column():
             allowed_values=allowed_values,
             private_id=private_id,
             selectable=selectable,
-            mask=mask
+            mask=mask,
+            synthesizable=synthesizable
         )
 
     def to_dict(self, sm=False):  # noqa: C901
@@ -467,4 +475,6 @@ class Column():
                 meta["selectable"] = self.selectable
             if self.mask is not None:
                 meta["mask"] = self.mask
+            if self.synthesizable is not None:
+                meta["synthesizable"] = self.synthesizable
         return meta
