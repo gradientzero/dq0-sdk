@@ -454,8 +454,12 @@ class Column():
             meta["bounded"] = self.bounded
         if self.lower is not None:
             meta["lower"] = self.lower
+        elif self.auto_lower is not None:
+            meta["lower"] = self.auto_lower
         if self.upper is not None:
             meta["upper"] = self.upper
+        elif self.auto_upper is not None:
+            meta["upper"] = self.auto_upper
         if self.private_id is not None:
             meta["private_id"] = self.private_id
         if not sm:
