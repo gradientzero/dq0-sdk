@@ -51,6 +51,7 @@ Database:
         name:
             type: string
             synthesizable: true
+            cardinality: 123
         email:
             type: string
             mask: '(.*)@(.*).{3}$'
@@ -88,6 +89,7 @@ Database:
     assert metadata.schemas['Database'].tables['Table1'].columns['weight'].synthesizable is True
     assert metadata.schemas['Database'].tables['Table1'].columns['height'].synthesizable is False
     assert metadata.schemas['Database'].tables['Table1'].columns['name'].synthesizable is True
+    assert metadata.schemas['Database'].tables['Table1'].columns['name'].cardinality == 123
     assert metadata.schemas['Database'].tables['Table1'].columns['email'].synthesizable is False
     assert metadata.schemas['Database'].tables['Table1'].columns['name'].name == "name"
     assert metadata.schemas['Database'].tables['Table1'].columns['email'].name == "email"
