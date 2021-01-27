@@ -458,6 +458,8 @@ class Column():
             meta["upper"] = self.upper
         if self.private_id is not None:
             meta["private_id"] = self.private_id
+        if self.cardinality is not None:
+            meta["cardinality"] = self.cardinality
         if not sm:
             if self.use_auto_bounds is not None:
                 meta["use_auto_bounds"] = self.use_auto_bounds
@@ -467,8 +469,6 @@ class Column():
                 meta["auto_lower"] = self.auto_lower
             if self.auto_upper is not None:
                 meta["auto_upper"] = self.auto_upper
-            if self.cardinality is not None:
-                meta["cardinality"] = self.cardinality
             if self.allowed_values is not None:
                 meta["allowed_values"] = self.allowed_values
             if self.selectable is not None:

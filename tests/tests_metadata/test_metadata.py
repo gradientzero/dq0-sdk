@@ -148,6 +148,7 @@ Database:
     assert sm_dict['Collection']['Database']['Table1']['row_privacy'] is True
     assert 'selectable' not in sm_dict['Collection']['Database']['Table1']['weight']
     assert sm_dict['Collection']['Database']['Table1']['weight']['upper'] == 100.5
+    assert sm_dict['Collection']['Database']['Table1']['name']['cardinality'] == 123
 
     # clean up
     os.remove('test.yaml')
