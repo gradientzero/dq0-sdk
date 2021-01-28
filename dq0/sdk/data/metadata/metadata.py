@@ -100,6 +100,7 @@ class Metadata:
 
         if sm:
             meta = {'Collection': meta}
+            meta['engine'] = self.type
 
         return meta
 
