@@ -51,10 +51,10 @@ Database:
         name:
             type: string
             synthesizable: true
-            cardinality: 123
         email:
             type: string
             mask: '(.*)@(.*).{3}$'
+            cardinality: 123
     '''
     with open('test.yaml', 'w') as f:
         f.write(content)
@@ -89,8 +89,8 @@ Database:
     assert metadata.schemas['Database'].tables['Table1'].columns['weight'].synthesizable is True
     assert metadata.schemas['Database'].tables['Table1'].columns['height'].synthesizable is False
     assert metadata.schemas['Database'].tables['Table1'].columns['name'].synthesizable is True
-    assert metadata.schemas['Database'].tables['Table1'].columns['name'].cardinality == 123
-    assert metadata.schemas['Database'].tables['Table1'].columns['email'].synthesizable is False
+    assert metadata.schemas['Database'].tables['Table1'].columns['email'].cardinality == 123
+    assert metadata.schemas['Database'].tables['Table1'].columns['email'].synthesizable is True
     assert metadata.schemas['Database'].tables['Table1'].columns['name'].name == "name"
     assert metadata.schemas['Database'].tables['Table1'].columns['email'].name == "email"
     assert metadata.schemas['Database'].tables['Table1'].columns['user_id'].private_id is True
@@ -136,6 +136,10 @@ Database:
     assert metadata.schemas['Database'].privacy_budget == 5678
     assert metadata.description == "new description 2"
 
+    # test drop columns
+    metadata.drop_columns_with_key_value('synthesizable', False)
+    assert len(metadata.schemas['Database'].tables['Table1'].columns) == 4
+
     # test to_dict
     m_dict = metadata.to_dict()
     assert m_dict['name'] == "sample data 1"
@@ -148,7 +152,7 @@ Database:
     assert sm_dict['Collection']['Database']['Table1']['row_privacy'] is True
     assert 'selectable' not in sm_dict['Collection']['Database']['Table1']['weight']
     assert sm_dict['Collection']['Database']['Table1']['weight']['upper'] == 100.5
-    assert sm_dict['Collection']['Database']['Table1']['name']['cardinality'] == 123
+    assert sm_dict['Collection']['Database']['Table1']['email']['cardinality'] == 123
 
     # clean up
     os.remove('test.yaml')

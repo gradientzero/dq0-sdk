@@ -175,6 +175,18 @@ class Metadata:
         """Helper function that returns a list of the names of all schemas in this metadata."""
         return [] if self.schemas is None else [schema_name for schema_name in self.schemas.keys()]
 
+    def drop_columns_with_key_value(self, key, value):
+        """Helper function that drops all columns from the metadata that have the given key value combination."""
+        cols_to_drop = []
+        for schema_key, schema in self.schemas.items():
+            if schema is not None:
+                for table_key, table in schema.tables.items():
+                    for col_key, col in table.columns.items():
+                        if getattr(col, key) == value:
+                            cols_to_drop.append((schema_key, table_key, col_key))
+        for col_to_drop in cols_to_drop:
+            del self.schemas[col_to_drop[0]].tables[col_to_drop[1]].columns[col_to_drop[2]]
+
 
 class Schema():
     """Schema class.
@@ -423,7 +435,7 @@ class Column():
             allowed_values = meta["allowed_values"] if "allowed_values" in meta else None
             mask = meta["mask"] if "mask" in meta else None
             if "synthesizable" not in meta:
-                synthesizable = False
+                synthesizable = False if cardinality == 0 else True
         else:
             raise ValueError("Unknown column type {} for column {}".format(_type, column))
         private_id = bool(meta["private_id"]) if "private_id" in meta else False
