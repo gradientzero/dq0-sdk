@@ -272,6 +272,8 @@ class Table():
     def __init__(
             self,
             name,
+            use_original_header=True,
+            header_row=None,
             row_privacy=False,
             rows=0,
             max_ids=1,
@@ -290,6 +292,8 @@ class Table():
             columns: columns of the table
         """
         self.name = name
+        self.use_original_header = use_original_header,
+        self.header_row = header_row
         self.row_privacy = row_privacy
         self.rows = rows
         self.max_ids = max_ids
@@ -304,6 +308,9 @@ class Table():
     @staticmethod
     def from_meta(table, meta):
         """Create a table instance from the meta yaml part."""
+        use_original_header = bool(meta.pop(
+            "use_original_header", True))
+        header_row = meta.pop("header_row", None)
         row_privacy = bool(meta.pop("row_privacy", False))
         rows = int(meta.pop("rows", 0))
         max_ids = int(meta.pop("max_ids", 1))
@@ -318,6 +325,8 @@ class Table():
             columns[column] = Column.from_meta(column, meta[column])
         return Table(
             table,
+            use_original_header=use_original_header,
+            header_row=header_row,
             row_privacy=row_privacy,
             rows=rows,
             max_ids=max_ids,
@@ -336,6 +345,10 @@ class Table():
         if not sm:
             if self.tau is not None:
                 meta["tau"] = self.tau
+        if self.use_original_header is not None:
+            meta["use_original_header"] = self.use_original_header
+        if self.header_row is not None:
+            meta["header_row"] = self.header_row
         if self.row_privacy is not None:
             meta["row_privacy"] = self.row_privacy
         if self.rows is not None:
