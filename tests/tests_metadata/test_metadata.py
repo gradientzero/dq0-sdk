@@ -14,6 +14,7 @@ def test_metadata():
     # prepare yaml file
     content = '''name: 'sample data 1'
 description: 'some description'
+tags: 'tag1,tag2'
 type: 'CSV'
 privacy_column: 'user_id'
 Database:
@@ -33,6 +34,8 @@ Database:
         clamp_counts: true
         clamp_columns: true
         tau: 99
+        use_original_header: true
+        header_row: '1,2'
         user_id:
             private_id: true
             type: int
@@ -65,6 +68,7 @@ Database:
     # test
     assert metadata.name == "sample data 1"
     assert metadata.description == "some description"
+    assert metadata.tags == "tag1,tag2"
     assert metadata.type == "CSV"
     assert metadata.privacy_column == 'user_id'
     assert metadata.schemas['Database'].connection == "user@db"
@@ -82,6 +86,8 @@ Database:
     assert metadata.schemas['Database'].tables['Table1'].clamp_counts is True
     assert metadata.schemas['Database'].tables['Table1'].clamp_columns is True
     assert metadata.schemas['Database'].tables['Table1'].tau == 99
+    assert metadata.schemas['Database'].tables['Table1'].use_original_header is True
+    assert metadata.schemas['Database'].tables['Table1'].header_row == '1,2'
     assert len(metadata.schemas['Database'].tables['Table1'].columns.keys()) == 5
     assert metadata.schemas['Database'].tables['Table1'].columns['user_id'].name == "user_id"
     assert metadata.schemas['Database'].tables['Table1'].columns['weight'].name == "weight"

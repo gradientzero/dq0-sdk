@@ -35,6 +35,7 @@ class Metadata:
         """
         self.name = None
         self.description = None
+        self.tags = None
         self.type = None
         self.schemas = None
         self.privacy_column = None
@@ -66,6 +67,7 @@ class Metadata:
 
         self.name = meta["name"] if "name" in meta else None
         self.description = meta["description"] if "description" in meta else None
+        self.tags = meta["tags"] if "tags" in meta else None
         self.type = meta["type"] if "type" in meta else None
         self.schemas = {}
         self.privacy_column = meta["privacy_column"] if "privacy_column" in meta else None
@@ -89,6 +91,8 @@ class Metadata:
                 meta["name"] = self.name
             if self.description is not None:
                 meta["description"] = self.description
+            if self.tags is not None:
+                meta["tags"] = self.tags
             if self.type is not None:
                 meta["type"] = self.type
             if self.privacy_column is not None:
@@ -292,7 +296,7 @@ class Table():
             columns: columns of the table
         """
         self.name = name
-        self.use_original_header = use_original_header,
+        self.use_original_header = use_original_header
         self.header_row = header_row
         self.row_privacy = row_privacy
         self.rows = rows
