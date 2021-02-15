@@ -284,7 +284,7 @@ class Table():
             sample_max_ids=True,
             use_dpsu=False,
             clamp_counts=False,
-            clamp_columns=False,
+            clamp_columns=True,
             censor_dims=False,
             tau=None,
             columns=None):
