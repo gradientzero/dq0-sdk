@@ -349,8 +349,8 @@ class Table():
         if not sm:
             if self.tau is not None:
                 meta["tau"] = self.tau
-        if self.use_original_header is not None:
-            meta["use_original_header"] = self.use_original_header
+            if self.use_original_header is not None:
+                meta["use_original_header"] = self.use_original_header
         if self.header_row is not None:
             meta["header_row"] = self.header_row
         if self.row_privacy is not None:
