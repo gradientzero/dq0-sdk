@@ -2,4 +2,4 @@ name: 'pneumonia'
 description: 'some description'
 type: 'CSV'
 DatabaseSchema1:
-    connection: '/Users/wolfganggross/code/data/X_ray_pneumonia/chest_xray/feat_vec_imgs.csv'
+    connection: '../data/X_ray_pneumonia/chest_xray/feat_vec_imgs.csv'
