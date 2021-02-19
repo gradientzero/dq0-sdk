@@ -35,7 +35,7 @@ class UserModel(NeuralNetworkClassification):
         self._classifier_type = 'mlnn'
         self.label_encoder = None
 
-    def setup_model(self):
+    def setup_model(self, **kwargs):
 
         self.optimizer = 'Adam'
         # As an alternative:
@@ -89,7 +89,7 @@ class UserModel(NeuralNetworkClassification):
         model.summary()
         return model
 
-    def setup_data(self):
+    def setup_data(self, **kwargs):
         """Setup data function
 
         This function can be used to prepare data or perform

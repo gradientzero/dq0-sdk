@@ -843,8 +843,8 @@ def print_evaluation_res(res, dataset_type, model_metrics=None):
 
         for metric in model_metrics:
             print('Model ' + metric.replace('_', ' ') + ' on '
-                  '' + dataset_type + ' set: %.1f%%' % (
-                      100 * res[_fix_metric_names(metric)])
+                  '' + dataset_type + ' set: %.5f' % (
+                      res[_fix_metric_names(metric)])
                   )
 
 
