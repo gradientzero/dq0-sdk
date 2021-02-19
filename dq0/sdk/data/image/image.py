@@ -33,7 +33,7 @@ class Image(Source):
         Returns:
             data (:obj:`pandas.DataFrame`): image data as pd dataframe (no-channels, ch1, ch2, ...)
         """
-        pass
+        return self.folderpath
 
     def to_json(self):
         """Returns a json representation of this data sources information.
