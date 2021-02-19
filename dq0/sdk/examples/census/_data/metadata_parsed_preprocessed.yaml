@@ -6,7 +6,7 @@ description: 'This data was extracted from the 1994 Census bureau database by Ro
 name: Adult Census Income Preprocessed
 privacy_column: fnlwgt
 schema:
-  connection: /Users/cl/Documents/projects/dq0-sdk/dq0/sdk/examples/census/_data/adult_processed.csv
+  connection: ../dq0-sdk/dq0/sdk/examples/census/_data/adult_processed.csv
   privacy_budget: 0
   privacy_budget_interval_days: 0
   privacy_level: 2

@@ -11,7 +11,7 @@ import yaml
 name = 'medical_insurance'
 description = 'description'
 type_ = 'CSV'
-connection = '/Users/cl/Documents/projects/dq0-sdk/dq0/sdk/examples/medical_insurance/_data/datasets_13720_18513_insurance.csv'
+connection = '../dq0-sdk/dq0/sdk/examples/medical_insurance/_data/datasets_13720_18513_insurance.csv'
 
 df = pd.read_csv(
     connection,

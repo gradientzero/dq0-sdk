@@ -2,7 +2,7 @@ description: description
 name: newsgroups
 privacy_column: ''
 schema:
-  connection: /Users/cl/Documents/projects/dq0-sdk/dq0/sdk/examples/newsgroups/_data/20newsgroups_text_label_df.csv
+  connection: ../dq0-sdk/dq0/sdk/examples/newsgroups/_data/20newsgroups_text_label_df.csv
   privacy_budget: 0
   privacy_budget_interval_days: 0
   privacy_level: 2

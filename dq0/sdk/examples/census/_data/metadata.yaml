@@ -6,7 +6,7 @@ description: 'This data was extracted from the 1994 Census bureau database by Ro
 name: Adult Census Income
 privacy_column: fnlwgt
 schema:
-  connection: /Users/cl/Documents/projects/dq0-sdk/dq0/sdk/examples/census/_data/adult_with_rand_names.csv
+  connection: ../dq0-sdk/dq0/sdk/examples/census/_data/adult_with_rand_names.csv
   table:
     age:
       lower: 20

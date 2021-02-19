@@ -11,7 +11,7 @@ import yaml
 name = 'newsgroups'
 description = 'description'
 type_ = 'CSV'
-connection = '/Users/cl/Documents/projects/dq0-sdk/dq0/sdk/examples/newsgroups/_data/20newsgroups_text_label_df.csv'
+connection = '../dq0-sdk/dq0/sdk/examples/newsgroups/_data/20newsgroups_text_label_df.csv'
 
 df = pd.read_csv(
     connection,

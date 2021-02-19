@@ -2,7 +2,7 @@ description: description
 name: medical_insurance
 privacy_column: ''
 schema:
-  connection: /Users/cl/Documents/projects/dq0-sdk/dq0/sdk/examples/medical_insurance/_data/datasets_13720_18513_insurance.csv
+  connection: ../dq0-sdk/dq0/sdk/examples/medical_insurance/_data/datasets_13720_18513_insurance.csv
   privacy_budget: 0
   privacy_budget_interval_days: 0
   privacy_level: 2
