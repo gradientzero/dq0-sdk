@@ -80,7 +80,7 @@ class UserModel(NeuralNetworkClassification):
         model.summary()
         return model
 
-    def setup_model(self):
+    def setup_model(self, **kwargs):
         """Setup model function
 
         Define the CNN model.
@@ -109,7 +109,7 @@ class UserModel(NeuralNetworkClassification):
         print('Setting up a convolution neural network...')
         self.model = self._get_cnn_model()
 
-    def setup_data(self):
+    def setup_data(self, **kwargs):
         """Setup data function
 
         This function can be used to prepare data or perform
