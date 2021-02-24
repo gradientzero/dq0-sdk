@@ -90,7 +90,7 @@ class NeuralNetwork(Model):
         Args:
             path (:obj:`str`): The model path
         """
-        self.model.save(path, include_optimizer=False)
+        self.model.save(path)
 
     def load(self, path):
         """Loads the model.
@@ -100,7 +100,7 @@ class NeuralNetwork(Model):
         Args:
             path (:obj:`str`): The model path
         """
-        self.model = tf.keras.models.load_model(path, compile=False)
+        self.model = tf.keras.models.load_model(path)
 
     def get_clone(self, trained=False):
         """

@@ -18,6 +18,12 @@ pip install -r requirements.txt
 pip install -r requirements-dev.txt
 ```
 
+Helper to resolve dependency conflicts:
+```bash
+# pip install pipdeptree
+pipdeptree
+```
+
 ## Run tests
 
 Use pytest for testings dq0-sdk completely:
@@ -25,6 +31,22 @@ Use pytest for testings dq0-sdk completely:
 # important not to use 'pytest .' only
 # explicitly use your current python environment
 python -m pytest
+```
+
+To test "slow" marked tests only, use:
+```bash
+python -m pytest -m slow
+```
+
+To test all non "slow" marked tests only, use:
+```bash
+python -m pytest -m "not slow"
+```
+
+Or one specific method:
+```bash
+# ignore setup.cfg with parameter "c"
+python -m pytest -c /dev/null tests/test_dummies.py::test_slow
 ```
 
 ## Format code

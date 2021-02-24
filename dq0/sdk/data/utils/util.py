@@ -843,8 +843,8 @@ def print_evaluation_res(res, dataset_type, model_metrics=None):
 
         for metric in model_metrics:
             print('Model ' + metric.replace('_', ' ') + ' on '
-                  '' + dataset_type + ' set: %.1f%%' % (
-                      100 * res[_fix_metric_names(metric)])
+                  '' + dataset_type + ' set: %.5f' % (
+                      res[_fix_metric_names(metric)])
                   )
 
 
@@ -862,7 +862,13 @@ def _fix_metric_names(metric):
     """
 
     if metric.lower() == 'accuracy':
-        metric = 'acc'
+        # TODO: Do we need this for reasons other than tf1 compat?
+        # Its used above and if its to convert mse to long name then we
+        # add mae, ...
+        if tf.__version__.split('.')[0] == '1':
+            metric = 'acc'
+        else:
+            metric = 'accuracy'
     elif metric.lower() == 'mse':
         metric = 'mean_squared_error'
 
@@ -1064,3 +1070,72 @@ def perform_stratified_random_sampling(df, col_name, sample_size):
     ).sample(frac=1).reset_index(drop=True)
 
     return sample_df
+
+
+def check_for_valid_numerical_encoding_of_labels(labels):
+    """
+    Checks whether the labels are numerical labels satisfying the following
+    requirements:
+        1. each label is an integer greater or equal to zero
+        2. the smallest label is zero
+
+    The labels encoded by applying "sklearn.preprocessing.LabelEncoder"
+    satisfy above requirements.
+
+    Args:
+        labels: array-like list of labels to check. Can even be a column
+        vector.
+
+    Returns:
+        is_valid: True if the input labels satisfy above requirements,
+        False if not.
+    """
+
+    is_valid = True
+
+    labels = np.asarray(labels)  # cast into numpy.ndarray if not yet
+
+    assert labels.ndim <= 2
+    if labels.ndim == 2:
+        assert labels.shape[1] == 1  # column vector
+        labels = labels.flatten()  # flatten column vector
+
+    # unsigned integer, signed integer are valid type kind
+    numeric_kinds = set('ui')
+    constraint_satisfied = labels.dtype.kind in numeric_kinds
+    is_valid = is_valid and constraint_satisfied
+
+    # no labels smaller than zero
+    constraint_satisfied = np.sum(labels < 0) == 0
+    is_valid = is_valid and constraint_satisfied
+
+    # min label is zero
+    constraint_satisfied = np.min(labels) == 0
+    is_valid = is_valid and constraint_satisfied
+
+    return is_valid
+
+
+def is_numeric(array):
+    """
+    Determine whether the argument has a numeric datatype, when
+    converted to a NumPy array.
+
+    Booleans, unsigned integers, signed integers, floats and complex
+    numbers are the kinds of numeric datatype.
+
+    Parameters
+    ----------
+    array : array-like
+        The array to check.
+
+    Returns
+    -------
+    is_numeric : `bool`
+        True if the array has a numeric datatype, False if not.
+
+    """
+    # Boolean, unsigned integer, signed integer, float, complex.
+    numeric_kinds = set('buifc')
+
+    return np.asarray(array).dtype.kind in numeric_kinds

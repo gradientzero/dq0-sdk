@@ -11,7 +11,11 @@ All rights reserved
 
 from dq0.sdk.data.sql.sql import SQL
 
-import pandas_gbq
+try:
+    from google.cloud import bigquery
+    big_query_available = True
+except ImportError:
+    big_query_available = False
 
 
 class BigQuery(SQL):
@@ -20,21 +24,57 @@ class BigQuery(SQL):
     Provides function to read in BigQuery data.
 
     Args:
-        query (:obj:`str`): SQL query.
-        project_id (:obj:`str`): The BigQuery project.
+        connection_string (:obj:`str`): The BigQuery project.
     """
 
-    def __init__(self, query, project_id):
-        super().__init__(query, project_id)
+    def __init__(self, connection_string):
+        super().__init__(connection_string)
         self.type = 'bigquery'
 
-    def read(self, **kwargs):
-        """Read BigQuery data sources
+    def execute(self, query, **kwargs):
+        """Execute SQL query
 
         Args:
+            query: SQL Query to execute
             kwargs: keyword arguments
 
         Returns:
-            BigQuery data as pandas dataframe
+            SQL ResultSet as pandas dataframe
         """
-        return pandas_gbq.read_gbq(self.query, project_id=self.connection, **kwargs)
+        # check query
+        if query is None:
+            raise ValueError('you need to pass a query parameter')
+
+        # Construct a BigQuery client object.
+        if not big_query_available:
+            raise ImportError('big_query dependencies must be installed first')
+
+        self.client = bigquery.Client()
+
+        # make an API request
+        query_job = self.client.query(query)
+
+        # waits for query to complete
+        query_job.result()
+
+        # get the destination table for the query results
+        destination = query_job.destination
+
+        # Get the schema (and other properties) for the destination table.
+        destination = self.client.get_table(destination)
+
+        # details: https://github.com/googleapis/python-bigquery/blob/35627d145a41d57768f19d4392ef235928e00f72/google/cloud/bigquery/client.py
+        rows = self.client.list_rows(
+            destination,
+            selected_fields=None,
+            max_results=None,
+            page_token=None,
+            start_index=None,
+            page_size=None,
+        )
+
+        # either create temporary table or return result set as dataframe
+        df = rows.to_dataframe(create_bqstorage_client=False)
+
+        # return pandas dataframe
+        return df

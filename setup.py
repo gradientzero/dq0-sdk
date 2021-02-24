@@ -11,8 +11,6 @@ from setuptools import find_namespace_packages, setup
 
 from setuptools_cythonize import get_cmdclass
 
-from typings import List
-
 
 # meta information
 VERSION = '1.0.0'
@@ -44,10 +42,27 @@ SETUP_REQUIRES = [
 PACKAGES = find_namespace_packages(include=['dq0.*'])  # find_packages()
 
 # Requirements
-INSTALL_REQUIRES: List['']
+INSTALL_REQUIRES = ['']
 with open('requirements.txt') as f:
     INSTALL_REQUIRES = [line for line in f.read().splitlines()
                         if line and not line.startswith('#')]
+
+# Extras requirements (big_query)
+BIG_QUERY = ['']
+with open('requirements-big_query.txt') as f:
+    BIG_QUERY = [line for line in f.read().splitlines()
+                        if line and not line.startswith('#')]
+
+# Extras requirements (snowflake)
+SNOWFLAKE = ['']
+with open('requirements-snowflake.txt') as f:
+    SNOWFLAKE = [line for line in f.read().splitlines()
+                        if line and not line.startswith('#')]
+
+EXTRA_REQUIRE = {
+    "big_query" : BIG_QUERY,
+    "snowflake" : SNOWFLAKE,
+}
 
 
 # Setup
@@ -64,5 +79,6 @@ setup(
     packages=PACKAGES,
     install_requires=INSTALL_REQUIRES,
     setup_requires=SETUP_REQUIRES,
+    extras_require=EXTRA_REQUIRE,
     include_package_data=True,
 )

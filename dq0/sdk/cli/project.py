@@ -21,7 +21,7 @@ import inspect
 import json
 import os
 
-from dq0.sdk.cli import Model
+from dq0.sdk.cli import Data
 from dq0.sdk.cli.api import Client, routes
 from dq0.sdk.cli.utils.code import (
     add_function,
@@ -30,6 +30,8 @@ from dq0.sdk.cli.utils.code import (
     replace_model_parent_class,
 )
 from dq0.sdk.errors import DQ0SDKError, checkSDKResponse
+
+import yaml
 
 
 class Project:
@@ -52,8 +54,8 @@ class Project:
 
     Attributes:
         name (:obj:`str`): The name of the project
-        model_uuid (:obj:`str`): The universally unique identifier of
-            the project's model
+        project_uuid (:obj:`str`): The universally unique identifier of
+            the project
         data_source_uuid (:obj:`str`): The universally unique identifier of
             the project's currently attached data source
         version (:obj:`str`): A version number of the project.
@@ -64,9 +66,9 @@ class Project:
         if name is None:
             raise ValueError('You need to set the "name" argument')
         self.name = name
-        self.model_uuid = ''
-        self.data_source_uuid = ''
-        self.version = '1'
+        self.commit_uuid = ''
+        self.datasets = []
+        self.experiment_name = ''
 
         # create API client instance
         self.client = Client()
@@ -97,13 +99,19 @@ class Project:
                                     'in current directory')
 
         with open('.meta') as f:
-            meta = json.load(f)
+            meta = yaml.load(f, Loader=yaml.FullLoader)
+
+        def _load_datasets_from_meta(metasets):
+            datasets = []
+            for key in metasets:
+                datasets.append(Data({'data_uuid': metasets[key], 'data_name': key}))
+            return datasets
 
         project = Project(name=meta['project_name'], create=False)
         project.project_uuid = meta['project_uuid']
-        project.model_uuid = meta['model_uuid']
-        project.data_source_uuid = meta['data_uuid']
-        project.version = meta['model_name']
+        project.commit_uuid = meta['commit_uuid']
+        project.experiment_name = meta['experiment_name']
+        project.datasets = _load_datasets_from_meta(meta.get('datasets', {}))
 
         return project
 
@@ -128,8 +136,8 @@ class Project:
         os.chdir(working_dir)
 
         with open('{}/.meta'.format(name)) as f:
-            meta = json.load(f)
-        self.model_uuid = meta['model_uuid']
+            meta = yaml.load(f, Loader=yaml.FullLoader)
+        self.project_uuid = meta['project_uuid']
 
         # change the working directory to the new project
         os.chdir(name)
@@ -143,29 +151,21 @@ class Project:
         Returns:
             Project info in JSON format
         """
-        return self.client.get(routes.project.info, uuid=self.model_uuid)
-
-    def get_latest_model(self):
-        """Returns the currently active model of this project.
-
-        Returns:
-            The currently active model of this project.
-        """
-        return Model(project=self)
+        return self.client.get(routes.project.info, uuid=self.project_uuid)
 
     def get_available_data_sources(self):
         """Returns a list of available data sources.
 
-        The returned UUIDs can be used for the attach_data_source method.
+        The returned Data instances can be used for the attach_data_source method.
 
         Returns:
             A list of available data sources.
         """
         response = self.client.get(routes.data.list)
         checkSDKResponse(response)
-        return response['items']
+        return [Data(d) for d in response['items']]
 
-    def get_data_info(self, data_uuid):
+    def get_data_info(self, data=None, data_uuid=None):
         """Returns info of a given data source.
 
         The returned dict contains information about the
@@ -173,28 +173,41 @@ class Project:
         the data owner.
 
         Args:
-            data_uuid (:obj:`str`): The UUID of the requested data source
+            data (:obj:`dq0.sdk.cli.Data`): Data instance of the requested data source
+            data_uuid (:obj:`str`): optional; The UUID of the requested data source
 
         Returns:
             The data source information in JSON format
         """
-        response = self.client.get(routes.data.get, uuid=data_uuid)
+        if data and isinstance(data, Data):
+            response = self.client.get(routes.data.get, uuid=data.uuid)
+        elif data_uuid:
+            response = self.client.get(routes.data.get, uuid=data_uuid)
+        else:
+            raise ValueError('Missing required parameter: data (Data instance) or data_uuid')
         checkSDKResponse(response)
         return response
 
-    def get_sample_data(self, data_uuid):
+    def get_sample_data(self, data=None, data_uuid=None):
         """Returns sample data for a given data source.
 
         Sample data is provided manually and is not available
         for every data source.
 
         Args:
-            data_uuid (:obj:`str`): The UUID of the requested data source
+            data (:obj:`dq0.sdk.cli.Data`): Data instance of the requested data source
+            data_uuid (:obj:`str`): optional; The UUID of the requested data source
 
         Returns:
             The data source sample data
         """
-        response = self.client.get(routes.data.sample, uuid=data_uuid)
+        if data and isinstance(data, Data):
+            response = self.client.get(routes.data.sample, uuid=data.uuid)
+        elif data_uuid:
+            response = self.client.get(routes.data.sample, uuid=data_uuid)
+        else:
+            raise ValueError('Missing required parameter: data (Data instance) or data_uuid')
+
         checkSDKResponse(response)
         if 'sample' in response:
             try:
@@ -203,18 +216,70 @@ class Project:
                 pass
         return response
 
-    def attach_data_source(self, data_source_uuid):
+    def attach_data_source(self, data=None, data_uuid=None, data_name=None):
         """Attaches a new data source to the project.
 
         Args:
-            data_source (:obj:`str`) The UUID of the new source to attach
+            data (:obj:`dq0.sdk.cli.Data`): Data instance of the data source to attach
+            data_uuid (:obj:`str`): optional; The UUID of the new source to attach
+            data_name (:obj:`str`): optional; The name of the new source to attach
         """
-        response = self.client.post(
-            routes.project.attach,
-            uuid=self.model_uuid,
-            data={'data_source_uuid': data_source_uuid})
-        checkSDKResponse(response)
+        if data and isinstance(data, Data):
+            response = self.client.post(
+                routes.project.attach,
+                uuid=self.project_uuid,
+                data={'data_uuid': data.uuid, 'data_name': data.name})
+            checkSDKResponse(response)
+            self.datasets.append(data)
+
+        elif data_uuid and data_name:
+            response = self.client.post(
+                routes.project.attach,
+                uuid=self.project_uuid,
+                data={'data_uuid': data_uuid, 'data_name': data_name})
+            checkSDKResponse(response)
+            self.datasets.append(Data({'data_uuid': data_uuid, 'data_name': data_name}))
+        else:
+            raise ValueError('Missing required parameter: data (Data instance) or data_uuid and data_name')
+
         print(response['message'])
+
+    def detach_data_source(self, data=None, data_uuid=None, data_name=None):
+        """Detaches a new data source to the project.
+
+        Args:
+            data (:obj:`dq0.sdk.cli.Data`): Data instance of the data source to attach
+            data_uuid (:obj:`str`): optional; The UUID of the new source to attach
+            data_name (:obj:`str`): optional; The name of the new source to attach
+        """
+        if data and isinstance(data, Data):
+            response = self.client.post(
+                routes.project.detach,
+                uuid=self.project_uuid,
+                data={'data_uuid': data.uuid, 'data_name': data.name})
+            checkSDKResponse(response)
+            self.datasets.remove(data)
+
+        elif data_uuid and data_name:
+            response = self.client.post(
+                routes.project.detach,
+                uuid=self.project_uuid,
+                data={'data_uuid': data_uuid, 'data_name': data_name})
+            checkSDKResponse(response)
+            self.datasets.remove(Data({'data_uuid': data_uuid, 'data_name': data_name}))
+        else:
+            raise ValueError('Missing required parameter: data (Data instance) or data_uuid and data_name')
+
+        print(response['message'])
+
+    def get_attached_data_sources(self):
+        pass
+
+    def _get_latest_commit(self):
+        pass
+
+    def commit(self):
+        return self._deploy()
 
     def _deploy(self):
         """Deploys the project to DQ0
@@ -225,6 +290,17 @@ class Project:
             The API response in JSON format
         """
         return self.client.post(routes.project.deploy, uuid=self.project_uuid)
+
+    def update_commit_uuid(self, message):
+        """Updates the latest commit uuid from the given response message.
+
+        Args:
+            message (:obj:`str`): The response message after deploy.
+        """
+        try:
+            self.commit_uuid = message.split(' ')[-1]
+        except Exception:
+            raise DQ0SDKError('Could not parse new commit uuid')
 
     def set_connection(self, host='localhost', port=9000):
         """Updates the connection string for the API communication.
@@ -280,8 +356,8 @@ class Project:
         if setup_data_code is None and setup_model_code is None and preprocess_code is None:
             return
 
-        # replace in user_model.py
-        with open('models/user_model.py', 'r') as f:
+        # replace in my_model.py
+        with open('my_model.py', 'r') as f:
             lines = f.readlines()
         if setup_data_code is not None:
             lines = replace_function(lines, setup_data_code)
@@ -308,7 +384,7 @@ class Project:
                 raise DQ0SDKError('DQ0SDK only allows one of {}'
                                   ' as parent_class_name!'.format(allowed_class_names))
             lines = replace_model_parent_class(lines, parent_class_name)
-        with open('models/user_model.py', 'w') as f:
+        with open('my_model.py', 'w') as f:
             f.writelines(lines)
 
         print('Successfully set model code.')

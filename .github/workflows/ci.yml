@@ -3,8 +3,8 @@ name: ci
 on:
   push:
     branches:
-    - develop
     - master
+    - actions
 
 jobs:
   build:
@@ -14,13 +14,13 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        python-version: [3.6, 3.7]
+        python-version: [3.7]
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
 
     - name: setup python ${{ matrix.python-version }}
-      uses: actions/setup-python@v1.1.1
+      uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -33,4 +33,4 @@ jobs:
     - name: Run pytest
       run: |
         pip install pytest
-        python -m pytest
+        python -m pytest -m "not slow"

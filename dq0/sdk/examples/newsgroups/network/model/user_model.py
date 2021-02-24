@@ -35,7 +35,7 @@ class UserModel(NeuralNetworkClassification):
         self._classifier_type = 'mlnn'
         self.label_encoder = None
 
-    def setup_model(self):
+    def setup_model(self, **kwargs):
 
         self.optimizer = 'Adam'
         # As an alternative:
@@ -48,14 +48,15 @@ class UserModel(NeuralNetworkClassification):
         self.loss = tf.keras.losses.SparseCategoricalCrossentropy()
         # As an alternative, define the loss function with a string
 
+        # TODO: kernel_regularizer breaks DP training in TF2.40 priv0.5.1
         self.regularization_param = 1e-3
         self.regularizer_dict = {
-            'kernel_regularizer': tf.keras.regularizers.l2(
-                self.regularization_param)  # ,
-            # 'activity_regularizer': tf.keras.regularizers.l2(
-            #    self.regularization_param),
-            # 'bias_regularizer': tf.keras.regularizers.l2(
-            #    self.regularization_param)
+            # 'kernel_regularizer': tf.keras.regularizers.l2(
+            #     self.regularization_param)  # ,
+            # # 'activity_regularizer': tf.keras.regularizers.l2(
+            # #    self.regularization_param),
+            # # 'bias_regularizer': tf.keras.regularizers.l2(
+            # #    self.regularization_param)
         }
         print('Setting up a multilayer neural network...')
         self.model = self._get_mlnn_model()
@@ -88,7 +89,7 @@ class UserModel(NeuralNetworkClassification):
         model.summary()
         return model
 
-    def setup_data(self):
+    def setup_data(self, **kwargs):
         """Setup data function
 
         This function can be used to prepare data or perform

@@ -1,0 +1,1115 @@
+description: 'This data was extracted from the 1994 Census bureau database by Ronny
+  Kohavi and Barry Becker (Data Mining and Visualization, Silicon Graphics). A set
+  of reasonably clean records was extracted using the following conditions: ((AAGE>16)
+  && (AGI>100) && (AFNLWGT>1) && (HRSWK>0)). The prediction task is to determine whether
+  a person makes over $50K a year.'
+name: Adult Census Income Preprocessed
+privacy_column: fnlwgt
+schema:
+  connection: ../dq0-sdk/dq0/sdk/examples/census/_data/adult_processed.csv
+  privacy_budget: 0
+  privacy_budget_interval_days: 0
+  privacy_level: 2
+  size: 0
+  synth_allowed: false
+  table:
+    age:
+      bounded: false
+      cardinality: 0
+      lower: 0.0547945205479452
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: float
+      upper: 0.5753424657534245
+      use_auto_bounds: false
+    capital-gain:
+      bounded: false
+      cardinality: 0
+      lower: 0.0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: float
+      upper: 0.09460179133381748
+      use_auto_bounds: false
+    capital-loss:
+      bounded: false
+      cardinality: 0
+      lower: 0.0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: float
+      upper: 0.0
+      use_auto_bounds: false
+    censor_dims: false
+    clamp_columns: true
+    clamp_counts: false
+    education-num:
+      bounded: false
+      cardinality: 0
+      lower: 0.4
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: float
+      upper: 0.8
+      use_auto_bounds: false
+    education_10th:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    education_11th:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    education_12th:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    education_1st-4th:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    education_5th-6th:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    education_7th-8th:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    education_9th:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    education_Assoc-acdm:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    education_Assoc-voc:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    education_Bachelors:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 1
+      use_auto_bounds: false
+    education_Doctorate:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    education_HS-grad:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 1
+      use_auto_bounds: false
+    education_Masters:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    education_Preschool:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    education_Prof-school:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    education_Some-college:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 1
+      use_auto_bounds: false
+    fnlwgt:
+      bounded: false
+      cardinality: 0
+      lower: 0.025756453320614433
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: float
+      upper: 0.2445100685670601
+      use_auto_bounds: false
+    hours-per-week:
+      bounded: false
+      cardinality: 0
+      lower: 0.1958762886597938
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: float
+      upper: 0.5567010309278351
+      use_auto_bounds: false
+    income:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 1
+      use_auto_bounds: false
+    marital-status_Divorced:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 1
+      use_auto_bounds: false
+    marital-status_Married-AF-spouse:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    marital-status_Married-civ-spouse:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 1
+      use_auto_bounds: false
+    marital-status_Married-spouse-absent:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    marital-status_Never-married:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 1
+      use_auto_bounds: false
+    marital-status_Separated:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    marital-status_Widowed:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    max_ids: 1
+    native-country_Cambodia:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    native-country_Canada:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    native-country_China:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    native-country_Columbia:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    native-country_Cuba:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    native-country_Dominican-Republic:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    native-country_Ecuador:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    native-country_El-Salvador:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    native-country_England:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    native-country_France:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    native-country_Germany:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    native-country_Greece:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    native-country_Guatemala:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    native-country_Haiti:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    native-country_Holand-Netherlands:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    native-country_Honduras:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    native-country_Hong:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    native-country_Hungary:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    native-country_India:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    native-country_Iran:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    native-country_Ireland:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    native-country_Italy:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    native-country_Jamaica:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    native-country_Japan:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    native-country_Laos:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    native-country_Mexico:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    native-country_Nicaragua:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    native-country_Outlying-US(Guam-USVI-etc):
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    native-country_Peru:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    native-country_Philippines:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    native-country_Poland:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    native-country_Portugal:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    native-country_Puerto-Rico:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    native-country_Scotland:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    native-country_South:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    native-country_Taiwan:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    native-country_Thailand:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    native-country_Trinadad&Tobago:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    native-country_United-States:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 1
+      use_auto_bounds: false
+    native-country_Unknown:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    native-country_Vietnam:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    native-country_Yugoslavia:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    occupation_Adm-clerical:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 1
+      use_auto_bounds: false
+    occupation_Armed-Forces:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    occupation_Craft-repair:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 1
+      use_auto_bounds: false
+    occupation_Exec-managerial:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 1
+      use_auto_bounds: false
+    occupation_Farming-fishing:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    occupation_Handlers-cleaners:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    occupation_Machine-op-inspct:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    occupation_Other-service:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 1
+      use_auto_bounds: false
+    occupation_Priv-house-serv:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    occupation_Prof-specialty:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 1
+      use_auto_bounds: false
+    occupation_Protective-serv:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    occupation_Sales:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 1
+      use_auto_bounds: false
+    occupation_Tech-support:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    occupation_Transport-moving:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    occupation_Unknown:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 1
+      use_auto_bounds: false
+    race_Amer-Indian-Eskimo:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    race_Asian-Pac-Islander:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    race_Black:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 1
+      use_auto_bounds: false
+    race_Other:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    race_White:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 1
+      use_auto_bounds: false
+    relationship_Husband:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 1
+      use_auto_bounds: false
+    relationship_Not-in-family:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 1
+      use_auto_bounds: false
+    relationship_Other-relative:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    relationship_Own-child:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 1
+      use_auto_bounds: false
+    relationship_Unmarried:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 1
+      use_auto_bounds: false
+    relationship_Wife:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    row_privacy: false
+    rows: 45559
+    sample_max_ids: true
+    sex_Female:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 1
+      use_auto_bounds: false
+    sex_Male:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 1
+      use_auto_bounds: false
+    use_dpsu: false
+    use_original_header: true
+    workclass_Federal-gov:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    workclass_Local-gov:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    workclass_Never-worked:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    workclass_Private:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 1
+      use_auto_bounds: false
+    workclass_Self-emp-inc:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    workclass_Self-emp-not-inc:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    workclass_State-gov:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+    workclass_Unknown:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 1
+      use_auto_bounds: false
+    workclass_Without-pay:
+      bounded: false
+      cardinality: 0
+      lower: 0
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 0
+      use_auto_bounds: false
+type: CSV

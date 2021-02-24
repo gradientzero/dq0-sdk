@@ -24,23 +24,27 @@ class MySQL(SQL):
     MySQL connection string: 'mysql+mysqlconnector://<user>:<password>@<host>[:<port>]/<dbname>'
 
     Args:
-        query (:obj:`str`): SQL query.
-        connection (:obj:`str`): The mysql connection string.
+        connection_string (:obj:`str`): The mysql connection string.
     """
 
-    def __init__(self, query, connection):
-        super().__init__(query, connection)
+    def __init__(self, connection_string):
+        super().__init__(connection_string)
         self.type = 'mysql'
-        self.engine = sqlalchemy.create_engine(connection)
+        self.engine = sqlalchemy.create_engine(connection_string)
 
-    def read(self, **kwargs):
-        """Read mysql data sources
+    def execute(self, query, **kwargs):
+        """Execute MYSQL query
 
         Args:
+            query: SQL Query to execute
             kwargs: keyword arguments
 
         Returns:
-            mysql data as pandas dataframe
+            SQL ResultSet as pandas dataframe
         """
-        connection = self.engine.connect()
-        return pd.read_sql_query(self.query, connection, **kwargs)
+        # check query
+        if query is None:
+            raise ValueError('you need to pass the query')
+
+        connection = self.get_connection()
+        return pd.read_sql_query(query, connection, **kwargs)

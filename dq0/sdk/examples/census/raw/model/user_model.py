@@ -401,6 +401,6 @@ class UserModel(NeuralNetworkClassification):
         #
         self.epochs = 10
         self.batch_size = 250
-        self.metrics = ['accuracy']
+        self.metrics = ['accuracy', 'mae']
         self.loss = tf.keras.losses.SparseCategoricalCrossentropy()
         # As an alternative, define the loss function with a string

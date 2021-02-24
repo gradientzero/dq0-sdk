@@ -80,7 +80,7 @@ class UserModel(NeuralNetworkClassification):
         model.summary()
         return model
 
-    def setup_model(self):
+    def setup_model(self, **kwargs):
         """Setup model function
 
         Define the CNN model.
@@ -95,19 +95,21 @@ class UserModel(NeuralNetworkClassification):
         self.metrics = ['accuracy']
         self.loss = tf.keras.losses.SparseCategoricalCrossentropy()
         # As an alternative, define the loss function with a string
-        self.regularization_param = 1e-3
+        
+        # TODO: kernel_regularizer breaks DP training in TF2.40 priv0.5.1
+        self.regularization_param = 1e-8
         self.regularizer_dict = {
-            'kernel_regularizer': tf.keras.regularizers.l2(
-                self.regularization_param)  # ,
-            # 'activity_regularizer': tf.keras.regularizers.l2(
-            #    self.regularization_param),
-            # 'bias_regularizer': tf.keras.regularizers.l2(
-            #    self.regularization_param)
+            # 'kernel_regularizer': tf.keras.regularizers.l2(
+            #     self.regularization_param)  # ,
+            # # 'activity_regularizer': tf.keras.regularizers.l2(
+            # #    self.regularization_param),
+            # # 'bias_regularizer': tf.keras.regularizers.l2(
+            # #    self.regularization_param)
         }
         print('Setting up a convolution neural network...')
         self.model = self._get_cnn_model()
 
-    def setup_data(self):
+    def setup_data(self, **kwargs):
         """Setup data function
 
         This function can be used to prepare data or perform

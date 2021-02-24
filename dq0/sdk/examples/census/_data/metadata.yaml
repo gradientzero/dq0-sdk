@@ -1,0 +1,86 @@
+description: 'This data was extracted from the 1994 Census bureau database by Ronny
+  Kohavi and Barry Becker (Data Mining and Visualization, Silicon Graphics). A set
+  of reasonably clean records was extracted using the following conditions: ((AAGE>16)
+  && (AGI>100) && (AFNLWGT>1) && (HRSWK>0)). The prediction task is to determine whether
+  a person makes over $50K a year.'
+name: Adult Census Income
+privacy_column: fnlwgt
+schema:
+  connection: ../dq0-sdk/dq0/sdk/examples/census/_data/adult_with_rand_names.csv
+  table:
+    age:
+      lower: 20
+      synthesizable: true
+      type: int
+      upper: 61
+    capital-gain:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 4064
+    capital-loss:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    education:
+      cardinality: 16
+      synthesizable: true
+      type: string
+    education-num:
+      lower: 6
+      synthesizable: true
+      type: int
+      upper: 14
+    firstname:
+      cardinality: 3298
+      synthesizable: true
+      type: string
+    fnlwgt:
+      lower: 45868
+      synthesizable: true
+      type: int
+      upper: 349148
+    hours-per-week:
+      lower: 21
+      synthesizable: true
+      type: int
+      upper: 55
+    income:
+      cardinality: 2
+      synthesizable: true
+      type: string
+    lastname:
+      cardinality: 18144
+      synthesizable: true
+      type: string
+    marital-status:
+      cardinality: 7
+      synthesizable: true
+      type: string
+    native-country:
+      cardinality: 42
+      synthesizable: true
+      type: string
+    occupation:
+      cardinality: 15
+      synthesizable: true
+      type: string
+    race:
+      cardinality: 5
+      synthesizable: true
+      type: string
+    relationship:
+      cardinality: 6
+      synthesizable: true
+      type: string
+    rows: 51925
+    sex:
+      cardinality: 2
+      synthesizable: true
+      type: string
+    workclass:
+      cardinality: 9
+      synthesizable: true
+      type: string
+type: CSV

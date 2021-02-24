@@ -35,11 +35,11 @@ class Source(ABC):
         types_allowed (bool): True if this source provides data type information
         stats_allowed (bool): True if this source provides statistics
         sample_allowed (bool): True if there is sample data for this source
-        path (:obj:`str`): Path to the data
-        sample_path (:obj:`str`): Absolute path to the file containing sample data.
+        path (:obj:`str`): Path to the data (filepath, URI)
+        sample_path (:obj:`str`): Path to the data containing sample data. (filepath, URI)
     """
 
-    def __init__(self, path=None):
+    def __init__(self, path=None, **kwargs):
         super().__init__()
         self.uuid = uuid.uuid1()  # UUID for this data source. Will be set at runtime.
         self.name = ''
@@ -94,8 +94,7 @@ class Source(ABC):
             "name": self.name,
             "type": self.type,
             "description": self.description,
-            "filepath": self.path,
-            "samplepath": self.sample_path,
+            "path": self.path,
+            "sample_path": self.sample_path,
             "permissions": permissions,
-            "types": self.types
         }
