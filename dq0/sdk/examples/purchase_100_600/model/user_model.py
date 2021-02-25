@@ -23,7 +23,7 @@ import logging
 
 from dq0.sdk.models.tf import NeuralNetworkClassification
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 class UserModel(NeuralNetworkClassification):
@@ -72,7 +72,7 @@ class UserModel(NeuralNetworkClassification):
         self.y_train = y_train_ts
         self.y_test = y_test_ts
 
-        print('{}, {}'.format(self.X_train.shape, self.X_test.shape))
+        logger.info('{}, {}'.format(self.X_train.shape, self.X_test.shape))
 
         self.input_dim = self.X_train.shape[1]
         self.output_dim = len(self.y_train.unique())
