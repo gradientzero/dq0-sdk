@@ -51,6 +51,8 @@ Database:
             use_auto_bounds: true
             auto_bounds_prob: 0.8
             synthesizable: false
+            discrete: true
+            min_step: 0.5
         name:
             type: string
             synthesizable: true
@@ -110,6 +112,9 @@ Database:
     assert metadata.schemas['Database'].tables['Table1'].columns['height'].bounded is True
     assert metadata.schemas['Database'].tables['Table1'].columns['height'].use_auto_bounds is True
     assert metadata.schemas['Database'].tables['Table1'].columns['height'].auto_bounds_prob == 0.8
+    assert metadata.schemas['Database'].tables['Table1'].columns['height'].discrete is True
+    assert metadata.schemas['Database'].tables['Table1'].columns['weight'].discrete is not True
+    assert metadata.schemas['Database'].tables['Table1'].columns['height'].min_step == 0.5
     assert metadata.schemas['Database'].tables['Table1'].columns['email'].selectable is False
     assert metadata.schemas['Database'].tables['Table1'].columns['email'].type == "string"
     assert metadata.schemas['Database'].tables['Table1'].columns['email'].mask == "(.*)@(.*).{3}$"
