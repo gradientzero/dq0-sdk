@@ -23,7 +23,7 @@ import logging
 
 from dq0.sdk.models.tf import NeuralNetworkClassification
 
-logger = logging.getLogger()
+logger = logging.getLogger('dq0.'+__name__)
 
 
 class UserModel(NeuralNetworkClassification):
@@ -36,7 +36,7 @@ class UserModel(NeuralNetworkClassification):
     def __init__(self):
         super().__init__()
 
-    def setup_data(self):
+    def setup_data(self, **kwargs):
         """Setup data function
 
         This function can be used to prepare data or perform
@@ -267,6 +267,11 @@ class UserModel(NeuralNetworkClassification):
         self.y_train = y_train_ts
         self.y_test = y_test_ts
 
+        logger.debug("X_train.shape: {}".format(self.X_train.shape))
+        logger.debug("X_test.shape: {}".format(self.X_test.shape))
+        logger.debug("y_train.shape: {}".format(self.y_train.shape))
+        logger.debug("y_test.shape: {}".format(self.y_test.shape))
+
     def preprocess(self):
         """Preprocess the data
 
@@ -378,7 +383,7 @@ class UserModel(NeuralNetworkClassification):
 
         return dataset
 
-    def setup_model(self):
+    def setup_model(self, **kwargs):
         """Setup model function
 
         Define the model here.
