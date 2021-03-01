@@ -23,7 +23,7 @@ import logging
 
 from dq0.sdk.models.bayes.naive_bayesian_model import NaiveBayesianModel
 
-from sklearn.naive_bayes import GaussianNB
+from sklearn.naive_bayes import MultinomialNB
 
 from tensorflow.keras import metrics
 
@@ -86,12 +86,12 @@ class UserModel(NaiveBayesianModel):
 
         Define the model here.
         """
-        self._classifier_type = 'GaussianNB'  # just for better-quality
+        self._classifier_type = 'MultinomialNB'  # just for better-quality
         # printings
 
-        self.model = GaussianNB()
+        self.model = MultinomialNB()
 
-        self.metrics = ['accuracy', metrics.Precision()]
+        self.metrics = ['accuracy']
 
         self.calibrate_posterior_probabilities = False
 
