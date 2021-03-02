@@ -11,7 +11,7 @@ import os
 
 import dq0.sdk
 from dq0.sdk.data.utils import util
-from dq0.sdk.examples.purchase_100_600.model.user_model import UserModel
+from dq0.sdk.examples.purchase_100_600.bayesian.model.user_model import UserModel
 
 
 if __name__ == '__main__':
@@ -22,7 +22,7 @@ if __name__ == '__main__':
     util.initialize_rnd_numbers_generators_state()
 
     # path to input
-    path = '_data/purchase_100_600_target_dataset.csv'
+    path = '../_data/purchase_100_600_target_dataset.csv'
     filepath = os.path.join(os.path.dirname(
         os.path.abspath(__file__)), path)
 
