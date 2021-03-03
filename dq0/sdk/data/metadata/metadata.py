@@ -232,7 +232,7 @@ class Schema():
         """Create a schema instance from the meta yaml part."""
         connection = meta.pop("connection", '')
         size = int(meta.pop("size", 0))
-        privacy_budget = int(meta.pop("privacy_budget", 0))
+        privacy_budget = float(meta.pop("privacy_budget", 0))
         privacy_budget_interval_days = int(meta.pop("privacy_budget_interval_days", 0))
         synth_allowed = bool(meta.pop("synth_allowed", False))
         privacy_level = int(meta.pop("privacy_level", 2))
@@ -392,7 +392,9 @@ class Column():
             private_id=False,
             selectable=False,
             mask=None,
-            synthesizable=True):
+            synthesizable=True,
+            discrete=False,
+            min_step=1.0):
         """Create a new table object.
 
         Args:
@@ -414,6 +416,8 @@ class Column():
         self.selectable = selectable
         self.mask = mask
         self.synthesizable = synthesizable
+        self.discrete = discrete
+        self.min_step = min_step
 
     @staticmethod
     def from_meta(column, meta):
@@ -431,6 +435,8 @@ class Column():
         use_auto_bounds = bool(meta["use_auto_bounds"]) if "use_auto_bounds" in meta else False
         auto_bounds_prob = float(meta["auto_bounds_prob"]) if "auto_bounds_prob" in meta else None
         synthesizable = bool(meta["synthesizable"]) if "synthesizable" in meta else True
+        discrete = False
+        min_step = 1.0
         if _type == "boolean":
             if "synthesizable" not in meta:
                 synthesizable = False
@@ -442,11 +448,15 @@ class Column():
             upper = int(meta["upper"]) if "upper" in meta else None
             auto_lower = int(meta["auto_lower"]) if "auto_lower" in meta else None
             auto_upper = int(meta["auto_upper"]) if "auto_upper" in meta else None
+            discrete = bool(meta["discrete"]) if "discrete" in meta else False
+            min_step = int(meta["min_step"]) if "min_step" in meta else None
         elif _type == "float":
             lower = float(meta["lower"]) if "lower" in meta else None
             upper = float(meta["upper"]) if "upper" in meta else None
             auto_lower = float(meta["auto_lower"]) if "auto_lower" in meta else None
             auto_upper = float(meta["auto_upper"]) if "auto_upper" in meta else None
+            discrete = bool(meta["discrete"]) if "discrete" in meta else False
+            min_step = float(meta["min_step"]) if "min_step" in meta else None
         elif _type == "string":
             cardinality = int(meta["cardinality"]) if "cardinality" in meta else 0
             allowed_values = meta["allowed_values"] if "allowed_values" in meta else None
@@ -472,7 +482,9 @@ class Column():
             private_id=private_id,
             selectable=selectable,
             mask=mask,
-            synthesizable=synthesizable
+            synthesizable=synthesizable,
+            discrete=discrete,
+            min_step=min_step
         )
 
     def to_dict(self, sm=False):  # noqa: C901
@@ -507,4 +519,8 @@ class Column():
                 meta["mask"] = self.mask
             if self.synthesizable is not None:
                 meta["synthesizable"] = self.synthesizable
+            if self.discrete is not None:
+                meta["discrete"] = self.discrete
+            if self.min_step is not None:
+                meta["min_step"] = self.min_step
         return meta

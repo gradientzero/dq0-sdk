@@ -247,7 +247,7 @@ def print_full_df(df_dataset):
     pd.set_option('display.max_rows', None)
     pd.set_option('display.max_columns', None)
     pd.set_option('display.width', None)
-    pd.set_option('display.max_colwidth', -1)
+    pd.set_option('display.max_colwidth', None)
 
     print(df_dataset)
 
@@ -463,7 +463,8 @@ def compute_features_bounds(X):
         min_values = X.min(axis=0)
         max_values = X.max(axis=0)
 
-    features_bounds = list(zip(min_values, max_values))
+    features_bounds = (min_values, max_values)
+
     return features_bounds
 
 

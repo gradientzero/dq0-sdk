@@ -134,10 +134,12 @@ def plot_confusion_matrix(y_true,
             # reduce font size to avoid cluttering
             annot_kws = {'size': fontsize['major_axes_tick:']}  # 6
             ticks_rotation = '45'  # must be a string due to below call of
+            annot = False
             # "lower()"
         else:
             annot_kws = None
-        sns.heatmap(cm, ax=ax, annot=True, cbar=True, fmt=fmt, cmap=cmap,
+            annot = True
+        sns.heatmap(cm, ax=ax, annot=annot, cbar=True, fmt=fmt, cmap=cmap,
                     annot_kws=annot_kws)
         # annot=True to annotate cells
         # cbar=True to show vertical bar acting as a color legend
@@ -154,8 +156,8 @@ def plot_confusion_matrix(y_true,
             'major_axes_tick:'])
         plt.tick_params(axis='both', which='minor', labelsize=fontsize[
             'minor_axes_tick:'])
-        ax.xaxis.set_ticklabels(labels_list)
-        ax.yaxis.set_ticklabels(labels_list)
+        # ax.xaxis.set_ticklabels(labels_list)
+        # ax.yaxis.set_ticklabels(labels_list)
 
         ax.grid(False)
 
@@ -196,7 +198,7 @@ def compute_confusion_matrix(y_true, y_pred, normalize):
     labels_list = list(unique_labels(list(y_true) + list(y_pred)))
 
     # Or u can also use np.unique()
-    cm = metrics.confusion_matrix(y_true, y_pred, labels_list)
+    cm = metrics.confusion_matrix(y_true, y_pred, labels=labels_list)
 
     if normalize:
         # cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]

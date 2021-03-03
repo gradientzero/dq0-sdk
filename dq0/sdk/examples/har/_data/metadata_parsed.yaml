@@ -1,0 +1,201 @@
+description: https://github.com/fbarth/humanActivityRecognition
+name: Human Activity Recognition
+privacy_column: ''
+schema:
+  connection: ../dq0-sdk/dq0/sdk/examples/har/_data/dataset-har-PUC-Rio-ugulino.csv
+  privacy_budget: 0
+  privacy_budget_interval_days: 0
+  privacy_level: 2
+  size: 0
+  synth_allowed: false
+  table:
+    age:
+      bounded: false
+      cardinality: 0
+      lower: 28
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 75
+      use_auto_bounds: false
+    body_mass_index:
+      bounded: false
+      cardinality: 4
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: string
+      use_auto_bounds: false
+    censor_dims: false
+    clamp_columns: true
+    clamp_counts: false
+    class:
+      bounded: false
+      cardinality: 5
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: string
+      use_auto_bounds: false
+    gender:
+      bounded: false
+      cardinality: 2
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: string
+      use_auto_bounds: false
+    how_tall_in_meters:
+      bounded: false
+      cardinality: 4
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: string
+      use_auto_bounds: false
+    max_ids: 1
+    row_privacy: false
+    rows: 181040
+    sample_max_ids: true
+    use_dpsu: false
+    use_original_header: true
+    user:
+      bounded: false
+      cardinality: 4
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: string
+      use_auto_bounds: false
+    weight:
+      bounded: false
+      cardinality: 0
+      lower: 55
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 83
+      use_auto_bounds: false
+    x1:
+      bounded: false
+      cardinality: 0
+      lower: -23
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 6
+      use_auto_bounds: false
+    x2:
+      bounded: false
+      cardinality: 0
+      lower: -491
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 18
+      use_auto_bounds: false
+    x3:
+      bounded: false
+      cardinality: 0
+      lower: -62
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 66
+      use_auto_bounds: false
+    x4:
+      bounded: false
+      cardinality: 0
+      lower: -210
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: -98
+      use_auto_bounds: false
+    y1:
+      bounded: false
+      cardinality: 0
+      lower: 32
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 119
+      use_auto_bounds: false
+    y2:
+      bounded: false
+      cardinality: 0
+      lower: -515
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 93
+      use_auto_bounds: false
+    y3:
+      bounded: false
+      cardinality: 0
+      lower: 58
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 159
+      use_auto_bounds: false
+    y4:
+      bounded: false
+      cardinality: 0
+      lower: -128
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: -68
+      use_auto_bounds: false
+    z1:
+      bounded: false
+      cardinality: 0
+      lower: -145
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: -27
+      use_auto_bounds: false
+    z2:
+      bounded: false
+      cardinality: 0
+      lower: -606
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: -21
+      use_auto_bounds: false
+    z3:
+      bounded: false
+      cardinality: 0
+      lower: -132
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: -65
+      use_auto_bounds: false
+    z4:
+      bounded: false
+      cardinality: 0
+      lower: -179
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: -143
+      use_auto_bounds: false
+type: CSV
