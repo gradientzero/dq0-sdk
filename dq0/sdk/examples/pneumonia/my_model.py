@@ -17,7 +17,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 import tensorflow_hub as hub
 
 logger = logging.getLogger('dq0.' + __name__)
@@ -65,7 +65,8 @@ class UserModel(NeuralNetworkClassification):
         # self.model = tf.keras.Sequential([hub.KerasLayer("https://tfhub.dev/google/imagenet/mobilenet_v2_100_224/feature_vector/4",
         #                                                 trainable=False, input_shape=(224, 224, 3)),
         #                                  tf.keras.layers.Dense(1, activation='linear')])
-        self.model = tf.keras.Sequential([tf.keras.layers.Dense(1280, activation='tanh'),
+        self.model = tf.keras.Sequential([tf.keras.layers.Input(1280),
+                                          tf.keras.layers.Dense(1280, activation='tanh'),
                                           tf.keras.layers.Dense(1280, activation='tanh'),
                                           tf.keras.layers.Dense(2, activation='softmax')])
         logger.debug('My model kwargs:{}'.format(kwargs))
