@@ -8,26 +8,26 @@ All rights reserved
 import logging
 import tensorflow as tf
 
-from dq0.sdk.estimators.estimator import Estimator
+from dq0.sdk.estimators.data_handler.base import BasicDataHandler
 from dq0.sdk.estimators.base_mixin import ClassifierMixin
 from dq0.sdk.estimators.tf.keras_base import NN_Classifier
 
 logger = logging.getLogger(__name__)
 
 
-class Keras_Dense_Classifier_OHE(NN_Classifier, ClassifierMixin, Estimator):
+class Keras_Dense_Classifier_OHE(NN_Classifier, ClassifierMixin, BasicDataHandler):
     """Keras sequential dense estimator for classification with OHE targets."""
 
     def __init__(self, input_shape, n_classes, n_layers=[10, 10], optimizer='Adam',
                  loss=tf.keras.losses.CategoricalCrossentropy(),
-                 metrics=['accuracy', 'mae']):
+                 metrics=['accuracy', 'mae'], **kwargs):
         # TODO: finish the comments
         """
         Args:
             n_layers: list of int, for every element a layer with the number of units given in the list
 
         """
-        super().__init__()
+        super().__init__(**kwargs)
         # define for fit, compile is excecuted just before fit is called
         self.optimizer = optimizer
         self.loss = loss
@@ -40,18 +40,18 @@ class Keras_Dense_Classifier_OHE(NN_Classifier, ClassifierMixin, Estimator):
         self.model = tf.keras.Sequential(layers)
 
 
-class Keras_Dense_Classifier_Integer(NN_Classifier, ClassifierMixin, Estimator):
+class Keras_Dense_Classifier_Integer(NN_Classifier, ClassifierMixin, BasicDataHandler):
 
     def __init__(self, input_shape, n_classes, n_layers=[10, 10], optimizer='Adam',
                  loss=tf.keras.losses.SparseCategoricalCrossentropy(),
-                 metrics=['accuracy', 'mae']):
+                 metrics=['accuracy', 'mae'], **kwargs):
         # TODO: finish the comments
         """
         Args:
             n_layers: list of int, for every element a layer with the number of units given in the list
 
         """
-        super().__init__()
+        super().__init__(**kwargs)
         # define for fit, compile is excecuted just before fit is called
         self.optimizer = optimizer
         self.loss = loss
@@ -64,18 +64,18 @@ class Keras_Dense_Classifier_Integer(NN_Classifier, ClassifierMixin, Estimator):
         self.model = tf.keras.Sequential(layers)
 
 
-class Keras_Dense_Classifier_Binary(NN_Classifier, ClassifierMixin, Estimator):
+class Keras_Dense_Classifier_Binary(NN_Classifier, ClassifierMixin, BasicDataHandler):
 
     def __init__(self, input_shape, n_layers=[10, 10], optimizer='Adam',
                  loss=tf.keras.losses.BinaryCrossentropy(),
-                 metrics=['accuracy', 'mae']):
+                 metrics=['accuracy', 'mae'], **kwargs):
         # TODO: finish the comments
         """
         Args:
             n_layers: list of int, for every element a layer with the number of units given in the list
 
         """
-        super().__init__()
+        super().__init__(**kwargs)
         # define for fit, compile is excecuted just before fit is called
         self.optimizer = optimizer
         self.loss = loss

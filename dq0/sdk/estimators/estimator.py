@@ -19,11 +19,13 @@ logger = logging.getLogger(__name__)
 class Estimator(Project):
     """Abstract base class"""
 
-    def __init__(self):
+    def __init__(self, data_source=None, feature_cols=None, target_cols=None):
         super().__init__()
-        self.data_source = None
+        self.data_source = data_source
         self.uuid = uuid.uuid1()
         self.model = None
+        self.feature_cols = feature_cols
+        self.target_cols = target_cols
     
     def setup_data(self, **kwargs):
         """Setup data function"""
