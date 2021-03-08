@@ -18,7 +18,7 @@ import cloudpickle
 
 from dq0.sdk.projects import Project
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 class Model(Project):

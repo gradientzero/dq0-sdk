@@ -9,8 +9,7 @@ from dq0.sdk.models.tf import NeuralNetwork
 
 
 class NeuralNetworkMultiClassClassification(NeuralNetwork):
-    """Neural Network multi class classification model
-    """
+    """Neural Network multi class classification model."""
 
     def __init__(self):
         super().__init__()
