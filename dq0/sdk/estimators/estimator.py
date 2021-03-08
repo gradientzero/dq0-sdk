@@ -27,7 +27,8 @@ class Estimator(Project):
     
     def setup_data(self, **kwargs):
         """Setup data function"""
-        pass
+        data = self.data_source.read()
+        return data
     
     def setup_model(self, **kwargs):
         """Setup model function"""
