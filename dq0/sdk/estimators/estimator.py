@@ -19,17 +19,22 @@ logger = logging.getLogger(__name__)
 class Estimator(Project):
     """Abstract base class"""
 
-    def __init__(self, data_source=None, feature_cols=None, target_cols=None):
+    def __init__(self, data_source=None):
         super().__init__()
         self.data_source = data_source
         self.uuid = uuid.uuid1()
         self.model = None
-        self.feature_cols = feature_cols
-        self.target_cols = target_cols
-    
+
     def setup_data(self, **kwargs):
         """Setup data function"""
-        data = self.data_source.read()
+        if hasattr(self.data_source, 'feature_cols'):
+            self.feature_cols = self.data_source.feature_cols
+        if hasattr(self.data_source, 'target_cols'):
+            self.target_cols = self.data_source.target_cols
+        if hasattr(self.data_source, 'header'):
+            data = self.data_source.read(names=self.data_source.header)
+        else:
+            data = self.data_source.read()
         return data
     
     def setup_model(self, **kwargs):
@@ -42,4 +47,3 @@ class Estimator(Project):
             return self.model.fit(X, **kwargs)
         else:
             return self.model.fit(X, y, **kwargs)
-

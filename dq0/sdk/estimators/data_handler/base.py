@@ -22,13 +22,19 @@ class BasicDataHandler(Estimator):
     def setup_data(self, train_size=0.66, **kwargs):
 
         data = super().setup_data(**kwargs)
-
+        # logger.debug("Data in Basic Data Handler: {}".format(data))
         # TODO: make type safe, for now I assume data is of type pandas.DataFrame
+        # also the availability of feature cols depends on the data sources used
         data = self._df_to_numerical(data)
         X = self._get_X(data, self.feature_cols)
         y = self._get_y(data, self.target_cols)
 
         self.X_train, self.X_test, self.y_train, self.y_test = self._train_test_split(X, y, train_size=train_size)
+        
+        ## TODO: this only work for two din X_train
+        # TODO: I think the data handler must be extended to also work with other structure e.g. images
+        self.input_dim = self.X_train.shape[-1]
+        self.out_shape = self.y_train.shape[-1]
     
     def _get_X(self, data, feature_cols):
         """Get X features vectors assuming data is a Pandas DataFrame"""

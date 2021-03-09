@@ -18,13 +18,12 @@ logger = logging.getLogger(__name__)
 class Keras_Dense_Classifier_OHE(NN_Classifier, ClassifierMixin, BasicDataHandler):
     """Keras sequential dense estimator for classification with OHE targets."""
 
-    def __init__(self, input_shape, n_classes, n_layers=[10, 10], optimizer='Adam',
+    def __init__(self, optimizer='Adam',
                  loss=tf.keras.losses.CategoricalCrossentropy(),
-                 metrics=['accuracy', 'mae'], **kwargs):
+                 metrics=['accuracy', 'mae'], batch_size=250, epochs=2, **kwargs):
         # TODO: finish the comments
         """
         Args:
-            n_layers: list of int, for every element a layer with the number of units given in the list
 
         """
         super().__init__(**kwargs)
@@ -32,7 +31,20 @@ class Keras_Dense_Classifier_OHE(NN_Classifier, ClassifierMixin, BasicDataHandle
         self.optimizer = optimizer
         self.loss = loss
         self.metrics = metrics
+        self.batch_size = batch_size
+        self.epochs = epochs
+        self.model_type = 'NeuralNetworkClassification'
+
+    def setup_model(self, input_shape=None, n_classes=None, n_layers=[10, 10], **kwargs):
+        """Args:
+            n_layers: list of int, for every element a layer with the number of units given in the list
+        """
+        # TODO: move the setup model back to the init, so that we can set all parameters when we init the models
         # Create Network architecture
+        if input_shape is None:
+            input_shape = self.input_dim
+        if n_classes is None:
+            n_classes = self.out_shape
         layers = [tf.keras.layers.Input(shape=input_shape)]
         layers = _layer_factory(layers, n_layers)
         layers.append(tf.keras.layers.Dense(n_classes, activation='softmax'))
@@ -42,9 +54,9 @@ class Keras_Dense_Classifier_OHE(NN_Classifier, ClassifierMixin, BasicDataHandle
 
 class Keras_Dense_Classifier_Integer(NN_Classifier, ClassifierMixin, BasicDataHandler):
 
-    def __init__(self, input_shape, n_classes, n_layers=[10, 10], optimizer='Adam',
+    def __init__(self, optimizer='Adam',
                  loss=tf.keras.losses.SparseCategoricalCrossentropy(),
-                 metrics=['accuracy', 'mae'], **kwargs):
+                 metrics=['accuracy', 'mae'], batch_size=250, epochs=2, **kwargs):
         # TODO: finish the comments
         """
         Args:
@@ -56,7 +68,18 @@ class Keras_Dense_Classifier_Integer(NN_Classifier, ClassifierMixin, BasicDataHa
         self.optimizer = optimizer
         self.loss = loss
         self.metrics = metrics
-        # Create Network architecture
+        self.batch_size = batch_size
+        self.epochs = epochs
+        self.model_type = 'NeuralNetworkClassification'
+
+    def setup_model(self, input_shape=None, n_classes=None, n_layers=[10, 10], **kwargs):
+        """Args:
+            n_layers: list of int, for every element a layer with the number of units given in the list
+        """
+        if input_shape is None:
+            input_shape = self.input_dim
+        if n_classes is None:
+            n_classes = self.out_shape
         layers = [tf.keras.layers.Input(shape=input_shape)]
         layers = _layer_factory(layers, n_layers)
         layers.append(tf.keras.layers.Dense(n_classes, activation='softmax'))
@@ -66,9 +89,9 @@ class Keras_Dense_Classifier_Integer(NN_Classifier, ClassifierMixin, BasicDataHa
 
 class Keras_Dense_Classifier_Binary(NN_Classifier, ClassifierMixin, BasicDataHandler):
 
-    def __init__(self, input_shape, n_layers=[10, 10], optimizer='Adam',
+    def __init__(self, optimizer='Adam',
                  loss=tf.keras.losses.BinaryCrossentropy(),
-                 metrics=['accuracy', 'mae'], **kwargs):
+                 metrics=['accuracy', 'mae'], batch_size=250, epochs=2, **kwargs):
         # TODO: finish the comments
         """
         Args:
@@ -80,7 +103,18 @@ class Keras_Dense_Classifier_Binary(NN_Classifier, ClassifierMixin, BasicDataHan
         self.optimizer = optimizer
         self.loss = loss
         self.metrics = metrics
-        # Create Network architecture
+        self.batch_size = batch_size
+        self.epochs = epochs
+        self.model_type = 'NeuralNetworkClassification'
+    
+    def setup_model(self, input_shape=None, n_classes=None, n_layers=[10, 10], **kwargs):
+        """Args:
+            n_layers: list of int, for every element a layer with the number of units given in the list
+        """
+        if input_shape is None:
+            input_shape = self.input_dim
+        if n_classes is None:
+            n_classes = self.out_shape
         layers = [tf.keras.layers.Input(shape=input_shape)]
         layers = _layer_factory(layers, n_layers)
         layers.append(tf.keras.layers.Dense(1, activation='sigmoid'))

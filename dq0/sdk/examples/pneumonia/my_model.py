@@ -68,6 +68,7 @@ class UserModel(NeuralNetworkClassification):
         self.model = tf.keras.Sequential([tf.keras.layers.Input(1280),
                                           tf.keras.layers.Dense(1280, activation='tanh'),
                                           tf.keras.layers.Dense(1280, activation='tanh'),
+                                          tf.keras.layers.Dense(2, activation='softmax')])
         logger.debug('My model kwargs:{}'.format(kwargs))
         if 'epochs' in kwargs:
             try:
