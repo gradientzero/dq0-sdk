@@ -113,8 +113,6 @@ class Keras_Dense_Classifier_Binary(NN_Classifier, ClassifierMixin, BasicDataHan
         """
         if input_shape is None:
             input_shape = self.input_dim
-        if n_classes is None:
-            n_classes = self.out_shape
         layers = [tf.keras.layers.Input(shape=input_shape)]
         layers = _layer_factory(layers, n_layers)
         layers.append(tf.keras.layers.Dense(1, activation='sigmoid'))

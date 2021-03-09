@@ -28,7 +28,8 @@ def test_Keras_Dense_Classifier_ohe():
     input_shape = (3,)
     n_classes = 4
 
-    estimator = Keras_Dense_Classifier_OHE(input_shape, n_classes, n_layers=[10, 10])
+    estimator = Keras_Dense_Classifier_OHE()
+    estimator.setup_model(input_shape, n_classes, n_layers=[10, 10])
     estimator.fit(X, y, epochs=1)
     logger.debug("Keras_Dense_Classifier_OHE.predict_proba(): {}".format(estimator.predict_proba(X)))
     logger.debug("Keras_Dense_Classifier_OHE.predict(): {}".format(estimator.predict(X)))
@@ -42,9 +43,8 @@ def test_Keras_Dense_Classifier_Integer():
 
     input_shape = (3,)
     n_classes = 4
-    estimator = Keras_Dense_Classifier_Integer(input_shape, 
-                                               n_classes, 
-                                               n_layers=[10, 10])
+    estimator = Keras_Dense_Classifier_Integer()
+    estimator.setup_model(input_shape, n_classes, n_layers=[10, 10])                                           
     estimator.fit(X, y_int, epochs=1)
     logger.debug("Keras_Dense_Classifier_Integer.predict_proba(): {}".format(estimator.predict_proba(X)))
     logger.debug("Keras_Dense_Classifier_Integer.predict(): {}".format(estimator.predict(X)))
@@ -57,8 +57,8 @@ def test_Keras_Dense_Classifier_Binary():
     y_int = np.array([1, 0, 0, 1])
     input_shape = (3,)
 
-    estimator = Keras_Dense_Classifier_Binary(input_shape,
-                                              n_layers=[10, 10])
+    estimator = Keras_Dense_Classifier_Binary()
+    estimator.setup_model(input_shape, n_layers=[10, 10])
     estimator.fit(X, y_int, epochs=1)
     logger.debug("Keras_Dense_Classifier_Binary.predict_proba(): {}".format(estimator.predict_proba(X)))
     logger.debug("Keras_Dense_Classifier_Binary.predict(): {}".format(estimator.predict(X)))
