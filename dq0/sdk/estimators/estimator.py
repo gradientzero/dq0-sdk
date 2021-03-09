@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 class Estimator(Project):
     """Abstract base class"""
 
-    def __init__(self, data_source=None):
+    def __init__(self, data_source=None, **kwargs):
         super().__init__()
         self.data_source = data_source
         self.uuid = uuid.uuid1()

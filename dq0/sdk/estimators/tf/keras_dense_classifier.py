@@ -34,6 +34,10 @@ class Keras_Dense_Classifier_OHE(NN_Classifier, ClassifierMixin, BasicDataHandle
         self.batch_size = batch_size
         self.epochs = epochs
         self.model_type = 'NeuralNetworkClassification'
+        if ('input_shape' in kwargs) and ('n_classes' in kwargs):
+            input_shape = kwargs.pop('input_shape')
+            n_classes = kwargs.pop('n_classes')
+            self.setup_model(input_shape=input_shape, n_classes=n_classes, **kwargs)
 
     def setup_model(self, input_shape=None, n_classes=None, n_layers=[10, 10], **kwargs):
         """Args:
@@ -71,6 +75,10 @@ class Keras_Dense_Classifier_Integer(NN_Classifier, ClassifierMixin, BasicDataHa
         self.batch_size = batch_size
         self.epochs = epochs
         self.model_type = 'NeuralNetworkClassification'
+        if ('input_shape' in kwargs) and ('n_classes' in kwargs):
+            input_shape = kwargs.pop('input_shape')
+            n_classes = kwargs.pop('n_classes')
+            self.setup_model(input_shape=input_shape, n_classes=n_classes, **kwargs)
 
     def setup_model(self, input_shape=None, n_classes=None, n_layers=[10, 10], **kwargs):
         """Args:
@@ -106,7 +114,10 @@ class Keras_Dense_Classifier_Binary(NN_Classifier, ClassifierMixin, BasicDataHan
         self.batch_size = batch_size
         self.epochs = epochs
         self.model_type = 'NeuralNetworkClassification'
-    
+        if ('input_shape' in kwargs):
+            input_shape = kwargs.pop('input_shape')
+            self.setup_model(input_shape=input_shape, **kwargs)
+
     def setup_model(self, input_shape=None, n_classes=None, n_layers=[10, 10], **kwargs):
         """Args:
             n_layers: list of int, for every element a layer with the number of units given in the list

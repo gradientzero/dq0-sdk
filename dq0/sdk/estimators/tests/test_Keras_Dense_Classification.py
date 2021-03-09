@@ -43,8 +43,8 @@ def test_Keras_Dense_Classifier_Integer():
 
     input_shape = (3,)
     n_classes = 4
-    estimator = Keras_Dense_Classifier_Integer()
-    estimator.setup_model(input_shape, n_classes, n_layers=[10, 10])                                           
+    # The setup_model is executed in the init if all required parameters are given
+    estimator = Keras_Dense_Classifier_Integer(input_shape=input_shape, n_classes=n_classes, n_layers=[10, 10])
     estimator.fit(X, y_int, epochs=1)
     logger.debug("Keras_Dense_Classifier_Integer.predict_proba(): {}".format(estimator.predict_proba(X)))
     logger.debug("Keras_Dense_Classifier_Integer.predict(): {}".format(estimator.predict(X)))
