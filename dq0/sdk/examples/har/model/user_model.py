@@ -42,7 +42,7 @@ class UserModel(NeuralNetworkClassification):
     def __init__(self):
         super().__init__()
 
-    def setup_data(self):
+    def setup_data(self, **kwargs):
         """Setup data function
 
         This function can be used to prepare data or perform
@@ -131,7 +131,7 @@ class UserModel(NeuralNetworkClassification):
 
         return dataset
 
-    def setup_model(self):
+    def setup_model(self, **kwargs):
         """Setup model function
 
         Define the model here.
