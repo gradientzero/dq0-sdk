@@ -21,7 +21,13 @@ class NeuralNetworkBase:
         self.model.compile(optimizer=self.optimizer,
                            loss=self.loss,
                            metrics=self.metrics)
-        self.model.fit(X, y, **kwargs)
+        if 'epochs' in kwargs:
+            epochs = kwargs.pop('epochs')
+            self.model.fit(X, y, epochs=epochs, **kwargs)
+        elif hasattr(self, epochs):
+            self.model.fit(X, y, epochs=self.epochs, **kwargs)
+        else:
+            self.model.fit(X, y, **kwargs)
 
 class NN_Classifier(NeuralNetworkBase):
     """Keras neural network classification models with one hot encoded targets."""

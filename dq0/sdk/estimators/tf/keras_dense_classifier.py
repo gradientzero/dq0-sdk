@@ -20,7 +20,8 @@ class Keras_Dense_Classifier_OHE(NN_Classifier, ClassifierMixin, BasicDataHandle
 
     def __init__(self, optimizer='Adam',
                  loss=tf.keras.losses.CategoricalCrossentropy(),
-                 metrics=['accuracy', 'mae'], batch_size=250, epochs=2, **kwargs):
+                 metrics=['accuracy', 'mae'], batch_size=250, epochs=2, n_layers=[10, 10],
+                 **kwargs):
         # TODO: finish the comments
         """
         Args:
@@ -34,17 +35,25 @@ class Keras_Dense_Classifier_OHE(NN_Classifier, ClassifierMixin, BasicDataHandle
         self.batch_size = batch_size
         self.epochs = epochs
         self.model_type = 'NeuralNetworkClassification'
+        # Auto setup model for the standalone usage
         if ('input_shape' in kwargs) and ('n_classes' in kwargs):
             input_shape = kwargs.pop('input_shape')
             n_classes = kwargs.pop('n_classes')
-            self.setup_model(input_shape=input_shape, n_classes=n_classes, **kwargs)
+            self.setup_model(input_shape=input_shape, n_classes=n_classes, n_layers=n_layers, optimizer=optimizer,
+                             loss=loss, metrics=metrics, batch_siz=batch_size, epochs=epochs, 
+                             **kwargs)
 
-    def setup_model(self, input_shape=None, n_classes=None, n_layers=[10, 10], **kwargs):
+    def setup_model(self, input_shape=None, n_classes=None, n_layers=[10, 10], 
+                    optimizer='Adam', loss=tf.keras.losses.CategoricalCrossentropy(),
+                    metrics=['accuracy', 'mae'], batch_size=250, epochs=2, **kwargs):
         """Args:
             n_layers: list of int, for every element a layer with the number of units given in the list
         """
-        # TODO: move the setup model back to the init, so that we can set all parameters when we init the models
-        # Create Network architecture
+        self.optimizer = optimizer
+        self.loss = loss
+        self.metrics = metrics
+        self.batch_size = int(batch_size)
+        self.epochs = int(epochs)
         if input_shape is None:
             input_shape = self.input_dim
         if n_classes is None:
@@ -60,7 +69,8 @@ class Keras_Dense_Classifier_Integer(NN_Classifier, ClassifierMixin, BasicDataHa
 
     def __init__(self, optimizer='Adam',
                  loss=tf.keras.losses.SparseCategoricalCrossentropy(),
-                 metrics=['accuracy', 'mae'], batch_size=250, epochs=2, **kwargs):
+                 metrics=['accuracy', 'mae'], batch_size=250, epochs=2, n_layers=[10, 10],  
+                 **kwargs):
         # TODO: finish the comments
         """
         Args:
@@ -69,21 +79,25 @@ class Keras_Dense_Classifier_Integer(NN_Classifier, ClassifierMixin, BasicDataHa
         """
         super().__init__(**kwargs)
         # define for fit, compile is excecuted just before fit is called
-        self.optimizer = optimizer
-        self.loss = loss
-        self.metrics = metrics
-        self.batch_size = batch_size
-        self.epochs = epochs
         self.model_type = 'NeuralNetworkClassification'
         if ('input_shape' in kwargs) and ('n_classes' in kwargs):
             input_shape = kwargs.pop('input_shape')
             n_classes = kwargs.pop('n_classes')
-            self.setup_model(input_shape=input_shape, n_classes=n_classes, **kwargs)
+            self.setup_model(input_shape=input_shape, n_classes=n_classes, n_layers=n_layers, optimizer=optimizer,
+                             loss=loss, metrics=metrics, batch_siz=batch_size, epochs=epochs, 
+                             **kwargs)
 
-    def setup_model(self, input_shape=None, n_classes=None, n_layers=[10, 10], **kwargs):
+    def setup_model(self, input_shape=None, n_classes=None, n_layers=[10, 10], optimizer='Adam',
+                    loss=tf.keras.losses.SparseCategoricalCrossentropy(),
+                    metrics=['accuracy', 'mae'], batch_size=250, epochs=2, **kwargs):
         """Args:
             n_layers: list of int, for every element a layer with the number of units given in the list
         """
+        self.optimizer = optimizer
+        self.loss = loss
+        self.metrics = metrics
+        self.batch_size = int(batch_size)
+        self.epochs = int(epochs)
         if input_shape is None:
             input_shape = self.input_dim
         if n_classes is None:
@@ -108,20 +122,24 @@ class Keras_Dense_Classifier_Binary(NN_Classifier, ClassifierMixin, BasicDataHan
         """
         super().__init__(**kwargs)
         # define for fit, compile is excecuted just before fit is called
-        self.optimizer = optimizer
-        self.loss = loss
-        self.metrics = metrics
-        self.batch_size = batch_size
-        self.epochs = epochs
         self.model_type = 'NeuralNetworkClassification'
         if ('input_shape' in kwargs):
             input_shape = kwargs.pop('input_shape')
-            self.setup_model(input_shape=input_shape, **kwargs)
+            self.setup_model(input_shape=input_shape, optimizer=optimizer,
+                             loss=loss, metrics=metrics, batch_siz=batch_size, epochs=epochs, 
+                             **kwargs)
 
-    def setup_model(self, input_shape=None, n_classes=None, n_layers=[10, 10], **kwargs):
+    def setup_model(self, input_shape=None, n_layers=[10, 10], optimizer='Adam',
+                    loss=tf.keras.losses.BinaryCrossentropy(),
+                    metrics=['accuracy', 'mae'], batch_size=250, epochs=2, **kwargs):
         """Args:
             n_layers: list of int, for every element a layer with the number of units given in the list
         """
+        self.optimizer = optimizer
+        self.loss = loss
+        self.metrics = metrics
+        self.batch_size = int(batch_size)
+        self.epochs = int(epochs)
         if input_shape is None:
             input_shape = self.input_dim
         layers = [tf.keras.layers.Input(shape=input_shape)]
