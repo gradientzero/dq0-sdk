@@ -28,7 +28,6 @@ class BasicDataHandler(Estimator):
         data = self._df_to_numerical(data)
         X = self._get_X(data, self.feature_cols)
         y = self._get_y(data, self.target_cols)
-
         self.X_train, self.X_test, self.y_train, self.y_test = self._train_test_split(X, y, train_size=train_size)
         
         ## TODO: this only work for two din X_train

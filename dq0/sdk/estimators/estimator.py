@@ -31,9 +31,10 @@ class Estimator(Project):
             self.feature_cols = self.data_source.feature_cols
         if hasattr(self.data_source, 'target_cols'):
             self.target_cols = self.data_source.target_cols
-        if hasattr(self.data_source, 'header'):
-            data = self.data_source.read(names=self.data_source.header)
+        if hasattr(self.data_source, 'has_header'):
+            data = self.data_source.read(header=0)
         else:
+            # Note that for the pandas csv header passing header=0 and using the default is identical
             data = self.data_source.read()
         return data
     

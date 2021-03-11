@@ -5,26 +5,10 @@ description: 'This data was extracted from the 1994 Census bureau database by Ro
   a person makes over $50K a year.'
 name: Adult Census Income
 privacy_column: fnlwgt
-header_columns: ['lastname',
-                'firstname',
-                'age',
-                'workclass',
-                'fnlwgt',
-                'education',
-                'education-num',
-                'marital-status',
-                'occupation',
-                'relationship',
-                'race',
-                'sex',
-                'capital-gain',
-                'capital-loss',
-                'hours-per-week',
-                'native-country',
-                'income']
 schema:
   connection: ../dq0-sdk/dq0/sdk/examples/census/_data/adult_with_rand_names.csv
   table:
+    use_original_header: true
     age:
       lower: 20
       synthesizable: true

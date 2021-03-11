@@ -21,12 +21,13 @@ class CSV(Source):
         path (:obj:`str`): Absolute path to the CSV file.
     """
 
-    def __init__(self, path, feature_cols=None, target_cols=None, header=None):
+    def __init__(self, path, feature_cols=None, target_cols=None,header=None):
         super().__init__(path)
         self.type = 'csv'
         self.feature_cols = feature_cols
         self.target_cols = target_cols
-        self.header = header
+        if len(header) == 1:
+            self.has_header = True
 
     def read(self, **kwargs):
         """Read CSV data sources
