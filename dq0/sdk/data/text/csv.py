@@ -26,8 +26,9 @@ class CSV(Source):
         self.type = 'csv'
         self.feature_cols = feature_cols
         self.target_cols = target_cols
-        if len(header) == 1:
-            self.has_header = True
+        if header is not None:
+            if len(header) == 1:
+                self.has_header = True
 
     def read(self, **kwargs):
         """Read CSV data sources

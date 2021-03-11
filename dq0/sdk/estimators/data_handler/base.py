@@ -29,21 +29,22 @@ class BasicDataHandler(Estimator):
         X = self._get_X(data, self.feature_cols)
         y = self._get_y(data, self.target_cols)
         self.X_train, self.X_test, self.y_train, self.y_test = self._train_test_split(X, y, train_size=train_size)
-        
+
         ## TODO: this only work for two din X_train
         # TODO: I think the data handler must be extended to also work with other structure e.g. images
         self.input_dim = self.X_train.shape[-1]
-        self.out_shape = self.y_train.shape[-1]
-    
+        self.out_shape = len(self.y_train.unique())
+
     def _get_X(self, data, feature_cols):
         """Get X features vectors assuming data is a Pandas DataFrame"""
         # TODO: make this type safe
         return data[feature_cols]
 
     def _get_y(self, data, target_cols):
-        """Get X features vectors assuming data is a Pandas DataFrame"""
+        """Get y target vector assuming data is a Pandas DataFrame"""
         # TODO: make this type safe
-        return data[target_cols]
+        # TODO: this only works for one dim labels
+        return data[target_cols[-1]]
 
     def _df_to_numerical(self, data):
         data_num = pd.DataFrame()
@@ -51,11 +52,11 @@ class BasicDataHandler(Estimator):
             if (col_type is not np.dtype(np.int)) and (col_type is not np.dtype(np.float)):
                 enc = OrdinalEncoder()
                 data_num[col_name] = enc.fit_transform(data[col_name].values.reshape(-1, 1)).flatten()
-                
+
             else:
                 data_num[col_name] = data[col_name]
         return data_num
-    
+
     def _train_test_split(self, X, y, train_size=0.66):
         X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=train_size)
         return X_train, X_test, y_train, y_test

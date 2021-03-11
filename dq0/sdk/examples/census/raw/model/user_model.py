@@ -299,7 +299,6 @@ class UserModel(NeuralNetworkClassification):
         if self.data_source is None:
             logger.error('No data source found')
             return
-
         # read the data via the attached input data source
         dataset = self.data_source.read(
             names=column_names_list,
