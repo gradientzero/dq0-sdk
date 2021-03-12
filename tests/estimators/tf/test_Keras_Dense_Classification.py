@@ -9,13 +9,14 @@ import logging
 import tensorflow as tf
 
 from dq0.sdk.estimators.tf.keras_dense_classifier import (
-        Keras_Dense_Classifier_OHE, 
-        Keras_Dense_Classifier_Integer, 
+        Keras_Dense_Classifier_OHE,
+        Keras_Dense_Classifier_Integer,
         Keras_Dense_Classifier_Binary)
 from sklearn.preprocessing import OneHotEncoder
 import numpy as np
 
 logger = logging.getLogger(__name__)
+
 
 def test_Keras_Dense_Classifier_ohe():
 
