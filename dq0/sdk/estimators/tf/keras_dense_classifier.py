@@ -23,7 +23,7 @@ class Keras_Dense_Classifier_OHE(NN_Classifier, ClassifierMixin, Estimator):
                  loss=tf.keras.losses.CategoricalCrossentropy(),
                  metrics=['accuracy', 'mae'], batch_size=250, epochs=2, n_layers=[10, 10],
                  **kwargs):
-        
+
         super().__init__(**kwargs)
         # define for fit, compile is excecuted just before fit is called
         self.optimizer = optimizer
@@ -69,7 +69,7 @@ class Keras_Dense_Classifier_Integer(NN_Classifier, ClassifierMixin, Estimator):
                  loss=tf.keras.losses.SparseCategoricalCrossentropy(),
                  metrics=['accuracy', 'mae'], batch_size=250, epochs=2, n_layers=[10, 10],  
                  **kwargs):
-    
+
         super().__init__(**kwargs)
         # define for fit, compile is excecuted just before fit is called
         self.model_type = 'NeuralNetworkClassification'
@@ -108,7 +108,7 @@ class Keras_Dense_Classifier_Binary(NN_Classifier, ClassifierMixin, Estimator):
     def __init__(self, optimizer='Adam',
                  loss=tf.keras.losses.BinaryCrossentropy(),
                  metrics=['accuracy', 'mae'], batch_size=250, epochs=2, **kwargs):
-        
+
         super().__init__(**kwargs)
         # define for fit, compile is excecuted just before fit is called
         self.model_type = 'NeuralNetworkClassification'

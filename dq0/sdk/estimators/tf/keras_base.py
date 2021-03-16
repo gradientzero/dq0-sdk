@@ -42,9 +42,19 @@ class NN_Classifier(NeuralNetworkBase):
     """Keras neural network classification models with one hot encoded targets."""
 
     def predict_proba(self, X):
-        """Returns the """
+        """Returns the confidence scores."""
         return self.model.predict(X)
 
     def predict(self, X):
         """Return the class as index on the one-hot-encoding format."""
         return np.argmax(self.model.predict(X), axis=-1)
+
+
+class NN_Regressor(NeuralNetworkBase):
+    """Keras neural network regression models."""
+
+    def predict_proba(self, X):
+        return self.predict(self, X)
+
+    def predict(self, X):
+        return self.model.predict(X)
