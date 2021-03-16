@@ -54,7 +54,7 @@ class NN_Regressor(NeuralNetworkBase):
     """Keras neural network regression models."""
 
     def predict_proba(self, X):
-        return self.predict(self, X)
+        return self.predict(X)
 
     def predict(self, X):
-        return self.model.predict(X)
+        return self.model.predict(X).flatten()
