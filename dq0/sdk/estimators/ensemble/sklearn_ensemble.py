@@ -93,7 +93,7 @@ class BaggingRegressor(RegressorMixin, Estimator):
                  warm_start=False, n_jobs=None, random_state=None, verbose=0, **kwargs):
         super().__init__(**kwargs)
         self.model_type = 'EnsembleEstimator'
-        self.model = ensemble.BaggingRegressor(base_estimator=base_estimator, n_estimators=n_estimators, max_samples=max_samples, max_features=max_features,
+        self.model = ensemble.AdaBoostRegressor(base_estimator=base_estimator, n_estimators=n_estimators, max_samples=max_samples, max_features=max_features,
                                                 bootstrap=bootstrap, bootstrap_features=bootstrap_features, oob_score=oob_score, warm_start=warm_start,
                                                 n_jobs=n_jobs, random_state=random_state, verbose=verbose)
 
