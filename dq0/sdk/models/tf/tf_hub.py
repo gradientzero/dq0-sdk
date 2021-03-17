@@ -31,7 +31,7 @@ class TFHub(NeuralNetworkYaml):
         try:
             self.preprocessing = self.yaml_dict['PREPROCESSING']
         except Exception as e:
-            logger.error('PREPROCESSING is missinng in yaml: {}'.format(e))
+            logger.fatal('PREPROCESSING is missinng in yaml: {}'.format(e))
             sys.exit(1)
 
     def setup_data(self, augment=False):
@@ -50,8 +50,9 @@ class TFHub(NeuralNetworkYaml):
         """
 
         if len(self.data_sources) < 1:
-            logger.error('No data source found')
-            return
+            logger.fatal('No data source found')
+            sys.exit(1)
+
         source = next(iter(self.data_sources.values()))
         self.path_train = source.path_train
         self.path_test = source.path_test

@@ -6,6 +6,7 @@ All rights reserved
 """
 
 import logging
+import sys
 
 from dq0.sdk.data.utils import util
 from dq0.sdk.models.tf import NeuralNetworkClassification
@@ -36,8 +37,9 @@ class UserModel(NeuralNetworkClassification):
 
         """Set up data function"""
         if self.data_source is None:
-            logger.error('No data source found')
-            return 1
+            logger.fatal('No data source found')
+            sys.exit(1)
+
         logger.debug('Start Loading data')
         data = self.data_source.read()
         logger.debug('data.shape: {}'.format(data.shape))

@@ -11,6 +11,7 @@ All rights reserved
 import logging
 import os
 import uuid
+import sys
 from abc import abstractmethod
 from tempfile import TemporaryDirectory
 
@@ -72,7 +73,9 @@ class Model(Project):
                     try:
                         state['_model_binary_data_'] = cloudpickle.dumps(binary_data)
                     except BaseException:
-                        logger.error('Could not pickle binary_data of length: {}'.format(len(binary_data)))
+                        logger.fatal('Could not pickle binary_data of '
+                                     'length: {}'.format(len(binary_data)))
+                        sys.exit(1)
 
             # remove model from state to make this class pickelable
             del state['model']

@@ -33,6 +33,7 @@ All rights reserved
 
 import copy
 import logging
+import sys
 
 from dq0.sdk.data.utils import util
 from dq0.sdk.models.model import Model
@@ -168,6 +169,7 @@ class NeuralNetwork(Model):
         """
         if self.model is None:
             logger.fatal('No TensorFlow model provided!')
+            sys.exit(1)
 
         self.model.compile(optimizer=self.optimizer,
                            loss=self.loss,
@@ -206,23 +208,24 @@ class NeuralNetwork(Model):
 
         if self.model is None:
             logger.fatal('No  TensorFlow model provided!')
+            sys.exit(1)
 
         # Check for valid model setup
         if not test_data and not hasattr(self, 'X_train'):
             logger.fatal('Missing argument in model: X_train')
-            return
+            sys.exit(1)
         if not test_data and not hasattr(self, 'y_train'):
             logger.fatal('Missing argument in model: y_train')
-            return
+            sys.exit(1)
         if test_data and not hasattr(self, 'X_test'):
             logger.fatal('Missing argument in model: X_test')
-            return
+            sys.exit(1)
         if test_data and not hasattr(self, 'y_test'):
             logger.fatal('Missing argument in model: y_test')
-            return
+            sys.exit(1)
         if not hasattr(self, 'batch_size'):
             logger.fatal('Missing argument in model: batch_size')
-            return
+            sys.exit(1)
 
         # work on deep copy of data because
         # "fix_limitation_of_Keras_fit_and_predict_functions" modifies the

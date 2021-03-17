@@ -19,6 +19,7 @@ Copyright 2020, Gradient Zero
 """
 
 import logging
+import sys
 
 from dq0.sdk.models.tf import NeuralNetworkRegression
 
@@ -50,8 +51,8 @@ class UserModel(NeuralNetworkRegression):
 
         # get the input dataset
         if self.data_source is None:
-            logger.error('No data source found')
-            return
+            logger.fatal('No data source found')
+            sys.exit(1)
 
         data = self.data_source.read()
         X, y = self._prepare_data(data)

@@ -57,14 +57,15 @@ class NeuralNetworkYaml(Model):
 
             self.epochs = self.yaml_dict['FIT']['epochs']
         except Exception as e:
-            logger.error('YAML config is missing key {}'.format(e))
+            logger.fatal('YAML config is missing key {}'.format(e))
             sys.exit(1)
 
         try:
             self.optimizer = optimizers[self.optimizer_dict['optimizer']](**self.optimizer_dict['kwargs'])
             self.loss = losses[self.loss_dict['loss']](**self.loss_dict['kwargs'])
         except Exception as e:
-            logger.error('optimizer or loss is not in managed list or specified in yaml {}'.format(e))
+            logger.fatal('optimizer or loss is not in managed list or '
+                        'specified in yaml {}'.format(e))
             sys.exit(1)
 
         try:
@@ -114,7 +115,7 @@ class NeuralNetworkYaml(Model):
             self.model = tf.keras.models.model_from_yaml(graph_str,
                                                          custom_objects=self.custom_objects)
         except Exception as e:
-            logger.error('model_from_yaml: {}'.format(e))
+            logger.fatal('model_from_yaml: {}'.format(e))
             sys.exit(1)
 
     def predict(self, x):

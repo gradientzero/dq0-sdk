@@ -7,6 +7,7 @@ All rights reserved
 """
 
 import logging
+import sys
 
 from dq0.sdk.data.preprocessing import preprocessing
 from dq0.sdk.data.utils import util
@@ -115,8 +116,8 @@ class UserModel(NeuralNetworkClassification):
 
         # get the input dataset
         if self.data_source is None:
-            logger.error('No data source found')
-            return
+            logger.fatal('No data source found')
+            sys.exit(1)
 
         dataset_df = self.data_source.read()
 

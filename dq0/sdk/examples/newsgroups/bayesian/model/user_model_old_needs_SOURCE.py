@@ -6,6 +6,7 @@ All rights reserved
 """
 
 import logging
+import sys
 
 from dq0.sdk.models.bayes.naive_bayesian_model import NaiveBayesianModel
 
@@ -62,8 +63,8 @@ class UserModel(NaiveBayesianModel):
         """
         # get the input dataset
         if self.data_source is None:
-            logger.error('No data source found')
-            return
+            logger.fatal('No data source found')
+            sys.exit(1)
 
         X, y = self.data_source.read()
 

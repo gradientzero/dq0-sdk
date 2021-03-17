@@ -52,7 +52,8 @@ class YamlConfig():
             with open(self.yaml_path, 'r') as yaml_file:
                 self.yaml_dict = yaml.load(yaml_file, Loader=yaml.Loader)  # turnsout SafeLoader doesnt recognise !!python/tuple
         except Exception as e:
-            logger.error('Could not find config at {}! {}'.format(self.yaml_path, e))
+            logger.fatal('Could not find config at {}! {}'.format(
+                self.yaml_path, e))
             sys.exit(1)
         return self.yaml_dict
 
@@ -62,7 +63,9 @@ class YamlConfig():
             with open(self.yaml_path, 'w') as yaml_file:
                 yaml_file.write(self.yaml_dict)
         except Exception as e:
-            logger.error('Cannot write yaml to {}! {}'.format(self.yaml_path, e))
+            logger.fatal('Cannot write yaml to {}! {}'.format(
+                self.yaml_path, e))
+            sys.exit(1)
 
     def dump_yaml(self, yaml_dict):
         self.yaml_str = yaml.dump(yaml_dict)
