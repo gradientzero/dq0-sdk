@@ -24,7 +24,7 @@ import logging
 from dq0.mod_utils.error import fatal_error
 from dq0.sdk.models.tf import NeuralNetworkClassification
 
-logger = logging.getLogger('dq0.'+__name__)
+logger = logging.getLogger('dq0.' + __name__)
 
 
 class UserModel(NeuralNetworkClassification):

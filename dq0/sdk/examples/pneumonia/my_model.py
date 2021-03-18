@@ -42,8 +42,8 @@ class UserModel(NeuralNetworkClassification):
         self.X_test = (df_test.drop(['split', 'label'], axis=1).values)
         self.y_test = ((df_test['label'] == 'pneumonial') * 1.).values.reshape(-1, 1)
         lb = OneHotEncoder()
-        self.y_train  = lb.fit_transform(self.y_train).toarray()
-        self.y_test  = lb.transform(self.y_test).toarray()
+        self.y_train = lb.fit_transform(self.y_train).toarray()
+        self.y_test = lb.transform(self.y_test).toarray()
 
         logger.debug("X_train.shape: {}".format(self.X_train.shape))
         logger.debug("X_test.shape: {}".format(self.X_test.shape))
@@ -80,14 +80,14 @@ class UserModel(NeuralNetworkClassification):
     def evaluate(self, test_data=True, verbose=0):
         from sklearn.metrics import confusion_matrix
         results = super().evaluate(test_data, verbose)
-        
+
         if test_data:
             yhat = self.predict(self.X_test).argmax(axis=1)
             cm = confusion_matrix(self.y_test.argmax(axis=1), yhat)
         else:
             yhat = self.predict(self.X_train).argmax(axis=1)
             cm = confusion_matrix(self.y_test.argmax(axis=1), yhat)
-            
+
         results['cm'] = cm
         # add comment
         return results

@@ -11,7 +11,6 @@ All rights reserved
 import logging
 import os
 import uuid
-import sys
 from abc import abstractmethod
 from tempfile import TemporaryDirectory
 

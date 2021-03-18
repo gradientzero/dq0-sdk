@@ -15,6 +15,7 @@ import tensorflow as tf
 
 logger = logging.getLogger('dq0.' + __name__)
 
+
 class UserModel(NeuralNetworkClassification):
     """CNN with pre-training"""
 
@@ -25,7 +26,7 @@ class UserModel(NeuralNetworkClassification):
         logger.debug('Init user model done')
 
     def setup_data(self, **kwargs):
-        from sklearn.preprocessing import OneHotEncoder
+        # from sklearn.preprocessing import OneHotEncoder
 
         """Set up data function"""
         if self.data_source is None:
@@ -37,16 +38,16 @@ class UserModel(NeuralNetworkClassification):
         df_train = data[data['split'] == 'train']
         df_test = data[data['split'] == 'test']
         self.X_train = df_train.drop(['split', 'label'], axis=1).values
-        self.y_train = ((df_train['label'] == 'pneumonial') * 1.).values#.reshape(-1, 1)
+        self.y_train = ((df_train['label'] == 'pneumonial') * 1.).values  # .reshape(-1, 1)
         logger.debug('self.X_train.shape: {}'.format(self.X_train.shape))
         self.X_test = (df_test.drop(['split', 'label'], axis=1).values)
-        self.y_test = ((df_test['label'] == 'pneumonial') * 1.).values#.reshape(-1, 1)
-        #lb = OneHotEncoder()
-        #self.y_train  = lb.fit_transform(self.y_train).toarray()
-        #self.y_test  = lb.transform(self.y_test).toarray()
+        self.y_test = ((df_test['label'] == 'pneumonial') * 1.).values  # .reshape(-1, 1)
+        # lb = OneHotEncoder()
+        # self.y_train  = lb.fit_transform(self.y_train).toarray()
+        # self.y_test  = lb.transform(self.y_test).toarray()
         # for the model checker only; int encoding
-        #self.y_train = np.argmax(self.y_train, axis=1)
-        #self.y_test = np.argmax(self.y_test, axis=1)
+        # self.y_train = np.argmax(self.y_train, axis=1)
+        # self.y_test = np.argmax(self.y_test, axis=1)
 
         logger.debug("X_train.shape: {}".format(self.X_train.shape))
         logger.debug("X_test.shape: {}".format(self.X_test.shape))

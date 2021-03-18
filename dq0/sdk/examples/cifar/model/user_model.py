@@ -8,7 +8,6 @@ All rights reserved
 """
 
 import logging
-import sys
 
 from dq0.mod_utils.error import fatal_error
 from dq0.sdk.data.utils import util
@@ -97,7 +96,7 @@ class UserModel(NeuralNetworkClassification):
         self.metrics = ['accuracy']
         self.loss = tf.keras.losses.SparseCategoricalCrossentropy()
         # As an alternative, define the loss function with a string
-        
+
         # TODO: kernel_regularizer breaks DP training in TF2.40 priv0.5.1
         self.regularization_param = 1e-8
         self.regularizer_dict = {

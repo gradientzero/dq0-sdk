@@ -26,7 +26,6 @@ All rights reserved
 """
 
 import logging
-import sys
 
 from dq0.mod_utils.error import fatal_error
 from dq0.sdk.models.tf import NeuralNetworkClassification
@@ -79,7 +78,6 @@ class UserModel(NeuralNetworkClassification):
 
         self.input_dim = self.X_train.shape[1]
         self.output_dim = len(self.y_train.unique())
-        
 
     def preprocess(self):
         """Preprocess the data
@@ -114,8 +112,8 @@ class UserModel(NeuralNetworkClassification):
         y = dataset['class']
 
         dtypes = X.dtypes
-        cat_cals = dtypes.loc[dtypes=='O'].index
-        num_cols = dtypes.loc[dtypes!='O'].index
+        cat_cals = dtypes.loc[dtypes == 'O'].index
+        num_cols = dtypes.loc[dtypes != 'O'].index
 
         # Convert cat to dummies
         for col in cat_cals:

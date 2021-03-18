@@ -8,7 +8,6 @@ All rights reserved
 """
 
 import logging
-import sys
 
 from dq0.mod_utils.error import fatal_error
 from dq0.sdk.data.utils import util
