@@ -332,7 +332,7 @@ schema:
       selectable: false
       synthesizable: true
       type: float
-      upper: 1.0
+      upper: 0.0
       use_auto_bounds: false
     '120':
       bounded: false
@@ -748,7 +748,7 @@ schema:
       selectable: false
       synthesizable: true
       type: float
-      upper: 0.0
+      upper: 1.0
       use_auto_bounds: false
     '15':
       bounded: false
@@ -2360,7 +2360,7 @@ schema:
       selectable: false
       synthesizable: true
       type: float
-      upper: 0.0
+      upper: 1.0
       use_auto_bounds: false
     '261':
       bounded: false
@@ -2477,7 +2477,7 @@ schema:
       selectable: false
       synthesizable: true
       type: float
-      upper: 1.0
+      upper: 0.0
       use_auto_bounds: false
     '27':
       bounded: false
@@ -3673,7 +3673,7 @@ schema:
       selectable: false
       synthesizable: true
       type: float
-      upper: 1.0
+      upper: 0.0
       use_auto_bounds: false
     '352':
       bounded: false
@@ -3920,7 +3920,7 @@ schema:
       selectable: false
       synthesizable: true
       type: float
-      upper: 1.0
+      upper: 0.0
       use_auto_bounds: false
     '37':
       bounded: false
@@ -5051,7 +5051,7 @@ schema:
       selectable: false
       synthesizable: true
       type: float
-      upper: 1.0
+      upper: 0.0
       use_auto_bounds: false
     '448':
       bounded: false
@@ -5220,7 +5220,7 @@ schema:
       selectable: false
       synthesizable: true
       type: float
-      upper: 0.0
+      upper: 1.0
       use_auto_bounds: false
     '46':
       bounded: false
@@ -5779,7 +5779,7 @@ schema:
       selectable: false
       synthesizable: true
       type: float
-      upper: 0.0
+      upper: 1.0
       use_auto_bounds: false
     '499':
       bounded: false
@@ -5987,7 +5987,7 @@ schema:
       selectable: false
       synthesizable: true
       type: float
-      upper: 1.0
+      upper: 0.0
       use_auto_bounds: false
     '512':
       bounded: false
@@ -6182,7 +6182,7 @@ schema:
       selectable: false
       synthesizable: true
       type: float
-      upper: 0.0
+      upper: 1.0
       use_auto_bounds: false
     '526':
       bounded: false
@@ -6312,7 +6312,7 @@ schema:
       selectable: false
       synthesizable: true
       type: float
-      upper: 0.0
+      upper: 1.0
       use_auto_bounds: false
     '535':
       bounded: false
@@ -6702,7 +6702,7 @@ schema:
       selectable: false
       synthesizable: true
       type: float
-      upper: 1.0
+      upper: 0.0
       use_auto_bounds: false
     '562':
       bounded: false
@@ -6923,7 +6923,7 @@ schema:
       selectable: false
       synthesizable: true
       type: float
-      upper: 0.0
+      upper: 1.0
       use_auto_bounds: false
     '578':
       bounded: false
@@ -7014,7 +7014,7 @@ schema:
       selectable: false
       synthesizable: true
       type: float
-      upper: 1.0
+      upper: 0.0
       use_auto_bounds: false
     '584':
       bounded: false
@@ -7144,7 +7144,7 @@ schema:
       selectable: false
       synthesizable: true
       type: float
-      upper: 1.0
+      upper: 0.0
       use_auto_bounds: false
     '593':
       bounded: false
@@ -7157,7 +7157,7 @@ schema:
       selectable: false
       synthesizable: true
       type: float
-      upper: 0.0
+      upper: 1.0
       use_auto_bounds: false
     '594':
       bounded: false
@@ -7209,7 +7209,7 @@ schema:
       selectable: false
       synthesizable: true
       type: float
-      upper: 0.0
+      upper: 1.0
       use_auto_bounds: false
     '598':
       bounded: false
@@ -7814,7 +7814,7 @@ schema:
     clamp_counts: false
     max_ids: 1
     row_privacy: false
-    rows: 18535
+    rows: 20430
     sample_max_ids: true
     use_dpsu: false
     use_original_header: true
@@ -7824,7 +7824,7 @@ schema:
       discrete: false
       is_feature: false
       is_target: false
-      lower: 1
+      lower: 0
       private_id: false
       selectable: false
       synthesizable: true

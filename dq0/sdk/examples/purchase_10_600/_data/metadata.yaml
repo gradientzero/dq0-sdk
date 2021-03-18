@@ -4,6 +4,7 @@ privacy_column: ''
 schema:
   connection: ../dq0-sdk/dq0/sdk/examples/purchase_10_600/_data/purchase_10_600_target_dataset.csv
   table:
+    use_original_header: true
     '0':
       lower: 0.0
       synthesizable: true
@@ -128,7 +129,7 @@ schema:
       lower: 0.0
       synthesizable: true
       type: float
-      upper: 1.0
+      upper: 0.0
     '120':
       lower: 0.0
       synthesizable: true
@@ -288,7 +289,7 @@ schema:
       lower: 0.0
       synthesizable: true
       type: float
-      upper: 0.0
+      upper: 1.0
     '15':
       lower: 1.0
       synthesizable: true
@@ -908,7 +909,7 @@ schema:
       lower: 0.0
       synthesizable: true
       type: float
-      upper: 0.0
+      upper: 1.0
     '261':
       lower: 0.0
       synthesizable: true
@@ -953,7 +954,7 @@ schema:
       lower: 0.0
       synthesizable: true
       type: float
-      upper: 1.0
+      upper: 0.0
     '27':
       lower: 0.0
       synthesizable: true
@@ -1413,7 +1414,7 @@ schema:
       lower: 0.0
       synthesizable: true
       type: float
-      upper: 1.0
+      upper: 0.0
     '352':
       lower: 0.0
       synthesizable: true
@@ -1508,7 +1509,7 @@ schema:
       lower: 0.0
       synthesizable: true
       type: float
-      upper: 1.0
+      upper: 0.0
     '37':
       lower: 0.0
       synthesizable: true
@@ -1943,7 +1944,7 @@ schema:
       lower: 0.0
       synthesizable: true
       type: float
-      upper: 1.0
+      upper: 0.0
     '448':
       lower: 0.0
       synthesizable: true
@@ -2008,7 +2009,7 @@ schema:
       lower: 0.0
       synthesizable: true
       type: float
-      upper: 0.0
+      upper: 1.0
     '46':
       lower: 0.0
       synthesizable: true
@@ -2223,7 +2224,7 @@ schema:
       lower: 0.0
       synthesizable: true
       type: float
-      upper: 0.0
+      upper: 1.0
     '499':
       lower: 0.0
       synthesizable: true
@@ -2303,7 +2304,7 @@ schema:
       lower: 0.0
       synthesizable: true
       type: float
-      upper: 1.0
+      upper: 0.0
     '512':
       lower: 0.0
       synthesizable: true
@@ -2378,7 +2379,7 @@ schema:
       lower: 0.0
       synthesizable: true
       type: float
-      upper: 0.0
+      upper: 1.0
     '526':
       lower: 0.0
       synthesizable: true
@@ -2428,7 +2429,7 @@ schema:
       lower: 0.0
       synthesizable: true
       type: float
-      upper: 0.0
+      upper: 1.0
     '535':
       lower: 0.0
       synthesizable: true
@@ -2578,7 +2579,7 @@ schema:
       lower: 0.0
       synthesizable: true
       type: float
-      upper: 1.0
+      upper: 0.0
     '562':
       lower: 0.0
       synthesizable: true
@@ -2663,7 +2664,7 @@ schema:
       lower: 0.0
       synthesizable: true
       type: float
-      upper: 0.0
+      upper: 1.0
     '578':
       lower: 0.0
       synthesizable: true
@@ -2698,7 +2699,7 @@ schema:
       lower: 0.0
       synthesizable: true
       type: float
-      upper: 1.0
+      upper: 0.0
     '584':
       lower: 0.0
       synthesizable: true
@@ -2748,12 +2749,12 @@ schema:
       lower: 0.0
       synthesizable: true
       type: float
-      upper: 1.0
+      upper: 0.0
     '593':
       lower: 0.0
       synthesizable: true
       type: float
-      upper: 0.0
+      upper: 1.0
     '594':
       lower: 0.0
       synthesizable: true
@@ -2773,7 +2774,7 @@ schema:
       lower: 0.0
       synthesizable: true
       type: float
-      upper: 0.0
+      upper: 1.0
     '598':
       lower: 0.0
       synthesizable: true
@@ -3004,9 +3005,9 @@ schema:
       synthesizable: true
       type: float
       upper: 1.0
-    rows: 18535
+    rows: 20430
     y:
-      lower: 1
+      lower: 0
       synthesizable: true
       type: int
       upper: 9
