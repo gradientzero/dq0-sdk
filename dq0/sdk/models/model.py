@@ -17,6 +17,7 @@ from tempfile import TemporaryDirectory
 
 import cloudpickle
 
+from dq0.mod_utils.error import fatal_error
 from dq0.sdk.projects import Project
 
 logger = logging.getLogger()
@@ -73,9 +74,8 @@ class Model(Project):
                     try:
                         state['_model_binary_data_'] = cloudpickle.dumps(binary_data)
                     except BaseException:
-                        logger.fatal('Could not pickle binary_data of '
-                                     'length: {}'.format(len(binary_data)))
-                        sys.exit(1)
+                        fatal_error('Could not pickle binary_data of '
+                                    'length: {}'.format(len(binary_data)), logger=logger)
 
             # remove model from state to make this class pickelable
             del state['model']

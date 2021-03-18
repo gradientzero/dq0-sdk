@@ -21,6 +21,7 @@ Copyright 2020, Gradient Zero
 import logging
 import sys
 
+from dq0.mod_utils.error import fatal_error
 from dq0.sdk.models.tf import NeuralNetworkRegression
 
 from sklearn.compose import ColumnTransformer
@@ -51,8 +52,7 @@ class UserModel(NeuralNetworkRegression):
 
         # get the input dataset
         if self.data_source is None:
-            logger.fatal('No data source found')
-            sys.exit(1)
+            fatal_error('No data source found', logger=logger)
 
         data = self.data_source.read()
         X, y = self._prepare_data(data)

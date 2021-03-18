@@ -7,8 +7,8 @@ All rights reserved
 """
 
 import logging
-import sys
 
+from dq0.mod_utils.error import fatal_error
 from dq0.sdk.data.utils import util
 from dq0.sdk.models.tf import NeuralNetworkClassification
 
@@ -106,8 +106,7 @@ class UserModel(NeuralNetworkClassification):
         """
         # get the input dataset
         if self.data_source is None:
-            logger.fatal('No data source found')
-            sys.exit(1)
+            fatal_error('No data source found', logger=logger)
 
         dataset_df = self.data_source.read()
 

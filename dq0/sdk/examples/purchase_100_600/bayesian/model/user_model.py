@@ -20,13 +20,12 @@ All rights reserved
 """
 
 import logging
-import sys
 
+from dq0.mod_utils.error import fatal_error
 from dq0.sdk.models.bayes.naive_bayesian_model import NaiveBayesianModel
 
 from sklearn.naive_bayes import MultinomialNB
 
-from tensorflow.keras import metrics
 
 logger = logging.getLogger(__name__)
 
@@ -57,8 +56,7 @@ class UserModel(NaiveBayesianModel):
         """
         # get the input dataset
         if self.data_source is None:
-            logger.fatal('No data source found')
-            sys.exit(1)
+            fatal_error('No data source found', logger=logger)
 
         # read the data via the attached input data source
         dataset = self.data_source.read()

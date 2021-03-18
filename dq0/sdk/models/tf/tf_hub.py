@@ -6,8 +6,8 @@ All rights reserved
 """
 
 import logging
-import sys
 
+from dq0.mod_utils.error import fatal_error
 from dq0.sdk.models.tf.neural_network_yaml import NeuralNetworkYaml
 from dq0.sdk.models.yaml_configs.tf_hub_models import hub_models_dict
 
@@ -31,8 +31,7 @@ class TFHub(NeuralNetworkYaml):
         try:
             self.preprocessing = self.yaml_dict['PREPROCESSING']
         except Exception as e:
-            logger.fatal('PREPROCESSING is missinng in yaml: {}'.format(e))
-            sys.exit(1)
+            fatal_error('PREPROCESSING is missinng in yaml: {}'.format(e), logger=logger)
 
     def setup_data(self, augment=False):
         """Setup Predefined data
@@ -50,8 +49,7 @@ class TFHub(NeuralNetworkYaml):
         """
 
         if len(self.data_sources) < 1:
-            logger.fatal('No data source found')
-            sys.exit(1)
+            fatal_error('No data source found', logger=logger)
 
         source = next(iter(self.data_sources.values()))
         self.path_train = source.path_train

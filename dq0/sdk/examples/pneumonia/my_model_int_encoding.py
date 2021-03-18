@@ -6,20 +6,12 @@ All rights reserved
 """
 
 import logging
-import sys
 
-from dq0.sdk.data.utils import util
+from dq0.mod_utils.error import fatal_error
 from dq0.sdk.models.tf import NeuralNetworkClassification
 
-import numpy as np
-
-import pandas as pd
-
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder
-
 import tensorflow as tf
-import tensorflow_hub as hub
+
 
 logger = logging.getLogger('dq0.' + __name__)
 
@@ -37,8 +29,7 @@ class UserModel(NeuralNetworkClassification):
 
         """Set up data function"""
         if self.data_source is None:
-            logger.fatal('No data source found')
-            sys.exit(1)
+            fatal_error('No data source found', logger=logger)
 
         logger.debug('Start Loading data')
         data = self.data_source.read()
