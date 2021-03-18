@@ -213,7 +213,11 @@ class Metadata:
         return feature_cols, target_cols
 
     def get_header(self):
-        return self.header
+        tables = self.get_all_tables()
+        header = []
+        for m_table in tables:
+            header.append(m_table.header_row)
+        return header
 
 
 class Schema():
