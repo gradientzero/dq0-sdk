@@ -119,7 +119,7 @@ class Model(Project):
         pass
 
     @abstractmethod
-    def setup_model(self):
+    def setup_model(self, **kwargs):
         """Setup model function
 
         Implementing child classes can use this method to define the model.
