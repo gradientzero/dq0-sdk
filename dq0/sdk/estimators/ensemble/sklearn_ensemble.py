@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 class AdaBoostClassifier(ClassifierMixin, Estimator):
     def __init__(self, base_estimator=None, *, n_estimators=50, learning_rate=1.0, algorithm='SAMME.R', random_state=None, **kwargs):
         super().__init__(**kwargs)
-        self.model_type = 'EnsembleEstimator'
+        self.model_type = 'EnsembleEstimatorClassifier'
         self.model = ensemble.AdaBoostClassifier(base_estimator=base_estimator, n_estimators=n_estimators, learning_rate=learning_rate, algorithm=algorithm,
                                                  random_state=random_state)
 
@@ -28,7 +28,7 @@ class BaggingClassifier(ClassifierMixin, Estimator):
     def __init__(self, base_estimator=None, n_estimators=10, *, max_samples=1.0, max_features=1.0, bootstrap=True, bootstrap_features=False, oob_score=False,
                  warm_start=False, n_jobs=None, random_state=None, verbose=0, **kwargs):
         super().__init__(**kwargs)
-        self.model_type = 'EnsembleEstimator'
+        self.model_type = 'EnsembleEstimatorClassifier'
         self.model = ensemble.BaggingClassifier(base_estimator=base_estimator, n_estimators=n_estimators, max_samples=max_samples, max_features=max_features,
                                                 bootstrap=bootstrap, bootstrap_features=bootstrap_features, oob_score=oob_score, warm_start=warm_start,
                                                 n_jobs=n_jobs, random_state=random_state, verbose=verbose)
@@ -39,7 +39,7 @@ class ExtraTreesClassifier(ClassifierMixin, Estimator):
                  max_features='auto', max_leaf_nodes=None, min_impurity_decrease=0.0, min_impurity_split=None, bootstrap=False, oob_score=False, n_jobs=None,
                  random_state=None, verbose=0, warm_start=False, class_weight=None, ccp_alpha=0.0, max_samples=None, **kwargs):
         super().__init__(**kwargs)
-        self.model_type = 'EnsembleEstimator'
+        self.model_type = 'EnsembleEstimatorClassifier'
         self.model = ensemble.ExtraTreesClassifier(n_estimators=n_estimators, criterion=criterion, max_depth=max_depth, min_samples_split=min_samples_split,
                                                    min_samples_leaf=min_samples_leaf, min_weight_fraction_leaf=min_weight_fraction_leaf,
                                                    max_features=max_features, max_leaf_nodes=max_leaf_nodes, min_impurity_decrease=min_impurity_decrease,
@@ -54,7 +54,7 @@ class GradientBoostingClassifier(ClassifierMixin, Estimator):
                  random_state=None, max_features=None, verbose=0, max_leaf_nodes=None, warm_start=False, validation_fraction=0.1, n_iter_no_change=None,
                  tol=0.0001, ccp_alpha=0.0, **kwargs):
         super().__init__(**kwargs)
-        self.model_type = 'EnsembleEstimator'
+        self.model_type = 'EnsembleEstimatorClassifier'
         self.model = ensemble.GradientBoostingClassifier(loss=loss, learning_rate=learning_rate, n_estimators=n_estimators, subsample=subsample,
                                                          criterion=criterion, min_samples_split=min_samples_split, min_samples_leaf=min_samples_leaf,
                                                          min_weight_fraction_leaf=min_weight_fraction_leaf, max_depth=max_depth, 
@@ -69,7 +69,7 @@ class RandomForestClassifier(ClassifierMixin, Estimator):
                  max_features='auto', max_leaf_nodes=None, min_impurity_decrease=0.0, min_impurity_split=None, bootstrap=True, oob_score=False,
                  n_jobs=None, random_state=None, verbose=0, warm_start=False, class_weight=None, ccp_alpha=0.0, max_samples=None, **kwargs):
         super().__init__(**kwargs)
-        self.model_type = 'EnsembleEstimator'
+        self.model_type = 'EnsembleEstimatorClassifier'
         self.model = ensemble.RandomForestClassifier(n_estimators=n_estimators, criterion=criterion, max_depth=max_depth, min_samples_split=min_samples_split,
                                                      min_samples_leaf=min_samples_leaf, min_weight_fraction_leaf=min_weight_fraction_leaf,
                                                      max_features=max_features, max_leaf_nodes=max_leaf_nodes, min_impurity_decrease=min_impurity_decrease,
@@ -83,7 +83,7 @@ class RandomForestClassifier(ClassifierMixin, Estimator):
 class AdaBoostRegressor(RegressorMixin, Estimator):
     def __init__(self, base_estimator=None, *, n_estimators=50, learning_rate=1.0, loss='linear', random_state=None, **kwargs):
         super().__init__(**kwargs)
-        self.model_type = 'EnsembleEstimator'
+        self.model_type = 'EnsembleEstimatorRegressor'
         self.model = ensemble.AdaBoostRegressor(base_estimator=base_estimator, n_estimators=n_estimators, learning_rate=learning_rate, loss=loss,
                                                 random_state=random_state)
 
@@ -92,10 +92,10 @@ class BaggingRegressor(RegressorMixin, Estimator):
     def __init__(self, base_estimator=None, n_estimators=10, *, max_samples=1.0, max_features=1.0, bootstrap=True, bootstrap_features=False, oob_score=False,
                  warm_start=False, n_jobs=None, random_state=None, verbose=0, **kwargs):
         super().__init__(**kwargs)
-        self.model_type = 'EnsembleEstimator'
-        self.model = ensemble.AdaBoostRegressor(base_estimator=base_estimator, n_estimators=n_estimators, max_samples=max_samples, max_features=max_features,
-                                                bootstrap=bootstrap, bootstrap_features=bootstrap_features, oob_score=oob_score, warm_start=warm_start,
-                                                n_jobs=n_jobs, random_state=random_state, verbose=verbose)
+        self.model_type = 'EnsembleEstimatorRegressor'
+        self.model = ensemble.BaggingRegressor(base_estimator=base_estimator, n_estimators=n_estimators, max_samples=max_samples, max_features=max_features,
+                                               bootstrap=bootstrap, bootstrap_features=bootstrap_features, oob_score=oob_score, warm_start=warm_start,
+                                               n_jobs=n_jobs, random_state=random_state, verbose=verbose)
 
 
 class ExtraTreesRegressor(RegressorMixin, Estimator):
@@ -103,7 +103,7 @@ class ExtraTreesRegressor(RegressorMixin, Estimator):
                  max_features='auto', max_leaf_nodes=None, min_impurity_decrease=0.0, min_impurity_split=None, bootstrap=False, oob_score=False,
                  n_jobs=None, random_state=None, verbose=0, warm_start=False, ccp_alpha=0.0, max_samples=None, **kwargs):
         super().__init__(**kwargs)
-        self.model_type = 'EnsembleEstimator'
+        self.model_type = 'EnsembleEstimatorRegressor'
         self.model = ensemble.ExtraTreesRegressor(n_estimators=n_estimators, criterion=criterion, max_depth=max_depth, min_samples_split=min_samples_split,
                                                   min_samples_leaf=min_samples_leaf, min_weight_fraction_leaf=min_weight_fraction_leaf,
                                                   max_features=max_features, max_leaf_nodes=max_leaf_nodes, min_impurity_decrease=min_impurity_decrease,
@@ -118,7 +118,7 @@ class GradientBoostingRegressor(RegressorMixin, Estimator):
                  alpha=0.9, verbose=0, max_leaf_nodes=None, warm_start=False, validation_fraction=0.1, n_iter_no_change=None, tol=0.0001, ccp_alpha=0.0,
                  **kwargs):
         super().__init__(**kwargs)
-        self.model_type = 'EnsembleEstimator'
+        self.model_type = 'EnsembleEstimatorRegressor'
         self.model = ensemble.GradientBoostingRegressor(loss=loss, learning_rate=learning_rate, n_estimators=n_estimators, subsample=subsample,
                                                         criterion=criterion, min_samples_split=min_samples_split, min_samples_leaf=min_samples_leaf,
                                                         min_weight_fraction_leaf=min_weight_fraction_leaf, max_depth=max_depth,
@@ -133,7 +133,7 @@ class RandomForestRegressor(RegressorMixin, Estimator):
                  max_features='auto', max_leaf_nodes=None, min_impurity_decrease=0.0, min_impurity_split=None, bootstrap=True, oob_score=False, n_jobs=None,
                  random_state=None, verbose=0, warm_start=False, ccp_alpha=0.0, max_samples=None, **kwargs):
         super().__init__(**kwargs)
-        self.model_type = 'EnsembleEstimator'
+        self.model_type = 'EnsembleEstimatorRegressor'
         self.model = ensemble.RandomForestRegressor(n_estimators=n_estimators, criterion=criterion, max_depth=max_depth, min_samples_split=min_samples_split,
                                                     min_samples_leaf=min_samples_leaf, min_weight_fraction_leaf=min_weight_fraction_leaf,
                                                     max_features=max_features, max_leaf_nodes=max_leaf_nodes, min_impurity_decrease=min_impurity_decrease,
