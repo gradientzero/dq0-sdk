@@ -110,7 +110,7 @@ class Model(Project):
                 self.load(path_to_model_file)
 
     @abstractmethod
-    def setup_data(self):
+    def setup_data(self, **kwargs):
         """Setup data function
 
         This function can be used by child classes to prepare data or perform
