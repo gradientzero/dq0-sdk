@@ -21,7 +21,7 @@ def get_data_int():
 
 def test_LogisticRegression_001():
     X, y = get_data_int()
-    estimator = diffprivlib_lm.LogisticRegression()
+    estimator = diffprivlib_lm.LogisticRegressionDP()
     estimator.fit(X, y)
     logger.debug("LogisticRegression.predict_proba(): {}".format(estimator.predict_proba(X)))
     logger.debug("LogisticRegression.predict(): {}".format(estimator.predict(X)))
@@ -30,7 +30,7 @@ def test_LogisticRegression_001():
 
 def test_LinearRegression_001():
     X, y = get_data_int()
-    estimator = diffprivlib_lm.LinearRegression()
+    estimator = diffprivlib_lm.LinearRegressionDP()
     estimator.fit(X, y)
     logger.debug("LinearRegression.predict_proba(): {}".format(estimator.predict_proba(X)))
     logger.debug("LinearRegression.predict(): {}".format(estimator.predict(X)))
