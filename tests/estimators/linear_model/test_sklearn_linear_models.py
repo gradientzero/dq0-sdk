@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-""" Keras dense neural network for classification with different target encoding.
+""" 
 
 Copyright 2021, Gradient Zero
 All rights reserved

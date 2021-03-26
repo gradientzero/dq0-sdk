@@ -6,6 +6,8 @@ All rights reserved
 """
 
 import logging
+import tensorflow as tf
+
 import uuid
 from abc import abstractmethod
 from dq0.sdk.estimators.estimator import Estimator
@@ -58,3 +60,113 @@ class NN_Regressor(NeuralNetworkBase):
 
     def predict(self, X):
         return self.model.predict(X).flatten()
+
+
+def _check_param(param, expected_len):
+    if type(param) is list:
+        if len(param) == expected_len:
+            return param
+        else:
+            return None
+    else:
+        return [param] * expected_len
+
+
+def parse_value(val):
+    try:
+        # check if is list and parse list
+        if val[0] == '[' and val[-1] == ']':
+            val = val.strip('[').strip(']').replace('"', '').replace("'", '').split(',')
+
+            parsed_el = []
+            # try to parse every element in list
+            for el in val:
+                try:
+                    parsed_el.append(float(el))
+                except ValueError:
+                    parsed_el.append(el)
+            return parsed_el
+
+        else:
+            val = val.replace('"', '').replace("'", '')
+            # try to parse the values
+            try:
+                val = float(val)
+            except ValueError:
+                pass
+            return val
+    except:
+        return val
+
+
+def parse_kwargs(kwargs):
+    for key in kwargs:
+        kwargs[key] = parse_value(kwargs[key])
+
+    return kwargs
+
+
+def layer_factory(layers, n_layers, **kwargs):
+    """Helper function to create the layers given some parameters."""
+    # check if the length of the given parameter list is as expected
+    # if a global setting is given (no list) it is converted into a list
+
+    # parse n_layer param separately
+    n_layers = parse_value(n_layers)
+    if not type(n_layers) is list:
+        n_layers = [n_layers]
+    expected_len = len(n_layers)
+    kwargs = parse_kwargs(kwargs)
+    # activation
+    if 'activation' in kwargs:
+        activation = _check_param(kwargs['activation'], expected_len)
+    else:
+        activation = _check_param('tanh', expected_len)
+    # use_bias
+    if 'use_bias' in kwargs:
+        use_bias = _check_param(kwargs['use_bias'], expected_len)
+    else:
+        use_bias = _check_param(True, expected_len)
+    # kernel_initializer
+    if 'kernel_initializer' in kwargs:
+        kernel_initializer = _check_param(kwargs['kernel_initializer'], expected_len)
+    else:
+        kernel_initializer = _check_param('glorot_uniform', expected_len)
+    # bias_initializer
+    if 'bias_initializer' in kwargs:
+        bias_initializer = _check_param(kwargs['bias_initializer'], expected_len)
+    else:
+        bias_initializer = _check_param('zeros', expected_len)
+    # kernel_regularizer
+    if 'kernel_regularizer' in kwargs:
+        kernel_regularizer = _check_param(kwargs['kernel_regularizer'], expected_len)
+    else:
+        kernel_regularizer = _check_param(None, expected_len)
+    # bias_regularizer
+    if 'bias_regularizer' in kwargs:
+        bias_regularizer = _check_param(kwargs['bias_regularizer'], expected_len)
+    else:
+        bias_regularizer = _check_param(None, expected_len)
+    # activity_regularizer
+    if 'activity_regularizer' in kwargs:
+        activity_regularizer = _check_param(kwargs['activity_regularizer'], expected_len)
+    else:
+        activity_regularizer = _check_param(None, expected_len)
+    # kernel_constraint
+    if 'kernel_constraint' in kwargs:
+        kernel_constraint = _check_param(kwargs['kernel_constraint'], expected_len)
+    else:
+        kernel_constraint = _check_param(None, expected_len)
+    # bias_constraint
+    if 'bias_constraint' in kwargs:
+        bias_constraint = _check_param(kwargs['bias_constraint'], expected_len)
+    else:
+        bias_constraint = _check_param(None, expected_len)
+
+    for i, n in enumerate(n_layers):
+        layers.append(tf.keras.layers.Dense(units=n, activation=activation[i],
+                                            use_bias=use_bias[i], kernel_initializer=kernel_initializer[i],
+                                            bias_initializer=bias_initializer[i], kernel_regularizer=kernel_regularizer[i],
+                                            bias_regularizer=bias_regularizer[i], activity_regularizer=activity_regularizer[i],
+                                            kernel_constraint=kernel_constraint[i], bias_constraint=bias_constraint[i]))
+    return layers
