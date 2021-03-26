@@ -9,7 +9,7 @@ import logging
 import tensorflow as tf
 from dq0.sdk.estimators.estimator import Estimator
 from dq0.sdk.estimators.base_mixin import RegressorMixin
-from dq0.sdk.estimators.tf.keras_base import NN_Regressor
+from dq0.sdk.estimators.tf.keras_base import NN_Regressor, layer_factory
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +33,7 @@ class Keras_Dense_Regressor(NN_Regressor, RegressorMixin, Estimator):
                              loss=loss, metrics=metrics, batch_siz=batch_size, epochs=epochs,
                              **kwargs)
 
-    def setup_model(self, input_shape=None, n_layers=[10, 10], 
+    def setup_model(self, input_shape=None, n_layers=[10, 10],
                     optimizer='Adam', loss=tf.keras.losses.MeanAbsoluteError(),
                     metrics=['mae'], batch_size=250, epochs=2, **kwargs):
         self.optimizer = optimizer
@@ -44,15 +44,7 @@ class Keras_Dense_Regressor(NN_Regressor, RegressorMixin, Estimator):
         if input_shape is None:
             input_shape = self.input_dim
         layers = [tf.keras.layers.Input(shape=input_shape)]
-        layers = _layer_factory(layers, n_layers)
+        layers = layer_factory(layers, n_layers, **kwargs)
         layers.append(tf.keras.layers.Dense(1, activation='linear'))
 
         self.model = tf.keras.Sequential(layers)
-
-
-def _layer_factory(layers, n_layers):
-    """Helper function to create the layers given some parameters."""
-    # TODO: increase the functionality
-    for n in n_layers:
-        layers.append(tf.keras.layers.Dense(units=n, activation='tanh'))
-    return layers
