@@ -33,9 +33,9 @@ jobs:
     - name: Run pytest
       run: |
         pip install pytest
-        python -m pytest -m "not slow"
+      # python -m pytest -m "not slow"
 
     - name: Create wheel-cython distribution
       run: |
         python setup.py bdist_wheel
-        # python setup.py bdist --cythonize 
+      # python setup.py bdist --cythonize 
