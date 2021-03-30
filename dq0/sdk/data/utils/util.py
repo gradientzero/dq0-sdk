@@ -6,13 +6,13 @@ All rights reserved
 """
 
 import inspect
+import logging
 import math
 import os
 import pickle
 import random
 import shutil
 import sys
-import warnings
 
 import numpy as np
 
@@ -23,6 +23,9 @@ import scipy as sp
 import tensorflow as tf
 
 import yaml
+
+
+logger = logging.getLogger(__name__)
 
 
 def load_params_from_config_file(yaml_file_path):
@@ -220,14 +223,27 @@ def _print_feats(l_column_names, s_title):
     print("\n\t".join(([s_title + ': '] + l_column_names)))
 
 
-def pretty_print_dict(d, indent_steps=1, indent_unit='  '):
+def pretty_print_dict(d, indent_steps=1, indent_unit='  ',
+                      logger_fun=None, log_key_string=None):
     """Print dictionary."""
     for key, value in d.items():
         if isinstance(value, dict):
-            print(indent_unit * indent_steps + str(key) + ': ')
+            text = indent_unit * indent_steps + str(key) + ': '
+            if logger_fun is None:
+                print(text)
+            else:
+                if log_key_string is not None:
+                    text += ' {}'.format(log_key_string)
+                logger_fun(text)
             pretty_print_dict(value, indent_steps + 1)
         else:
-            print(indent_unit * indent_steps + str(key) + ': ' + str(value))
+            text = indent_unit * indent_steps + str(key) + ': ' + str(value)
+            if logger_fun is None:
+                print(text)
+            else:
+                if log_key_string is not None:
+                    text += ' {}'.format(log_key_string)
+                logger_fun(text)
 
 
 def pretty_diplay_string_on_terminal(s):
@@ -433,19 +449,19 @@ def get_percentage_freq_of_values(x_np_a):
     return dict(zip(vals, freqs))
 
 
-def estimate_freq_of_labels(y):
+def estimate_freq_of_labels(y, log_key_string=None):
     """Estimate the frequency of labels in y."""
     if isinstance(y, pd.Series):
-        print(y.value_counts(normalize=True) * 100)
-    else:
-        assert isinstance(y, np.ndarray)
-        # print(pd.Series(y).value_counts(normalize=True) * 100)
+        # print(y.value_counts(normalize=True) * 100)
+        y = y.values
+    # else:
+    assert isinstance(y, np.ndarray)
 
-        # print('Label     percentage freq.')
-        # pretty_print_dict(get_percentage_freq_of_values(y))
-
-        for key, value in get_percentage_freq_of_values(y).items():
-            print('  label "' + str(key) + '": %.1f%%' % value)
+    for key, value in get_percentage_freq_of_values(y).items():
+        msg = '  label "{}": {:.1f}%'.format(key, value)
+        if log_key_string is not None:
+            msg += ' {}'.format(log_key_string)
+        print(msg)
 
 
 # def compute_features_min_max(X):
@@ -728,7 +744,8 @@ def datasets_are_equal(d1, d2):
 
 
 def check_matrices_for_element_wise_equality(X_1, X_2, threshold=1e-5,
-                                             raise_error=False):
+                                             raise_error=False,
+                                             log_key_string=None):
     """
     Sanity check: compare X_1, X_2 matrices for element-wise equality of
     numeric values, raise error or warning if equality is not satisfied.
@@ -738,6 +755,7 @@ def check_matrices_for_element_wise_equality(X_1, X_2, threshold=1e-5,
         X_2: (n, c) numpy.ndarray
         threshold (float): threshold for equality of float values
         raise_error: Boolean flag to raise and error rather than a warning
+        log_key_string:
     """
 
     abs_diff = np.abs(X_2 - X_1)
@@ -756,10 +774,13 @@ def check_matrices_for_element_wise_equality(X_1, X_2, threshold=1e-5,
               ', max diff: ' + str(np.max(differing_entries)) + \
               ', min diff: ' + str(np.min(differing_entries))
 
+        if log_key_string is not None:
+            msg += ' {}'.format(log_key_string)
+
         if raise_error:
             raise RuntimeError(msg)
         else:
-            warnings.warn(msg)
+            logger.warning(msg)
 
 
 def initialize_rnd_numbers_generators_state(seed=1, verbose=True):
