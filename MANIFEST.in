@@ -1,4 +1,1 @@
-recursive-include dq0/sdk/examples/census/_data *.csv
-recursive-include dq0/sdk/examples/cifar/_data *.csv
-recursive-include dq0/sdk/examples/newsgroups/_data *.csv
-recursive-include dq0/sdk/examples/medical_insurance/_data *.csv
+
