@@ -19,7 +19,7 @@ import cloudpickle
 from dq0.mod_utils.error import fatal_error
 from dq0.sdk.projects import Project
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 class Model(Project):
@@ -112,7 +112,7 @@ class Model(Project):
                 self.load(path_to_model_file)
 
     @abstractmethod
-    def setup_data(self):
+    def setup_data(self, **kwargs):
         """Setup data function
 
         This function can be used by child classes to prepare data or perform
@@ -121,7 +121,7 @@ class Model(Project):
         pass
 
     @abstractmethod
-    def setup_model(self):
+    def setup_model(self, **kwargs):
         """Setup model function
 
         Implementing child classes can use this method to define the model.

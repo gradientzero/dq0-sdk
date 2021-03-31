@@ -31,7 +31,7 @@ class UserModel(NaiveBayesianModel):
         super().__init__()
         self.label_encoder = None
 
-    def setup_model(self):
+    def setup_model(self, **kwargs):
         """Setup model function
 
         Define the model here.
@@ -45,7 +45,7 @@ class UserModel(NaiveBayesianModel):
 
         print('Set up a ' + self._classifier_type + ' classifier.')
 
-    def setup_data(self):
+    def setup_data(self, **kwargs):
         """Setup data function
 
         This function can be used to prepare data or perform

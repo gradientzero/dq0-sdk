@@ -71,6 +71,7 @@ class Metadata:
         self.type = meta["type"] if "type" in meta else None
         self.schemas = {}
         self.privacy_column = meta["privacy_column"] if "privacy_column" in meta else None
+        self.header = meta["header_columns"] if "header_columns" in meta else None
 
         for key in meta.keys():
             if key not in self.__dict__ and isinstance(meta[key], dict):
@@ -190,6 +191,33 @@ class Metadata:
                             cols_to_drop.append((schema_key, table_key, col_key))
         for col_to_drop in cols_to_drop:
             del self.schemas[col_to_drop[0]].tables[col_to_drop[1]].columns[col_to_drop[2]]
+
+    def get_feature_target_cols(self):
+        """gets all column name from all tables and looks if is_feature or is defined"""
+        feature_cols = []
+        target_cols = []
+
+        tables = self.get_all_tables()
+        for m_table in tables:
+            for key in m_table.columns:
+                col = m_table.columns[key]
+                if col.is_feature:
+                    feature_cols.append(key)
+                if col.is_target:
+                    target_cols.append(key)
+
+        # conservative default. If not both list have elements fall back to the default values NONE 
+        if (len(feature_cols) == 0) or (len(target_cols) == 0):
+            feature_cols = None
+            target_cols = None
+        return feature_cols, target_cols
+
+    def get_header(self):
+        tables = self.get_all_tables()
+        header = []
+        for m_table in tables:
+            header.append(m_table.header_row)
+        return header
 
 
 class Schema():
@@ -394,7 +422,9 @@ class Column():
             mask=None,
             synthesizable=True,
             discrete=False,
-            min_step=1.0):
+            min_step=1.0,
+            is_feature=False,
+            is_target=False):
         """Create a new table object.
 
         Args:
@@ -418,6 +448,8 @@ class Column():
         self.synthesizable = synthesizable
         self.discrete = discrete
         self.min_step = min_step
+        self.is_feature = is_feature
+        self.is_target = is_target
 
     @staticmethod
     def from_meta(column, meta):
@@ -467,6 +499,8 @@ class Column():
             raise ValueError("Unknown column type {} for column {}".format(_type, column))
         private_id = bool(meta["private_id"]) if "private_id" in meta else False
         selectable = bool(meta["selectable"]) if "selectable" in meta else False
+        is_feature = bool(meta["is_feature"]) if "is_feature" in meta else False
+        is_target = bool(meta["is_target"]) if "is_target" in meta else False
         return Column(
             column,
             _type=_type,
@@ -484,7 +518,9 @@ class Column():
             mask=mask,
             synthesizable=synthesizable,
             discrete=discrete,
-            min_step=min_step
+            min_step=min_step,
+            is_feature=is_feature,
+            is_target=is_target
         )
 
     def to_dict(self, sm=False):  # noqa: C901
@@ -523,4 +559,8 @@ class Column():
                 meta["discrete"] = self.discrete
             if self.min_step is not None:
                 meta["min_step"] = self.min_step
+            if self.is_feature is not None:
+                meta["is_feature"] = self.is_feature
+            if self.is_target is not None:
+                meta["is_target"] = self.is_target
         return meta
