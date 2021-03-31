@@ -32,13 +32,13 @@ jobs:
 
     - name: Run pytest
       run: |
-        #pip install pytest
+        pip install pytest
         #python -m pytest -m "not slow"
 
     - name: Create wheel-cython distribution
       run: |
-        python setup.py install_egg_info
-        pip install -e .
-        pip install pycodestyle==2.6.0
+        #python setup.py install_egg_info
+        #pip install -e .
+        #pip install pycodestyle==2.6.0
         python setup.py bdist_wheel
       # python setup.py bdist --cythonize 
