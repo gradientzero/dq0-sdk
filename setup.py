@@ -80,5 +80,5 @@ setup(
     install_requires=INSTALL_REQUIRES,
     setup_requires=SETUP_REQUIRES,
     extras_require=EXTRA_REQUIRE,
-    include_package_data=True,
+    include_package_data=False,
 )
