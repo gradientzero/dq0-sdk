@@ -29,12 +29,12 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install --upgrade setuptools
+        pycodestyle --version
         #pip install -r requirements-dev.txt
 
     - name: Run pytest
       run: |
         pip install pytest
-        pip install --upgrade setuptools
         #python -m pytest -m "not slow"
 
     - name: Create wheel-cython distribution
