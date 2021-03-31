@@ -37,5 +37,7 @@ jobs:
 
     - name: Create wheel-cython distribution
       run: |
+        python setup.py install_egg_info
+        pip install -e .
         python setup.py bdist_wheel
       # python setup.py bdist --cythonize 
