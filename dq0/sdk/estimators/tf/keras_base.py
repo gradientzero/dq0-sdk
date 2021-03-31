@@ -7,11 +7,12 @@ All rights reserved
 
 import logging
 import tensorflow as tf
+import numpy as np
 
 import uuid
 from abc import abstractmethod
 from dq0.sdk.estimators.estimator import Estimator
-import numpy as np
+from dq0.mod_utils.modules import parse_value, parse_kwargs
 
 logger = logging.getLogger(__name__)
 
@@ -70,40 +71,6 @@ def _check_param(param, expected_len):
             return None
     else:
         return [param] * expected_len
-
-
-def parse_value(val):
-    try:
-        # check if is list and parse list
-        if val[0] == '[' and val[-1] == ']':
-            val = val.strip('[').strip(']').replace('"', '').replace("'", '').split(',')
-
-            parsed_el = []
-            # try to parse every element in list
-            for el in val:
-                try:
-                    parsed_el.append(float(el))
-                except ValueError:
-                    parsed_el.append(el)
-            return parsed_el
-
-        else:
-            val = val.replace('"', '').replace("'", '')
-            # try to parse the values
-            try:
-                val = float(val)
-            except ValueError:
-                pass
-            return val
-    except:
-        return val
-
-
-def parse_kwargs(kwargs):
-    for key in kwargs:
-        kwargs[key] = parse_value(kwargs[key])
-
-    return kwargs
 
 
 def layer_factory(layers, n_layers, **kwargs):
