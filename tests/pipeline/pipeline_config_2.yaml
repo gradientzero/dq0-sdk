@@ -1,0 +1,13 @@
+pipeline:
+  # unique names
+  # should be a list to ensure ordering
+  StandardScaler1:
+    class : 'StandardScaler'
+    copy : True
+    with_mean : False
+  StandardScaler2:
+    # name of the transformer class
+    class : 'StandardScaler'
+    input_col : ['a']
+    copy : True
+    with_mean : True

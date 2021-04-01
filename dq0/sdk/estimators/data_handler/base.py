@@ -6,6 +6,7 @@ All rights reserved
 """
 
 from abc import ABC, abstractmethod
+from dq0.sdk.pipeline.pipeline import Pipeline
 import logging
 logger = logging.getLogger(__name__)
 
@@ -13,8 +14,12 @@ logger = logging.getLogger(__name__)
 class BasicDataHandler(ABC):
     """Basic Data Handler for all estimators"""
 
-    def __init__(self):
-        pass
+    def __init__(self, pipeline_steps=None, pipeline_config_path=None):
+        # Setup pipeline
+        if pipeline_steps is None and pipeline_config_path is None:
+            self.pipeline = None
+        else:
+            self.pipeline = Pipeline(steps=pipeline_steps, config_path=pipeline_config_path)
 
     def setup_data(self, data_source, **kwargs):
         """ Empty setup data, just returns the data source

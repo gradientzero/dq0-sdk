@@ -20,8 +20,8 @@ logger = logging.getLogger(__name__)
 class CSVDataHandler(BasicDataHandler):
     """Basic CSV Data Handler for all estimators"""
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, pipeline_steps=None, pipeline_config_path=None):
+        super().__init__(pipeline_steps=pipeline_steps, pipeline_config_path=pipeline_config_path)
 
     def setup_data(self, data_source, train_size=0.66, **kwargs):
         """ Setup data from CSV file. Using the CSV data source.
@@ -38,8 +38,11 @@ class CSVDataHandler(BasicDataHandler):
         if not isinstance(data, pd.DataFrame):
             raise ValueError("Data loaded is not of type pandas.DataFrame, but: {}".format(type(data)))
 
+        # TODO: Remode
         # Convert all non-numerical columns to numerical ones
-        data = self._df_to_numerical(data)
+        # data = self._df_to_numerical(data)
+        if self.pipeline is not None:
+            data = self.pipeline.fit_transform(data)
 
         X = self._get_X(data, data_source.feature_cols)
         y = self._get_y(data, data_source.target_cols)
