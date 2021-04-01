@@ -64,13 +64,15 @@ class PipelineConfig:
                 trans = getattr(module, target_class)(**params)
                 if trans is None:
                     # TODO: add secure key
-                    raise Exception(f"The transformer {target_class} couldn't be loaded")
+                    #raise Exception(f"The transformer {target_class} couldn't be loaded")
+                    pass
                 else:
                     self.steps.append((key, trans))
 
             except Exception as e:
                 # TODO: add secure log key
-                logging.debug(e)
+                #logging.debug(e)
+                pass
 
         # TODO: add secure log key
         logger.info(f"loaded tranformers: {self.steps}")

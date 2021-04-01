@@ -20,8 +20,8 @@ logger = logging.getLogger(__name__)
 class CSVDataHandler(BasicDataHandler):
     """Basic CSV Data Handler for all estimators"""
 
-    def __init__(self, pipeline_steps=None, pipeline_config_path=None):
-        super().__init__(pipeline_steps=pipeline_steps, pipeline_config_path=pipeline_config_path)
+    def __init__(self, pipeline_steps=None, pipeline_config_path=None, transformers_root_dir='.'):
+        super().__init__(pipeline_steps=pipeline_steps, pipeline_config_path=pipeline_config_path, transformers_root_dir=transformers_root_dir)
 
     def setup_data(self, data_source, train_size=0.66, **kwargs):
         """ Setup data from CSV file. Using the CSV data source.
@@ -33,19 +33,17 @@ class CSVDataHandler(BasicDataHandler):
         if not hasattr(data_source, 'feature_cols') and not hasattr(data_source, 'target_cols'):
             raise ValueError("CSV data source has not attribute feature_cols or target_cols. Please set this values on init or in the metadata")
 
-        data = super().setup_data(data_source=data_source, **kwargs)
+        self.data = super().setup_data(data_source=data_source, **kwargs)
         # Check type of data, must be pandas.DataFrame
-        if not isinstance(data, pd.DataFrame):
-            raise ValueError("Data loaded is not of type pandas.DataFrame, but: {}".format(type(data)))
+        if not isinstance(self.data, pd.DataFrame):
+            raise ValueError("Data loaded is not of type pandas.DataFrame, but: {}".format(type(self.data)))
 
-        # TODO: Remode
-        # Convert all non-numerical columns to numerical ones
-        # data = self._df_to_numerical(data)
+        # run pipeline
         if self.pipeline is not None:
-            data = self.pipeline.fit_transform(data)
+            self.data = self.pipeline.fit_transform(self.data)
 
-        X = self._get_X(data, data_source.feature_cols)
-        y = self._get_y(data, data_source.target_cols)
+        X = self._get_X(self.data, data_source.feature_cols)
+        y = self._get_y(self.data, data_source.target_cols)
         X_train, X_test, y_train, y_test = self._train_test_split(X, y, train_size=train_size)
         return X_train, X_test, y_train, y_test
 
@@ -68,17 +66,18 @@ class CSVDataHandler(BasicDataHandler):
         else:
             raise ValueError("CSVDataHandler currently only supports one target_col (Check Metadata!); len(target_cols): {}".format(len(target_cols)))
 
-    def _df_to_numerical(self, data):
-        logger.info("Converting all non-numerical columns to numerical (Integer-Encoding)")
-        data_num = pd.DataFrame()
-        for col_name, col_type in zip(data.columns, data.dtypes):
-            if (col_type is not np.dtype(np.int)) and (col_type is not np.dtype(np.float)):
-                enc = OrdinalEncoder()
-                data_num[col_name] = enc.fit_transform(data[col_name].values.reshape(-1, 1)).flatten()
+    # TODO: remove
+    # def _df_to_numerical(self, data):
+    #     logger.info("Converting all non-numerical columns to numerical (Integer-Encoding)")
+    #     data_num = pd.DataFrame()
+    #     for col_name, col_type in zip(data.columns, data.dtypes):
+    #         if (col_type is not np.dtype(np.int)) and (col_type is not np.dtype(np.float)):
+    #             enc = OrdinalEncoder()
+    #             data_num[col_name] = enc.fit_transform(data[col_name].values.reshape(-1, 1)).flatten()
 
-            else:
-                data_num[col_name] = data[col_name]
-        return data_num
+    #         else:
+    #             data_num[col_name] = data[col_name]
+    #     return data_num
 
     def _train_test_split(self, X, y, train_size=0.66):
         X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=train_size)

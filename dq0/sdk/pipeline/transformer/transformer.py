@@ -26,7 +26,7 @@ class Transformer(ABC):
         # If input_col is given only those will be processed, by wrapping it into a ColumnTransformer.
         # The remaining columns are passeed through
         if self.input_col is not None:
-            self.transformer = ColumnTransformer([('', self.transformer, self.input_col)], remainder='passthrough').fit(X)
+            self.transformer = ColumnTransformer([('', self.transformer, self.input_col)], remainder='drop').fit(X)
         else:
             self.transformer = self.transformer.fit(X)
         return self
@@ -40,13 +40,15 @@ class Transformer(ABC):
 
         # drop columns
         if self.input_col is not None:
-            X_t = ColumnTransformer([('', self.transformer, self.input_col)], remainder='passthrough').fit_transform(X)
+            X_t = ColumnTransformer([('', self.transformer, self.input_col)], remainder='drop').fit_transform(X)
+            X[self.input_col] = X_t
         else:
             X_t = self.transformer.fit_transform(X)
-
-        if self.col_names is not None:
-            X_t = pd.DataFrame(X_t, columns=self.col_names)
-        return X_t
+            if self.col_names is not None:
+                X = pd.DataFrame(X_t, columns=self.col_names)
+            else:
+                X = X_t
+        return X
 
     def transform(self, X):
         # keep pandas column names after transformation
@@ -55,9 +57,13 @@ class Transformer(ABC):
         else:
             self.col_names = None
         X_t = self.transformer.transform(X)
-        if self.col_names is not None:
-            X_t = pd.DataFrame(X_t, columns=self.col_names)
-        return X_t
+        if self.input_col is not None:
+            X[self.input_col] = X_t
+        elif self.col_names is not None:
+            X = pd.DataFrame(X_t, columns=self.col_names)
+        else:
+            X = X_t
+        return X
 
 
 class StandardScaler(Transformer):

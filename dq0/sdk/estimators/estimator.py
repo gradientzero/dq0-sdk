@@ -26,7 +26,7 @@ class Estimator(Project):
         self.uuid = uuid.uuid1()
         self.model = None
 
-    def setup_data(self, data_handler_instance='CSV', **kwargs):
+    def setup_data(self, data_handler_instance='CSV', pipeline_steps=None, pipeline_config_path=None, transformers_root_dir='.', **kwargs):
         """Setup data function using a data_handler
         None of the estimators handle data by themselfs. They make use of predefined data_handler.
         It is selected by the 'data_handler_instance' attribute.
@@ -36,7 +36,8 @@ class Estimator(Project):
             **kwargs: open kwargs
 
         """
-        self.data_handler = data_handler_factory(data_handler_instance)
+        self.data_handler = data_handler_factory(data_handler_instance, pipeline_steps=pipeline_steps, pipeline_config_path=pipeline_config_path,
+                                                 transformers_root_dir=transformers_root_dir)
         self.X_train, self.X_test, self.y_train, self.y_test = self.data_handler.setup_data(self.data_source, **kwargs)
 
         return self.X_train, self.X_test, self.y_train, self.y_test

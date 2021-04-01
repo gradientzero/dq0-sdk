@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 class Pipeline():
 
-    def __init__(self, steps=None, config_path=None, **kwargs):
+    def __init__(self, steps=None, config_path=None, transformers_root_dir='.', **kwargs):
         """
         Initialize with steps directly (standalone mode) or with config file. Both can not be given.
         params:
@@ -28,7 +28,7 @@ class Pipeline():
             self.pipeline = pipeline.Pipeline(steps)
         elif (steps is None) and (config_path is not None):
             pp_config = pipeline_config.PipelineConfig(config_path=config_path)
-            steps = pp_config.get_steps_from_config()
+            steps = pp_config.get_steps_from_config(root_dir=transformers_root_dir)
             self.pipeline = pipeline.Pipeline(steps)
         else:
             logger.fatal("Both steps and config_path are given. Only one should be given.")

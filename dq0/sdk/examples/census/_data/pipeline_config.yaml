@@ -1,0 +1,6 @@
+pipeline:
+  # unique names
+  # should be a list to ensure ordering
+  OrdinalEncoder1:
+    class : 'OrdinalEncoder'
+    input_col : ['lastname','firstname','workclass','education','marital-status','occupation','relationship','race','sex','native-country','income']
