@@ -435,17 +435,20 @@ def get_percentage_freq_of_values(x_np_a):
 
 def estimate_freq_of_labels(y):
     """Estimate the frequency of labels in y."""
+    if isinstance(y, pd.DataFrame):
+        y = y.idxmax(axis=1)
     if isinstance(y, pd.Series):
-        print(y.value_counts(normalize=True) * 100)
+        pass
+    elif isinstance(y, np.ndarray):
+        if y.ndim == 2:
+            if len(y[0]) > 1:
+                y = np.argmax(y, axis=1)
+            else:
+                y = np.ravel(y)
+        y = pd.Series(y)
     else:
-        assert isinstance(y, np.ndarray)
-        # print(pd.Series(y).value_counts(normalize=True) * 100)
-
-        # print('Label     percentage freq.')
-        # pretty_print_dict(get_percentage_freq_of_values(y))
-
-        for key, value in get_percentage_freq_of_values(y).items():
-            print('  label "' + str(key) + '": %.1f%%' % value)
+        raise ValueError('y must be either pd.DataFrame, pd.Series or np.ndarray')
+    print(y.value_counts(normalize=True) * 100)
 
 
 def compute_features_bounds(X):
