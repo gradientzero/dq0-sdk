@@ -224,7 +224,7 @@ def _print_feats(l_column_names, s_title):
 
 
 def pretty_print_dict(d, indent_steps=1, indent_unit='  ',
-                      logger_fun=None, log_key_string=None):
+                      logger_fun=None):
     """Print dictionary."""
     for key, value in d.items():
         if isinstance(value, dict):
@@ -232,8 +232,6 @@ def pretty_print_dict(d, indent_steps=1, indent_unit='  ',
             if logger_fun is None:
                 print(text)
             else:
-                if log_key_string is not None:
-                    text += ' {}'.format(log_key_string)
                 logger_fun(text)
             pretty_print_dict(value, indent_steps + 1)
         else:
@@ -241,12 +239,10 @@ def pretty_print_dict(d, indent_steps=1, indent_unit='  ',
             if logger_fun is None:
                 print(text)
             else:
-                if log_key_string is not None:
-                    text += ' {}'.format(log_key_string)
                 logger_fun(text)
 
 
-def pretty_diplay_string_on_terminal(s):
+def pretty_display_string_on_terminal(s):
     """Trim string to fit on terminal (assuming 80-column display)"""
     column_display_size = 80
     if len(s) <= column_display_size:
@@ -449,7 +445,7 @@ def get_percentage_freq_of_values(x_np_a):
     return dict(zip(vals, freqs))
 
 
-def estimate_freq_of_labels(y, log_key_string=None):
+def estimate_freq_of_labels(y):
     """Estimate the frequency of labels in y."""
     if isinstance(y, pd.Series):
         # print(y.value_counts(normalize=True) * 100)
@@ -459,8 +455,6 @@ def estimate_freq_of_labels(y, log_key_string=None):
 
     for key, value in get_percentage_freq_of_values(y).items():
         msg = '  label "{}": {:.1f}%'.format(key, value)
-        if log_key_string is not None:
-            msg += ' {}'.format(log_key_string)
         print(msg)
 
 
@@ -741,46 +735,6 @@ def datasets_are_equal(d1, d2):
         else:
             raise Exception('Comparing for equality a ' + type(d1) + ''
                             'with a ' + type(d2))
-
-
-def check_matrices_for_element_wise_equality(X_1, X_2, threshold=1e-5,
-                                             raise_error=False,
-                                             log_key_string=None):
-    """
-    Sanity check: compare X_1, X_2 matrices for element-wise equality of
-    numeric values, raise error or warning if equality is not satisfied.
-
-    Args:
-        X_1: (n, c) numpy.ndarray
-        X_2: (n, c) numpy.ndarray
-        threshold (float): threshold for equality of float values
-        raise_error: Boolean flag to raise and error rather than a warning
-        log_key_string:
-    """
-
-    abs_diff = np.abs(X_2 - X_1)
-    element_wise_comp = abs_diff < threshold
-    all_close = element_wise_comp.all()
-
-    if not all_close:
-        num_els = element_wise_comp.size
-        differing_entries = abs_diff[np.logical_not(element_wise_comp)]
-
-        msg = 'Out of ' + str(num_els) + ' comparisons, ' + \
-              str(num_els - np.sum(element_wise_comp)) + \
-              ' inequalities. About them,' + \
-              ' mean diff: ' + str(np.mean(differing_entries)) + \
-              ', median diff: ' + str(np.median(differing_entries)) + \
-              ', max diff: ' + str(np.max(differing_entries)) + \
-              ', min diff: ' + str(np.min(differing_entries))
-
-        if log_key_string is not None:
-            msg += ' {}'.format(log_key_string)
-
-        if raise_error:
-            raise RuntimeError(msg)
-        else:
-            logger.warning(msg)
 
 
 def initialize_rnd_numbers_generators_state(seed=1, verbose=True):
