@@ -27,6 +27,7 @@ All rights reserved
 
 import logging
 
+from dq0.mod_utils.error import fatal_error
 from dq0.sdk.models.tf import NeuralNetworkClassification
 
 logger = logging.getLogger()
@@ -77,7 +78,6 @@ class UserModel(NeuralNetworkClassification):
 
         self.input_dim = self.X_train.shape[1]
         self.output_dim = len(self.y_train.unique())
-        
 
     def preprocess(self):
         """Preprocess the data
@@ -100,8 +100,7 @@ class UserModel(NeuralNetworkClassification):
 
         # get the input dataset
         if self.data_source is None:
-            logger.error('No data source found')
-            return
+            fatal_error('No data source found', logger=logger)
 
         # read the data via the attached input data source
         dataset = self.data_source.read(
@@ -113,8 +112,8 @@ class UserModel(NeuralNetworkClassification):
         y = dataset['class']
 
         dtypes = X.dtypes
-        cat_cals = dtypes.loc[dtypes=='O'].index
-        num_cols = dtypes.loc[dtypes!='O'].index
+        cat_cals = dtypes.loc[dtypes == 'O'].index
+        num_cols = dtypes.loc[dtypes != 'O'].index
 
         # Convert cat to dummies
         for col in cat_cals:

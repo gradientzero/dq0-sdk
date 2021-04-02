@@ -9,6 +9,7 @@ All rights reserved
 
 import logging
 
+from dq0.mod_utils.error import fatal_error
 from dq0.sdk.data.utils import util
 from dq0.sdk.models.tf import NeuralNetworkClassification
 
@@ -95,7 +96,7 @@ class UserModel(NeuralNetworkClassification):
         self.metrics = ['accuracy']
         self.loss = tf.keras.losses.SparseCategoricalCrossentropy()
         # As an alternative, define the loss function with a string
-        
+
         # TODO: kernel_regularizer breaks DP training in TF2.40 priv0.5.1
         self.regularization_param = 1e-8
         self.regularizer_dict = {
@@ -125,8 +126,7 @@ class UserModel(NeuralNetworkClassification):
         """
         # get the input dataset
         if self.data_source is None:
-            logger.error('No data source found')
-            return
+            fatal_error('No data source found', logger=logger)
 
         _ = self.data_source.read()  # num_instances_to_load=10000
 

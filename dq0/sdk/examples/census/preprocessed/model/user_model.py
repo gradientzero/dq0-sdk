@@ -21,6 +21,7 @@ All rights reserved
 
 import logging
 
+from dq0.mod_utils.error import fatal_error
 from dq0.sdk.models.tf import NeuralNetworkClassification
 
 logger = logging.getLogger()
@@ -54,8 +55,7 @@ class UserModel(NeuralNetworkClassification):
 
         # get the input dataset
         if self.data_source is None:
-            logger.error('No data source found')
-            return
+            fatal_error('No data source found', logger=logger)
 
         # read the dataset from the attached input source
         data = self.data_source.read()

@@ -7,6 +7,7 @@ All rights reserved
 
 import logging
 
+from dq0.mod_utils.error import fatal_error
 from dq0.sdk.models.bayes.naive_bayesian_model import NaiveBayesianModel
 
 import numpy as np
@@ -65,6 +66,13 @@ class UserModel(NaiveBayesianModel):
 
         # check data format
         if isinstance(X_train_df, pd.DataFrame):
+            # TODO discuss how we save the features list is user model. We
+            #  cannot use the list of columns in the data yaml file, 'cause
+            #  the user can remove columns during the preprocessing step.
+            #  More in general, we should not allow the user to create new
+            #  features (e.g., by multiply columns)!
+            self.features_list = X_train_df.columns.to_list()
+
             X_train_df = X_train_df.values
         if isinstance(X_test_df, pd.DataFrame):
             X_test_df = X_test_df.values
@@ -121,8 +129,7 @@ class UserModel(NaiveBayesianModel):
 
         # get the input dataset
         if self.data_source is None:
-            logger.error('No data source found')
-            return
+            fatal_error('No data source found', logger=logger)
 
         # columns
         column_names_list = [

@@ -9,8 +9,8 @@ All rights reserved
 """
 
 import logging
-import sys
 
+from dq0.mod_utils.error import fatal_error
 from dq0.sdk.models.model import Model
 from dq0.sdk.utils import YamlConfig
 from dq0.sdk.utils.managed_classes import custom_objects
@@ -57,15 +57,14 @@ class NeuralNetworkYaml(Model):
 
             self.epochs = self.yaml_dict['FIT']['epochs']
         except Exception as e:
-            logger.error('YAML config is missing key {}'.format(e))
-            sys.exit(1)
+            fatal_error('YAML config is missing key {}'.format(e), logger=logger)
 
         try:
             self.optimizer = optimizers[self.optimizer_dict['optimizer']](**self.optimizer_dict['kwargs'])
             self.loss = losses[self.loss_dict['loss']](**self.loss_dict['kwargs'])
         except Exception as e:
-            logger.error('optimizer or loss is not in managed list or specified in yaml {}'.format(e))
-            sys.exit(1)
+            fatal_error('optimizer or loss is not in managed list or '
+                        'specified in yaml {}'.format(e), logger=logger)
 
         try:
             self.fit_kwargs = self.yaml_dict['FIT']['kwargs']
@@ -114,8 +113,7 @@ class NeuralNetworkYaml(Model):
             self.model = tf.keras.models.model_from_yaml(graph_str,
                                                          custom_objects=self.custom_objects)
         except Exception as e:
-            logger.error('model_from_yaml: {}'.format(e))
-            sys.exit(1)
+            fatal_error('model_from_yaml: {}'.format(e), logger=logger)
 
     def predict(self, x):
         """Model predict function.
