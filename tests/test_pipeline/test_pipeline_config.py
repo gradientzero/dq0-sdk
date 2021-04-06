@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
-""" 
+"""
 Copyright 2021, Gradient Zero
 All rights reserved
 """
 
 import logging
 
-from dq0.sdk.pipeline import transformer
-from dq0.sdk.pipeline.pipeline_config import PipelineConfig
-from dq0.sdk.pipeline import pipeline
-import numpy as np
-import os 
-
+from dq0.sdk.pipeline import transformer # noqa 
+from dq0.sdk.pipeline.pipeline_config import PipelineConfig # noqa
+from dq0.sdk.pipeline import pipeline # noqa
+import numpy as np # noqa
+import os # noqa
 
 logger = logging.getLogger(__name__)
+
 
 def get_data_int():
     X = np.ones((4, 3))
@@ -32,6 +32,7 @@ def test_pipeline_config_read():
     X, y = get_data_int()
     X_t = pipe.fit_transform(X)
     print(X_t)
+    assert X_t[0, 0] == 1
 
 
 if __name__ == '__main__':

@@ -6,10 +6,11 @@ All rights reserved
 """
 
 import logging
-from sklearn import svm
 
-from dq0.sdk.estimators.estimator import Estimator
 from dq0.sdk.estimators.base_mixin import ClassifierMixin, RegressorMixin
+from dq0.sdk.estimators.estimator import Estimator
+
+from sklearn import svm
 
 logger = logging.getLogger(__name__)
 
@@ -82,4 +83,4 @@ class NuSVR(RegressorMixin, Estimator):
         super().__init__(**kwargs)
         self.model_type = 'SVMEstimatorRegressor'
         self.model = svm.NuSVR(nu=nu, C=C, kernel=kernel, degree=degree, gamma=gamma, coef0=coef0, shrinking=shrinking, tol=tol, cache_size=cache_size,
-                                   verbose=verbose, max_iter=max_iter)
+                               verbose=verbose, max_iter=max_iter)

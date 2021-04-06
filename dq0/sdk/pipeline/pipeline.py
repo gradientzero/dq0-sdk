@@ -5,34 +5,35 @@ All rights reserved
 """
 
 import logging
-from sklearn import pipeline
+
+from dq0.mod_utils import error
 from dq0.sdk.pipeline import pipeline_config
 
-from abc import abstractmethod, ABC
-import sys
 import pandas as pd
+
+from sklearn import pipeline
 
 logger = logging.getLogger(__name__)
 
 
 class Pipeline():
 
-    def __init__(self, steps=None, config_path=None, transformers_root_dir='.', **kwargs):
+    def __init__(self, steps=None, config_path=None, transformers_root_dir='.', log_key_string='', **kwargs):
         """
         Initialize with steps directly (standalone mode) or with config file. Both can not be given.
         params:
             steps: List of (name, transform) tuples (implementing fit/transform) that are chained, in the order in which they are chained.
             config_path: path to config file where the pipelien steps are given.
         """
+        self.log_key_string = log_key_string
         if (steps is not None) and (config_path is None):
             self.pipeline = pipeline.Pipeline(steps)
         elif (steps is None) and (config_path is not None):
             pp_config = pipeline_config.PipelineConfig(config_path=config_path)
-            steps = pp_config.get_steps_from_config(root_dir=transformers_root_dir)
+            steps = pp_config.get_steps_from_config(root_dir=transformers_root_dir, log_key_string=self.log_key_string)
             self.pipeline = pipeline.Pipeline(steps)
         else:
-            logger.fatal("Both steps and config_path are given. Only one should be given.")
-            sys.exit(1)
+            error.fatal_error("Both steps and config_path are given. Only one should be given.")
 
     def fit(self, X, y=None, **fit_params):
         if hasattr(X, 'columns'):

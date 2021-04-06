@@ -6,10 +6,12 @@ All rights reserved
 """
 
 import logging
-import tensorflow as tf
-from dq0.sdk.estimators.estimator import Estimator
+
 from dq0.sdk.estimators.base_mixin import RegressorMixin
+from dq0.sdk.estimators.estimator import Estimator
 from dq0.sdk.estimators.tf.keras_base import NN_Regressor, layer_factory
+
+import tensorflow as tf
 
 logger = logging.getLogger(__name__)
 

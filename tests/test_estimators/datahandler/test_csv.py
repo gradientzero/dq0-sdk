@@ -5,11 +5,13 @@ Copyright 2021, Gradient Zero
 All rights reserved
 """
 
-from dq0.sdk.estimators.data_handler.csv import CSVDataHandler
-from dq0.sdk.data.text.csv import CSV
+import os
+import pathlib
 
-import pathlib, os
-import logging
+from dq0.sdk.data.text.csv import CSV
+from dq0.sdk.estimators.data_handler.csv import CSVDataHandler
+
+import logging # noqa
 
 FILEPATH = pathlib.Path(__file__).parent.absolute()
 

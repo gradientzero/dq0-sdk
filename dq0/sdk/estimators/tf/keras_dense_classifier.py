@@ -6,12 +6,12 @@ All rights reserved
 """
 
 import logging
-import tensorflow as tf
 
-from dq0.sdk.estimators.data_handler.csv import CSVDataHandler
-from dq0.sdk.estimators.estimator import Estimator
 from dq0.sdk.estimators.base_mixin import ClassifierMixin
+from dq0.sdk.estimators.estimator import Estimator
 from dq0.sdk.estimators.tf.keras_base import NN_Classifier, layer_factory
+
+import tensorflow as tf
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +40,7 @@ class Keras_Dense_Classifier_OHE(NN_Classifier, ClassifierMixin, Estimator):
                              loss=loss, metrics=metrics, batch_siz=batch_size, epochs=epochs,
                              **kwargs)
 
-    def setup_model(self, input_shape=None, n_classes=None, n_layers=[10, 10], 
+    def setup_model(self, input_shape=None, n_classes=None, n_layers=[10, 10],
                     optimizer='Adam', loss=tf.keras.losses.CategoricalCrossentropy(),
                     metrics=['accuracy', 'mae'], batch_size=250, epochs=2, **kwargs):
         """Args:
@@ -67,7 +67,7 @@ class Keras_Dense_Classifier_Integer(NN_Classifier, ClassifierMixin, Estimator):
 
     def __init__(self, optimizer='Adam',
                  loss=tf.keras.losses.SparseCategoricalCrossentropy(),
-                 metrics=['accuracy', 'mae'], batch_size=250, epochs=2, n_layers=[10, 10],  
+                 metrics=['accuracy', 'mae'], batch_size=250, epochs=2, n_layers=[10, 10],
                  **kwargs):
 
         super().__init__(**kwargs)
@@ -77,7 +77,7 @@ class Keras_Dense_Classifier_Integer(NN_Classifier, ClassifierMixin, Estimator):
             input_shape = kwargs.pop('input_shape')
             n_classes = kwargs.pop('n_classes')
             self.setup_model(input_shape=input_shape, n_classes=n_classes, n_layers=n_layers, optimizer=optimizer,
-                             loss=loss, metrics=metrics, batch_siz=batch_size, epochs=epochs, 
+                             loss=loss, metrics=metrics, batch_siz=batch_size, epochs=epochs,
                              **kwargs)
 
     def setup_model(self, input_shape=None, n_classes=None, n_layers=[10, 10], optimizer='Adam',
@@ -115,7 +115,7 @@ class Keras_Dense_Classifier_Binary(NN_Classifier, ClassifierMixin, Estimator):
         if ('input_shape' in kwargs):
             input_shape = kwargs.pop('input_shape')
             self.setup_model(input_shape=input_shape, optimizer=optimizer,
-                             loss=loss, metrics=metrics, batch_siz=batch_size, epochs=epochs, 
+                             loss=loss, metrics=metrics, batch_siz=batch_size, epochs=epochs,
                              **kwargs)
 
     def setup_model(self, input_shape=None, n_layers=[10, 10], optimizer='Adam',

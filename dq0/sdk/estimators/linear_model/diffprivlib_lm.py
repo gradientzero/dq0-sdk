@@ -6,10 +6,12 @@ All rights reserved
 """
 
 import logging
+
 from diffprivlib.models import linear_regression, logistic_regression
 
-from dq0.sdk.estimators.estimator import Estimator
 from dq0.sdk.estimators.base_mixin import ClassifierMixin, RegressorMixin
+from dq0.sdk.estimators.estimator import Estimator
+
 
 logger = logging.getLogger(__name__)
 
@@ -22,8 +24,8 @@ class LogisticRegressionDP(ClassifierMixin, Estimator):
         """ Note the diff priv models are DP only. The target_epsilon value has to be set on initialize."""
         super().__init__(**kwargs)
         self.model_type = 'DPLinearModelEstimatorClassifier'
-        self.model = logistic_regression.LogisticRegression(epsilon=target_epsilon, data_norm=data_norm, tol=tol, C=C, fit_intercept=fit_intercept, max_iter=max_iter,
-                                                            verbose=verbose, warm_start=warm_start, n_jobs=n_jobs, accountant=None)
+        self.model = logistic_regression.LogisticRegression(epsilon=target_epsilon, data_norm=data_norm, tol=tol, C=C, fit_intercept=fit_intercept,
+                                                            max_iter=max_iter, verbose=verbose, warm_start=warm_start, n_jobs=n_jobs, accountant=None)
 
 
 class LinearRegressionDP(RegressorMixin, Estimator):

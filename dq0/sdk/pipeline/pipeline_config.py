@@ -4,21 +4,17 @@ Copyright 2021, Gradient Zero
 All rights reserved
 """
 
-import logging
-
-from dq0.sdk.pipeline import pipeline
-from dq0.sdk.pipeline import transformer
-import yaml
-import os
 import importlib
-from dq0.mod_utils.modules import load_module, get_all_python_module_paths, read_module_content
-import numpy as np
+import logging
+import os
+
+import yaml
 
 logger = logging.getLogger(__name__)
 
 
 class PipelineConfig:
-    """ Helper class to set up a pipline with a given config yaml. 
+    """ Helper class to set up a pipline with a given config yaml.
     """
     def __init__(self, config_path):
         self.config = self.read_from_yaml_file(config_path)
@@ -47,9 +43,8 @@ class PipelineConfig:
         config = yaml.load(yaml_input, Loader=yaml.FullLoader)
         return config
 
-    def get_steps_from_config(self, root_dir='./dq0/sdk/pipeline/transformer/transformer.py'):
+    def get_steps_from_config(self, root_dir='./dq0/sdk/pipeline/transformer/transformer.py', log_key_string=''):
         """Goes though the list pipeline of the config and sets ups the setps list of tuples to initialize the pipeline with."""
-        # TODO: root dir must be set correctly
         pipeline_config = self.config['pipeline']
         self.steps = []
         for key in pipeline_config:
@@ -63,17 +58,14 @@ class PipelineConfig:
                 spec.loader.exec_module(module)
                 trans = getattr(module, target_class)(**params)
                 if trans is None:
-                    # TODO: add secure key
-                    #raise Exception(f"The transformer {target_class} couldn't be loaded")
-                    pass
+                    raise Exception(f"The transformer {target_class} couldn't be loaded")
+
                 else:
                     self.steps.append((key, trans))
 
             except Exception as e:
-                # TODO: add secure log key
-                #logging.debug(e)
+                logging.debug(f'{e} {log_key_string}')
                 pass
 
-        # TODO: add secure log key
-        logger.info(f"loaded tranformers: {self.steps}")
+        logger.info(f"loaded tranformers: {self.steps} {log_key_string}")
         return self.steps

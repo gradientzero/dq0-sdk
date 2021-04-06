@@ -7,11 +7,14 @@ All rights reserved
 """
 
 import logging
+from abc import ABC
+
+import numpy as np
+
+import pandas as pd
+
 from sklearn import preprocessing
 from sklearn.compose import ColumnTransformer
-from abc import abstractmethod, ABC
-import numpy as np
-import pandas as pd
 
 logger = logging.getLogger(__name__)
 

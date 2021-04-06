@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-""" 
+"""
 
 Copyright 2021, Gradient Zero
 All rights reserved
@@ -8,6 +8,7 @@ All rights reserved
 import logging
 
 from dq0.sdk.estimators.linear_model import sklearn_lm
+
 import numpy as np
 
 logger = logging.getLogger(__name__)

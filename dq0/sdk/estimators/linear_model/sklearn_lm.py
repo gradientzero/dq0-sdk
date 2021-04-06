@@ -6,10 +6,11 @@ All rights reserved
 """
 
 import logging
-from sklearn import linear_model
 
-from dq0.sdk.estimators.estimator import Estimator
 from dq0.sdk.estimators.base_mixin import ClassifierMixin, RegressorMixin
+from dq0.sdk.estimators.estimator import Estimator
+
+from sklearn import linear_model
 
 logger = logging.getLogger(__name__)
 
@@ -34,11 +35,11 @@ class LogisticRegression(ClassifierMixin, Estimator):
 class RidgeClassifier(ClassifierMixin, Estimator):
     """Sklearn RidgeClassifier"""
 
-    def __init__(self, alpha=1.0, *, fit_intercept=True, normalize=False, copy_X=True, max_iter=None, tol=0.001, class_weight=None, solver='auto', 
+    def __init__(self, alpha=1.0, *, fit_intercept=True, normalize=False, copy_X=True, max_iter=None, tol=0.001, class_weight=None, solver='auto',
                  random_state=None, **kwargs):
         super().__init__(**kwargs)
         self.model_type = 'LinearModelEstimatorClassifier'
-        self.model = linear_model.RidgeClassifier(alpha=alpha, fit_intercept=fit_intercept, normalize=normalize, copy_X=copy_X, max_iter=max_iter, tol=tol, 
+        self.model = linear_model.RidgeClassifier(alpha=alpha, fit_intercept=fit_intercept, normalize=normalize, copy_X=copy_X, max_iter=max_iter, tol=tol,
                                                   class_weight=class_weight, solver=solver, random_state=random_state)
 
 
@@ -66,16 +67,16 @@ class Lasso(RegressorMixin, Estimator):
                  positive=False, random_state=None, selection='cyclic', **kwargs):
         super().__init__(**kwargs)
         self.model_type = 'LinearModelEstimatorRegressor'
-        self.model = linear_model.Lasso(alpha=alpha, fit_intercept=fit_intercept, normalize=normalize, precompute=precompute, copy_X=copy_X, max_iter=max_iter, 
+        self.model = linear_model.Lasso(alpha=alpha, fit_intercept=fit_intercept, normalize=normalize, precompute=precompute, copy_X=copy_X, max_iter=max_iter,
                                         tol=tol, warm_start=warm_start, positive=positive, random_state=random_state, selection=selection)
 
 
 class ElasticNet(RegressorMixin, Estimator):
 
-    def __init__(self, alpha=1.0, *, l1_ratio=0.5, fit_intercept=True, normalize=False, precompute=False, max_iter=1000, copy_X=True, tol=0.0001, 
+    def __init__(self, alpha=1.0, *, l1_ratio=0.5, fit_intercept=True, normalize=False, precompute=False, max_iter=1000, copy_X=True, tol=0.0001,
                  warm_start=False, positive=False, random_state=None, selection='cyclic', **kwargs):
         super().__init__(**kwargs)
         self.model_type = 'LinearModelEstimatorRegressor'
         self.model = linear_model.ElasticNet(alpha=alpha, l1_ratio=l1_ratio, fit_intercept=fit_intercept, normalize=normalize, precompute=precompute,
-                                             max_iter=max_iter, copy_X=copy_X, tol=tol, warm_start=warm_start, positive=positive, random_state=random_state, 
+                                             max_iter=max_iter, copy_X=copy_X, tol=tol, warm_start=warm_start, positive=positive, random_state=random_state,
                                              selection=selection)
