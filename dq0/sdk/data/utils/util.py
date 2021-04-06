@@ -44,8 +44,6 @@ def load_params_from_config_file(yaml_file_path):
     with open(yaml_file_path, 'r') as f:
         params_dict = yaml.load(f, Loader=yaml.FullLoader)
 
-        # print(params_dict)
-
         section_params_dict = params_dict['demo parameters']
         seed = section_params_dict['seed']
 
@@ -57,12 +55,6 @@ def load_params_from_config_file(yaml_file_path):
         recall_threshold = section_params_dict['recall_threshold']
         stop_at_first_privacy_breach = section_params_dict[
             'stop_at_first_privacy_breach']
-
-        # print(type(stop_at_first_privacy_breach))
-        # print(type(precision_threshold))
-        # print(type(recall_threshold))
-        # print(type(seed))
-        # print(type(target_model_type))
 
         section_params_dict = params_dict['Differential-privacy parameters']
         dp_epsilons_list = section_params_dict['epsilons']
