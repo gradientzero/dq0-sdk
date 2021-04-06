@@ -80,6 +80,143 @@ def test_OrdinalEncoder():
     assert X[0, 0] == 0
 
 
+def test_Binarizer():
+    print("\ntest_Binarizer")
+    X, y = get_data_int()
+    trans = transformer.Binarizer()
+    X = trans.fit_transform(X)
+    print(X)
+    assert X[0, 0] == 1
+
+
+# TODO: use a function
+def test_FunctionTransformer():
+    print("\ntest_FunctionTransformer")
+    X, y = get_data_int()
+    trans = transformer.FunctionTransformer()
+    X = trans.fit_transform(X)
+    print(X)
+    assert X[0, 0] == 1
+
+
+def test_KBinsDiscretizer():
+    print("\ntest_KBinsDiscretizer")
+    X, y = get_data_int()
+    trans = transformer.KBinsDiscretizer()
+    X = trans.fit_transform(X)
+    print(X)
+    # assert X[0, 0] == 1
+
+
+def test_KernelCenterer():
+    print("\ntest_KernelCenterer")
+    X, y = get_data_int()
+    X = X[:3]
+    trans = transformer.KernelCenterer()
+    X = trans.fit_transform(X)
+    print(X)
+    # assert X[0, 0] == 1
+
+
+def test_LabelBinarizer():
+    print("\ntest_LabelBinarizer")
+    X, y = get_data_int()
+    trans = transformer.LabelBinarizer()
+    y = trans.fit_transform(y)
+    print(y)
+    # assert X[0, 0] == 1
+
+
+def test_LabelEncoder():
+    print("\ntest_LabelEncoder")
+    X, y = get_data_int()
+    trans = transformer.LabelEncoder()
+    y = trans.fit_transform(y)
+    print(X)
+    # assert X[0, 0] == 1
+
+
+def test_MultiLabelBinarizer():
+    print("\ntest_MultiLabelBinarizer")
+    X, y = get_data_int()
+    trans = transformer.MultiLabelBinarizer()
+    X = trans.fit_transform(X)
+    print(X)
+    # assert X[0, 0] == 1
+
+
+def test_MaxAbsScaler():
+    print("\ntest_MaxAbsScaler")
+    X, y = get_data_int()
+    trans = transformer.MaxAbsScaler()
+    X = trans.fit_transform(X)
+    print(X)
+    # assert X[0, 0] == 1
+
+
+def test_MinMaxScaler():
+    print("\ntest_MinMaxScaler")
+    X, y = get_data_int()
+    trans = transformer.MinMaxScaler()
+    X = trans.fit_transform(X)
+    print(X)
+    # assert X[0, 0] == 1
+
+
+def test_Normalizer():
+    print("\ntest_Normalizer")
+    X, y = get_data_int()
+    trans = transformer.Normalizer()
+    X = trans.fit_transform(X)
+    print(X)
+    # assert X[0, 0] == 1
+
+
+def test_OneHotEncoder():
+    print("\ntest_OneHotEncoder")
+    X, y = get_data_int()
+    trans = transformer.OneHotEncoder()
+    X = trans.fit_transform(X)
+    print(X)
+    # assert X[0, 0] == 1
+
+
+def test_PolynomialFeatures():
+    print("\ntest_PolynomialFeatures")
+    X, y = get_data_int()
+    trans = transformer.PolynomialFeatures()
+    X = trans.fit_transform(X)
+    print(X)
+    # assert X[0, 0] == 1
+
+
+def test_PowerTransformer():
+    print("\ntest_PowerTransformer")
+    X, y = get_data_int()
+    trans = transformer.PowerTransformer()
+    X = trans.fit_transform(X)
+    print(X)
+    # assert X[0, 0] == 1
+
+
+def test_QuantileTransformer():
+    print("\ntest_QuantileTransformer")
+    X, y = get_data_int()
+    trans = transformer.QuantileTransformer()
+    X = trans.fit_transform(X)
+    print(X)
+    # assert X[0, 0] == 1
+
+
+def test_RobustScaler():
+    print("\ntest_RobustScaler")
+    X, y = get_data_int()
+    trans = transformer.RobustScaler()
+    X = trans.fit_transform(X)
+    print(X)
+    # assert X[0, 0] == 1
+
+
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
     test_StandardScaler_001()
@@ -87,3 +224,18 @@ if __name__ == '__main__':
     test_StandardScaler_pandas_002()
     test_StandardScaler_pandas_003()
     test_OrdinalEncoder()
+    test_Binarizer()
+    test_FunctionTransformer()
+    test_KBinsDiscretizer()
+    test_KernelCenterer()
+    test_LabelBinarizer()
+    test_LabelEncoder()
+    test_MultiLabelBinarizer()
+    test_MaxAbsScaler()
+    test_MinMaxScaler()
+    test_Normalizer()
+    test_OneHotEncoder()
+    test_PolynomialFeatures()
+    test_PowerTransformer()
+    test_QuantileTransformer()
+    test_RobustScaler()
