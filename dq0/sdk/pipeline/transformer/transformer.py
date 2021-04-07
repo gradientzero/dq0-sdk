@@ -20,10 +20,12 @@ from sklearn.compose import ColumnTransformer
 
 logger = logging.getLogger(__name__)
 
+
 class Transformer(ABC):
 
     def __init__(self, input_col=None, **kwargs):
         self.transformer = None
+        self.col_names = None
         self.input_col = input_col
 
     @abstractmethod
@@ -45,11 +47,13 @@ class Transformer_1_to_1(ABC):
 
     def __init__(self, input_col=None, **kwargs):
         self.transformer = None
+        self.col_names = None
         self.input_col = input_col
 
     def fit(self, X, y=None):
         # If input_col is given only those will be processed, by wrapping it into a ColumnTransformer.
         # The remaining columns are passeed through
+        # keep pandas column names after transformation
         if self.input_col is not None:
             self.transformer = ColumnTransformer([('', self.transformer, self.input_col)], remainder='drop').fit(X)
         else:
@@ -57,46 +61,24 @@ class Transformer_1_to_1(ABC):
         return self
 
     def fit_transform(self, X, y=None):
-        # keep pandas column names after transformation
-        if hasattr(X, 'columns'):
-            self.col_names = X.columns
-        else:
-            self.col_names = None
-
-        # drop columns
-        if self.input_col is not None:
-            X_t = ColumnTransformer([('', self.transformer, self.input_col)], remainder='drop').fit_transform(X)
-            # TODO: check for sparse encoding arrays
-            # TODO: move to fucntion below
-            if isinstance(X_t, scipy.sparse.csr.csr_matrix):
-                X_t = X_t.toarray()
-
-            X[self.input_col] = X_t
-        else:
-            X_t = self.transformer.fit_transform(X)
-            if isinstance(X_t, scipy.sparse.csr.csr_matrix):
-                X_t = X_t.toarray()
-
-            if self.col_names is not None:
-                X = pd.DataFrame(X_t, columns=self.col_names)
-            else:
-                X = X_t
-        return X
+        self.fit(X, y)
+        return self.transform(X)
 
     def transform(self, X):
-        # keep pandas column names after transformation
         if hasattr(X, 'columns'):
             self.col_names = X.columns
         else:
             self.col_names = None
         X_t = self.transformer.transform(X)
+        # check and convert sparse encoding arrays
+        if isinstance(X_t, scipy.sparse.csr.csr_matrix):
+            X_t = X_t.toarray()
+        # case ColumnTransformer
         if self.input_col is not None:
-            # TODO: check for sparse encoding arrays
-            # TODO: call the private helper function
             X[self.input_col] = X_t
         elif self.col_names is not None:
             X = pd.DataFrame(X_t, columns=self.col_names)
-        else:
+        else:  # numpy array
             X = X_t
         return X
 
@@ -124,6 +106,17 @@ class Transformer_1_to_N(Transformer):
         """"Sets up transformers with the given params for columnwise transformation if the given data"""
         pass
 
+    def fit_transform(self, X, y=None):
+        """Call fit and then transform"""
+        self.fit(X, y)
+        X_t = self.transform(X)
+        if self.input_col is not None:
+            X = X.drop(self.input_col, axis=1)
+            X = pd.concat([X, X_t], axis=1)  # append X_t
+        else:
+            X = X_t
+        return X
+
     def fit(self, X, y=None):
         """ Sets up a separate transformer for every column in the DataFrame.
         Args:
@@ -139,7 +132,12 @@ class Transformer_1_to_N(Transformer):
         self.transformers_c = []
         self.column_names_ = []
 
-        for c in X.columns:
+        if self.input_col is not None:
+            col_process = self.input_col
+        else:
+            col_process = X.columns
+
+        for c in col_process:
             transformer = self._setup_transformer()
             self.transformers_c.append(transformer.fit(X.loc[:, [c]]))
             self.column_names_.append(self._get_column_names(transformer, c))
@@ -162,7 +160,12 @@ class Transformer_1_to_N(Transformer):
 
         all_df = []
 
-        for i, c in enumerate(X.columns):
+        if self.input_col is not None:
+            col_process = self.input_col
+        else:
+            col_process = X.columns
+
+        for i, c in enumerate(col_process):
             transformer = self.transformers_c[i]
 
             transformed_col = transformer.transform(X.loc[:, [c]])

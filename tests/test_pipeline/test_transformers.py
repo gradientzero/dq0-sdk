@@ -189,10 +189,19 @@ def test_Normalizer():
     # assert X[0, 0] == 1
 
 
-def test_OneHotEncoder():
+def test_OneHotEncoder_001():
     print("\ntest_OneHotEncoder")
     X, y = get_data_pandas()
     trans = transformer.OneHotEncoder()
+    X = trans.fit_transform(X)
+    print(X)
+    # assert X[0, 0] == 1
+
+
+def test_OneHotEncoder_002():
+    print("\ntest_OneHotEncoder")
+    X, y = get_data_pandas()
+    trans = transformer.OneHotEncoder(input_col=['a', 'b'])
     X = trans.fit_transform(X)
     print(X)
     # assert X[0, 0] == 1
@@ -252,7 +261,8 @@ if __name__ == '__main__':
     test_MaxAbsScaler()
     test_MinMaxScaler()
     test_Normalizer()
-    test_OneHotEncoder()
+    test_OneHotEncoder_001()
+    test_OneHotEncoder_002()
     test_PolynomialFeatures()
     test_PowerTransformer()
     test_QuantileTransformer()
