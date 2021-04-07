@@ -447,39 +447,43 @@ def get_percentage_freq_of_values(x_np_a):
 
 def estimate_freq_of_labels(y):
     """Estimate the frequency of labels in y."""
+    if isinstance(y, pd.DataFrame):
+        y = y.idxmax(axis=1)
     if isinstance(y, pd.Series):
-        # print(y.value_counts(normalize=True) * 100)
-        y = y.values
-    # else:
-    assert isinstance(y, np.ndarray)
-
+        pass
+    elif isinstance(y, np.ndarray):
+        if y.ndim == 2:
+            if len(y[0]) > 1:
+                y = np.argmax(y, axis=1)
+            else:
+                y = np.ravel(y)
+        y = pd.Series(y)
+    else:
+        raise ValueError('y must be either pd.DataFrame, pd.Series or np.ndarray')
+    
     for key, value in get_percentage_freq_of_values(y).items():
         msg = '  label "{}": {:.1f}%'.format(key, value)
         print(msg)
 
 
-# def compute_features_min_max(X):
+# def compute_features_bounds(X):
 #     """
 #     Compute min / max value for each feature.
-#
-#     Args:
-#         X: array-like data matrix (features are the columns).
-#
-#     Returns:
-#         Tuple with ordered lists of min/max values for each feature.
-#         Order of the list is the order of the columns in the data matrix.
+#     :param X: data matrix (features are the columns).
+#     :return: ordered list of tuples with min/max values for each feature.
+#              Order of the list is the order of the columns in the data matrix.
 #     """
-#
+
 #     if isinstance(X, pd.DataFrame):
 #         min_values = X.min(axis=0).values
 #         max_values = X.max(axis=0).values
 #     elif isinstance(X, np.ndarray):
 #         min_values = X.min(axis=0)
 #         max_values = X.max(axis=0)
-#
-#     features_min_max = (min_values, max_values)
-#
-#     return features_min_max
+
+#     features_bounds = (min_values, max_values)
+
+#     return features_bounds
 
 
 def save_preprocessed_tr_and_te_datasets(X_train, X_test, y_train, y_test,
