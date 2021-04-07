@@ -64,7 +64,7 @@ class UserModel(NeuralNetworkClassification):
         # read the data via the attached input data source
         dataset = self.data_source.read()
 
-        one_hot_encoded = False
+        one_hot_encoded = True
         as_numpy_out = False
         n_features = 100
 
@@ -90,6 +90,21 @@ class UserModel(NeuralNetworkClassification):
                 y_train_ts.values,
                 y_test_ts.values
                 )
+        elif as_numpy_out == 'mixed1':
+            X_train_df, X_test_df = (
+                X_train_df.values,
+                X_test_df.values
+            )
+        elif as_numpy_out == 'mixed2':
+            y_train_ts, y_test_ts = (
+                y_train_ts.values,
+                y_test_ts.values
+            )
+        elif as_numpy_out == 'mixed3':
+            X_train_df, y_test_ts = (
+                X_train_df.values,
+                y_test_ts.values
+            )
 
         # set data attributes
         self.X_train = X_train_df
