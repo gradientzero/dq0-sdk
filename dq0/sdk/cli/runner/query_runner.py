@@ -17,7 +17,7 @@ All rights reserved
 
 from dq0.sdk.cli.api import routes
 from dq0.sdk.cli.runner.runner import Runner
-from dq0.sdk.errors import checkSDKResponse, DQ0SDKError
+from dq0.sdk.errors import DQ0SDKError, checkSDKResponse
 
 
 class QueryRunner(Runner):

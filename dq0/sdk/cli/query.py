@@ -6,11 +6,11 @@ A query object will be created at runtime from a project instance.
 Copyright 2020, Gradient Zero
 All rights reserved
 """
+from dq0.sdk.cli import Project
 from dq0.sdk.cli.api import Client, routes
 from dq0.sdk.cli.data import Data
 from dq0.sdk.cli.runner import QueryRunner
 from dq0.sdk.errors import DQ0SDKError, checkSDKResponse
-from dq0.sdk.cli import Project
 
 
 class Query:

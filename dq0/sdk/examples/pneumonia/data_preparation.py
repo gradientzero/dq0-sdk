@@ -8,16 +8,18 @@ Copyright 2020, Gradient Zero
 All rights reserved
 """
 
-import logging
+import argparse
+import os
 
-import tensorflow as tf
-import tensorflow_hub as hub
+from PIL import Image
+
+import numpy as np
 
 import pandas as pd
-import numpy as np
-from PIL import Image
-import os
-import argparse
+
+import tensorflow as tf
+
+import tensorflow_hub as hub
 
 
 def create_dataset(data_path, DOWNSAMPLE=True):
@@ -78,11 +80,11 @@ def load_img_in_dir(data_folder, resize_shape=(224, 224)):
 def train_test_split_reshape(df, img_shape=(224, 224)):
     df_train = df[df['split'] == 'train']
     df_test = df[df['split'] == 'test']
-    X_train = (df_train.drop(['split', 'label'], axis=1).values / 255.).reshape(-1, img_shape[0] , img_shape[1])
+    X_train = (df_train.drop(['split', 'label'], axis=1).values / 255.).reshape(-1, img_shape[0], img_shape[1])
     # y_train  = df_train['']
     y_train = ((df_train['label'] == 'pneumonial') * 1.).values.reshape(-1, 1)
 
-    X_test = (df_test.drop(['split', 'label'], axis=1).values / 255.).reshape(-1, img_shape[0] , img_shape[1])
+    X_test = (df_test.drop(['split', 'label'], axis=1).values / 255.).reshape(-1, img_shape[0], img_shape[1])
     # y_train  = df_train['']
     y_test = ((df_test['label'] == 'pneumonial') * 1.).values.reshape(-1, 1)
 

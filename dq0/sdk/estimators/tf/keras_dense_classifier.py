@@ -11,7 +11,7 @@ import tensorflow as tf
 from dq0.sdk.estimators.data_handler.csv import CSVDataHandler
 from dq0.sdk.estimators.estimator import Estimator
 from dq0.sdk.estimators.base_mixin import ClassifierMixin
-from dq0.sdk.estimators.tf.keras_base import NN_Classifier
+from dq0.sdk.estimators.tf.keras_base import NN_Classifier, layer_factory
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +56,7 @@ class Keras_Dense_Classifier_OHE(NN_Classifier, ClassifierMixin, Estimator):
         if n_classes is None:
             n_classes = self.out_shape
         layers = [tf.keras.layers.Input(shape=input_shape)]
-        layers = _layer_factory(layers, n_layers)
+        layers = layer_factory(layers, n_layers, **kwargs)
         layers.append(tf.keras.layers.Dense(n_classes, activation='softmax'))
 
         self.model = tf.keras.Sequential(layers)
@@ -96,7 +96,7 @@ class Keras_Dense_Classifier_Integer(NN_Classifier, ClassifierMixin, Estimator):
         if n_classes is None:
             n_classes = self.out_shape
         layers = [tf.keras.layers.Input(shape=input_shape)]
-        layers = _layer_factory(layers, n_layers)
+        layers = layer_factory(layers, n_layers, **kwargs)
         layers.append(tf.keras.layers.Dense(n_classes, activation='softmax'))
 
         self.model = tf.keras.Sequential(layers)
@@ -132,15 +132,7 @@ class Keras_Dense_Classifier_Binary(NN_Classifier, ClassifierMixin, Estimator):
         if input_shape is None:
             input_shape = self.input_dim
         layers = [tf.keras.layers.Input(shape=input_shape)]
-        layers = _layer_factory(layers, n_layers)
+        layers = layer_factory(layers, n_layers, **kwargs)
         layers.append(tf.keras.layers.Dense(1, activation='sigmoid'))
 
         self.model = tf.keras.Sequential(layers)
-
-
-def _layer_factory(layers, n_layers):
-    """Helper function to create the layers given some parameters."""
-    # TODO: increase the functionality
-    for n in n_layers:
-        layers.append(tf.keras.layers.Dense(units=n, activation='tanh'))
-    return layers
