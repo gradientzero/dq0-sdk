@@ -64,48 +64,16 @@ class UserModel(NeuralNetworkClassification):
         # read the data via the attached input data source
         dataset = self.data_source.read()
 
-        one_hot_encoded = True
-        as_numpy_out = False
-        n_features = 100
-
         X = dataset.iloc[:, :-1]
         y = dataset.iloc[:, -1]
-        self.loss = tf.keras.losses.SparseCategoricalCrossentropy()
-
-        if one_hot_encoded:
-            y = pd.get_dummies(y)
-            self.loss = tf.keras.losses.CategoricalCrossentropy(from_logits=True)
-
-        # do the train test split
+        
         X_train_df, X_test_df, y_train_ts, y_test_ts = \
-            (X.iloc[:10000, :n_features],
-            X.iloc[10000:, :n_features],
+            (X.iloc[:10000, :],
+            X.iloc[10000:, :],
             y.iloc[:10000],
             y.iloc[10000:,],
             )
-        if as_numpy_out:
-            X_train_df, X_test_df, y_train_ts, y_test_ts = \
-                (X_train_df.values,
-                X_test_df.values,
-                y_train_ts.values,
-                y_test_ts.values
-                )
-        elif as_numpy_out == 'mixed1':
-            X_train_df, X_test_df = (
-                X_train_df.values,
-                X_test_df.values
-            )
-        elif as_numpy_out == 'mixed2':
-            y_train_ts, y_test_ts = (
-                y_train_ts.values,
-                y_test_ts.values
-            )
-        elif as_numpy_out == 'mixed3':
-            X_train_df, y_test_ts = (
-                X_train_df.values,
-                y_test_ts.values
-            )
-
+        
         # set data attributes
         self.X_train = X_train_df
         self.X_test = X_test_df
@@ -128,6 +96,7 @@ class UserModel(NeuralNetworkClassification):
             tf.keras.layers.Dense(128, activation='tanh'),
             tf.keras.layers.Dense(self.output_dim, activation='softmax')])
         self.optimizer = 'Adam'
+        self.loss = tf.keras.losses.SparseCategoricalCrossentropy()
         # To set optimizer params, self.optimizer = optimizer instance
         # rather than string, with params values passed as input to the class
         # constructor. E.g.:
