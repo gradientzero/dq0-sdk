@@ -12,11 +12,16 @@ import numpy as np
 
 import pandas as pd
 
+import scipy
+
 logger = logging.getLogger(__name__)
 
 
 def get_data_int():
-    X = np.array([[1, 2, 3], [4, 5, 6, ], [7, 8, 9], [10, 11, 12]])
+    X = np.array([[1, 2, 3],
+                  [4, 5, 6],
+                  [7, 8, 9],
+                  [10, 11, 12]])
     y_int = np.array([1, 2, 3, 4])
 
     return X, y_int
@@ -99,18 +104,30 @@ def test_FunctionTransformer():
     assert X[0, 0] == 1
 
 
-def test_KBinsDiscretizer():
+def test_KBinsDiscretizer_001():
     print("\ntest_KBinsDiscretizer")
-    X, y = get_data_int()
-    trans = transformer.KBinsDiscretizer()
+    X, y = get_data_pandas()
+    trans = transformer.KBinsDiscretizer(n_bins=5)
     X = trans.fit_transform(X)
     print(X)
+
+    # assert X[0, 0] == 1
+
+
+# TODO this currently fails. Add support for numpy array
+def test_KBinsDiscretizer_002():
+    print("\ntest_KBinsDiscretizer")
+    X, y = get_data_int()
+    trans = transformer.KBinsDiscretizer(n_bins=5)
+    X = trans.fit_transform(X)
+    print(X)
+
     # assert X[0, 0] == 1
 
 
 def test_KernelCenterer():
     print("\ntest_KernelCenterer")
-    X, y = get_data_int()
+    X, y = get_data_pandas()
     X = X[:3]
     trans = transformer.KernelCenterer()
     X = trans.fit_transform(X)
@@ -120,7 +137,7 @@ def test_KernelCenterer():
 
 def test_LabelBinarizer():
     print("\ntest_LabelBinarizer")
-    X, y = get_data_int()
+    X, y = get_data_pandas()
     trans = transformer.LabelBinarizer()
     y = trans.fit_transform(y)
     print(y)
@@ -129,7 +146,7 @@ def test_LabelBinarizer():
 
 def test_LabelEncoder():
     print("\ntest_LabelEncoder")
-    X, y = get_data_int()
+    X, y = get_data_pandas()
     trans = transformer.LabelEncoder()
     y = trans.fit_transform(y)
     print(X)
@@ -138,7 +155,7 @@ def test_LabelEncoder():
 
 def test_MultiLabelBinarizer():
     print("\ntest_MultiLabelBinarizer")
-    X, y = get_data_int()
+    X, y = get_data_pandas()
     trans = transformer.MultiLabelBinarizer()
     X = trans.fit_transform(X)
     print(X)
@@ -147,7 +164,7 @@ def test_MultiLabelBinarizer():
 
 def test_MaxAbsScaler():
     print("\ntest_MaxAbsScaler")
-    X, y = get_data_int()
+    X, y = get_data_pandas()
     trans = transformer.MaxAbsScaler()
     X = trans.fit_transform(X)
     print(X)
@@ -156,7 +173,7 @@ def test_MaxAbsScaler():
 
 def test_MinMaxScaler():
     print("\ntest_MinMaxScaler")
-    X, y = get_data_int()
+    X, y = get_data_pandas()
     trans = transformer.MinMaxScaler()
     X = trans.fit_transform(X)
     print(X)
@@ -165,7 +182,7 @@ def test_MinMaxScaler():
 
 def test_Normalizer():
     print("\ntest_Normalizer")
-    X, y = get_data_int()
+    X, y = get_data_pandas()
     trans = transformer.Normalizer()
     X = trans.fit_transform(X)
     print(X)
@@ -174,7 +191,7 @@ def test_Normalizer():
 
 def test_OneHotEncoder():
     print("\ntest_OneHotEncoder")
-    X, y = get_data_int()
+    X, y = get_data_pandas()
     trans = transformer.OneHotEncoder()
     X = trans.fit_transform(X)
     print(X)
@@ -183,7 +200,7 @@ def test_OneHotEncoder():
 
 def test_PolynomialFeatures():
     print("\ntest_PolynomialFeatures")
-    X, y = get_data_int()
+    X, y = get_data_pandas()
     trans = transformer.PolynomialFeatures()
     X = trans.fit_transform(X)
     print(X)
@@ -192,7 +209,7 @@ def test_PolynomialFeatures():
 
 def test_PowerTransformer():
     print("\ntest_PowerTransformer")
-    X, y = get_data_int()
+    X, y = get_data_pandas()
     trans = transformer.PowerTransformer()
     X = trans.fit_transform(X)
     print(X)
@@ -201,7 +218,7 @@ def test_PowerTransformer():
 
 def test_QuantileTransformer():
     print("\ntest_QuantileTransformer")
-    X, y = get_data_int()
+    X, y = get_data_pandas()
     trans = transformer.QuantileTransformer()
     X = trans.fit_transform(X)
     print(X)
@@ -210,7 +227,7 @@ def test_QuantileTransformer():
 
 def test_RobustScaler():
     print("\ntest_RobustScaler")
-    X, y = get_data_int()
+    X, y = get_data_pandas()
     trans = transformer.RobustScaler()
     X = trans.fit_transform(X)
     print(X)
@@ -226,7 +243,8 @@ if __name__ == '__main__':
     test_OrdinalEncoder()
     test_Binarizer()
     test_FunctionTransformer()
-    test_KBinsDiscretizer()
+    test_KBinsDiscretizer_001()
+    # test_KBinsDiscretizer_002()
     test_KernelCenterer()
     test_LabelBinarizer()
     test_LabelEncoder()

@@ -7,19 +7,41 @@ All rights reserved
 """
 
 import logging
-from abc import ABC
+from abc import ABC, abstractmethod
 
 import numpy as np
 
 import pandas as pd
+
+import scipy
 
 from sklearn import preprocessing
 from sklearn.compose import ColumnTransformer
 
 logger = logging.getLogger(__name__)
 
-
 class Transformer(ABC):
+
+    def __init__(self, input_col=None, **kwargs):
+        self.transformer = None
+        self.input_col = input_col
+
+    @abstractmethod
+    def fit(self, X, y=None):
+        pass
+
+    @abstractmethod
+    def transform(self, X):
+        pass
+
+    def fit_transform(self, X, y=None):
+        """Call fit and then transform"""
+        self.fit(X, y)
+        return self.transform(X)
+
+
+class Transformer_1_to_1(ABC):
+    """Standart transformer with 1 to 1 column mappings"""
 
     def __init__(self, input_col=None, **kwargs):
         self.transformer = None
@@ -44,9 +66,17 @@ class Transformer(ABC):
         # drop columns
         if self.input_col is not None:
             X_t = ColumnTransformer([('', self.transformer, self.input_col)], remainder='drop').fit_transform(X)
+            # TODO: check for sparse encoding arrays
+            # TODO: move to fucntion below
+            if isinstance(X_t, scipy.sparse.csr.csr_matrix):
+                X_t = X_t.toarray()
+
             X[self.input_col] = X_t
         else:
             X_t = self.transformer.fit_transform(X)
+            if isinstance(X_t, scipy.sparse.csr.csr_matrix):
+                X_t = X_t.toarray()
+
             if self.col_names is not None:
                 X = pd.DataFrame(X_t, columns=self.col_names)
             else:
@@ -61,6 +91,8 @@ class Transformer(ABC):
             self.col_names = None
         X_t = self.transformer.transform(X)
         if self.input_col is not None:
+            # TODO: check for sparse encoding arrays
+            # TODO: call the private helper function
             X[self.input_col] = X_t
         elif self.col_names is not None:
             X = pd.DataFrame(X_t, columns=self.col_names)
@@ -68,15 +100,88 @@ class Transformer(ABC):
             X = X_t
         return X
 
+    def _update_X_pandas(X, X_t, input_col):
+        """Takes the input pd.DataFrame and updates the input columns of the DataFrame with the
+        new values after the transformation. If the mapping of the columns (X_t) are not 1:1 the
+        original columns are dropped and new columns added with names generated.
+        """
+        pass
 
-class StandardScaler(Transformer):
+
+class Transformer_1_to_N(Transformer):
+    """Transformer with 1 to N column mappings (e.g. One-Hot-Encoding).
+    The mapping if performed column wise so the N new columns can be named an track accordingly.
+    A many to many mapping is not possible with this type of transformer
+    """
+
+    @abstractmethod
+    def _get_column_names(self, transformer, c_name):
+        """Specific to each transformer mapping. Gets names of the resulting Xt columns."""
+        pass
+
+    @abstractmethod
+    def _setup_transformer(self):
+        """"Sets up transformers with the given params for columnwise transformation if the given data"""
+        pass
+
+    def fit(self, X, y=None):
+        """ Sets up a separate transformer for every column in the DataFrame.
+        Args:
+            X: pandas DataFrame
+            y: None, ignored here. Only for compatability with pipeline
+        Retruns:
+            self
+        """
+        # TODO add functionality for numpy array
+        if type(X) != pd.DataFrame:
+            raise TypeError(f"X should be of type dataframe, not {type(X)}")
+
+        self.transformers_c = []
+        self.column_names_ = []
+
+        for c in X.columns:
+            transformer = self._setup_transformer()
+            self.transformers_c.append(transformer.fit(X.loc[:, [c]]))
+            self.column_names_.append(self._get_column_names(transformer, c))
+
+        return self
+
+    def transform(self, X):
+        """Transform X using the transformers per column
+
+        Args:
+            X: Dataframe that is to be one hot encoded
+
+        Returns:
+            Dataframe Xt
+
+        """
+        # TODO add functionality for numpy array
+        if type(X) != pd.DataFrame:
+            raise TypeError(f"X should be of type dataframe, not {type(X)}")
+
+        all_df = []
+
+        for i, c in enumerate(X.columns):
+            transformer = self.transformers_c[i]
+
+            transformed_col = transformer.transform(X.loc[:, [c]])
+            if isinstance(transformed_col, scipy.sparse.csr.csr_matrix):
+                transformed_col = transformed_col.toarray()
+            df_col = pd.DataFrame(transformed_col, columns=self.column_names_[i])
+            all_df.append(df_col)
+
+        return pd.concat(all_df, axis=1)
+
+
+class StandardScaler(Transformer_1_to_1):
 
     def __init__(self, *, copy=True, with_mean=True, with_std=True, **kwargs):
         super().__init__(**kwargs)
         self.transformer = preprocessing.StandardScaler(copy=copy, with_mean=with_mean, with_std=with_std)
 
 
-class OrdinalEncoder(Transformer):
+class OrdinalEncoder(Transformer_1_to_1):
 
     def __init__(self, *, categories='auto', dtype=np.float64, handle_unknown='error', unknown_value=None,
                  **kwargs):
@@ -85,14 +190,14 @@ class OrdinalEncoder(Transformer):
                                                         unknown_value=unknown_value)
 
 
-class Binarizer(Transformer):
+class Binarizer(Transformer_1_to_1):
 
     def __init__(self, *, threshold=0.0, copy=True, **kwargs):
         super().__init__(**kwargs)
         self.transformer = preprocessing.Binarizer(threshold=threshold, copy=copy)
 
 
-class FunctionTransformer(Transformer):
+class FunctionTransformer(Transformer_1_to_1):
 
     def __init__(self, func=None, inverse_func=None, *, validate=False, accept_sparse=False, check_inverse=True, kw_args=None,
                  inv_kw_args=None, **kwargs):
@@ -101,84 +206,131 @@ class FunctionTransformer(Transformer):
                                                              check_inverse=check_inverse, kw_args=kw_args, inv_kw_args=inv_kw_args)
 
 
-class KBinsDiscretizer(Transformer):
+class KBinsDiscretizer(Transformer_1_to_N):
 
     def __init__(self, n_bins=5, *, encode='onehot', strategy='quantile', dtype=None, **kwargs):
         super().__init__(**kwargs)
-        self.transformer = preprocessing.KBinsDiscretizer(n_bins=n_bins, encode=encode, strategy=strategy, dtype=dtype)
+        self.n_bins = n_bins
+        self.encode = encode
+        self.strategy = strategy
+        self.dtype = dtype
+        self.transformer = self._setup_transformer()
+
+    def _setup_transformer(self):
+        return preprocessing.KBinsDiscretizer(n_bins=self.n_bins, encode=self.encode, strategy=self.strategy, dtype=self.dtype)
+
+    def _get_column_names(self, transformer, c_name):
+        """Specific to this transformer mapping. Gets names of the resulting Xt columns."""
+        col_names = []
+        for i in range(transformer.n_bins_[0]):
+            col_names.append(f"{c_name}_bin_{i}")
+
+        return col_names
 
 
-class KernelCenterer(Transformer):
+class KernelCenterer(Transformer_1_to_1):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.transformer = preprocessing.KernelCenterer()
 
 
-class LabelBinarizer(Transformer):
+class LabelBinarizer(Transformer_1_to_1):
 
     def __init__(self, *, neg_label=0, pos_label=1, sparse_output=False, **kwargs):
         super().__init__(**kwargs)
         self.transformer = preprocessing.LabelBinarizer(neg_label=neg_label, pos_label=pos_label, sparse_output=sparse_output)
 
 
-class LabelEncoder(Transformer):
+class LabelEncoder(Transformer_1_to_1):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.transformer = preprocessing.LabelEncoder()
 
 
-class MultiLabelBinarizer(Transformer):
+class MultiLabelBinarizer(Transformer_1_to_1):
 
     def __init__(self, *, classes=None, sparse_output=False, **kwargs):
         super().__init__(**kwargs)
         self.transformer = preprocessing.MultiLabelBinarizer(classes=classes, sparse_output=sparse_output)
 
 
-class MaxAbsScaler(Transformer):
+class MaxAbsScaler(Transformer_1_to_1):
 
     def __init__(self, *, copy=True, **kwargs):
         super().__init__(**kwargs)
         self.transformer = preprocessing.MaxAbsScaler(copy=copy)
 
 
-class MinMaxScaler(Transformer):
+class MinMaxScaler(Transformer_1_to_1):
 
     def __init__(self, feature_range=(0, 1), *, copy=True, clip=False, **kwargs):
         super().__init__(**kwargs)
         self.transformer = preprocessing.MinMaxScaler(feature_range=feature_range, copy=copy, clip=clip)
 
 
-class Normalizer(Transformer):
+class Normalizer(Transformer_1_to_1):
 
     def __init__(self, norm='l2', *, copy=True, **kwargs):
         super().__init__(**kwargs)
         self.transformer = preprocessing.Normalizer(norm=norm, copy=copy)
 
 
-class OneHotEncoder(Transformer):
+class OneHotEncoder(Transformer_1_to_N):
 
     def __init__(self, *, categories='auto', drop=None, sparse=True, dtype=np.float64, handle_unknown='error', **kwargs):
         super().__init__(**kwargs)
-        self.transformer = preprocessing.OneHotEncoder(categories=categories, drop=drop, sparse=sparse, dtype=dtype)
+        self.categories = categories
+        self.drop = drop
+        self.sparse = sparse
+        self.dtype = dtype
+        self.handle_unknown = handle_unknown
+        self.transformer = self._setup_transformer()
+
+    def _setup_transformer(self):
+        return preprocessing.OneHotEncoder(categories=self.categories, drop=self.drop, sparse=self.sparse, dtype=self.dtype)
+
+    def _get_column_names(self, transformer, c_name):
+        """Specific to this transformer mapping. Gets names of the resulting Xt columns."""
+        col_names = []
+        for i in transformer.get_feature_names():
+            col_names.append(f"{c_name}_{i.replace('x0_', '')}")
+
+        return col_names
 
 
-class PolynomialFeatures(Transformer):
-
+class PolynomialFeatures(Transformer_1_to_N):
+    """Take note is 1 to N mapping does not allows for interaction of the features."""
+    # TODO: add k to N transformer and change here
     def __init__(self, degree=2, *, interaction_only=False, include_bias=True, order='C', **kwargs):
         super().__init__(**kwargs)
-        self.transformer = preprocessing.PolynomialFeatures(degree=degree, interaction_only=interaction_only, include_bias=include_bias, order=order)
+        self.degree = degree
+        self.interaction_only = interaction_only
+        self.include_bias = include_bias
+        self.order = order
+        self.transformer = self._setup_transformer()
+
+    def _setup_transformer(self):
+        return preprocessing.PolynomialFeatures(degree=self.degree, interaction_only=self.interaction_only, include_bias=self.include_bias, order=self.order)
+
+    def _get_column_names(self, transformer, c_name):
+        """Specific to this transformer mapping. Gets names of the resulting Xt columns."""
+        col_names = []
+        for i in range(transformer.n_output_features_):
+            col_names.append(f"{c_name}_poly_{i}")
+
+        return col_names
 
 
-class PowerTransformer(Transformer):
+class PowerTransformer(Transformer_1_to_1):
 
     def __init__(self, method='yeo-johnson', *, standardize=True, copy=True, **kwargs):
         super().__init__(**kwargs)
         self.transformer = preprocessing.PowerTransformer(method=method, standardize=standardize, copy=copy)
 
 
-class QuantileTransformer(Transformer):
+class QuantileTransformer(Transformer_1_to_1):
 
     def __init__(self, *, n_quantiles=1000, output_distribution='uniform', ignore_implicit_zeros=False, subsample=100000, random_state=None, copy=True,
                  **kwargs):
@@ -188,7 +340,7 @@ class QuantileTransformer(Transformer):
                                                              copy=copy)
 
 
-class RobustScaler(Transformer):
+class RobustScaler(Transformer_1_to_1):
 
     def __init__(self, * , with_centering=True, with_scaling=True, quantile_range=(25.0, 75.0) , copy=True, unit_variance=False, **kwargs):
         super().__init__(**kwargs)
