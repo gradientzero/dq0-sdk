@@ -105,24 +105,23 @@ def test_FunctionTransformer():
 
 
 def test_KBinsDiscretizer_001():
-    print("\ntest_KBinsDiscretizer")
+    print("\ntest_KBinsDiscretizer_001")
     X, y = get_data_pandas()
     trans = transformer.KBinsDiscretizer(n_bins=5)
     X = trans.fit_transform(X)
     print(X)
 
-    # assert X[0, 0] == 1
+    assert X.iloc[0]['a_bin_0'] == 1.0
 
 
-# TODO this currently fails. Add support for numpy array
 def test_KBinsDiscretizer_002():
-    print("\ntest_KBinsDiscretizer")
+    print("\ntest_KBinsDiscretizer_002")
     X, y = get_data_int()
     trans = transformer.KBinsDiscretizer(n_bins=5)
     X = trans.fit_transform(X)
     print(X)
 
-    # assert X[0, 0] == 1
+    assert X[0, 0] == 1
 
 
 def test_KernelCenterer():
@@ -132,7 +131,7 @@ def test_KernelCenterer():
     trans = transformer.KernelCenterer()
     X = trans.fit_transform(X)
     print(X)
-    # assert X[0, 0] == 1
+    assert X.iloc[0]['c'] == 0.0
 
 
 def test_LabelBinarizer():
@@ -141,7 +140,7 @@ def test_LabelBinarizer():
     trans = transformer.LabelBinarizer()
     y = trans.fit_transform(y)
     print(y)
-    # assert X[0, 0] == 1
+    assert X.iloc[0]['a'] == 1
 
 
 def test_LabelEncoder():
@@ -149,8 +148,8 @@ def test_LabelEncoder():
     X, y = get_data_pandas()
     trans = transformer.LabelEncoder()
     y = trans.fit_transform(y)
-    print(X)
-    # assert X[0, 0] == 1
+    print(y)
+    assert y[0] == 0
 
 
 def test_MultiLabelBinarizer():
@@ -159,7 +158,7 @@ def test_MultiLabelBinarizer():
     trans = transformer.MultiLabelBinarizer()
     X = trans.fit_transform(X)
     print(X)
-    # assert X[0, 0] == 1
+    assert X.iloc[0]['a'] == 1
 
 
 def test_MaxAbsScaler():
@@ -168,7 +167,7 @@ def test_MaxAbsScaler():
     trans = transformer.MaxAbsScaler()
     X = trans.fit_transform(X)
     print(X)
-    # assert X[0, 0] == 1
+    assert X.iloc[3]['a'] == 1
 
 
 def test_MinMaxScaler():
@@ -177,7 +176,7 @@ def test_MinMaxScaler():
     trans = transformer.MinMaxScaler()
     X = trans.fit_transform(X)
     print(X)
-    # assert X[0, 0] == 1
+    assert X.iloc[3]['a'] == 1
 
 
 def test_Normalizer():
@@ -186,7 +185,7 @@ def test_Normalizer():
     trans = transformer.Normalizer()
     X = trans.fit_transform(X)
     print(X)
-    # assert X[0, 0] == 1
+    assert np.round(X.iloc[0]['a'], 5) == 0.26726
 
 
 def test_OneHotEncoder_001():
@@ -195,7 +194,7 @@ def test_OneHotEncoder_001():
     trans = transformer.OneHotEncoder()
     X = trans.fit_transform(X)
     print(X)
-    # assert X[0, 0] == 1
+    assert X.iloc[0]['a_1'] == 1
 
 
 def test_OneHotEncoder_002():
@@ -204,7 +203,8 @@ def test_OneHotEncoder_002():
     trans = transformer.OneHotEncoder(input_col=['a', 'b'])
     X = trans.fit_transform(X)
     print(X)
-    # assert X[0, 0] == 1
+    # column c should not be transformed
+    assert X.iloc[0]['c'] == 3
 
 
 def test_PolynomialFeatures():
@@ -213,7 +213,7 @@ def test_PolynomialFeatures():
     trans = transformer.PolynomialFeatures()
     X = trans.fit_transform(X)
     print(X)
-    # assert X[0, 0] == 1
+    assert X.iloc[3]['a_poly_2'] == 100
 
 
 def test_PowerTransformer():
@@ -222,7 +222,7 @@ def test_PowerTransformer():
     trans = transformer.PowerTransformer()
     X = trans.fit_transform(X)
     print(X)
-    # assert X[0, 0] == 1
+    assert np.round(X.iloc[0]['a'], 5) == -1.42438
 
 
 def test_QuantileTransformer():
@@ -231,7 +231,7 @@ def test_QuantileTransformer():
     trans = transformer.QuantileTransformer()
     X = trans.fit_transform(X)
     print(X)
-    # assert X[0, 0] == 1
+    assert X.iloc[0]['a'] == 0
 
 
 def test_RobustScaler():
@@ -240,7 +240,7 @@ def test_RobustScaler():
     trans = transformer.RobustScaler()
     X = trans.fit_transform(X)
     print(X)
-    # assert X[0, 0] == 1
+    assert X.iloc[0]['a'] == -1
 
 
 if __name__ == '__main__':
@@ -253,7 +253,7 @@ if __name__ == '__main__':
     test_Binarizer()
     test_FunctionTransformer()
     test_KBinsDiscretizer_001()
-    # test_KBinsDiscretizer_002()
+    test_KBinsDiscretizer_002()
     test_KernelCenterer()
     test_LabelBinarizer()
     test_LabelEncoder()

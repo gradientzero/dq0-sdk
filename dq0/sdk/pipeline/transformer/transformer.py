@@ -125,22 +125,23 @@ class Transformer_1_to_N(Transformer):
         Retruns:
             self
         """
-        # TODO add functionality for numpy array
-        if type(X) != pd.DataFrame:
-            raise TypeError(f"X should be of type dataframe, not {type(X)}")
+        if type(X) == pd.DataFrame:
 
-        self.transformers_c = []
-        self.column_names_ = []
+            self.transformers_c = []
+            self.column_names_ = []
 
-        if self.input_col is not None:
-            col_process = self.input_col
+            if self.input_col is not None:
+                col_process = self.input_col
+            else:
+                col_process = X.columns
+
+            for c in col_process:
+                transformer = self._setup_transformer()
+                self.transformers_c.append(transformer.fit(X.loc[:, [c]]))
+                self.column_names_.append(self._get_column_names(transformer, c))
         else:
-            col_process = X.columns
-
-        for c in col_process:
             transformer = self._setup_transformer()
-            self.transformers_c.append(transformer.fit(X.loc[:, [c]]))
-            self.column_names_.append(self._get_column_names(transformer, c))
+            self.transformer = transformer.fit(X)
 
         return self
 
@@ -154,27 +155,29 @@ class Transformer_1_to_N(Transformer):
             Dataframe Xt
 
         """
-        # TODO add functionality for numpy array
-        if type(X) != pd.DataFrame:
-            raise TypeError(f"X should be of type dataframe, not {type(X)}")
+        if type(X) == pd.DataFrame:
 
-        all_df = []
+            all_df = []
 
-        if self.input_col is not None:
-            col_process = self.input_col
+            if self.input_col is not None:
+                col_process = self.input_col
+            else:
+                col_process = X.columns
+
+            for i, c in enumerate(col_process):
+                transformer = self.transformers_c[i]
+
+                transformed_col = transformer.transform(X.loc[:, [c]])
+                if isinstance(transformed_col, scipy.sparse.csr.csr_matrix):
+                    transformed_col = transformed_col.toarray()
+                df_col = pd.DataFrame(transformed_col, columns=self.column_names_[i])
+                all_df.append(df_col)
+            return pd.concat(all_df, axis=1)
         else:
-            col_process = X.columns
-
-        for i, c in enumerate(col_process):
-            transformer = self.transformers_c[i]
-
-            transformed_col = transformer.transform(X.loc[:, [c]])
-            if isinstance(transformed_col, scipy.sparse.csr.csr_matrix):
-                transformed_col = transformed_col.toarray()
-            df_col = pd.DataFrame(transformed_col, columns=self.column_names_[i])
-            all_df.append(df_col)
-
-        return pd.concat(all_df, axis=1)
+            X_t = self.transformer.transform(X)
+            if isinstance(X_t, scipy.sparse.csr.csr_matrix):
+                X_t = X_t.toarray()
+            return X_t
 
 
 class StandardScaler(Transformer_1_to_1):
