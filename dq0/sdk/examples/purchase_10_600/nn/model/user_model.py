@@ -23,6 +23,12 @@ import logging
 
 from dq0.sdk.models.tf import NeuralNetworkClassification
 
+import numpy as np
+
+import pandas as pd
+
+import tensorflow.compat.v1 as tf
+
 logger = logging.getLogger(__name__)
 
 
@@ -58,14 +64,16 @@ class UserModel(NeuralNetworkClassification):
         # read the data via the attached input data source
         dataset = self.data_source.read()
 
-        # do the train test split
+        X = dataset.iloc[:, :-1]
+        y = dataset.iloc[:, -1]
+        
         X_train_df, X_test_df, y_train_ts, y_test_ts = \
-            (dataset.iloc[:10000, :-1],
-            dataset.iloc[10000:, :-1],
-            dataset.iloc[:10000, -1],
-            dataset.iloc[10000:, -1],
+            (X.iloc[:10000, :],
+            X.iloc[10000:, :],
+            y.iloc[:10000],
+            y.iloc[10000:,],
             )
-
+        
         # set data attributes
         self.X_train = X_train_df
         self.X_test = X_test_df
@@ -75,20 +83,20 @@ class UserModel(NeuralNetworkClassification):
         logger.info('{}, {}'.format(self.X_train.shape, self.X_test.shape))
 
         self.input_dim = self.X_train.shape[1]
-        self.output_dim = len(self.y_train.unique())
+        self.output_dim = 10  # len(np.unique(self.y_train))
 
     def setup_model(self, **kwargs):
         """Setup model function
 
         Define the model here.
         """
-        import tensorflow.compat.v1 as tf
-
+        
         self.model = tf.keras.Sequential([
             tf.keras.layers.Input(self.input_dim),
             tf.keras.layers.Dense(128, activation='tanh'),
             tf.keras.layers.Dense(self.output_dim, activation='softmax')])
         self.optimizer = 'Adam'
+        self.loss = tf.keras.losses.SparseCategoricalCrossentropy()
         # To set optimizer params, self.optimizer = optimizer instance
         # rather than string, with params values passed as input to the class
         # constructor. E.g.:
@@ -100,5 +108,5 @@ class UserModel(NeuralNetworkClassification):
         self.epochs = 100
         self.batch_size = 100
         self.metrics = ['accuracy']
-        self.loss = tf.keras.losses.SparseCategoricalCrossentropy()
+        
         # As an alternative, define the loss function with a string

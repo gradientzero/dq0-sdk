@@ -34,6 +34,7 @@ All rights reserved
 import copy
 import logging
 
+from dq0.mod_utils.error import fatal_error
 from dq0.sdk.data.utils import util
 from dq0.sdk.models.model import Model
 
@@ -167,7 +168,7 @@ class NeuralNetwork(Model):
         Model fit function learning a model from training data
         """
         if self.model is None:
-            logger.fatal('No TensorFlow model provided!')
+            fatal_error('No TensorFlow model provided!', logger=logger)
 
         self.model.compile(optimizer=self.optimizer,
                            loss=self.loss,
@@ -205,24 +206,19 @@ class NeuralNetwork(Model):
         """
 
         if self.model is None:
-            logger.fatal('No  TensorFlow model provided!')
+            fatal_error('No  TensorFlow model provided!', logger=logger)
 
         # Check for valid model setup
         if not test_data and not hasattr(self, 'X_train'):
-            logger.fatal('Missing argument in model: X_train')
-            return
+            fatal_error('Missing argument in model: X_train', logger=logger)
         if not test_data and not hasattr(self, 'y_train'):
-            logger.fatal('Missing argument in model: y_train')
-            return
+            fatal_error('Missing argument in model: y_train', logger=logger)
         if test_data and not hasattr(self, 'X_test'):
-            logger.fatal('Missing argument in model: X_test')
-            return
+            fatal_error('Missing argument in model: X_test', logger=logger)
         if test_data and not hasattr(self, 'y_test'):
-            logger.fatal('Missing argument in model: y_test')
-            return
+            fatal_error('Missing argument in model: y_test', logger=logger)
         if not hasattr(self, 'batch_size'):
-            logger.fatal('Missing argument in model: batch_size')
-            return
+            fatal_error('Missing argument in model: batch_size', logger=logger)
 
         # work on deep copy of data because
         # "fix_limitation_of_Keras_fit_and_predict_functions" modifies the

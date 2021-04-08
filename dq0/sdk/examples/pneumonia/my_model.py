@@ -7,20 +7,13 @@ All rights reserved
 
 import logging
 
-from dq0.sdk.data.utils import util
+from dq0.mod_utils.error import fatal_error
 from dq0.sdk.models.tf import NeuralNetworkClassification
 
-import numpy as np
-
-import pandas as pd
-
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder
-
 import tensorflow as tf
-import tensorflow_hub as hub
 
 logger = logging.getLogger('dq0.' + __name__)
+
 
 class UserModel(NeuralNetworkClassification):
     """CNN with pre-training"""
@@ -36,8 +29,8 @@ class UserModel(NeuralNetworkClassification):
 
         """Set up data function"""
         if self.data_source is None:
-            logger.error('No data source found')
-            return 1
+            fatal_error('No data source found', logger=logger)
+
         logger.debug('Start Loading data')
         data = self.data_source.read()
         logger.debug('data.shape: {}'.format(data.shape))
@@ -49,8 +42,8 @@ class UserModel(NeuralNetworkClassification):
         self.X_test = (df_test.drop(['split', 'label'], axis=1).values)
         self.y_test = ((df_test['label'] == 'pneumonial') * 1.).values.reshape(-1, 1)
         lb = OneHotEncoder()
-        self.y_train  = lb.fit_transform(self.y_train).toarray()
-        self.y_test  = lb.transform(self.y_test).toarray()
+        self.y_train = lb.fit_transform(self.y_train).toarray()
+        self.y_test = lb.transform(self.y_test).toarray()
 
         logger.debug("X_train.shape: {}".format(self.X_train.shape))
         logger.debug("X_test.shape: {}".format(self.X_test.shape))
@@ -87,14 +80,14 @@ class UserModel(NeuralNetworkClassification):
     def evaluate(self, test_data=True, verbose=0):
         from sklearn.metrics import confusion_matrix
         results = super().evaluate(test_data, verbose)
-        
+
         if test_data:
             yhat = self.predict(self.X_test).argmax(axis=1)
             cm = confusion_matrix(self.y_test.argmax(axis=1), yhat)
         else:
             yhat = self.predict(self.X_train).argmax(axis=1)
             cm = confusion_matrix(self.y_test.argmax(axis=1), yhat)
-            
+
         results['cm'] = cm
         # add comment
         return results

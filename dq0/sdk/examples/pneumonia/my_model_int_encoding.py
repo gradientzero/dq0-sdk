@@ -7,20 +7,14 @@ All rights reserved
 
 import logging
 
-from dq0.sdk.data.utils import util
+from dq0.mod_utils.error import fatal_error
 from dq0.sdk.models.tf import NeuralNetworkClassification
 
-import numpy as np
-
-import pandas as pd
-
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder
-
 import tensorflow as tf
-import tensorflow_hub as hub
+
 
 logger = logging.getLogger('dq0.' + __name__)
+
 
 class UserModel(NeuralNetworkClassification):
     """CNN with pre-training"""
@@ -32,28 +26,28 @@ class UserModel(NeuralNetworkClassification):
         logger.debug('Init user model done')
 
     def setup_data(self, **kwargs):
-        from sklearn.preprocessing import OneHotEncoder
+        # from sklearn.preprocessing import OneHotEncoder
 
         """Set up data function"""
         if self.data_source is None:
-            logger.error('No data source found')
-            return 1
+            fatal_error('No data source found', logger=logger)
+
         logger.debug('Start Loading data')
         data = self.data_source.read()
         logger.debug('data.shape: {}'.format(data.shape))
         df_train = data[data['split'] == 'train']
         df_test = data[data['split'] == 'test']
         self.X_train = df_train.drop(['split', 'label'], axis=1).values
-        self.y_train = ((df_train['label'] == 'pneumonial') * 1.).values#.reshape(-1, 1)
+        self.y_train = ((df_train['label'] == 'pneumonial') * 1.).values  # .reshape(-1, 1)
         logger.debug('self.X_train.shape: {}'.format(self.X_train.shape))
         self.X_test = (df_test.drop(['split', 'label'], axis=1).values)
-        self.y_test = ((df_test['label'] == 'pneumonial') * 1.).values#.reshape(-1, 1)
-        #lb = OneHotEncoder()
-        #self.y_train  = lb.fit_transform(self.y_train).toarray()
-        #self.y_test  = lb.transform(self.y_test).toarray()
+        self.y_test = ((df_test['label'] == 'pneumonial') * 1.).values  # .reshape(-1, 1)
+        # lb = OneHotEncoder()
+        # self.y_train  = lb.fit_transform(self.y_train).toarray()
+        # self.y_test  = lb.transform(self.y_test).toarray()
         # for the model checker only; int encoding
-        #self.y_train = np.argmax(self.y_train, axis=1)
-        #self.y_test = np.argmax(self.y_test, axis=1)
+        # self.y_train = np.argmax(self.y_train, axis=1)
+        # self.y_test = np.argmax(self.y_test, axis=1)
 
         logger.debug("X_train.shape: {}".format(self.X_train.shape))
         logger.debug("X_test.shape: {}".format(self.X_test.shape))

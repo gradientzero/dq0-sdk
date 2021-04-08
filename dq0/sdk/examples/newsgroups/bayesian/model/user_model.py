@@ -7,6 +7,7 @@ All rights reserved
 
 import logging
 
+from dq0.mod_utils.error import fatal_error
 from dq0.sdk.data.preprocessing import preprocessing
 from dq0.sdk.data.utils import util
 from dq0.sdk.models.bayes.naive_bayesian_model import NaiveBayesianModel
@@ -69,8 +70,7 @@ class UserModel(NaiveBayesianModel):
 
         # get the input dataset
         if self.data_source is None:
-            logger.error('No data source found')
-            return
+            fatal_error('No data source found', logger=logger)
 
         dataset_df = self.data_source.read()
 
