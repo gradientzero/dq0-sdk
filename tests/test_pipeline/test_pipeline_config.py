@@ -11,6 +11,7 @@ from dq0.sdk.pipeline.pipeline_config import PipelineConfig # noqa
 from dq0.sdk.pipeline import pipeline # noqa
 import numpy as np # noqa
 import os # noqa
+import yaml
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +23,7 @@ def get_data_int():
     return X, y_int
 
 
-def test_pipeline_config_read():
+def test_pipeline_config_read_001():
     dir_path = os.path.dirname(os.path.realpath(__file__))
     pp_config = PipelineConfig(config_path=os.path.join(dir_path, 'pipeline_config.yaml'))
     steps = pp_config.get_steps_from_config()
@@ -37,4 +38,4 @@ def test_pipeline_config_read():
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
-    test_pipeline_config_read()
+    test_pipeline_config_read_001()

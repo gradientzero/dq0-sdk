@@ -1,0 +1,6 @@
+pipeline:
+  # unique names
+  -
+    LabelEncoder1:
+      class : 'LabelEncoder'
+      input_col : ['label']

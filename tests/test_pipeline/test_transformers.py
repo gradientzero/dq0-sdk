@@ -137,28 +137,28 @@ def test_KernelCenterer():
 def test_LabelBinarizer():
     print("\ntest_LabelBinarizer")
     X, y = get_data_pandas()
-    trans = transformer.LabelBinarizer()
-    y = trans.fit_transform(y)
-    print(y)
-    assert X.iloc[0]['a'] == 1
+    trans = transformer.LabelBinarizer(input_col=['a'])
+    X = trans.fit_transform(X)
+    print(X)
+    assert X.iloc[0]['a_label_1'] == 1
 
 
 def test_LabelEncoder():
     print("\ntest_LabelEncoder")
     X, y = get_data_pandas()
-    trans = transformer.LabelEncoder()
-    y = trans.fit_transform(y)
-    print(y)
-    assert y[0] == 0
+    trans = transformer.LabelEncoder(input_col=['a'])
+    X = trans.fit_transform(X)
+    print(X)
+    assert X.iloc[0]['a'] == 0
 
 
 def test_MultiLabelBinarizer():
     print("\ntest_MultiLabelBinarizer")
     X, y = get_data_pandas()
-    trans = transformer.MultiLabelBinarizer()
+    trans = transformer.MultiLabelBinarizer(input_col=['a', 'b'])
     X = trans.fit_transform(X)
     print(X)
-    assert X.iloc[0]['a'] == 1
+    assert X.iloc[0]['a_label_a'] == 1
 
 
 def test_MaxAbsScaler():
@@ -243,6 +243,24 @@ def test_RobustScaler():
     assert X.iloc[0]['a'] == -1
 
 
+def test_ColumnSelector_001():
+    print("\ntest_ColumnSelector_001")
+    X, y = get_data_pandas()  # test with pd.DataFrame
+    trans = transformer.ColumnSelector(selected_columns=['a'])
+    X = trans.fit_transform(X)
+    print(X)
+    assert X.iloc[0]['a'] == 1.
+
+
+def test_ColumnSelector_002():
+    print("\ntest_ColumnSelector_002")
+    X, y = get_data_int()  # test with numpy.array
+    trans = transformer.ColumnSelector(selected_columns=[0])
+    X = trans.fit_transform(X)
+    print(X)
+    assert X[0, 0] == 1.
+
+
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
     test_StandardScaler_001()
@@ -267,3 +285,5 @@ if __name__ == '__main__':
     test_PowerTransformer()
     test_QuantileTransformer()
     test_RobustScaler()
+    test_ColumnSelector_001()
+    test_ColumnSelector_002()

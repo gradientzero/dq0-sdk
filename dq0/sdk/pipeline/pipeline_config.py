@@ -47,9 +47,11 @@ class PipelineConfig:
         """Goes though the list pipeline of the config and sets ups the setps list of tuples to initialize the pipeline with."""
         pipeline_config = self.config['pipeline']
         self.steps = []
-        for key in pipeline_config:
-            target_class = pipeline_config[key]['class']
-            params = pipeline_config[key]
+        for pipeline_config_step in pipeline_config:
+            print('pipeline_config_step', pipeline_config_step)
+            key = list(pipeline_config_step.keys())[0]
+            target_class = pipeline_config_step[key]['class']
+            params = pipeline_config_step[key]
             # Try loading the class given the name in the pipeline and initialize with the params
             try:
                 spec = importlib.util.spec_from_file_location(name=target_class,

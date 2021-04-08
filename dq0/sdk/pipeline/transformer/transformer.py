@@ -18,6 +18,8 @@ import scipy
 from sklearn import preprocessing
 from sklearn.compose import ColumnTransformer
 
+from dq0.mod_utils import error
+
 logger = logging.getLogger(__name__)
 
 
@@ -51,11 +53,10 @@ class Transformer_1_to_1(ABC):
         self.input_col = input_col
 
     def fit(self, X, y=None):
-        # If input_col is given only those will be processed, by wrapping it into a ColumnTransformer.
-        # The remaining columns are passeed through
+        # If input_col is given only those will be processed.
         # keep pandas column names after transformation
         if self.input_col is not None:
-            self.transformer = ColumnTransformer([('', self.transformer, self.input_col)], remainder='drop').fit(X)
+            self.transformer = self.transformer.fit(X[self.input_col])
         else:
             self.transformer = self.transformer.fit(X)
         return self
@@ -69,16 +70,28 @@ class Transformer_1_to_1(ABC):
             self.col_names = X.columns
         else:
             self.col_names = None
-        X_t = self.transformer.transform(X)
-        # check and convert sparse encoding arrays
-        if isinstance(X_t, scipy.sparse.csr.csr_matrix):
-            X_t = X_t.toarray()
         # case ColumnTransformer
         if self.input_col is not None:
+            X_t = self.transformer.transform(X[self.input_col])
+            # check and convert sparse encoding arrays
+            if isinstance(X_t, scipy.sparse.csr.csr_matrix):
+                X_t = X_t.toarray()
+            # some transformers return flat shapes
+            if X_t.ndim == 1:
+                X_t = X_t.reshape(-1, 1)
             X[self.input_col] = X_t
+
         elif self.col_names is not None:
+            X_t = self.transformer.transform(X)
+            # check and convert sparse encoding arrays
+            if isinstance(X_t, scipy.sparse.csr.csr_matrix):
+                X_t = X_t.toarray()
             X = pd.DataFrame(X_t, columns=self.col_names)
         else:  # numpy array
+            X_t = self.transformer.transform(X)
+            # check and convert sparse encoding arrays
+            if isinstance(X_t, scipy.sparse.csr.csr_matrix):
+                X_t = X_t.toarray()
             X = X_t
         return X
 
@@ -241,11 +254,25 @@ class KernelCenterer(Transformer_1_to_1):
         self.transformer = preprocessing.KernelCenterer()
 
 
-class LabelBinarizer(Transformer_1_to_1):
+class LabelBinarizer(Transformer_1_to_N):
 
     def __init__(self, *, neg_label=0, pos_label=1, sparse_output=False, **kwargs):
         super().__init__(**kwargs)
-        self.transformer = preprocessing.LabelBinarizer(neg_label=neg_label, pos_label=pos_label, sparse_output=sparse_output)
+        self.neg_label = neg_label
+        self.pos_label = pos_label
+        self.sparse_output = sparse_output
+        self.transformer = self._setup_transformer()
+
+    def _setup_transformer(self):
+        return preprocessing.LabelBinarizer(neg_label=self.neg_label, pos_label=self.pos_label, sparse_output=self.sparse_output)
+
+    def _get_column_names(self, transformer, c_name):
+        """Specific to this transformer mapping. Gets names of the resulting Xt columns."""
+        col_names = []
+        for i in transformer.classes_:
+            col_names.append(f"{c_name}_label_{i}")
+
+        return col_names
 
 
 class LabelEncoder(Transformer_1_to_1):
@@ -255,11 +282,24 @@ class LabelEncoder(Transformer_1_to_1):
         self.transformer = preprocessing.LabelEncoder()
 
 
-class MultiLabelBinarizer(Transformer_1_to_1):
+class MultiLabelBinarizer(Transformer_1_to_N):
 
     def __init__(self, *, classes=None, sparse_output=False, **kwargs):
         super().__init__(**kwargs)
-        self.transformer = preprocessing.MultiLabelBinarizer(classes=classes, sparse_output=sparse_output)
+        self.classes = classes
+        self.sparse_output = sparse_output
+        self.transformer = self._setup_transformer()
+
+    def _setup_transformer(self):
+        return preprocessing.MultiLabelBinarizer(classes=self.classes, sparse_output=self.sparse_output)
+
+    def _get_column_names(self, transformer, c_name):
+        """Specific to this transformer mapping. Gets names of the resulting Xt columns."""
+        col_names = []
+        for i in transformer.classes_:
+            col_names.append(f"{c_name}_label_{i}")
+
+        return col_names
 
 
 class MaxAbsScaler(Transformer_1_to_1):
@@ -352,3 +392,28 @@ class RobustScaler(Transformer_1_to_1):
         super().__init__(**kwargs)
         self.transformer = preprocessing.RobustScaler(with_centering=with_centering, with_scaling=with_scaling, quantile_range=quantile_range,
                                                       copy=copy, unit_variance=unit_variance)
+
+
+# ####################
+# Utility Transformers
+# ####################
+
+class ColumnSelector(Transformer):
+    """Utility transformer to select specif columns of the DataFrame and drop the rest."""
+
+    def __init__(self, selected_columns):
+        """Only the selected Columns will be passed on.
+        Args:
+            selected_columns: list of columns names (for pandas.DataFrame) or list of indexes for numpy array.
+        """
+        self.selected_columns = selected_columns
+
+    def fit(self, X, y=None):
+        """Nothing happens during fit. This is here for compatability with the pipline interface."""
+        pass
+
+    def transform(self, X):
+        if isinstance(X, np.ndarray) or isinstance(X, pd.DataFrame):
+            return X[self.selected_columns]
+        else:
+            error.fatal_error(f'Transformer ColumnSelector does not support data of type {type(X)}. Only pd.DataFrames and numpy.arrays are supported')
