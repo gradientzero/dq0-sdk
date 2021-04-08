@@ -9,6 +9,8 @@ All rights reserved
 import logging
 from abc import ABC, abstractmethod
 
+from dq0.mod_utils import error
+
 import numpy as np
 
 import pandas as pd
@@ -16,9 +18,7 @@ import pandas as pd
 import scipy
 
 from sklearn import preprocessing
-from sklearn.compose import ColumnTransformer
 
-from dq0.mod_utils import error
 
 logger = logging.getLogger(__name__)
 
