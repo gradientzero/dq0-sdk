@@ -1,0 +1,9 @@
+pipeline:
+  # unique names
+  -
+    StandardScaler1:
+      # name of the transformer class
+      class : 'StandardScaler'
+      input_col : ['c']
+      copy : True
+      with_mean : True

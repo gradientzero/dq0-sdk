@@ -8,6 +8,7 @@ All rights reserved
 import logging
 
 from dq0.sdk.estimators.ensemble import sklearn_ensemble
+
 import numpy as np
 
 logger = logging.getLogger(__name__)

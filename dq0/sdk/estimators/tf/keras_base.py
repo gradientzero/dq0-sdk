@@ -6,13 +6,13 @@ All rights reserved
 """
 
 import logging
-import tensorflow as tf
+
+from dq0.mod_utils.modules import parse_kwargs, parse_value
+
 import numpy as np
 
-import uuid
-from abc import abstractmethod
-from dq0.sdk.estimators.estimator import Estimator
-from dq0.mod_utils.modules import parse_value, parse_kwargs
+import tensorflow as tf
+
 
 logger = logging.getLogger(__name__)
 
@@ -73,7 +73,7 @@ def _check_param(param, expected_len):
         return [param] * expected_len
 
 
-def layer_factory(layers, n_layers, **kwargs):
+def layer_factory(layers, n_layers, **kwargs):  # noqa
     """Helper function to create the layers given some parameters."""
     # check if the length of the given parameter list is as expected
     # if a global setting is given (no list) it is converted into a list

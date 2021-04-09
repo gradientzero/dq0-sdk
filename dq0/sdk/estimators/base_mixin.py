@@ -6,9 +6,8 @@ All rights reserved
 """
 
 import logging
-import uuid
-from abc import abstractmethod
-from dq0.sdk.estimators.estimator import Estimator
+
+from dq0.sdk.estimators.estimator import Estimator # noqa
 
 logger = logging.getLogger(__name__)
 
@@ -76,4 +75,3 @@ class TransformerMixin:
         else:
             # fit method of arity 2 (supervised transformation)
             return self.fit(X, y, **fit_params).transform(X)
-    

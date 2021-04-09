@@ -6,14 +6,16 @@ All rights reserved
 """
 
 import logging
+
 import tensorflow as tf
 
-from dq0.sdk.estimators.tf.keras_dense_classifier import (
-        Keras_Dense_Classifier_OHE,
-        Keras_Dense_Classifier_Integer,
-        Keras_Dense_Classifier_Binary)
-from sklearn.preprocessing import OneHotEncoder
-import numpy as np
+from dq0.sdk.estimators.tf.keras_dense_classifier import (  # noqa
+        Keras_Dense_Classifier_OHE, # noqa
+        Keras_Dense_Classifier_Integer, # noqa
+        Keras_Dense_Classifier_Binary) # noqa
+from sklearn.preprocessing import OneHotEncoder # noqa
+
+import numpy as np # noqa
 
 logger = logging.getLogger(__name__)
 

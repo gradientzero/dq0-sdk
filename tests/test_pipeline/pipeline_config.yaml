@@ -1,0 +1,7 @@
+pipeline:
+  # unique names
+  -
+    StandardScaler1:
+      class : 'StandardScaler'
+      copy : True
+      with_mean : False

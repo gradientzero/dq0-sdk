@@ -8,6 +8,7 @@ All rights reserved
 import logging
 
 from dq0.sdk.estimators.SVM import sklearn_svm
+
 import numpy as np
 
 logger = logging.getLogger(__name__)

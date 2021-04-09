@@ -1,0 +1,6 @@
+pipeline:
+  # unique names
+  -
+    OrdinalEncoder1:
+      class : 'OrdinalEncoder'
+      input_col : ['sex','smoker','region']
