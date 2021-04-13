@@ -12,7 +12,7 @@ from setuptools import find_namespace_packages, setup
 from setuptools_cythonize import get_cmdclass
 
 # meta information
-VERSION = '1.0.0'
+VERSION = '1.0.0.0'
 try:
     import dq0.sdk
     VERSION = dq0.sdk.version

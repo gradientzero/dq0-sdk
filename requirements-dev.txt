@@ -16,5 +16,5 @@ pytest-flake8==1.0.6
 pytest-mypy==0.6.2
 pytest-runner==5.2
 alabaster==0.7.12
-rinohtype==0.4.0
+rinohtype==0.5.2
 sphinx_rtd_theme==0.4.3
