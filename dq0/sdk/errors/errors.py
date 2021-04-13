@@ -1,9 +1,34 @@
 # -*- coding: utf-8 -*-
-"""Custom Exceptions for the DQ0 SDK
+"""Error handling module
 
-Copyright 2020, Gradient Zero
+Guidelines for handling errors occurring in SDK and plugins
+Please use:
+
+logger.warning(), for harmless warning messages. Program execution should not
+                  be stopped;
+
+logger.error(),  for an error that DQ0 can recover from. E.g., log an error for
+                 a parameter that has been assigned an infeasible value,
+                 assign a default feasible value to the parameter and
+                 continue program execution;
+
+mod_utils.error.fatal_error(error_msg)  for an error that DQ0 cannot recover
+                from. Program execution is stopped.
+                Therefore, to handle fatal exception / error:
+                    mod_utils.error.fatal_error(message)
+                should be preferred to:
+                    logger.fatal(message)
+                    return 1.  / sys.exit(1)
+Optionally, fatal_error() accepts as input a logger instance and a log-key value.
+See below for details.
+
+Copyright 2021, Gradient Zero
 All rights reserved
 """
+
+
+import logging
+import sys
 
 
 class DQ0SDKError(Exception):
@@ -22,3 +47,28 @@ def checkSDKResponse(response):
         return
     if 'error' in response and response['error'] != '':
         raise DQ0SDKError(response['error'])
+
+
+def fatal_error(error_msg, logger=None, log_key_string=None):
+    """
+    Handle fatal errors.
+
+    Args:
+        error_msg: string with error message
+        logger: Logger instance
+        log_key_string (str): secret key to be appended to safe logging
+            messages (i.e., not harming data privacy). Safe logging messages
+            are shown to DQ0 users without waiting for approval by the data
+            owner / officer.
+
+    """
+
+    if logger is None:
+        logger = logging.getLogger(__name__)
+
+    if log_key_string is not None:
+        error_msg += ' {}'.format(log_key_string)
+
+    logger.fatal(error_msg)
+
+    sys.exit(1)

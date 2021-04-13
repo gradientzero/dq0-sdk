@@ -6,7 +6,7 @@ All rights reserved
 
 import logging
 
-from dq0.mod_utils import error
+from dq0.sdk.errors.errors import fatal_error
 from dq0.sdk.pipeline import pipeline_config
 
 import pandas as pd
@@ -33,7 +33,7 @@ class Pipeline():
             steps = pp_config.get_steps_from_config(root_dir=transformers_root_dir, log_key_string=self.log_key_string)
             self.pipeline = pipeline.Pipeline(steps)
         else:
-            error.fatal_error("Both steps and config_path are given. Only one should be given.")
+            fatal_error("Both steps and config_path are given. Only one should be given.")
 
     def fit(self, X, y=None, **fit_params):
         if hasattr(X, 'columns'):

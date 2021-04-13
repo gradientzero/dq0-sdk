@@ -7,8 +7,8 @@ All rights reserved
 
 import logging
 
-from dq0.mod_utils.modules import parse_kwargs, parse_value
 from dq0.sdk.estimators.estimator import Estimator
+from dq0.sdk.utils.parse_args import parse_kwargs, parse_value
 
 import numpy as np
 

@@ -16,7 +16,7 @@ from tempfile import TemporaryDirectory
 
 import cloudpickle
 
-from dq0.mod_utils.error import fatal_error
+from dq0.sdk.errors.errors import fatal_error
 from dq0.sdk.projects import Project
 
 logger = logging.getLogger(__name__)

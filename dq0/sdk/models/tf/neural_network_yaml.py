@@ -10,7 +10,7 @@ All rights reserved
 
 import logging
 
-from dq0.mod_utils.error import fatal_error
+from dq0.sdk.errors.errors import fatal_error
 from dq0.sdk.models.model import Model
 from dq0.sdk.utils import YamlConfig
 from dq0.sdk.utils.managed_classes import custom_objects
