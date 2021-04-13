@@ -1,0 +1,363 @@
+# https://docs.github.com/en/rest/reference/actions#create-a-workflow-dispatch-event
+# curl \
+#  -X POST \
+#  -H "Accept: application/vnd.github.v3+json" \
+#  https://api.github.com/repos/octocat/hello-world/actions/workflows/42/dispatches \
+#  -d '{"ref":"ref"}'
+
+name: release
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_branch: 
+        description: 'Which branch should be used as the source for the release (default: develop)'
+        default: 'develop'
+        required: true
+      dest_branch: 
+        description: 'Which branch should be used as the destination for the release (default: master)'
+        default: 'master'
+        required: true
+      target_tag: 
+        description: 'Which version (tag) to assign to this release'
+        default: '1.0.9.0'
+        required: true
+jobs:
+
+  # ------------------------------------------
+  # Run unit tests
+  # ------------------------------------------
+  job_unit_test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        python-version: [3.7]
+        # os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest]
+    steps:
+
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ github.event.inputs.source_branch }}
+
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install pip and setuptools dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install setuptools-cythonize==1.0.5
+
+    - name: Install project dependencies
+      run: |
+        pip install -r requirements.txt
+        pip install -r requirements-dev.txt
+
+    - name: Run pytest
+      run: |
+        pip install pytest
+        python -m pytest -m "not slow"
+
+  # ------------------------------------------
+  # Create release branch release-*
+  # ------------------------------------------
+  job_create_release_branch:
+    needs: job_unit_test
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ github.event.inputs.source_branch }}
+        fetch-depth: 0
+
+    - run: git config --global user.email "actions@users.noreply.github.com"
+    - run: git config --global user.name "GitHub Actions"
+
+    - name: Remove existing release branch (if any)
+      continue-on-error: true
+      run: |
+        git branch -d -r origin/release-${{ github.event.inputs.target_tag }}
+
+    - name: Create new release branch
+      continue-on-error: true
+      run: |
+        git checkout -b release-${{ github.event.inputs.target_tag }}
+        git push origin release-${{ github.event.inputs.target_tag }}
+
+  # ------------------------------------------
+  # Generate changelog and Update version
+  # https://github.com/lalitkapoor/github-changes
+  # We have to add the final tag (target_tag) to this commit
+  # and upload to github. This way we get the changelog including
+  # the new changes. After generation we can remove tag again.
+  # ------------------------------------------
+  job_update_branch:
+    needs: job_create_release_branch
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        ref: 'release-${{ github.event.inputs.target_tag }}'
+        fetch-depth: 0
+
+    - name: install npm
+      uses: actions/setup-node@v2
+      with:
+        node-version: '12'
+
+    - run: git config --global user.email "actions@users.noreply.github.com"
+    - run: git config --global user.name "GitHub Actions"
+
+    - name: Install github-changes
+      run: |
+        npm install -g github-changes
+
+    - name: Generate full Changelog
+      continue-on-error: true
+      run: |
+        github-changes -o ${GITHUB_REPOSITORY///*} -r ${GITHUB_REPOSITORY##*/} -a --only-pulls --use-commit-body -k ${{ github.token }} -b release-${{ github.event.inputs.target_tag }} -n ${{ github.event.inputs.target_tag }} -m "(YYYY-MM-DD)" -t "Changelog" -f "CHANGELOG.md"
+        git add CHANGELOG.md
+        git commit -m "Updated CHANGELOG.md"
+
+    - name: Update version in dq0/sdk/__init__.py
+      continue-on-error: true
+      run: |
+        echo Updating version to ${{ github.event.inputs.target_tag }}
+        sed "s/^version = .*/version = '${{ github.event.inputs.target_tag }}'/" dq0/sdk/__init__.py > dq0/sdk/new__init__.py
+        rm dq0/sdk/__init__.py
+        mv dq0/sdk/new__init__.py dq0/sdk/__init__.py
+        git add dq0/sdk/__init__.py
+        git commit -m "Updated version in dq0/sdk/__init__.py"
+    
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.7
+
+    - name: Install pip and setuptools dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install setuptools-cythonize==1.0.5
+
+    - name: Install project dependencies
+      run: |
+        pip install -r requirements.txt
+        pip install -r requirements-dev.txt
+
+    - name: Generate documentation (sphinx sources)
+      continue-on-error: true
+      run: |
+        sphinx-apidoc -M -o ./docs/source ./dq0 -f -e --implicit-namespaces
+
+    - name: Generate documentation (pdf)
+      continue-on-error: true
+      run: |
+        cd docs/
+        sphinx-build -b rinoh source build/rinoh
+        cd ../
+        mv docs/build/rinoh/DQ0.pdf docs/dq0-sdk.pdf
+        git add docs/dq0-sdk.pdf
+        git commit -m "added documentation docs/dq0-sdk.pdf"
+
+    - name: Push changes to release branch
+      continue-on-error: true
+      run: |
+        git push origin release-${{ github.event.inputs.target_tag }}
+        
+
+  # ------------------------------------------
+  # Build and Upload Artifacts
+  # ------------------------------------------
+  job_build_and_upload:
+    needs: job_update_branch
+    runs-on: ${{matrix.os}}
+    strategy:
+      matrix:
+        python-version: [3.7]
+        #os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest]
+    steps:
+
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install pip and setuptools dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install setuptools-cythonize==1.0.5
+
+    - name: Install project dependencies
+      run: |
+        pip install -r requirements.txt
+
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        ref: 'release-${{ github.event.inputs.target_tag }}'
+
+    - name: Generate artifacts for GitHub Release
+      run: |
+        mkdir -p path/to/artifacts
+
+    - name: Build None Universal Python Wheel
+      run: |
+        python setup.py bdist_wheel
+        mv dist/* path/to/artifacts/
+
+    - name: Upload artifacts for GitHub Release
+      uses: actions/upload-artifact@master
+      with:
+        name: artifacts
+        path: path/to/artifacts
+        
+  # ------------------------------------------
+  # Merge new release branch with destination branch (default: master)
+  # When merging into master branch:
+  # - we do not use fast-forwarding (--no-ff)
+  # - we use `ours` merge strategy in case of merge conflicts
+  # Finally create a github release with:
+  # https://github.com/mathieudutour/github-tag-action
+  # ------------------------------------------
+  job_merge_branch_with_master:
+    needs: job_build_and_upload
+    runs-on: ubuntu-latest
+    steps:
+ 
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        ref: '${{ github.event.inputs.dest_branch }}'
+        fetch-depth: 0
+
+    - run: git config --global user.email "actions@users.noreply.github.com"
+    - run: git config --global user.name "GitHub Actions"
+
+    - name: Merge release branch with destination branch (master)
+      run: |
+        echo "merge release-${{ github.event.inputs.target_tag }} into ${{ github.event.inputs.dest_branch }}"
+        git merge --strategy-option=theirs --no-ff origin/release-${{ github.event.inputs.target_tag }} -m "merge release-${{ github.event.inputs.target_tag }} into ${{ github.event.inputs.dest_branch }}"
+
+        echo "push to origin ${{ github.event.inputs.dest_branch }}"
+        git push origin ${{ github.event.inputs.dest_branch }}
+
+  # ------------------------------------------
+  # Create GitHub Release
+  # https://github.com/mathieudutour/github-tag-action
+  # ------------------------------------------
+  job_create_release:
+    needs: job_merge_branch_with_master
+    runs-on: ubuntu-latest
+    steps:
+ 
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        ref: '${{ github.event.inputs.dest_branch }}'
+        fetch-depth: 0
+
+    - run: git config --global user.email "actions@users.noreply.github.com"
+    - run: git config --global user.name "GitHub Actions"
+
+    - name: Install python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.7
+
+    - name: Prepare python script for reading release notes
+      run: |
+        echo "# -*- coding: utf-8 -*-" >> run-${{ github.event.inputs.target_tag }}.py
+        echo "appending = False" >> run-${{ github.event.inputs.target_tag }}.py
+        echo "results = []" >> run-${{ github.event.inputs.target_tag }}.py
+        echo "try:" >> run-${{ github.event.inputs.target_tag }}.py
+        echo "  with open('CHANGELOG.md') as f:" >> run-${{ github.event.inputs.target_tag }}.py
+        echo "    lines = f.readlines()" >> run-${{ github.event.inputs.target_tag }}.py
+        echo "    for line in lines:" >> run-${{ github.event.inputs.target_tag }}.py
+        echo "      if appending and line.startswith('### '):" >> run-${{ github.event.inputs.target_tag }}.py
+        echo "        break" >> run-${{ github.event.inputs.target_tag }}.py
+        echo "      if not appending and line.startswith('### '):" >> run-${{ github.event.inputs.target_tag }}.py
+        echo "        appending = True" >> run-${{ github.event.inputs.target_tag }}.py
+        echo "      if appending:" >> run-${{ github.event.inputs.target_tag }}.py
+        echo "        results.append(line)" >> run-${{ github.event.inputs.target_tag }}.py
+        echo "except:" >> run-${{ github.event.inputs.target_tag }}.py
+        echo "  pass" >> run-${{ github.event.inputs.target_tag }}.py
+        echo "print(''.join(results).strip())" >> run-${{ github.event.inputs.target_tag }}.py
+
+    - name: Read CHANGELOG.md and extract first section
+      run: |
+        echo "Release ${{ github.event.inputs.target_tag }}" > release_title.txt
+        python run-${{ github.event.inputs.target_tag }}.py > release_body.txt
+
+        echo "release_title=$(cat release_title.txt)" >> $GITHUB_ENV
+
+    - name: Download the artifacts
+      uses: actions/download-artifact@master
+      with:
+        name: artifacts
+        path: path/to/artifacts
+
+    - name: Prepare GitHub Release assets
+      run: |
+        cp docs/dq0-sdk.pdf path/to/artifacts/dq0-sdk-${{ github.event.inputs.target_tag }}.pdf
+
+    - name: Create a GitHub release
+      uses: softprops/action-gh-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.event.inputs.target_tag }}
+        name: ${{ env.release_title }}
+        body_path: release_body.txt
+        files: |
+            path/to/artifacts/dq0-sdk-${{ github.event.inputs.target_tag }}.pdf
+            path/to/artifacts/dq0_sdk-${{ github.event.inputs.target_tag }}-py3-none-any.whl
+            CHANGELOG.md
+
+  # ------------------------------------------
+  # Create Pull Request back to source branch 
+  # (default: master -> develop)
+  # ------------------------------------------
+  job_create_pull_request_source_branch:
+    needs: job_merge_branch_with_master
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        ref: '${{ github.event.inputs.source_branch }}'
+        fetch-depth: 0
+
+    - name: Reset promotion branch
+      run: |
+        git fetch origin ${{ github.event.inputs.dest_branch }}:${{ github.event.inputs.dest_branch }}
+        git reset --hard ${{ github.event.inputs.dest_branch }}
+        
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v3
+      with:
+        commit-message: merge into ${{ github.event.inputs.source_branch }} from ${{ github.event.inputs.dest_branch }}@${{ github.event.inputs.target_tag }}
+        title: merge into ${{ github.event.inputs.source_branch }} from ${{ github.event.inputs.dest_branch }}@${{ github.event.inputs.target_tag }}
+        body: Promotion branch ${{ github.event.inputs.dest_branch }}-${{ github.event.inputs.target_tag }} can be deleted after merge
+        branch: ${{ github.event.inputs.dest_branch }}-${{ github.event.inputs.target_tag }}
+
+  # ------------------------------------------
+  # Delete release branch
+  # ------------------------------------------
+  job_delete_release_branch:
+    needs: job_merge_branch_with_master
+    runs-on: ubuntu-latest
+    steps:
+    - name: Delet release branch
+      uses: dawidd6/action-delete-branch@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branches: release-${{ github.event.inputs.target_tag }}
+
