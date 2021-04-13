@@ -452,7 +452,7 @@ def estimate_freq_of_labels(y):
         y = pd.Series(y)
     else:
         raise ValueError('y must be either pd.DataFrame, pd.Series or np.ndarray')
-    
+
     for key, value in get_percentage_freq_of_values(y).items():
         msg = '  label "{}": {:.1f}%'.format(key, value)
         print(msg)

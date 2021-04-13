@@ -50,14 +50,12 @@ with open('requirements.txt') as f:
 # Extras requirements (big_query)
 BIG_QUERY = ['']
 with open('requirements-big_query.txt') as f:
-    BIG_QUERY = [line for line in f.read().splitlines()
-                        if line and not line.startswith('#')]
+    BIG_QUERY = [line for line in f.read().splitlines() if line and not line.startswith('#')]
 
 # Extras requirements (snowflake)
 SNOWFLAKE = ['']
 with open('requirements-snowflake.txt') as f:
-    SNOWFLAKE = [line for line in f.read().splitlines()
-                        if line and not line.startswith('#')]
+    SNOWFLAKE = [line for line in f.read().splitlines() if line and not line.startswith('#')]
 
 EXTRA_REQUIRE = {
     "big_query" : BIG_QUERY,

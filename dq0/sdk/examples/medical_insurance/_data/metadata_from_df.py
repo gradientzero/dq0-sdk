@@ -16,8 +16,7 @@ type_ = 'CSV'
 connection = '../dq0-sdk/dq0/sdk/examples/medical_insurance/_data/datasets_13720_18513_insurance.csv'
 
 df = pd.read_csv(
-    connection,
-    )
+    connection)
 n_rows = df.shape[0]
 n_rows = int(n_rows + np.random.randint(-int(0.1 * n_rows), int(0.1 * n_rows), 1)[0])
 # print(type(n_rows))
