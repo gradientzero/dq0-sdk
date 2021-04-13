@@ -21,7 +21,7 @@ All rights reserved
 
 import logging
 
-from dq0.mod_utils.error import fatal_error
+from dq0.sdk.errors.errors import fatal_error
 from dq0.sdk.models.tf import NeuralNetworkClassification
 
 logger = logging.getLogger(__name__)
@@ -61,10 +61,9 @@ class UserModel(NeuralNetworkClassification):
         # do the train test split
         X_train_df, X_test_df, y_train_ts, y_test_ts = \
             (dataset.iloc[:10000, :-1],
-            dataset.iloc[10000:, :-1],
-            dataset.iloc[:10000, -1],
-            dataset.iloc[10000:, -1],
-            )
+             dataset.iloc[10000:, :-1],
+             dataset.iloc[:10000, -1],
+             dataset.iloc[10000:, -1])
 
         # set data attributes
         self.X_train = X_train_df

@@ -25,22 +25,6 @@ class QueryRunner(Runner):
 
     Provides methods to get job status, wait for completion or cancel job.
 
-    Example:
-        >>> # run query directly from a dataset
-        >>> run = data.query('SELECT * FROM db') # doctest: +SKIP
-        >>> # or over a query instance, allowing for queries across multiple data sources
-        >>> query = Query(project)
-        >>> run = query.for_data([data, data2]).execute('SELECT a.* FROM data.table a')
-        >>>
-        >>> # get status
-        >>> print(res.get_state()) # doctest: +SKIP
-        >>>
-        >>> # wait for completion
-        >>> run.wait_for_completion(verbose=True) # doctest: +SKIP
-        >>>
-        >>> # or cancel
-        >>> run.cancel() # doctest: +SKIP
-
     Args:
         project (:obj:`dq0.sdk.cli.Project`): The project
             this runner belongs to

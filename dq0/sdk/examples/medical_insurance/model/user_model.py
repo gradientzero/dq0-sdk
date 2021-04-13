@@ -20,7 +20,7 @@ Copyright 2020, Gradient Zero
 
 import logging
 
-from dq0.mod_utils.error import fatal_error
+from dq0.sdk.errors.errors import fatal_error
 from dq0.sdk.models.tf import NeuralNetworkRegression
 
 from sklearn.compose import ColumnTransformer

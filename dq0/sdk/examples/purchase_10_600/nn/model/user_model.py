@@ -23,10 +23,6 @@ import logging
 
 from dq0.sdk.models.tf import NeuralNetworkClassification
 
-import numpy as np
-
-import pandas as pd
-
 import tensorflow.compat.v1 as tf
 
 logger = logging.getLogger(__name__)
@@ -66,14 +62,13 @@ class UserModel(NeuralNetworkClassification):
 
         X = dataset.iloc[:, :-1]
         y = dataset.iloc[:, -1]
-        
+
         X_train_df, X_test_df, y_train_ts, y_test_ts = \
             (X.iloc[:10000, :],
-            X.iloc[10000:, :],
-            y.iloc[:10000],
-            y.iloc[10000:,],
-            )
-        
+             X.iloc[10000:, :],
+             y.iloc[:10000],
+             y.iloc[10000:, ])
+
         # set data attributes
         self.X_train = X_train_df
         self.X_test = X_test_df
@@ -90,7 +85,7 @@ class UserModel(NeuralNetworkClassification):
 
         Define the model here.
         """
-        
+
         self.model = tf.keras.Sequential([
             tf.keras.layers.Input(self.input_dim),
             tf.keras.layers.Dense(128, activation='tanh'),
@@ -108,5 +103,5 @@ class UserModel(NeuralNetworkClassification):
         self.epochs = 100
         self.batch_size = 100
         self.metrics = ['accuracy']
-        
+
         # As an alternative, define the loss function with a string

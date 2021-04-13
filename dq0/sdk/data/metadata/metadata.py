@@ -206,7 +206,7 @@ class Metadata:
                 if col.is_target:
                     target_cols.append(key)
 
-        # conservative default. If not both list have elements fall back to the default values NONE 
+        # conservative default. If not both list have elements fall back to the default values NONE
         if (len(feature_cols) == 0) or (len(target_cols) == 0):
             feature_cols = None
             target_cols = None

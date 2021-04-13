@@ -10,8 +10,8 @@ import logging
 import os
 import pickle
 
-from dq0.mod_utils.error import fatal_error
 from dq0.sdk.data.utils import util
+from dq0.sdk.errors.errors import fatal_error
 from dq0.sdk.models.model import Model
 
 import numpy as np

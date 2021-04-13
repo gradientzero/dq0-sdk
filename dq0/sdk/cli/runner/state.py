@@ -53,7 +53,7 @@ class State:
             self._run_status = response.get('run_status')
             self.error = response.get('job_errors')
 
-        except Exception as e:
+        except Exception:
             pass
         if self.progress == 1 or self.message == 'error' or self.message == 'finished':
             self.finished = True

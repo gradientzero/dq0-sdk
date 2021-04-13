@@ -2,7 +2,7 @@ description: description
 name: medical_insurance
 privacy_column: ''
 schema:
-  connection: ../dq0-sdk/dq0/sdk/examples/purchase_10_600/_data/purchase_10_600_target_dataset.csv
+  connection: /Users/wolfganggross/code/dq0-privacy-checker/tests/integration_tests/purchase_10_600/_data/../../../../../dq0-sdk/dq0/sdk/examples/purchase_10_600/_data/purchase_10_600_target_dataset.csv
   privacy_budget: 0.0
   privacy_budget_interval_days: 0
   privacy_level: 2
@@ -2477,7 +2477,7 @@ schema:
       selectable: false
       synthesizable: true
       type: float
-      upper: 0.0
+      upper: 1.0
       use_auto_bounds: false
     '27':
       bounded: false
@@ -2893,7 +2893,7 @@ schema:
       selectable: false
       synthesizable: true
       type: float
-      upper: 0.0
+      upper: 1.0
       use_auto_bounds: false
     '299':
       bounded: false
@@ -3140,7 +3140,7 @@ schema:
       selectable: false
       synthesizable: true
       type: float
-      upper: 0.0
+      upper: 1.0
       use_auto_bounds: false
     '315':
       bounded: false
@@ -3270,7 +3270,7 @@ schema:
       selectable: false
       synthesizable: true
       type: float
-      upper: 0.0
+      upper: 1.0
       use_auto_bounds: false
     '324':
       bounded: false
@@ -3920,7 +3920,7 @@ schema:
       selectable: false
       synthesizable: true
       type: float
-      upper: 0.0
+      upper: 1.0
       use_auto_bounds: false
     '37':
       bounded: false
@@ -4765,7 +4765,7 @@ schema:
       selectable: false
       synthesizable: true
       type: float
-      upper: 1.0
+      upper: 0.0
       use_auto_bounds: false
     '428':
       bounded: false
@@ -5051,7 +5051,7 @@ schema:
       selectable: false
       synthesizable: true
       type: float
-      upper: 0.0
+      upper: 1.0
       use_auto_bounds: false
     '448':
       bounded: false
@@ -5779,7 +5779,7 @@ schema:
       selectable: false
       synthesizable: true
       type: float
-      upper: 1.0
+      upper: 0.0
       use_auto_bounds: false
     '499':
       bounded: false
@@ -6234,7 +6234,7 @@ schema:
       selectable: false
       synthesizable: true
       type: float
-      upper: 1.0
+      upper: 0.0
       use_auto_bounds: false
     '53':
       bounded: false
@@ -6312,7 +6312,7 @@ schema:
       selectable: false
       synthesizable: true
       type: float
-      upper: 1.0
+      upper: 0.0
       use_auto_bounds: false
     '535':
       bounded: false
@@ -6702,7 +6702,7 @@ schema:
       selectable: false
       synthesizable: true
       type: float
-      upper: 0.0
+      upper: 1.0
       use_auto_bounds: false
     '562':
       bounded: false
@@ -7014,7 +7014,7 @@ schema:
       selectable: false
       synthesizable: true
       type: float
-      upper: 0.0
+      upper: 1.0
       use_auto_bounds: false
     '584':
       bounded: false
@@ -7430,7 +7430,7 @@ schema:
       selectable: false
       synthesizable: true
       type: float
-      upper: 1.0
+      upper: 0.0
       use_auto_bounds: false
     '73':
       bounded: false
@@ -7814,7 +7814,7 @@ schema:
     clamp_counts: false
     max_ids: 1
     row_privacy: false
-    rows: 20430
+    rows: 21004
     sample_max_ids: true
     use_dpsu: false
     use_original_header: true

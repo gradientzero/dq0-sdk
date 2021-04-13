@@ -11,7 +11,6 @@ from dq0.sdk.pipeline.pipeline_config import PipelineConfig # noqa
 from dq0.sdk.pipeline import pipeline # noqa
 import numpy as np # noqa
 import os # noqa
-import yaml
 
 logger = logging.getLogger(__name__)
 

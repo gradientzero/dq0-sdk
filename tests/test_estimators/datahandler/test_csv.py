@@ -14,6 +14,8 @@ from dq0.sdk.estimators.data_handler.csv import CSVDataHandler
 import logging # noqa
 
 FILEPATH = pathlib.Path(__file__).parent.absolute()
+DIR_PATH = os.path.dirname(os.path.realpath(__file__))
+PATH_TO_CM_CONFIG_CLASSIFICATION = os.path.join(DIR_PATH + '/mc_classification.yaml')
 
 
 def test_CSVDataHandler_setup_data_001():
@@ -30,10 +32,10 @@ def test_CSVDataHandler_setup_data_002():
     feature_cols = ['a', 'b']
     target_cols = ['c']
     # test with pipeline
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    config_path = os.path.join(dir_path, '..', '..', 'pipeline', 'pipeline_config.yaml')
+    config_path = os.path.join(DIR_PATH, '..', '..', 'test_pipeline', 'pipeline_config.yaml')
     data_source = CSV(path=os.path.join(FILEPATH, 'test.csv'), feature_cols=feature_cols, target_cols=target_cols)
-    data_handler = CSVDataHandler(pipeline_config_path=config_path, transformers_root_dir='./dq0/sdk/pipeline/transformer/transformer.py')
+    print(DIR_PATH + '/../dq0/sdk/pipeline/transformer/transformer.py')
+    data_handler = CSVDataHandler(pipeline_config_path=config_path, transformers_root_dir=DIR_PATH + '/../../../dq0/sdk/pipeline/transformer/transformer.py')
     X_train, X_test, y_train, y_test = data_handler.setup_data(data_source=data_source)
     print(X_train)
     # assert X_train.loc[0, 'a'] == 1

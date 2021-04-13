@@ -17,23 +17,6 @@ class Data:
 
     Provides an interface for inspecting/interacting with data sources as well as query methods
 
-    Example:
-        >>> # get data source
-        >>> # multiple ways of instantiating a Data object, e.g. over it's UUID/Name or via a dict representing it:
-        >>> data = Data('data_name')
-        >>> data = Data('data_uuid', project=project)
-        >>> data = Data({'data_uuid': 'uuid', 'data_name': 'name', 'data_type': 'type'})
-        >>> data = project.get_available_data_sources()[0] # doctest: +SKIP
-        >>>
-        >>>  # call dp mean
-        >>>  result = data.mean(cols=['age']) # doctest: +SKIP
-        >>>
-        >>>  # call with where clause
-        >>>  result = data.mean(cols=['age'], query="where age > 30 and age < 40") # doctest: +SKIP
-        >>>
-        >>>  # run a query on this data source
-        >>>  result = data.query("select a.* from table a where age > 30 and age < 40") # doctest: +SKIP
-
     Args:
         project (:obj:`dq0.sdk.cli.Project`): The project
             this data source belongs to

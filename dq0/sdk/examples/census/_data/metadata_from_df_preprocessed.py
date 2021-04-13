@@ -1,6 +1,8 @@
 """Auto populate dq0 metadata from CSV"""
 import os
 
+from dq0.sdk.data.metadata.metadata import Metadata
+
 import numpy as np
 
 import pandas as pd
@@ -8,13 +10,12 @@ import pandas as pd
 import yaml
 
 name = 'Adult Census Income Preprocessed'
-description = 'This data was extracted from the 1994 Census bureau database by Ronny Kohavi and Barry Becker (Data Mining and Visualization, Silicon Graphics). A set of reasonably clean records was extracted using the following conditions: ((AAGE>16) && (AGI>100) && (AFNLWGT>1) && (HRSWK>0)). The prediction task is to determine whether a person makes over $50K a year.'
+description = 'This data was extracted from the 1994 Census bureau database by Ronny Kohavi and Barry Becker (Data Mining and Visualization, Silicon Graphics). A set of reasonably clean records was extracted using the following conditions: ((AAGE>16) && (AGI>100) && (AFNLWGT>1) && (HRSWK>0)). The prediction task is to determine whether a person makes over $50K a year.'  # noqa
 type_ = 'CSV'
 connection = '../dq0-sdk/dq0/sdk/examples/census/_data/adult_processed.csv'
 
 df = pd.read_csv(
-    connection,
-    )
+    connection)
 n_rows = df.shape[0]
 n_rows = int(n_rows + np.random.randint(-int(0.1 * n_rows), int(0.1 * n_rows), 1)[0])
 # print(type(n_rows))
@@ -61,8 +62,6 @@ for c in df.columns:
 
 meta_yaml = yaml.dump(meta_d)
 print(meta_yaml)
-
-from dq0.sdk.data.metadata.metadata import Metadata
 
 meta_dq0 = Metadata(yaml=meta_yaml)
 

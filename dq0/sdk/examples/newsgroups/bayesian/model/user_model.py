@@ -7,9 +7,9 @@ All rights reserved
 
 import logging
 
-from dq0.mod_utils.error import fatal_error
 from dq0.sdk.data.preprocessing import preprocessing
 from dq0.sdk.data.utils import util
+from dq0.sdk.errors.errors import fatal_error
 from dq0.sdk.models.bayes.naive_bayesian_model import NaiveBayesianModel
 
 import numpy as np

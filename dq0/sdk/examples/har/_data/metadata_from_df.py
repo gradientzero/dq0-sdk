@@ -1,6 +1,8 @@
 """Auto populate dq0 metadata from CSV"""
 import os
 
+from dq0.sdk.data.metadata.metadata import Metadata
+
 import numpy as np
 
 import pandas as pd
@@ -15,8 +17,7 @@ connection = './dq0/sdk/examples/har/_data/dataset-har-PUC-Rio-ugulino.csv'
 
 df = pd.read_csv(
     connection,
-    sep=';'
-    )
+    sep=';')
 n_rows = df.shape[0]
 n_rows = int(n_rows + np.random.randint(-int(0.1 * n_rows), int(0.1 * n_rows), 1)[0])
 # print(type(n_rows))
@@ -63,8 +64,6 @@ for c in df.columns:
 
 meta_yaml = yaml.dump(meta_d)
 print(meta_yaml)
-
-from dq0.sdk.data.metadata.metadata import Metadata
 
 meta_dq0 = Metadata(yaml=meta_yaml)
 
