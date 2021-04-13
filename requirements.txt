@@ -28,3 +28,4 @@ cloudpickle==1.6.0
 imbalanced-learn==0.7.0
 pyyaml==5.4.1
 six==1.15.0
+diffprivlib==0.4.1
