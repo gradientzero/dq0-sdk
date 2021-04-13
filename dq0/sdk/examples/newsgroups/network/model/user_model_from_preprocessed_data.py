@@ -9,14 +9,15 @@ All rights reserved
 import logging
 
 from dq0.sdk.data.utils import util
+from dq0.sdk.errors.errors import fatal_error
 from dq0.sdk.models.tf import NeuralNetworkClassification
 
 import numpy as np
 
 import pandas as pd
 
-from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
 
 import tensorflow.compat.v1 as tf
 
@@ -105,8 +106,7 @@ class UserModel(NeuralNetworkClassification):
         """
         # get the input dataset
         if self.data_source is None:
-            logger.error('No data source found')
-            return
+            fatal_error('No data source found', logger=logger)
 
         dataset_df = self.data_source.read()
 

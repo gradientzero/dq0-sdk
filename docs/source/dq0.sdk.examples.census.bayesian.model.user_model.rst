@@ -1,7 +1,0 @@
-dq0.sdk.examples.census.bayesian.model.user\_model module
-=========================================================
-
-.. automodule:: dq0.sdk.examples.census.bayesian.model.user_model
-   :members:
-   :undoc-members:
-   :show-inheritance:

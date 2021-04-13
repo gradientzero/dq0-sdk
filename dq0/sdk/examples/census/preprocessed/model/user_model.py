@@ -21,6 +21,7 @@ All rights reserved
 
 import logging
 
+from dq0.sdk.errors.errors import fatal_error
 from dq0.sdk.models.tf import NeuralNetworkClassification
 
 logger = logging.getLogger()
@@ -36,7 +37,7 @@ class UserModel(NeuralNetworkClassification):
     def __init__(self):
         super().__init__()
 
-    def setup_data(self):
+    def setup_data(self, **kwargs):
         """Setup data function
 
         This function can be used to prepare data or perform
@@ -54,8 +55,7 @@ class UserModel(NeuralNetworkClassification):
 
         # get the input dataset
         if self.data_source is None:
-            logger.error('No data source found')
-            return
+            fatal_error('No data source found', logger=logger)
 
         # read the dataset from the attached input source
         data = self.data_source.read()
@@ -74,7 +74,7 @@ class UserModel(NeuralNetworkClassification):
         self.y_train = y_train_ts
         self.y_test = y_test_ts
 
-    def setup_model(self):
+    def setup_model(self, **kwargs):
         """Setup model function
 
         Define the model here.

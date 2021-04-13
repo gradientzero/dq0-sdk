@@ -6,6 +6,8 @@ All rights reserved
 """
 
 import inspect
+import logging
+import math
 import os
 import pickle
 import random
@@ -21,6 +23,9 @@ import scipy as sp
 import tensorflow as tf
 
 import yaml
+
+
+logger = logging.getLogger(__name__)
 
 
 def load_params_from_config_file(yaml_file_path):
@@ -42,8 +47,6 @@ def load_params_from_config_file(yaml_file_path):
     with open(yaml_file_path, 'r') as f:
         params_dict = yaml.load(f, Loader=yaml.FullLoader)
 
-        # print(params_dict)
-
         section_params_dict = params_dict['demo parameters']
         seed = section_params_dict['seed']
 
@@ -55,12 +58,6 @@ def load_params_from_config_file(yaml_file_path):
         recall_threshold = section_params_dict['recall_threshold']
         stop_at_first_privacy_breach = section_params_dict[
             'stop_at_first_privacy_breach']
-
-        # print(type(stop_at_first_privacy_breach))
-        # print(type(precision_threshold))
-        # print(type(recall_threshold))
-        # print(type(seed))
-        # print(type(target_model_type))
 
         section_params_dict = params_dict['Differential-privacy parameters']
         dp_epsilons_list = section_params_dict['epsilons']
@@ -94,7 +91,7 @@ def print_details_about_df_columns(df_dataset):
         df_dataset: data frame to inspect.
     """
     if isinstance(df_dataset, pd.DataFrame):
-        _print_feats(df_dataset.columns.values.tolist(), "\tfeatures")
+        _print_feats(df_dataset.columns.values.tolist(), "features")
         print("\nfeatures type:")
         _print_dataframe_cols_grouped_by_type(df_dataset)
 
@@ -218,17 +215,26 @@ def _print_feats(l_column_names, s_title):
     print("\n\t".join(([s_title + ': '] + l_column_names)))
 
 
-def pretty_print_dict(d, indent_steps=1, indent_unit='  '):
+def pretty_print_dict(d, indent_steps=1, indent_unit='  ',
+                      logger_fun=None):
     """Print dictionary."""
     for key, value in d.items():
         if isinstance(value, dict):
-            print(indent_unit * indent_steps + str(key) + ': ')
+            text = indent_unit * indent_steps + str(key) + ': '
+            if logger_fun is None:
+                print(text)
+            else:
+                logger_fun(text)
             pretty_print_dict(value, indent_steps + 1)
         else:
-            print(indent_unit * indent_steps + str(key) + ': ' + str(value))
+            text = indent_unit * indent_steps + str(key) + ': ' + str(value)
+            if logger_fun is None:
+                print(text)
+            else:
+                logger_fun(text)
 
 
-def pretty_diplay_string_on_terminal(s):
+def pretty_display_string_on_terminal(s):
     """Trim string to fit on terminal (assuming 80-column display)"""
     column_display_size = 80
     if len(s) <= column_display_size:
@@ -245,7 +251,7 @@ def print_full_df(df_dataset):
     pd.set_option('display.max_rows', None)
     pd.set_option('display.max_columns', None)
     pd.set_option('display.width', None)
-    pd.set_option('display.max_colwidth', -1)
+    pd.set_option('display.max_colwidth', None)
 
     print(df_dataset)
 
@@ -433,36 +439,43 @@ def get_percentage_freq_of_values(x_np_a):
 
 def estimate_freq_of_labels(y):
     """Estimate the frequency of labels in y."""
+    if isinstance(y, pd.DataFrame):
+        y = y.idxmax(axis=1)
     if isinstance(y, pd.Series):
-        print(y.value_counts(normalize=True) * 100)
+        pass
+    elif isinstance(y, np.ndarray):
+        if y.ndim == 2:
+            if len(y[0]) > 1:
+                y = np.argmax(y, axis=1)
+            else:
+                y = np.ravel(y)
+        y = pd.Series(y)
     else:
-        assert isinstance(y, np.ndarray)
-        # print(pd.Series(y).value_counts(normalize=True) * 100)
+        raise ValueError('y must be either pd.DataFrame, pd.Series or np.ndarray')
 
-        # print('Label     percentage freq.')
-        # pretty_print_dict(get_percentage_freq_of_values(y))
-
-        for key, value in get_percentage_freq_of_values(y).items():
-            print('  label "' + str(key) + '": %.1f%%' % value)
+    for key, value in get_percentage_freq_of_values(y).items():
+        msg = '  label "{}": {:.1f}%'.format(key, value)
+        print(msg)
 
 
-def compute_features_bounds(X):
-    """
-    Compute min / max value for each feature.
-    :param X: data matrix (features are the columns).
-    :return: ordered list of tuples with min/max values for each feature.
-             Order of the list is the order of the columns in the data matrix.
-    """
+# def compute_features_bounds(X):
+#     """
+#     Compute min / max value for each feature.
+#     :param X: data matrix (features are the columns).
+#     :return: ordered list of tuples with min/max values for each feature.
+#              Order of the list is the order of the columns in the data matrix.
+#     """
 
-    if isinstance(X, pd.DataFrame):
-        min_values = X.min(axis=0).values
-        max_values = X.max(axis=0).values
-    elif isinstance(X, np.ndarray):
-        min_values = X.min(axis=0)
-        max_values = X.max(axis=0)
+#     if isinstance(X, pd.DataFrame):
+#         min_values = X.min(axis=0).values
+#         max_values = X.max(axis=0).values
+#     elif isinstance(X, np.ndarray):
+#         min_values = X.min(axis=0)
+#         max_values = X.max(axis=0)
 
-    features_bounds = list(zip(min_values, max_values))
-    return features_bounds
+#     features_bounds = (min_values, max_values)
+
+#     return features_bounds
 
 
 def save_preprocessed_tr_and_te_datasets(X_train, X_test, y_train, y_test,
@@ -522,8 +535,8 @@ def check_data_structure_type_consistency(X_train, X_test, y_train, y_test):
         y_test: Numpy (also non-dimensional) array or Pandas Series
 
     """
-    assert (isinstance(X_train, pd.DataFrame) or
-            isinstance(X_train, np.ndarray))
+    assert (isinstance(X_train, pd.DataFrame) or isinstance(X_train,
+            np.ndarray))
 
     assert isinstance(y_train, pd.Series) or isinstance(y_train, np.ndarray)
 
@@ -806,8 +819,8 @@ def print_evaluation_res(res, dataset_type, model_metrics=None):
 
         for metric in model_metrics:
             print('Model ' + metric.replace('_', ' ') + ' on '
-                  '' + dataset_type + ' set: %.1f%%' % (
-                      100 * res[_fix_metric_names(metric)])
+                  '' + dataset_type + ' set: %.5f' % (
+                      res[_fix_metric_names(metric)])
                   )
 
 
@@ -825,7 +838,13 @@ def _fix_metric_names(metric):
     """
 
     if metric.lower() == 'accuracy':
-        metric = 'acc'
+        # TODO: Do we need this for reasons other than tf1 compat?
+        # Its used above and if its to convert mse to long name then we
+        # add mae, ...
+        if tf.__version__.split('.')[0] == '1':
+            metric = 'acc'
+        else:
+            metric = 'accuracy'
     elif metric.lower() == 'mse':
         metric = 'mean_squared_error'
 
@@ -892,8 +911,12 @@ def compute_metrics_scores(y, y_pred_np_a, metrics_list):
         #    else metric.__class__.__name__
         metric_name = metric.__class__.__name__.lower()
 
-        # convert tensor to array and update dict
-        res.update({metric_name: metric.result().numpy()})
+        # convert tensor to array
+        metric_result = tensorflow_tensor_to_numpy_ndarray(metric.result())
+        # metric_result = metric.result().numpy()
+
+        # update dict
+        res.update({metric_name: metric_result})
         metric.reset_states()
 
     return res
@@ -929,3 +952,166 @@ def copy_obj_attributes(obj_from, obj_to, attributes_l=None):
                 setattr(obj_to, attr, value)
 
     return obj_to
+
+
+def tensorflow_tensor_to_numpy_ndarray(*args):
+    """
+
+    Convert input tensorflow tensors into numpy.ndarray arrays.
+
+    Args:
+        args: tensorflow tensors
+    Returns:
+        np_arrays, a list of numpy.ndarray arrays. Order matters: np_arrays[i]
+        is the conversion of args[i]. If np_arrays contains a single item,
+        the item is returned rather than a list with just one item inside.
+
+    """
+
+    eager_execution_enabled = tf.executing_eagerly()
+    # In TensorFlow 2 eager execution is activated by default.
+    #
+    # In TensorFlow 1 eager execution is DE-activated by default. Explicitly
+    # activating eager execution In TensorFlow 1 by command
+    # "tf.enable_eager_execution()" is NOT possible if TensorFlow Privacy is
+    # is used.
+    #
+    # With above setting, migration to TensorFlow 2 should be accomplishable
+    # without modifying below code.
+
+    np_arrays = [None] * len(args)  # list where each position is set to None
+
+    for i, tf_tensor in enumerate(args):
+        np_arrays[i] = tf_tensor.numpy() if eager_execution_enabled else\
+            tf.keras.backend.eval(tf_tensor)
+
+    # sanity check
+    assert all([x is not None for x in np_arrays])
+
+    if len(np_arrays) == 1:
+        # return item rather than list with just one item inside
+        np_arrays = np_arrays[0]
+
+    return np_arrays
+
+
+def format_float_lower_than_1(float_value, abs_tol=1e-8):
+    """
+    Generate a string representation for the input float number with the 0
+    value of the unit being removed if the absolute value of the float
+    number is smaller than one. E.g, 0.234 is converted into ".234".
+
+    Args:
+        float_value (float): input float number
+        abs_tol (float): tolerance value for equality to zero
+    Returns:
+        str representation of the input float number with redundant 0 for
+        unit removed (if any).
+
+    """
+
+    if not math.isfinite(float_value):
+        raise RuntimeError(
+            'finite value expected. Found: ' + str(float_value)
+        )
+
+    if abs(float_value) < abs_tol:
+        return str(0)
+
+    if type(float_value) != str:
+        res = str(float_value)
+
+    # TODO replace below naive solution with suitable regex expression
+
+    if res.startswith('0.'):
+        res = res[1:]
+    if res.startswith('-0.'):
+        res = '-' + res[2:]
+
+    return res
+
+
+def perform_stratified_random_sampling(df, col_name, sample_size):
+    """
+    Generate stratified sample of size "sample_size" where the
+    proportion of instances with value "A" for "col_name"
+    in the stratified sample matches the proportion of instances
+    with value "A" for "col_name" in the larger DataFrame. This
+    holds for every distinct value "A" of "col_name".
+
+    """
+
+    sample_df = df.groupby(col_name, group_keys=False).apply(
+        lambda x: x.sample(int(np.rint(sample_size * len(x) / len(df))))
+    ).sample(frac=1).reset_index(drop=True)
+
+    return sample_df
+
+
+def check_for_valid_numerical_encoding_of_labels(labels):
+    """
+    Checks whether the labels are numerical labels satisfying the following
+    requirements:
+        1. each label is an integer greater or equal to zero
+        2. the smallest label is zero
+
+    The labels encoded by applying "sklearn.preprocessing.LabelEncoder"
+    satisfy above requirements.
+
+    Args:
+        labels: array-like list of labels to check. Can even be a column
+        vector.
+
+    Returns:
+        is_valid: True if the input labels satisfy above requirements,
+        False if not.
+    """
+
+    is_valid = True
+
+    labels = np.asarray(labels)  # cast into numpy.ndarray if not yet
+
+    assert labels.ndim <= 2
+    if labels.ndim == 2:
+        assert labels.shape[1] == 1  # column vector
+        labels = labels.flatten()  # flatten column vector
+
+    # unsigned integer, signed integer are valid type kind
+    numeric_kinds = set('ui')
+    constraint_satisfied = labels.dtype.kind in numeric_kinds
+    is_valid = is_valid and constraint_satisfied
+
+    # no labels smaller than zero
+    constraint_satisfied = np.sum(labels < 0) == 0
+    is_valid = is_valid and constraint_satisfied
+
+    # min label is zero
+    constraint_satisfied = np.min(labels) == 0
+    is_valid = is_valid and constraint_satisfied
+
+    return is_valid
+
+
+def is_numeric(array):
+    """
+    Determine whether the argument has a numeric datatype, when
+    converted to a NumPy array.
+
+    Booleans, unsigned integers, signed integers, floats and complex
+    numbers are the kinds of numeric datatype.
+
+    Parameters
+    ----------
+    array : array-like
+        The array to check.
+
+    Returns
+    -------
+    is_numeric : `bool`
+        True if the array has a numeric datatype, False if not.
+
+    """
+    # Boolean, unsigned integer, signed integer, float, complex.
+    numeric_kinds = set('buifc')
+
+    return np.asarray(array).dtype.kind in numeric_kinds

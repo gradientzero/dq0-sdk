@@ -7,9 +7,11 @@ implementing subclasses.
 
 from . import binary, image, sql, text, utils
 from .source import Source
+from .transform import Transform
 
 __all__ = [
     'Source',
+    'Transform',
     'binary',
     'image',
     'sql',

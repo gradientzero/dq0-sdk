@@ -81,7 +81,7 @@ class Client:
         """
         if uuid is not None:
             route = route.replace(':uuid', uuid)
-        response = requests.get('{}{}'.format(self.api, route), data=data)
+        response = requests.get('{}{}'.format(self.api, route), params=data)
         response_json = self._parse_response(response)
         return response_json
 

@@ -16,8 +16,8 @@ Copyright 2020, Gradient Zero
 All rights reserved
 """
 import logging
-import sys
 
+from dq0.sdk.errors.errors import fatal_error
 from dq0.sdk.utils.managed_classes import custom_objects
 
 import yaml
@@ -52,8 +52,8 @@ class YamlConfig():
             with open(self.yaml_path, 'r') as yaml_file:
                 self.yaml_dict = yaml.load(yaml_file, Loader=yaml.Loader)  # turnsout SafeLoader doesnt recognise !!python/tuple
         except Exception as e:
-            logger.error('Could not find config at {}! {}'.format(self.yaml_path, e))
-            sys.exit(1)
+            fatal_error('Could not find config at {}! {}'.format(
+                self.yaml_path, e), logger=logger)
         return self.yaml_dict
 
     def save_yaml(self):
@@ -62,7 +62,8 @@ class YamlConfig():
             with open(self.yaml_path, 'w') as yaml_file:
                 yaml_file.write(self.yaml_dict)
         except Exception as e:
-            logger.error('Cannot write yaml to {}! {}'.format(self.yaml_path, e))
+            fatal_error('Cannot write yaml to {}! {}'.format(
+                self.yaml_path, e), logger=logger)
 
     def dump_yaml(self, yaml_dict):
         self.yaml_str = yaml.dump(yaml_dict)

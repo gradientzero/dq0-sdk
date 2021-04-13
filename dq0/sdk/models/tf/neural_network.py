@@ -35,6 +35,7 @@ import copy
 import logging
 
 from dq0.sdk.data.utils import util
+from dq0.sdk.errors.errors import fatal_error
 from dq0.sdk.models.model import Model
 
 import numpy as np
@@ -90,7 +91,7 @@ class NeuralNetwork(Model):
         Args:
             path (:obj:`str`): The model path
         """
-        self.model.save(path, include_optimizer=False)
+        self.model.save(path)
 
     def load(self, path):
         """Loads the model.
@@ -100,7 +101,7 @@ class NeuralNetwork(Model):
         Args:
             path (:obj:`str`): The model path
         """
-        self.model = tf.keras.models.load_model(path, compile=False)
+        self.model = tf.keras.models.load_model(path)
 
     def get_clone(self, trained=False):
         """
@@ -167,19 +168,23 @@ class NeuralNetwork(Model):
         Model fit function learning a model from training data
         """
         if self.model is None:
-            logger.fatal('No TensorFlow model provided!')
-
-        self.X_train, self.y_train = \
-            fix_limitation_of_Keras_fit_and_predict_functions(
-                self.X_train, self.y_train, self.batch_size
-            )
+            fatal_error('No TensorFlow model provided!', logger=logger)
 
         self.model.compile(optimizer=self.optimizer,
                            loss=self.loss,
                            metrics=self.metrics)
 
-        self.model.fit(self.X_train,
-                       self.y_train,
+        # work on deep copy of data because
+        # "fix_limitation_of_Keras_fit_and_predict_functions" modifies the
+        # dataset is gets as input
+        tmp_X_train = copy.deepcopy(self.X_train)
+        tmp_y_train = copy.deepcopy(self.y_train)
+        tmp_X_train, tmp_y_train = \
+            fix_limitation_of_Keras_fit_and_predict_functions(
+                tmp_X_train, tmp_y_train, self.batch_size
+            )
+        self.model.fit(tmp_X_train,
+                       tmp_y_train,
                        epochs=self.epochs,
                        verbose=verbose,
                        batch_size=self.batch_size)
@@ -201,27 +206,27 @@ class NeuralNetwork(Model):
         """
 
         if self.model is None:
-            logger.fatal('No  TensorFlow model provided!')
+            fatal_error('No  TensorFlow model provided!', logger=logger)
 
         # Check for valid model setup
         if not test_data and not hasattr(self, 'X_train'):
-            logger.fatal('Missing argument in model: X_train')
-            return
+            fatal_error('Missing argument in model: X_train', logger=logger)
         if not test_data and not hasattr(self, 'y_train'):
-            logger.fatal('Missing argument in model: y_train')
-            return
+            fatal_error('Missing argument in model: y_train', logger=logger)
         if test_data and not hasattr(self, 'X_test'):
-            logger.fatal('Missing argument in model: X_test')
-            return
+            fatal_error('Missing argument in model: X_test', logger=logger)
         if test_data and not hasattr(self, 'y_test'):
-            logger.fatal('Missing argument in model: y_test')
-            return
+            fatal_error('Missing argument in model: y_test', logger=logger)
         if not hasattr(self, 'batch_size'):
-            logger.fatal('Missing argument in model: batch_size')
-            return
+            fatal_error('Missing argument in model: batch_size', logger=logger)
 
-        X = self.X_test if test_data else self.X_train
-        y = self.y_test if test_data else self.y_train
+        # work on deep copy of data because
+        # "fix_limitation_of_Keras_fit_and_predict_functions" modifies the
+        # dataset is gets as input
+        X = copy.deepcopy(self.X_test) if test_data else copy.deepcopy(
+            self.X_train)
+        y = copy.deepcopy(self.y_test) if test_data else copy.deepcopy(
+            self.y_train)
 
         # If all the data to be predicted do not fit in the CPU/GPU RAM at
         # the same time, predictions are done in batches.

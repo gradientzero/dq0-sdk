@@ -1,4 +1,4 @@
-alabaster==0.7.12
+docutils==0.15.2
 flake8==3.8.1
 flake8-import-order==0.18.1
 pycodestyle==2.6.0
@@ -15,5 +15,6 @@ pytest-cov==2.8.1
 pytest-flake8==1.0.6
 pytest-mypy==0.6.2
 pytest-runner==5.2
-rinohtype==0.4.0
+alabaster==0.7.12
+rinohtype==0.5.2
 sphinx_rtd_theme==0.4.3

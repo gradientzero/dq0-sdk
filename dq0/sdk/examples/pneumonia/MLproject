@@ -1,0 +1,22 @@
+name: My DQ0 project with all uses cases
+
+entry_points:
+
+  main:
+    parameters:
+      arg1: float
+      arg2: string
+    command: python quickstart.py {arg1} {arg2}
+
+  train_use_keras:
+    command: python keras_model.py
+  
+  train_use_my_model:
+    command: python my_model.py
+
+  train_use_dq0_makedp:
+    parameters:
+      target-epsilon: float
+      num-microbatches: float
+      epochs: int
+    command: python -m dq0.makedp --action train --module-path my_model.py --budget 100  --tracker-type mlflow --num-microbatches {num-microbatches}  --target-epsilon {target-epsilon} --epochs {epochs}

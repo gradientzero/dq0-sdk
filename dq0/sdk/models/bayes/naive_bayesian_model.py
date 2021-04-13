@@ -11,6 +11,7 @@ import os
 import pickle
 
 from dq0.sdk.data.utils import util
+from dq0.sdk.errors.errors import fatal_error
 from dq0.sdk.models.model import Model
 
 import numpy as np
@@ -140,7 +141,7 @@ class NaiveBayesianModel(Model):
         """
 
         if self.model is None:
-            logger.fatal('No Scikit-learn model provided!')
+            fatal_error('No Scikit-learn model provided!', logger=logger)
 
         # Check for valid model setup
         if not hasattr(self, 'X_train'):
@@ -200,21 +201,17 @@ class NaiveBayesianModel(Model):
                 Default is True.
         """
         if self.model is None:
-            logger.fatal('No Scikit-learn model provided!')
+            fatal_error('No Scikit-learn model provided!', logger=logger)
 
         # Check for valid model setup
         if not test_data and not hasattr(self, 'X_train'):
-            logger.fatal('Missing argument in model: X_train')
-            return
+            fatal_error('Missing argument in model: X_train', logger=logger)
         if not test_data and not hasattr(self, 'y_train'):
-            logger.fatal('Missing argument in model: y_train')
-            return
+            fatal_error('Missing argument in model: y_train', logger=logger)
         if test_data and not hasattr(self, 'X_test'):
-            logger.fatal('Missing argument in model: X_test')
-            return
+            fatal_error('Missing argument in model: X_test', logger=logger)
         if test_data and not hasattr(self, 'y_test'):
-            logger.fatal('Missing argument in model: y_test')
-            return
+            fatal_error('Missing argument in model: y_test', logger=logger)
 
         X = self.X_test if test_data else self.X_train
         y = self.y_test if test_data else self.y_train

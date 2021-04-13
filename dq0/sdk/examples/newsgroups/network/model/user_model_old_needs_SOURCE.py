@@ -9,6 +9,7 @@ All rights reserved
 import logging
 
 from dq0.sdk.data.utils import util
+from dq0.sdk.errors.errors import fatal_error
 from dq0.sdk.models.tf import NeuralNetworkClassification
 
 import numpy as np
@@ -104,8 +105,7 @@ class UserModel(NeuralNetworkClassification):
         """
         # get the input dataset
         if self.data_source is None:
-            logger.error('No data source found')
-            return
+            fatal_error('No data source found', logger=logger)
 
         X, y = self.data_source.read()
 

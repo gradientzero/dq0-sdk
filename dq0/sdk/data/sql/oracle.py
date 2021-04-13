@@ -24,23 +24,27 @@ class Oracle(SQL):
     Oracle connection string: 'oracle+cx_oracle://user:pass@host:port/dbname[?key=value&key=value...]'
 
     Args:
-        query (:obj:`str`): SQL query.
-        connection (:obj:`str`): The oracle connection string.
+        connection_string (:obj:`str`): The oracle connection string.
     """
 
-    def __init__(self, query, connection):
-        super().__init__(query, connection)
+    def __init__(self, connection_string):
+        super().__init__(connection_string)
         self.type = 'oracle'
-        self.engine = sqlalchemy.create_engine(connection)
+        self.engine = sqlalchemy.create_engine(connection_string)
 
-    def read(self, **kwargs):
-        """Read oracle data source
+    def execute(self, query, **kwargs):
+        """Execute Oracle SQL query
 
         Args:
+            query: SQL Query to execute
             kwargs: keyword arguments
 
         Returns:
-            oracle data as pandas dataframe
+            SQL ResultSet as pandas dataframe
         """
-        connection = self.engine.connect()
-        return pd.read_sql_query(self.query, connection, **kwargs)
+        # check query
+        if query is None:
+            raise ValueError('you need to pass the query')
+
+        connection = self.get_connection()
+        return pd.read_sql_query(query, connection, **kwargs)

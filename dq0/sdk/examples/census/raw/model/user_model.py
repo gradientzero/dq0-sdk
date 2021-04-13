@@ -21,9 +21,10 @@ All rights reserved
 
 import logging
 
+from dq0.sdk.errors import fatal_error
 from dq0.sdk.models.tf import NeuralNetworkClassification
 
-logger = logging.getLogger()
+logger = logging.getLogger('dq0.' + __name__)
 
 
 class UserModel(NeuralNetworkClassification):
@@ -36,7 +37,7 @@ class UserModel(NeuralNetworkClassification):
     def __init__(self):
         super().__init__()
 
-    def setup_data(self):
+    def setup_data(self, **kwargs):
         """Setup data function
 
         This function can be used to prepare data or perform
@@ -267,6 +268,11 @@ class UserModel(NeuralNetworkClassification):
         self.y_train = y_train_ts
         self.y_test = y_test_ts
 
+        logger.debug("X_train.shape: {}".format(self.X_train.shape))
+        logger.debug("X_test.shape: {}".format(self.X_test.shape))
+        logger.debug("y_train.shape: {}".format(self.y_train.shape))
+        logger.debug("y_test.shape: {}".format(self.y_test.shape))
+
     def preprocess(self):
         """Preprocess the data
 
@@ -292,8 +298,7 @@ class UserModel(NeuralNetworkClassification):
 
         # get the input dataset
         if self.data_source is None:
-            logger.error('No data source found')
-            return
+            fatal_error('No data source found', logger=logger)
 
         # read the data via the attached input data source
         dataset = self.data_source.read(
@@ -324,7 +329,7 @@ class UserModel(NeuralNetworkClassification):
             col['name'] for col in columns_types_list
             if col['type'] == 'string']
 
-        # get categorical features
+        # get quantitative features
         quantitative_features_list = [
             col['name'] for col in columns_types_list
             if col['type'] == 'int' or col['type'] == 'float']
@@ -378,7 +383,7 @@ class UserModel(NeuralNetworkClassification):
 
         return dataset
 
-    def setup_model(self):
+    def setup_model(self, **kwargs):
         """Setup model function
 
         Define the model here.
@@ -401,6 +406,6 @@ class UserModel(NeuralNetworkClassification):
         #
         self.epochs = 10
         self.batch_size = 250
-        self.metrics = ['accuracy']
+        self.metrics = ['accuracy', 'mae']
         self.loss = tf.keras.losses.SparseCategoricalCrossentropy()
         # As an alternative, define the loss function with a string

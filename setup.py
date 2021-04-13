@@ -11,9 +11,8 @@ from setuptools import find_namespace_packages, setup
 
 from setuptools_cythonize import get_cmdclass
 
-
 # meta information
-VERSION = '1.0.0'
+VERSION = '1.0.0.0'
 try:
     import dq0.sdk
     VERSION = dq0.sdk.version
@@ -39,13 +38,28 @@ SETUP_REQUIRES = [
     'flake8-import-order~=0.18.1',
 ]
 
-PACKAGES = find_namespace_packages(include=['dq0.*']) #find_packages()
+PACKAGES = find_namespace_packages(include=['dq0.*'])  # find_packages()
 
 # Requirements
-INSTALL_REQUIRES: []
+INSTALL_REQUIRES = ['']
 with open('requirements.txt') as f:
     INSTALL_REQUIRES = [line for line in f.read().splitlines()
                         if line and not line.startswith('#')]
+
+# Extras requirements (big_query)
+BIG_QUERY = ['']
+with open('requirements-big_query.txt') as f:
+    BIG_QUERY = [line for line in f.read().splitlines() if line and not line.startswith('#')]
+
+# Extras requirements (snowflake)
+SNOWFLAKE = ['']
+with open('requirements-snowflake.txt') as f:
+    SNOWFLAKE = [line for line in f.read().splitlines() if line and not line.startswith('#')]
+
+EXTRA_REQUIRE = {
+    "big_query" : BIG_QUERY,
+    "snowflake" : SNOWFLAKE,
+}
 
 
 # Setup
@@ -62,6 +76,6 @@ setup(
     packages=PACKAGES,
     install_requires=INSTALL_REQUIRES,
     setup_requires=SETUP_REQUIRES,
+    extras_require=EXTRA_REQUIRE,
     include_package_data=True,
 )
-

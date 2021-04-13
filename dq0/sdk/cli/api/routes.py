@@ -17,14 +17,23 @@ _routes = {
         'create': '',
         'info': ':uuid/',
         'deploy': ':uuid/deploy/',
-        'attach': ':uuid/attach/'
+        'attach': ':uuid/attach/',
+        'detach': ':uuid/detach/'
     },
     'model': {
-        '_base': 'models/:uuid/',
-        'train': 'train/',
-        'predict': 'predict/',
-        'state': 'state/',
-        'cancel': 'cancel/'
+        '_base': 'models/',
+        'predict': ':uuid/predict/',
+        'register': 'register/'
+    },
+    'runs': {
+        '_base': 'runs/',
+        'create': '',
+        'get': ':uuid/'
+    },
+    'job': {
+        '_base': 'jobs/:uuid/',
+        'state': '',
+        'cancel': 'delete/'
     },
     'data': {
         '_base': 'data/',
@@ -35,6 +44,17 @@ _routes = {
         'info': ':uuid/',
         'sample': ':uuid/sample/',
         'cancel': ':uuid/cancel/'
+    },
+    'query': {
+        '_base': 'queries/',
+        'list': '',
+        'info': ':uuid/',
+        'cancel': ':uuid/cancel/',
+        'create': ''
+    },
+    'artifacts': {
+        '_base': 'artifacts/',
+        'download': 'download'
     }
 }
 

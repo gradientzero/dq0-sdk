@@ -20,6 +20,7 @@ Copyright 2020, Gradient Zero
 
 import logging
 
+from dq0.sdk.errors.errors import fatal_error
 from dq0.sdk.models.tf import NeuralNetworkRegression
 
 from sklearn.compose import ColumnTransformer
@@ -40,7 +41,7 @@ class UserModel(NeuralNetworkRegression):
     def __init__(self):
         super().__init__()
 
-    def setup_data(self):
+    def setup_data(self, **kwargs):
         """Setup data function
 
         This function can be used to prepare data or perform
@@ -50,8 +51,7 @@ class UserModel(NeuralNetworkRegression):
 
         # get the input dataset
         if self.data_source is None:
-            logger.error('No data source found')
-            return
+            fatal_error('No data source found', logger=logger)
 
         data = self.data_source.read()
         X, y = self._prepare_data(data)
@@ -85,7 +85,7 @@ class UserModel(NeuralNetworkRegression):
 
         return X_scale, y_scale
 
-    def setup_model(self):
+    def setup_model(self, **kwargs):
         """Setup model function
 
         Define the model here.

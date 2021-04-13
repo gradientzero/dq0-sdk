@@ -7,15 +7,16 @@ All rights reserved
 
 import logging
 
-from dq0.sdk.data.utils import util
 from dq0.sdk.data.preprocessing import preprocessing
+from dq0.sdk.data.utils import util
+from dq0.sdk.errors.errors import fatal_error
 from dq0.sdk.models.bayes.naive_bayesian_model import NaiveBayesianModel
 
 import numpy as np
 
+from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.preprocessing import LabelEncoder
-from sklearn.model_selection import train_test_split
 
 
 logger = logging.getLogger()
@@ -31,7 +32,7 @@ class UserModel(NaiveBayesianModel):
         super().__init__()
         self.label_encoder = None
 
-    def setup_model(self):
+    def setup_model(self, **kwargs):
         """Setup model.
 
         Define the model here.
@@ -47,7 +48,7 @@ class UserModel(NaiveBayesianModel):
 
         print('Set up a ' + self._classifier_type + ' classifier.')
 
-    def setup_data(self):
+    def setup_data(self, **kwargs):
         """Setup data function
 
         This function can be used to prepare data or perform
@@ -69,8 +70,7 @@ class UserModel(NaiveBayesianModel):
 
         # get the input dataset
         if self.data_source is None:
-            logger.error('No data source found')
-            return
+            fatal_error('No data source found', logger=logger)
 
         dataset_df = self.data_source.read()
 

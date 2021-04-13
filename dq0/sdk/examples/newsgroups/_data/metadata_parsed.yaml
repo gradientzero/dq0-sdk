@@ -1,0 +1,39 @@
+description: description
+name: newsgroups
+privacy_column: ''
+schema:
+  connection: ../dq0-sdk/dq0/sdk/examples/newsgroups/_data/20newsgroups_text_label_df.csv
+  privacy_budget: 0
+  privacy_budget_interval_days: 0
+  privacy_level: 2
+  size: 0
+  synth_allowed: false
+  table:
+    censor_dims: false
+    clamp_columns: true
+    clamp_counts: false
+    max_ids: 1
+    row_privacy: false
+    rows: 19980
+    sample_max_ids: true
+    text:
+      bounded: false
+      cardinality: 18286
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: string
+      use_auto_bounds: false
+    use_dpsu: false
+    use_original_header: true
+    y:
+      bounded: false
+      cardinality: 0
+      lower: 1
+      private_id: false
+      selectable: false
+      synthesizable: true
+      type: int
+      upper: 18
+      use_auto_bounds: false
+type: CSV
