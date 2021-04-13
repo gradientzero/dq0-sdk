@@ -20,23 +20,6 @@ class Query:
     Alternative to using the query method directly from a Data instance.
     Allows for querying multiple data sources.
 
-    Example:
-        >>>  # instantiate query with its project
-        >>>  query = Query(project) # doctest: +SKIP
-        >>>
-        >>>  # get datasets
-        >>>  data1 = Data('data_name1')
-        >>>  data2 = Data('data_name2')
-        >>>
-        >>>  # execute query asynchronously. Data source names must be defined as SQL aliases
-        >>>  # e.g. SELECT [data_source_name_1].[table_name1].*, [data_source_name_2].[table_name2]*
-        >>>  # this returns a QueryRunner instance
-        >>>  run = query.for_data([data1, data2]).execute('SELECT data_name1.table1.*') # doctest: +SKIP
-        >>>  # optionally, wait for completion
-        >>>  run.wait_for_completion()
-        >>>  # check result
-        >>>  result = run.get_results() # doctest: +SKIP
-
     Args:
         project (:obj:`dq0.sdk.cli.Project`): The project
             this query belongs to

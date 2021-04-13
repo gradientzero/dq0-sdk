@@ -8,6 +8,7 @@ All rights reserved
 import logging
 
 from dq0.mod_utils.modules import parse_kwargs, parse_value
+from dq0.sdk.estimators.estimator import Estimator
 
 import numpy as np
 
@@ -17,7 +18,7 @@ import tensorflow as tf
 logger = logging.getLogger(__name__)
 
 
-class NeuralNetworkBase:
+class NeuralNetworkBase(Estimator):
     """Base TF Network mixin."""
 
     def fit(self, X, y, **kwargs):
@@ -32,9 +33,9 @@ class NeuralNetworkBase:
         else:
             self.model.fit(X, y, **kwargs)
 
-    def setup_data(self, data_handler_instance='CSV', **kwargs):
+    def setup_data(self, data_handler_instance='CSV', pipeline_steps=None, pipeline_config_path=None, **kwargs):
         """Keras NN specific setup data. To get the input and output dimensions from the data handler."""
-        super().setup_data(data_handler_instance, **kwargs)
+        super().setup_data(data_handler_instance, pipeline_steps=None, pipeline_config_path=None, **kwargs)
 
         # get the input and output dimensions from the data.
         self.input_dim = self.data_handler.get_input_dim(self.X_train)
