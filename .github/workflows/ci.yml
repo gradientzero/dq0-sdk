@@ -3,8 +3,8 @@ name: ci
 on:
   push:
     branches:
-    - master
-    - actions
+    - master-non-existent
+    - actions-non-existent
 
 jobs:
   build:
