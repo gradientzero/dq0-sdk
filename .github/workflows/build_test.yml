@@ -1,0 +1,53 @@
+# https://docs.github.com/en/rest/reference/actions#create-a-workflow-dispatch-event
+# curl \
+#  -X POST \
+#  -H "Accept: application/vnd.github.v3+json" \
+#  https://api.github.com/repos/octocat/hello-world/actions/workflows/42/dispatches \
+#  -d '{"ref":"ref"}'
+
+name: build_test
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_branch: 
+        description: 'Which branch should be used as the source for the release (default: develop)'
+        default: 'develop'
+        required: true
+jobs:
+
+  # ------------------------------------------
+  # Build and Upload Artifacts
+  # ------------------------------------------
+  job_build_and_upload:
+    runs-on: ${{matrix.os}}
+    strategy:
+      matrix:
+        python-version: [3.7]
+        #os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest]
+    steps:
+
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install pip and setuptools dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install setuptools-cythonize==1.0.5
+
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        ref: '{{ github.event.inputs.source_branch }}'
+
+    - name: Install project dependencies
+      run: |
+        pip install -r requirements.txt
+
+    - name: Build None Universal Python Wheel
+      run: |
+        pip install pycodestyle==2.6.0
+        python setup.py bdist_wheel
