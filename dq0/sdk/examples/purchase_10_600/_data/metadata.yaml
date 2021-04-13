@@ -2,9 +2,8 @@ description: description
 name: medical_insurance
 privacy_column: ''
 schema:
-  connection: ../dq0-sdk/dq0/sdk/examples/purchase_10_600/_data/purchase_10_600_target_dataset.csv
+  connection: /Users/wolfganggross/code/dq0-privacy-checker/tests/integration_tests/purchase_10_600/_data/../../../../../dq0-sdk/dq0/sdk/examples/purchase_10_600/_data/purchase_10_600_target_dataset.csv
   table:
-    use_original_header: true
     '0':
       lower: 0.0
       synthesizable: true
@@ -954,7 +953,7 @@ schema:
       lower: 0.0
       synthesizable: true
       type: float
-      upper: 0.0
+      upper: 1.0
     '27':
       lower: 0.0
       synthesizable: true
@@ -1114,7 +1113,7 @@ schema:
       lower: 0.0
       synthesizable: true
       type: float
-      upper: 0.0
+      upper: 1.0
     '299':
       lower: 0.0
       synthesizable: true
@@ -1209,7 +1208,7 @@ schema:
       lower: 0.0
       synthesizable: true
       type: float
-      upper: 0.0
+      upper: 1.0
     '315':
       lower: 0.0
       synthesizable: true
@@ -1259,7 +1258,7 @@ schema:
       lower: 0.0
       synthesizable: true
       type: float
-      upper: 0.0
+      upper: 1.0
     '324':
       lower: 0.0
       synthesizable: true
@@ -1509,7 +1508,7 @@ schema:
       lower: 0.0
       synthesizable: true
       type: float
-      upper: 0.0
+      upper: 1.0
     '37':
       lower: 0.0
       synthesizable: true
@@ -1834,7 +1833,7 @@ schema:
       lower: 0.0
       synthesizable: true
       type: float
-      upper: 1.0
+      upper: 0.0
     '428':
       lower: 0.0
       synthesizable: true
@@ -1944,7 +1943,7 @@ schema:
       lower: 0.0
       synthesizable: true
       type: float
-      upper: 0.0
+      upper: 1.0
     '448':
       lower: 0.0
       synthesizable: true
@@ -2224,7 +2223,7 @@ schema:
       lower: 0.0
       synthesizable: true
       type: float
-      upper: 1.0
+      upper: 0.0
     '499':
       lower: 0.0
       synthesizable: true
@@ -2399,7 +2398,7 @@ schema:
       lower: 0.0
       synthesizable: true
       type: float
-      upper: 1.0
+      upper: 0.0
     '53':
       lower: 0.0
       synthesizable: true
@@ -2429,7 +2428,7 @@ schema:
       lower: 0.0
       synthesizable: true
       type: float
-      upper: 1.0
+      upper: 0.0
     '535':
       lower: 0.0
       synthesizable: true
@@ -2579,7 +2578,7 @@ schema:
       lower: 0.0
       synthesizable: true
       type: float
-      upper: 0.0
+      upper: 1.0
     '562':
       lower: 0.0
       synthesizable: true
@@ -2699,7 +2698,7 @@ schema:
       lower: 0.0
       synthesizable: true
       type: float
-      upper: 0.0
+      upper: 1.0
     '584':
       lower: 0.0
       synthesizable: true
@@ -2859,7 +2858,7 @@ schema:
       lower: 0.0
       synthesizable: true
       type: float
-      upper: 1.0
+      upper: 0.0
     '73':
       lower: 0.0
       synthesizable: true
@@ -3005,7 +3004,7 @@ schema:
       synthesizable: true
       type: float
       upper: 1.0
-    rows: 20430
+    rows: 21004
     y:
       lower: 0
       synthesizable: true
