@@ -90,6 +90,7 @@ ENV/
 env.bak/
 venv.bak/
 .vscode/
+dq0.code-workspace
 
 # Spyder project settings
 .spyderproject
@@ -115,3 +116,8 @@ venv.bak/
 # data file
 **/newsgroups/_data/preprocessed_dataset.csv
 output/eda/
+
+# Examples / outputs
+dq0/sdk/examples/census/raw/model/*
+mlruns/*
+tmp/*
