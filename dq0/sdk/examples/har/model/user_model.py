@@ -3,7 +3,9 @@
 
 http://groupware.les.inf.puc-rio.br/har
 
-Ugulino, W.; Cardador, D.; Vega, K.; Velloso, E.; Milidiu, R.; Fuks, H. Wearable Computing: Accelerometers' Data Classification of Body Postures and Movements. Proceedings of 21st Brazilian Symposium on Artificial Intelligence. Advances in Artificial Intelligence - SBIA 2012. In: Lecture Notes in Computer Science. , pp. 52-61. Curitiba, PR: Springer Berlin / Heidelberg, 2012. ISBN 978-3-642-34458-9. DOI: 10.1007/978-3-642-34459-6_6.
+Ugulino, W.; Cardador, D.; Vega, K.; Velloso, E.; Milidiu, R.; Fuks, H. Wearable Computing: Accelerometers' Data Classification of Body Postures and Movements.
+Proceedings of 21st Brazilian Symposium on Artificial Intelligence. Advances in Artificial Intelligence - SBIA 2012. In: Lecture Notes in Computer Science. ,
+pp. 52-61. Curitiba, PR: Springer Berlin / Heidelberg, 2012. ISBN 978-3-642-34458-9. DOI: 10.1007/978-3-642-34459-6_6.
 
 Read more: http://groupware.les.inf.puc-rio.br/har#ixzz6bPytcguP
 
@@ -27,7 +29,7 @@ All rights reserved
 
 import logging
 
-from dq0.mod_utils.error import fatal_error
+from dq0.sdk.errors.errors import fatal_error
 from dq0.sdk.models.tf import NeuralNetworkClassification
 
 logger = logging.getLogger()
@@ -113,7 +115,7 @@ class UserModel(NeuralNetworkClassification):
 
         dtypes = X.dtypes
         cat_cals = dtypes.loc[dtypes == 'O'].index
-        num_cols = dtypes.loc[dtypes != 'O'].index
+        _ = dtypes.loc[dtypes != 'O'].index
 
         # Convert cat to dummies
         for col in cat_cals:

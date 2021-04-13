@@ -65,12 +65,12 @@ sphinx-apidoc -M -o ./docs/source ./dq0 -f -e --implicit-namespaces
 ```
 This will (re-)generate multiple .rst file for each module / submodule and class.
 
-Execute makefile inside folder doc:
+Generate html documentation:
 ```bash
 (cd docs && make html)
 ```
 
-generate pdf:
+Generate documentation as one pdf file:
 ```bash
 (cd docs && sphinx-build -b rinoh source build/rinoh)
 ```

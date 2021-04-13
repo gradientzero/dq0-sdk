@@ -9,7 +9,7 @@ All rights reserved
 import logging
 from abc import ABC, abstractmethod
 
-from dq0.mod_utils import error
+from dq0.sdk.errors.errors import fatal_error
 
 import numpy as np
 
@@ -416,4 +416,4 @@ class ColumnSelector(Transformer):
         if isinstance(X, np.ndarray) or isinstance(X, pd.DataFrame):
             return X[self.selected_columns]
         else:
-            error.fatal_error(f'Transformer ColumnSelector does not support data of type {type(X)}. Only pd.DataFrames and numpy.arrays are supported')
+            fatal_error(f'Transformer ColumnSelector does not support data of type {type(X)}. Only pd.DataFrames and numpy.arrays are supported')

@@ -1,6 +1,8 @@
 """Auto populate dq0 metadata from CSV"""
 import os
 
+from dq0.sdk.data.metadata.metadata import Metadata
+
 import numpy as np
 
 import pandas as pd
@@ -14,10 +16,9 @@ type_ = 'CSV'
 connection = './dq0/sdk/examples/purchase_10_600/_data/purchase_10_600_target_dataset.csv'
 
 df = pd.read_csv(
-    connection,
-    )
+    connection)
 n_rows = df.shape[0]
-n_rows = int(n_rows + np.random.randint(-int(0.1*n_rows),int(0.1*n_rows),1)[0])
+n_rows = int(n_rows + np.random.randint(-int(0.1 * n_rows), int(0.1 * n_rows), 1)[0])
 # print(type(n_rows))
 
 # create yaml
@@ -39,14 +40,14 @@ for c in df.columns:
     card = None
     lower = None
     upper = None
-    if dtype_=='object':
+    if dtype_ == 'object':
         dtype_ = 'string'
         card = df[c].nunique()
-    if dtype_=='int64':
+    if dtype_ == 'int64':
         dtype_ = 'int'
         lower = int(df[c].quantile(np.random.uniform(0.05, 0.10, 1)))
         upper = int(df[c].quantile(np.random.uniform(0.9, 0.95, 1)))
-    if dtype_=='float':
+    if dtype_ == 'float':
         dtype_ = 'float'
         lower = float(df[c].quantile(np.random.uniform(0.05, 0.10, 1)))
         upper = float(df[c].quantile(np.random.uniform(0.9, 0.95, 1)))
@@ -63,10 +64,8 @@ for c in df.columns:
 meta_yaml = yaml.dump(meta_d)
 print(meta_yaml)
 
-from dq0.sdk.data.metadata.metadata import Metadata
-
 meta_dq0 = Metadata(yaml=meta_yaml)
 
-with open(os.path.join(os.path.split(connection)[0],'metadata.yaml'), 'w') as f:
+with open(os.path.join(os.path.split(connection)[0], 'metadata.yaml'), 'w') as f:
     yaml.dump(meta_d, f)
-meta_dq0.to_yaml_file(os.path.join(os.path.split(connection)[0],'metadata_parsed.yaml'))
+meta_dq0.to_yaml_file(os.path.join(os.path.split(connection)[0], 'metadata_parsed.yaml'))
