@@ -12,10 +12,10 @@ logger.error(),  for an error that DQ0 can recover from. E.g., log an error for
                  assign a default feasible value to the parameter and
                  continue program execution;
 
-mod_utils.error.fatal_error(error_msg)  for an error that DQ0 cannot recover
+ dq0.sdk.errors.errors..fatal_error(error_msg)  for an error that DQ0 cannot recover
                 from. Program execution is stopped.
                 Therefore, to handle fatal exception / error:
-                    mod_utils.error.fatal_error(message)
+                    dq0.sdk.errors.errors.fatal_error(message)
                 should be preferred to:
                     logger.fatal(message)
                     return 1.  / sys.exit(1)
