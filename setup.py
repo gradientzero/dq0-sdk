@@ -38,7 +38,7 @@ SETUP_REQUIRES = [
     'flake8-import-order~=0.18.1',
 ]
 
-PACKAGES = find_namespace_packages(include=['dq0.*'])  # find_packages()
+PACKAGES = find_namespace_packages(include=['dq0.*'])
 
 # Requirements
 INSTALL_REQUIRES = ['']
