@@ -35,7 +35,7 @@ class NeuralNetworkBase(Estimator):
 
     def setup_data(self, data_handler_instance='CSV', pipeline_steps=None, pipeline_config_path=None, **kwargs):
         """Keras NN specific setup data. To get the input and output dimensions from the data handler."""
-        super().setup_data(data_handler_instance, pipeline_steps=None, pipeline_config_path=None, **kwargs)
+        super().setup_data(data_handler_instance, pipeline_steps=pipeline_steps, pipeline_config_path=pipeline_config_path, **kwargs)
 
         # get the input and output dimensions from the data.
         self.input_dim = self.data_handler.get_input_dim(self.X_train)
