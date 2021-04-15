@@ -5,7 +5,7 @@
 #  https://api.github.com/repos/octocat/hello-world/actions/workflows/42/dispatches \
 #  -d '{"ref":"ref"}'
 
-name: build_test
+name: test_build
 
 on:
   workflow_dispatch:
