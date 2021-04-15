@@ -5,6 +5,8 @@ Copyright 2020, Gradient Zero
 All rights reserved
 """
 import logging
+import os
+import tempfile
 import warnings
 
 from dq0.sdk.data.utils import util
@@ -710,6 +712,52 @@ def visualize_continuous_distribution(series, output_folder, **kwargs):
               color_transparency_level=.8,
               graph_title=graph_title,
               file_with_fig=output_folder + series.name + fn_suffix + '.png')
+
+
+def save_figure(fig, figure_name, dpi=300, tracker=None,
+                tracker_output_path=None, output_folder=None):
+    """
+    Save figure referenced by input figure handle "fig". It also closes the
+    figure.
+
+    Args:
+        fig:
+        figure_name:
+        dpi (int): dots per inch. For printing and most screens, 150 is pretty
+            good, 300 is clear, and 600 is spectacular. 1200 or higher can
+            come in handy if you want to be able to do a lot of zooming in,
+            but your image can start to get very big on disk at that
+            resolution. Default: 300.
+        tracker:
+        tracker_output_path:
+        output_folder:
+
+    Returns:
+
+    """
+
+    # # log metrics
+    # if tracker is not None:
+    #     tracker.log_metric('elapsed_time_s', elapsed_time)
+    #     tracker.log_metric('consumed_budget', consumed_budget)
+
+    if tracker is not None:
+        destination_path = os.path.join(tracker_output_path,
+                                        figure_name + '.png')
+
+        # first, write the image into a named temporary file
+        with tempfile.NamedTemporaryFile(suffix=".png") as tmp_file:
+            fig.savefig(tmp_file, format="png", dpi=dpi)
+            tracker.log_file(tmp_file.name, destination_path=destination_path)
+
+        plt.close(fig)
+
+    if output_folder is not None:
+        fig.savefig(output_folder + figure_name + '.png', dpi=dpi)
+        # do not leave fig in RAM...
+        plt.close(fig)
+    else:
+        plt.show()
 
 
 if __name__ == '__main__':

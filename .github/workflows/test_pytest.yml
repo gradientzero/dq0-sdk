@@ -5,7 +5,7 @@
 #  https://api.github.com/repos/octocat/hello-world/actions/workflows/42/dispatches \
 #  -d '{"ref":"ref"}'
 
-name: test
+name: test_pytest
 
 on:
   workflow_dispatch:
@@ -17,11 +17,6 @@ on:
 
 jobs:
 
-  # ------------------------------------------
-  # run tests
-  # note: steps 'Setup environment' and 'Add System path'
-  # must be seperated. Otherwise it will not work
-  # ------------------------------------------
   job_test:
     runs-on: ${{ matrix.os }}
     strategy:
@@ -51,17 +46,7 @@ jobs:
         pip install -r requirements.txt
         pip install -r requirements-dev.txt
 
-    #- name: Generate dummy log file to avoid pytest errors. Should be solved later
-    #  run: |
-    #    mkdir logs
-    #    echo "" >> logs/dq0-log.log
-
     - name: Run pytest
       run: |
         pip install pytest
         python -m pytest -m "not slow"
-
-    #- name: Create wheel-cython distribution
-    #  run: |
-    #    python setup.py bdist_wheel
-    #    python setup.py bdist --cythonize
