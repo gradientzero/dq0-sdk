@@ -24,7 +24,7 @@ DESCRIPTION = 'DQ0 SDK Runtime'
 
 # Get the long description from the README file
 LONG_DESCRIPTION = ''
-with open(os.path.join(os.path.dirname(__file__), 'README.md'), 'r') as f:
+with open(os.path.join(os.path.dirname(__file__, encoding="utf8"), 'README.md'), 'r') as f:
     LONG_DESCRIPTION = f.read()
 LONG_DESCRIPTION_CONTENT_TYPE = 'text/markdown'
 
