@@ -1,5 +1,8 @@
 ## Changelog
 
+### 1.0.10.1 (2021-04-16)
+- [#79](https://github.com/gradientzero/dq0-sdk/pull/79) merge into develop from master@1.0.10.0 (@susdorf, @clincolnoz, @actions)
+
 ### 1.0.10.0 (2021-04-15)
 - [#78](https://github.com/gradientzero/dq0-sdk/pull/78) merge into develop from master@1.0.9.0 (@susdorf, @clincolnoz, @actions)
 
