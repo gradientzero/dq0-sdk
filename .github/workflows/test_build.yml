@@ -47,20 +47,3 @@ jobs:
     - name: Build None Universal Python Wheel
       run: |
         python setup.py bdist
-
-    - name: Platform dependent wheel fixes
-      if: startsWith(matrix.os, 'ubuntu')
-      run: |
-        pip install auditwheel
-        auditwheel repair --plat manylinux2014_x86_64 -w ./dist/ ./dist/*
-
-    - name: Platform dependent wheel fixes
-      if: startsWith(matrix.os, 'macos')
-      run: |
-        pip install delocate
-        delocate-wheel -v -k dist/dq0_*
-
-    - name: Platform dependent wheel fixes
-      if: startsWith(matrix.os, 'windows')
-      run: |
-        echo "just move to artifacts"
