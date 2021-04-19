@@ -46,4 +46,4 @@ jobs:
 
     - name: Build None Universal Python Wheel
       run: |
-        python setup.py bdist
+        python setup.py sdist bdist
