@@ -213,7 +213,7 @@ jobs:
 
     - name: Move wheel to artifacts
       run: |
-        mv dist/dq0_* path/to/artifacts/
+        mv dist/dq0* path/to/artifacts/
 
     - name: Upload artifacts for GitHub Release
       uses: actions/upload-artifact@master
