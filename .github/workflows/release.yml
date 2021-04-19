@@ -321,6 +321,7 @@ jobs:
         files: |
             path/to/artifacts/dq0-sdk-${{ github.event.inputs.target_tag }}.pdf
             path/to/artifacts/dq0_sdk-${{ github.event.inputs.target_tag }}-py3-none-any.whl
+            path/to/artifacts/dq0-sdk-${{ github.event.inputs.target_tag }}.tar.gz
             CHANGELOG.md
 
   # ------------------------------------------
