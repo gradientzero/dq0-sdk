@@ -16,16 +16,12 @@ on:
         required: true
 jobs:
 
-  # ------------------------------------------
-  # Build and Upload Artifacts
-  # ------------------------------------------
-  job_build_and_upload:
+  job_build:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
         python-version: [3.7]
-        #os: [ubuntu-latest, windows-latest, macos-latest]
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
 
     - name: Setup Python
@@ -37,6 +33,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install setuptools-cythonize==1.0.5
+        pip install pycodestyle==2.6.0
 
     - name: Checkout code
       uses: actions/checkout@v2
@@ -49,5 +46,4 @@ jobs:
 
     - name: Build None Universal Python Wheel
       run: |
-        pip install pycodestyle==2.6.0
-        python setup.py bdist_wheel
+        python setup.py sdist bdist
