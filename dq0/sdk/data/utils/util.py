@@ -1071,13 +1071,13 @@ def check_for_valid_numerical_encoding_of_labels(labels):
 
     labels = np.asarray(labels)  # cast into numpy.ndarray if not yet
 
-    assert labels.ndim <= 2
+    assert labels.ndim <= 2, 'labels.ndims <= 2 is False'
     if labels.ndim == 2:
-        assert labels.shape[1] == 1  # column vector
+        assert labels.shape[1] == 1, 'Is column vector'  # column vector
         labels = labels.flatten()  # flatten column vector
 
-    # unsigned integer, signed integer are valid type kind
-    numeric_kinds = set('ui')
+    # unsigned integer, signed integer, floats are valid type kind
+    numeric_kinds = set(['ui', 'i', 'f'])
     constraint_satisfied = labels.dtype.kind in numeric_kinds
     is_valid = is_valid and constraint_satisfied
 
