@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 # define version
-version = '1.0.9.0'
+version = '1.0.10.2'
 
 # module name used by service
 name = 'DQ0 Software Development Kit'

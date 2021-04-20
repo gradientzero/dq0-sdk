@@ -1,5 +1,14 @@
 ## Changelog
 
+### 1.0.10.2 (2021-04-19)
+- [#80](https://github.com/gradientzero/dq0-sdk/pull/80) merge into develop from master@1.0.10.1 (@susdorf, @clincolnoz, @actions)
+
+### 1.0.10.1 (2021-04-16)
+- [#79](https://github.com/gradientzero/dq0-sdk/pull/79) merge into develop from master@1.0.10.0 (@susdorf, @clincolnoz, @actions)
+
+### 1.0.10.0 (2021-04-15)
+- [#78](https://github.com/gradientzero/dq0-sdk/pull/78) merge into develop from master@1.0.9.0 (@susdorf, @clincolnoz, @actions)
+
 ### 1.0.9.0 (2021-04-13)
 - [#76](https://github.com/gradientzero/dq0-sdk/pull/76) Dq0 900: rm mod_utils dependency (@susdorf, @WolfgangGross)
 - [#74](https://github.com/gradientzero/dq0-sdk/pull/74) DQ0 823: Adds pipeline for data processing (@WolfgangGross)
@@ -32,21 +41,25 @@
 - [#45](https://github.com/gradientzero/dq0-sdk/pull/45) Dq0 452 (@gradientzero)
 - [#43](https://github.com/gradientzero/dq0-sdk/pull/43) Calibrate probs by keras models (@jonaboe)
 - [#41](https://github.com/gradientzero/dq0-sdk/pull/41) Dq0 402 (@clincolnoz, @susdorf)
+- [#40](https://github.com/gradientzero/dq0-sdk/pull/40) Dq0 402 (@clincolnoz, @susdorf, @jonaboe)
 - [#39](https://github.com/gradientzero/dq0-sdk/pull/39) Added calibration of posterior probabilities of the Naive Bayesian mo… (@gradientzero)
 - [#38](https://github.com/gradientzero/dq0-sdk/pull/38) Project ABC (@jonaboe)
 - [#37](https://github.com/gradientzero/dq0-sdk/pull/37) Dq0 348 (@susdorf)
 
 ### v1.1.0 (2020-07-16)
+- [#36](https://github.com/gradientzero/dq0-sdk/pull/36) v1.1.0 (@susdorf, @jonaboe, @WolfgangGross)
 - [#34](https://github.com/gradientzero/dq0-sdk/pull/34) Ticket 322 done: SDK models have their own implementation of fit and … (@gradientzero)
 - [#35](https://github.com/gradientzero/dq0-sdk/pull/35) change id to uuid (@WolfgangGross)
 - [#33](https://github.com/gradientzero/dq0-sdk/pull/33) Dq0 320 328 330 (@jonaboe)
 - [#32](https://github.com/gradientzero/dq0-sdk/pull/32) Dq0 287 (@gradientzero)
 
 ### v1.0.2 (2020-05-20)
+- [#31](https://github.com/gradientzero/dq0-sdk/pull/31) clean up & data (@jonaboe)
 - [#30](https://github.com/gradientzero/dq0-sdk/pull/30) cifar10 and image data source cleanup (@jonaboe)
 - [#28](https://github.com/gradientzero/dq0-sdk/pull/28) Dq0 292 and set up loss function in each user example using a NN (@gradientzero)
 
 ### v1.0.1 (2020-05-18)
+- [#27](https://github.com/gradientzero/dq0-sdk/pull/27) merged and set version to 1.0.1 (@susdorf, @jonaboe, @WolfgangGross, @clincolnoz)
 - [#26](https://github.com/gradientzero/dq0-sdk/pull/26) Bayesian models cleaned up. Ensured that only the models with attribute model_type can be instantiated. (@gradientzero)
 - [#25](https://github.com/gradientzero/dq0-sdk/pull/25) Dq0 283 (@jonaboe)
 - [#24](https://github.com/gradientzero/dq0-sdk/pull/24) In both sdk examples and sdk models, model.optimizer is set only by s… (@gradientzero)
