@@ -1,0 +1,557 @@
+description: 'This data was extracted from the 1994 Census bureau database by Ronny
+  Kohavi and Barry Becker (Data Mining and Visualization, Silicon Graphics). A set
+  of reasonably clean records was extracted using the following conditions: ((AAGE>16)
+  && (AGI>100) && (AFNLWGT>1) && (HRSWK>0)). The prediction task is to determine whether
+  a person makes over $50K a year.'
+name: Adult Census Income Preprocessed
+privacy_column: fnlwgt
+schema:
+  connection: ../dq0-sdk/dq0/examples/census/_data/adult_processed.csv
+  table:
+    age:
+      lower: 0.0547945205479452
+      synthesizable: true
+      type: float
+      upper: 0.5753424657534245
+    capital-gain:
+      lower: 0.0
+      synthesizable: true
+      type: float
+      upper: 0.09460179133381748
+    capital-loss:
+      lower: 0.0
+      synthesizable: true
+      type: float
+      upper: 0.0
+    education-num:
+      lower: 0.4
+      synthesizable: true
+      type: float
+      upper: 0.8
+    education_10th:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    education_11th:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    education_12th:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    education_1st-4th:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    education_5th-6th:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    education_7th-8th:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    education_9th:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    education_Assoc-acdm:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    education_Assoc-voc:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    education_Bachelors:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 1
+    education_Doctorate:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    education_HS-grad:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 1
+    education_Masters:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    education_Preschool:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    education_Prof-school:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    education_Some-college:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 1
+    fnlwgt:
+      lower: 0.025756453320614433
+      synthesizable: true
+      type: float
+      upper: 0.2445100685670601
+    hours-per-week:
+      lower: 0.1958762886597938
+      synthesizable: true
+      type: float
+      upper: 0.5567010309278351
+    income:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 1
+    marital-status_Divorced:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 1
+    marital-status_Married-AF-spouse:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    marital-status_Married-civ-spouse:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 1
+    marital-status_Married-spouse-absent:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    marital-status_Never-married:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 1
+    marital-status_Separated:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    marital-status_Widowed:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_Cambodia:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_Canada:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_China:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_Columbia:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_Cuba:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_Dominican-Republic:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_Ecuador:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_El-Salvador:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_England:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_France:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_Germany:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_Greece:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_Guatemala:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_Haiti:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_Holand-Netherlands:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_Honduras:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_Hong:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_Hungary:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_India:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_Iran:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_Ireland:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_Italy:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_Jamaica:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_Japan:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_Laos:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_Mexico:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_Nicaragua:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_Outlying-US(Guam-USVI-etc):
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_Peru:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_Philippines:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_Poland:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_Portugal:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_Puerto-Rico:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_Scotland:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_South:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_Taiwan:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_Thailand:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_Trinadad&Tobago:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_United-States:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 1
+    native-country_Unknown:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_Vietnam:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    native-country_Yugoslavia:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    occupation_Adm-clerical:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 1
+    occupation_Armed-Forces:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    occupation_Craft-repair:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 1
+    occupation_Exec-managerial:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 1
+    occupation_Farming-fishing:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    occupation_Handlers-cleaners:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    occupation_Machine-op-inspct:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    occupation_Other-service:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 1
+    occupation_Priv-house-serv:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    occupation_Prof-specialty:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 1
+    occupation_Protective-serv:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    occupation_Sales:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 1
+    occupation_Tech-support:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    occupation_Transport-moving:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    occupation_Unknown:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 1
+    race_Amer-Indian-Eskimo:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    race_Asian-Pac-Islander:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    race_Black:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 1
+    race_Other:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    race_White:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 1
+    relationship_Husband:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 1
+    relationship_Not-in-family:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 1
+    relationship_Other-relative:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    relationship_Own-child:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 1
+    relationship_Unmarried:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 1
+    relationship_Wife:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    rows: 45559
+    sex_Female:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 1
+    sex_Male:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 1
+    workclass_Federal-gov:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    workclass_Local-gov:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    workclass_Never-worked:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    workclass_Private:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 1
+    workclass_Self-emp-inc:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    workclass_Self-emp-not-inc:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    workclass_State-gov:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+    workclass_Unknown:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 1
+    workclass_Without-pay:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 0
+type: CSV

@@ -118,6 +118,6 @@ dq0.code-workspace
 output/eda/
 
 # Examples / outputs
-dq0/sdk/examples/census/raw/model/*
+dq0/examples/census/raw/model/*
 mlruns/*
 tmp/*
