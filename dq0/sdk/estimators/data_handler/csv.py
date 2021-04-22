@@ -20,10 +20,8 @@ logger = logging.getLogger(__name__)
 class CSVDataHandler(BasicDataHandler):
     """Basic CSV Data Handler for all estimators"""
 
-    def __init__(self, pipeline_steps=None, pipeline_config_path=None, transformers_root_dir='.', log_key_string='.'):
-        super().__init__(pipeline_steps=pipeline_steps, pipeline_config_path=pipeline_config_path, transformers_root_dir=transformers_root_dir,
-                         log_key_string=log_key_string)
-        self.log_key_string = log_key_string
+    def __init__(self, pipeline_steps=None, pipeline_config_path=None, transformers_root_dir='.'):
+        super().__init__(pipeline_steps=pipeline_steps, pipeline_config_path=pipeline_config_path, transformers_root_dir=transformers_root_dir)
 
     def setup_data(self, data_source, train_size=0.66, **kwargs):
         """ Setup data from CSV file. Using the CSV data source.

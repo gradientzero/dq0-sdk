@@ -43,7 +43,7 @@ class PipelineConfig:
         config = yaml.load(yaml_input, Loader=yaml.FullLoader)
         return config
 
-    def get_steps_from_config(self, root_dir='./dq0/sdk/pipeline/transformer/transformer.py', log_key_string=''):
+    def get_steps_from_config(self, root_dir='./dq0/sdk/pipeline/transformer/transformer.py'):
         """Goes though the list pipeline of the config and sets ups the setps list of tuples to initialize the pipeline with."""
         pipeline_config = self.config['pipeline']
         self.steps = []
@@ -66,8 +66,8 @@ class PipelineConfig:
                     self.steps.append((key, trans))
 
             except Exception as e:
-                logging.debug(f'{e} {log_key_string}')
+                logging.debug(f'{e}')
                 pass
 
-        logger.info(f"loaded tranformers: {self.steps} {log_key_string}")
+        logger.info(f"loaded tranformers: {self.steps}")
         return self.steps
