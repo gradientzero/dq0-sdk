@@ -15,8 +15,8 @@ import os
 import pickle
 
 import dq0.sdk
+from dq0.examples.newsgroups.network.model.user_model import UserModel
 from dq0.sdk.data.utils import util
-from dq0.sdk.examples.newsgroups.network.model.user_model import UserModel
 
 import pytest
 
@@ -36,7 +36,7 @@ def test_nn_and_data_setup():
     util.initialize_rnd_numbers_generators_state()
 
     # path to input
-    path = '../../../dq0/sdk/examples/newsgroups/_data/20newsgroups_text_label_df.csv'
+    path = '../../../dq0/examples/newsgroups/_data/20newsgroups_text_label_df.csv'
     filepath = os.path.join(os.path.dirname(
         os.path.abspath(__file__)), path)
 

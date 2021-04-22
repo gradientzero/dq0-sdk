@@ -15,8 +15,8 @@ import os
 import pickle
 
 import dq0.sdk
+from dq0.examples.cifar.model.user_model import UserModel
 from dq0.sdk.data.utils import util
-from dq0.sdk.examples.cifar.model.user_model import UserModel
 
 import pytest
 
@@ -34,7 +34,7 @@ def test_cnn_and_data_setup():
     util.initialize_rnd_numbers_generators_state()
 
     # path to input
-    path = '../../../dq0/sdk/examples/cifar/_data/cifar_dummy.csv'
+    path = '../../../dq0/examples/cifar/_data/cifar_dummy.csv'
     filepath = os.path.join(os.path.dirname(
         os.path.abspath(__file__)), path)
 

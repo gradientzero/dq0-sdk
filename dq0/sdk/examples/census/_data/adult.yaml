@@ -1,5 +1,0 @@
-name: 'adult'
-description: 'some description'
-type: 'CSV'
-DatabaseSchema1:
-    connection: '/Users/wolfganggross/code/dq0-sdk/dq0/sdk/examples/census/_data/adult_with_rand_names.csv'

@@ -47,8 +47,8 @@ def test_CSVDataHandler_census():
     target_cols = ['income']
     # test with pipeline
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    config_path = os.path.join(dir_path, '..', '..', '..', 'dq0', 'sdk', 'examples', 'census', '_data', 'pipeline_config.yaml')
-    data_path = os.path.join(dir_path, '..', '..', '..', 'dq0', 'sdk', 'examples', 'census', '_data', 'adult_with_rand_names_w_header.csv')
+    config_path = os.path.join(dir_path, '..', '..', '..', 'dq0', 'examples', 'census', '_data', 'pipeline_config.yaml')
+    data_path = os.path.join(dir_path, '..', '..', '..', 'dq0', 'examples', 'census', '_data', 'adult_with_rand_names_w_header.csv')
     data_source = CSV(path=data_path, feature_cols=feature_cols, target_cols=target_cols)
     data_handler = CSVDataHandler(pipeline_config_path=config_path, transformers_root_dir='./dq0/sdk/pipeline/transformer/transformer.py')
     X_train, X_test, y_train, y_test = data_handler.setup_data(data_source=data_source)
