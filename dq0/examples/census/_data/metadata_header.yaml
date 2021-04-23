@@ -102,4 +102,3 @@ schema:
       synthesizable: true
       type: string
       is_feature: True
-type: CSV
