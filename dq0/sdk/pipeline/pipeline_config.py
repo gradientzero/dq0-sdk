@@ -43,6 +43,18 @@ class PipelineConfig:
         config = yaml.load(yaml_input, Loader=yaml.FullLoader)
         return config
 
+    def get_input_columns_per_step(self):
+        """ Helper function to return all input columns for all steps in the pipeline
+
+        Retruns: a list of input columns for each step.
+        """
+        pipeline_config = self.config['pipeline']
+        steps_input_cols = []
+        for pipeline_config_step in pipeline_config:
+            key = list(pipeline_config_step.keys())[0]
+            steps_input_cols.append(pipeline_config_step[key]['input_col'])
+        return steps_input_cols
+
     def get_steps_from_config(self, root_dir='./dq0/sdk/pipeline/transformer/transformer.py'):
         """Goes though the list pipeline of the config and sets ups the setps list of tuples to initialize the pipeline with."""
         pipeline_config = self.config['pipeline']

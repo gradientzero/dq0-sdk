@@ -38,6 +38,12 @@ class CSVDataHandler(BasicDataHandler):
         if not isinstance(self.data, pd.DataFrame):
             raise ValueError("Data loaded is not of type pandas.DataFrame, but: {}".format(type(self.data)))
 
+        # check if header is present and is matching the pipeline config columns
+        input_cols_first_step = self.pipeline.steps_input_cols[0]
+        for col in input_cols_first_step:
+            if col not in self.data.columns:
+                raise ValueError(f"Column '{col}' not in the header of the CSV file. Check if header is present and if it matches the input columns the pipeline config.")
+
         # run pipeline
         if self.pipeline is not None:
             self.data = self.pipeline.fit_transform(self.data)

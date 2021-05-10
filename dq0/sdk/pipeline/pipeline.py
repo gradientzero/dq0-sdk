@@ -25,11 +25,14 @@ class Pipeline():
             steps: List of (name, transform) tuples (implementing fit/transform) that are chained, in the order in which they are chained.
             config_path: path to config file where the pipelien steps are given.
         """
+        # using steps as input (stand alone)
         if (steps is not None) and (config_path is None):
             self.pipeline = pipeline.Pipeline(steps)
+        # using config path
         elif (steps is None) and (config_path is not None):
             pp_config = pipeline_config.PipelineConfig(config_path=config_path)
             steps = pp_config.get_steps_from_config(root_dir=transformers_root_dir)
+            self.steps_input_cols = pp_config.get_input_columns_per_step()  # use for checks later
             self.pipeline = pipeline.Pipeline(steps)
         else:
             fatal_error("Both steps and config_path are given. Only one should be given.")
