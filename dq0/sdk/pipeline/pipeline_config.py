@@ -78,7 +78,7 @@ class PipelineConfig:
                     self.steps.append((key, trans))
 
             except Exception as e:
-                logging.debug(f'{e}')
+                print(f'{e}')
                 pass
 
         logger.info(f"loaded tranformers: {self.steps}")
