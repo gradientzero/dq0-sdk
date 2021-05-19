@@ -21,8 +21,11 @@ All rights reserved
 
 import logging
 
+from dq0.sdk.data.utils import util
 from dq0.sdk.errors import fatal_error
 from dq0.sdk.models.tf import NeuralNetworkClassification
+
+import sklearn
 
 logger = logging.getLogger('dq0.' + __name__)
 
@@ -43,7 +46,7 @@ class UserModel(NeuralNetworkClassification):
         This function can be used to prepare data or perform
         other tasks for the training run.
 
-        At runtime the selected datset is attached to this model. It
+        At runtime the selected dataset is attached to this model. It
         is available as the `data_source` attribute.
 
         For local testing call `model.attach_data_source(some_data_source)`
@@ -52,6 +55,9 @@ class UserModel(NeuralNetworkClassification):
         Use `self.data_source.read()` to read the attached data.
         """
         from sklearn.model_selection import train_test_split
+
+        # dq0.sdk.data.metadata.Metadata object with info about the dataset
+        metadata = kwargs.get('metadata', None)
 
         # columns
         self.column_names_list = [
@@ -74,7 +80,7 @@ class UserModel(NeuralNetworkClassification):
             'income'
         ]
 
-        self.columns_types_list = [
+        self.column_types_list = [
             {
                 'name': 'age',
                 'type': 'int'
@@ -248,11 +254,19 @@ class UserModel(NeuralNetworkClassification):
                     'Holand-Netherlands',
                     'Unknown'
                 ]
+            },
+            {
+                'name': 'income',
+                'type': 'string',
+                'values': [
+                    '<=50K',
+                    '>50K'
+                ]
             }
         ]
 
         # read and preprocess the data
-        dataset_df = self.preprocess()
+        dataset_df = self.preprocess(metadata)
 
         # do the train test split
         X_train_df, X_test_df, y_train_ts, y_test_ts =\
@@ -273,12 +287,12 @@ class UserModel(NeuralNetworkClassification):
         logger.debug("y_train.shape: {}".format(self.y_train.shape))
         logger.debug("y_test.shape: {}".format(self.y_test.shape))
 
-    def preprocess(self):
+    def preprocess(self, metadata=None):
         """Preprocess the data
 
         Preprocess the data set. The input data is read from the attached source.
 
-        At runtime the selected datset is attached to this model. It
+        At runtime the selected dataset is attached to this model. It
         is available as the `data_source` attribute.
 
         For local testing call `model.attach_data_source(some_data_source)`
@@ -286,15 +300,15 @@ class UserModel(NeuralNetworkClassification):
 
         Use `self.data_source.read()` to read the attached data.
 
+        Args:
+            metadata (dq0.sdk.data.metadata.Metadata): Metadata object with info
+                about the dataset.
+
         Returns:
             preprocessed data
         """
         from dq0.sdk.data.preprocessing import preprocessing
-        import sklearn.preprocessing
         import pandas as pd
-
-        column_names_list = self.column_names_list
-        columns_types_list = self.columns_types_list
 
         # get the input dataset
         if self.data_source is None:
@@ -302,7 +316,7 @@ class UserModel(NeuralNetworkClassification):
 
         # read the data via the attached input data source
         dataset = self.data_source.read(
-            names=column_names_list,
+            names=self.column_names_list,
             sep=',',
             skiprows=1,
             index_col=None,
@@ -318,21 +332,32 @@ class UserModel(NeuralNetworkClassification):
 
         # drop unused columns
         dataset.drop(['lastname', 'firstname'], axis=1, inplace=True)
-        column_names_list.remove('lastname')
-        column_names_list.remove('firstname')
+        self.column_names_list.remove('lastname')
+        self.column_names_list.remove('firstname')
+
+        if metadata is not None:
+            categorical_features_list, quantitative_features_list = \
+                util.load_dataset_info_from_yaml(metadata, self.column_names_list)
+        else:
+            # get categorical features
+            categorical_features_list = [
+                col['name'] for col in self.column_types_list
+                if col['type'] == 'string']
+
+            # get quantitative features
+            quantitative_features_list = [
+                col['name'] for col in self.column_types_list
+                if col['type'] == 'int' or col['type'] == 'float']
 
         # define target feature
         target_feature = 'income'
 
-        # get categorical features
-        categorical_features_list = [
-            col['name'] for col in columns_types_list
-            if col['type'] == 'string']
-
-        # get quantitative features
-        quantitative_features_list = [
-            col['name'] for col in columns_types_list
-            if col['type'] == 'int' or col['type'] == 'float']
+        if target_feature in categorical_features_list:
+            categorical_features_list = list(
+                set(categorical_features_list) - {target_feature})
+        if target_feature in quantitative_features_list:
+            quantitative_features_list = list(
+                set(quantitative_features_list) - {target_feature})
 
         # get arguments
         approach_for_missing_feature = 'imputation'
@@ -355,23 +380,15 @@ class UserModel(NeuralNetworkClassification):
         # get dummy columns
         dataset = pd.get_dummies(dataset, columns=categorical_features_list, dummy_na=False)
 
-        # unzip categorical features with dummies
-        categorical_features_list_with_dummies = []
-        for col in columns_types_list:
-            if col['type'] == 'string':
-                for value in col['values']:
-                    categorical_features_list_with_dummies.append('{}_{}'.format(col['name'], value))
-
-        # add missing columns
-        missing_columns = set(categorical_features_list_with_dummies) - set(dataset.columns)
-        for col in missing_columns:
-            dataset[col] = 0
-
-        # and sort the columns
+        dataset = self._handle_categorical_feature_values_missing_in_dataset(
+            dataset)
+        # sort columns
         dataset = dataset.reindex(sorted(dataset.columns), axis=1)
 
-        # Scale values to the range from 0 to 1 to be precessed by the neural network
-        dataset[quantitative_features_list] = sklearn.preprocessing.minmax_scale(dataset[quantitative_features_list])
+        # scale values to the range from 0 to 1 to be precessed by the
+        # neural network
+        dataset[quantitative_features_list] = sklearn.preprocessing.minmax_scale(
+            dataset[quantitative_features_list])
 
         # label target
         y_ts = dataset[target_feature]
@@ -380,6 +397,43 @@ class UserModel(NeuralNetworkClassification):
         y_bin = pd.Series(index=y_ts.index, data=y_bin_nb)
         dataset.drop([target_feature], axis=1, inplace=True)
         dataset[target_feature] = y_bin
+
+        return dataset
+
+    def _handle_categorical_feature_values_missing_in_dataset(self, dataset):
+        """
+        Add missing columns (if any) due to feature values missing in the
+        dataset. If a feasible value "v" of a categorical feature "f" is
+        missing in the dataset, one-hot encoding of "f" does not generate
+        the column associated to "v".
+
+        Args:
+            dataset(Pandas.DataFrame): dataset with one-hot encoded
+                categorical features.
+
+        Returns:
+            dataset(Pandas.DataFrame) with columns
+        """
+        # unzip categorical features with dummies
+        categorical_features_list_with_dummies = []
+        for col in self.column_types_list:
+            if col['type'] == 'string':
+                for value in col['values']:
+                    categorical_features_list_with_dummies.append(
+                        '{}_{}'.format(col['name'], value))
+
+        missing_columns = set(
+            categorical_features_list_with_dummies) - set(dataset.columns)
+
+        for col in missing_columns:
+            pos = col.rfind('_')
+            f = col[:pos]
+            v = col[pos + 1:]
+            logger.warning('Feasible value "{}" of categorical feature "{}" '
+                           'not appearing in the dataset'.format(v, f))
+
+            # add column to the DataFrame and fill it with zero values
+            dataset[col] = 0
 
         return dataset
 

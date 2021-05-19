@@ -21,7 +21,7 @@ class Metadata:
     Attributes:
         name: parsed name property.
         description: parsed description property
-        type: parsed type propertey.
+        type: parsed type property.
         schemas: parsed schema metadata (see class Schema below)
         privacy_column: the unique privacy column for this data set
     """
