@@ -8,6 +8,7 @@ implementing subclasses.
 from . import binary, image, sql, text, utils
 from .source import Source
 from .transform import Transform
+from .base_preprocess import BasePreprocess
 
 __all__ = [
     'Source',
@@ -16,5 +17,6 @@ __all__ = [
     'image',
     'sql',
     'text',
-    'utils'
+    'utils',
+    'BasePreprocess'
 ]
