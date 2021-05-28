@@ -17,6 +17,7 @@ description: 'some description'
 tags: 'tag1,tag2'
 type: 'CSV'
 privacy_column: 'user_id'
+metadata_is_public: true
 Database:
     connection: 'user@db'
     size: 1001
@@ -73,6 +74,7 @@ Database:
     assert metadata.tags == "tag1,tag2"
     assert metadata.type == "CSV"
     assert metadata.privacy_column == 'user_id'
+    assert metadata.metadata_is_public is True
     assert metadata.schemas['Database'].connection == "user@db"
     assert metadata.schemas['Database'].size == 1001
     assert metadata.schemas['Database'].privacy_budget == 1000
@@ -122,6 +124,7 @@ Database:
     # change metadata
     metadata.schemas['Database'].privacy_budget = 1234
     metadata.description = 'new description'
+    metadata.metadata_is_public = False
 
     # save metadata
     yaml_string = metadata.to_yaml()
@@ -132,10 +135,12 @@ Database:
     # test again
     assert metadata.schemas['Database'].privacy_budget == 1234
     assert metadata.description == "new description"
+    assert metadata.metadata_is_public is False
 
     # change metadata
     metadata.schemas['Database'].privacy_budget = 5678
     metadata.description = 'new description 2'
+    metadata.metadata_is_public = None
 
     # dump metadata
     meta_string = metadata.to_yaml()
@@ -146,6 +151,7 @@ Database:
     # test again
     assert metadata.schemas['Database'].privacy_budget == 5678
     assert metadata.description == "new description 2"
+    assert metadata.metadata_is_public is False
 
     # test drop columns
     metadata.drop_columns_with_key_value('synthesizable', False)
