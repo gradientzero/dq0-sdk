@@ -42,8 +42,8 @@ class NaiveBayesianModel(Model):
 
         self.metrics = None
 
-        # calibrate posterior probabilities of the fitted model
-        self.calibrate_posterior_probabilities = True
+        # method to calibrate the posterior probabilities of the fitted model (
+        # if calibration is enabled via command line)
         self.calibration_method = 'isotonic'
 
     def to_string(self):
