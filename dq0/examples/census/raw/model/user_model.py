@@ -21,10 +21,10 @@ All rights reserved
 
 import logging
 
+# from dq0.examples.census.raw.model.preprocess import CalledWhatever
 from dq0.sdk.data.base_preprocess import BasePreprocess
 from dq0.sdk.errors import fatal_error
 from dq0.sdk.models.tf import NeuralNetworkClassification
-# from .preprocess import CalledWhatever
 
 logger = logging.getLogger('dq0.' + __name__)
 
@@ -126,6 +126,15 @@ class UserModel(NeuralNetworkClassification):
 
 
 class CalledWhatever(BasePreprocess):
+    """ Derived from dq0.sdk.data.base_preprocess.BasePreprocess class
+    
+    User defined preprocessing class used
+    to preprocess data in setup_data() during training run
+    and later for predict.
+
+    Note: all preprocessing required at predict must be included
+
+    """
     def __init__(self):
         super().__init__()
         self.per_feature_imputation_value_ts = None
@@ -346,20 +355,11 @@ class CalledWhatever(BasePreprocess):
     def run(self, x, y=None, train=False):
         """Preprocess the data
 
-        Preprocess the data set. The input data is read from the attached source.
-
-        At runtime the selected datset is attached to this model. It
-        is available as the `data_source` attribute.
-
-        For local testing call `model.attach_data_source(some_data_source)`
-        manually before calling `setup_data()`.
-
-        Use `self.data_source.read()` to read the attached data.
+        Preprocess the data set and store transformer parameters.
 
         Returns:
             preprocessed data
         """
-        # from dq0.sdk.data.preprocessing import preprocessing
         import sklearn.preprocessing
         import pandas as pd
         import numpy as np
@@ -438,7 +438,5 @@ class CalledWhatever(BasePreprocess):
                 raise ValueError('self.le_params cannot be None')
         
             y = le.transform(y)
-
-        # x.to_csv('/Users/cl/Documents/projects/gradient0/dq0-sdk/dq0/examples/census/_data/X_{}.csv'.format(train))
 
         return x, y

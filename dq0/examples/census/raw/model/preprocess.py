@@ -1,6 +1,40 @@
+"""Adult dataset preprocess example.
+
+Neural network model definition
+
+Example:
+    >>> ./dq0 project create --name demo # doctest: +SKIP
+    >>> cd demo # doctest: +SKIP
+    >>> copy user_model.py to demo/model/ # doctest: +SKIP
+    >>> ../dq0 data list # doctest: +SKIP
+    >>> ../dq0 model attach --id <dataset id> # doctest: +SKIP
+    >>> ../dq0 project deploy # doctest: +SKIP
+    >>> ../dq0 model train # doctest: +SKIP
+    >>> ../dq0 model state # doctest: +SKIP
+    >>> ../dq0 model predict --input-path </path/to/numpy.npy> # doctest: +SKIP
+    >>> ../dq0 model state # doctest: +SKIP
+
+Copyright 2020, Gradient Zero
+All rights reserved
+"""
+
+import logging
+
 from dq0.sdk.data.base_preprocess import BasePreprocess
 
+logger = logging.getLogger('dq0.' + __name__)
+
+
 class CalledWhatever(BasePreprocess):
+    """ Derived from dq0.sdk.data.base_preprocess.BasePreprocess class
+    
+    User defined preprocessing class used
+    to preprocess data in setup_data() during training run
+    and later for predict.
+
+    Note: all preprocessing required at predict must be included
+
+    """
     def __init__(self):
         super().__init__()
         self.per_feature_imputation_value_ts = None
@@ -221,20 +255,11 @@ class CalledWhatever(BasePreprocess):
     def run(self, x, y=None, train=False):
         """Preprocess the data
 
-        Preprocess the data set. The input data is read from the attached source.
-
-        At runtime the selected datset is attached to this model. It
-        is available as the `data_source` attribute.
-
-        For local testing call `model.attach_data_source(some_data_source)`
-        manually before calling `setup_data()`.
-
-        Use `self.data_source.read()` to read the attached data.
+        Preprocess the data set and store transformer parameters.
 
         Returns:
             preprocessed data
         """
-        # from dq0.sdk.data.preprocessing import preprocessing
         import sklearn.preprocessing
         import pandas as pd
         import numpy as np
@@ -313,7 +338,5 @@ class CalledWhatever(BasePreprocess):
                 raise ValueError('self.le_params cannot be None')
         
             y = le.transform(y)
-
-        # x.to_csv('/Users/cl/Documents/projects/gradient0/dq0-sdk/dq0/examples/census/_data/X_{}.csv'.format(train))
 
         return x, y
