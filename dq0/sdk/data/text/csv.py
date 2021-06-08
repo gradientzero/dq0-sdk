@@ -64,7 +64,6 @@ class CSV(Source):
             else:
                 header = self.header_row if self.header_row is not None else None
             try:
-                print([header, skiprows, names])
                 df = pd.read_csv(self.path, header=header, names=names, skiprows=skiprows, **kwargs)
             except:
                 print('Failed to load CSV with use_original_header {}, '
