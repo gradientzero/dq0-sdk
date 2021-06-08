@@ -3,39 +3,49 @@ description: 'This data was extracted from the 1994 Census bureau database by Ro
   of reasonably clean records was extracted using the following conditions: ((AAGE>16)
   && (AGI>100) && (AFNLWGT>1) && (HRSWK>0)). The prediction task is to determine whether
   a person makes over $50K a year.'
-name: census
+metadata_is_public: false
+name: Adult Census Income
 privacy_column: fnlwgt
 schema:
   connection: ../dq0-sdk/dq0/examples/census/_data/adult_with_rand_names.csv
-  privacy_budget: 1000
-  privacy_budget_interval_days: 30
+  privacy_budget: 0.0
+  privacy_budget_interval_days: 0
   privacy_level: 2
-  size: 40000
+  size: 0
   synth_allowed: false
   table:
     age:
-      bounded: true
+      bounded: false
       cardinality: 0
+      discrete: false
+      is_feature: true
+      is_target: false
       lower: 20
       private_id: false
       selectable: false
       synthesizable: true
       type: int
-      upper: 61
+      upper: 60
       use_auto_bounds: false
     capital-gain:
-      bounded: true
+      bounded: false
       cardinality: 0
+      discrete: false
+      is_feature: true
+      is_target: false
       lower: 0
       private_id: false
       selectable: false
       synthesizable: true
       type: int
-      upper: 4064
+      upper: 2463
       use_auto_bounds: false
     capital-loss:
-      bounded: true
+      bounded: false
       cardinality: 0
+      discrete: false
+      is_feature: true
+      is_target: false
       lower: 0
       private_id: false
       selectable: false
@@ -47,17 +57,24 @@ schema:
     clamp_columns: true
     clamp_counts: false
     education:
-      bounded: true
+      bounded: false
       cardinality: 16
+      discrete: false
+      is_feature: true
+      is_target: false
+      min_step: 1.0
       private_id: false
       selectable: false
       synthesizable: true
       type: string
       use_auto_bounds: false
     education-num:
-      bounded: true
+      bounded: false
       cardinality: 0
-      lower: 6
+      discrete: false
+      is_feature: true
+      is_target: false
+      lower: 5
       private_id: false
       selectable: false
       synthesizable: true
@@ -65,27 +82,55 @@ schema:
       upper: 14
       use_auto_bounds: false
     firstname:
-      bounded: true
+      bounded: false
       cardinality: 3298
+      discrete: false
+      is_feature: true
+      is_target: false
+      min_step: 1.0
       private_id: false
       selectable: false
       synthesizable: true
       type: string
       use_auto_bounds: false
     fnlwgt:
-      bounded: true
+      bounded: false
       cardinality: 0
-      lower: 45868
+      discrete: false
+      is_feature: true
+      is_target: false
+      lower: 57233
       private_id: false
       selectable: false
       synthesizable: true
       type: int
-      upper: 349148
+      upper: 354632
       use_auto_bounds: false
+    header_columns:
+    - lastname
+    - firstname
+    - age
+    - workclass
+    - fnlwgt
+    - education
+    - education-num
+    - marital-status
+    - occupation
+    - relationship
+    - race
+    - sex
+    - capital-gain
+    - capital-loss
+    - hours-per-week
+    - native-country
+    - income
     hours-per-week:
-      bounded: true
+      bounded: false
       cardinality: 0
-      lower: 21
+      discrete: false
+      is_feature: true
+      is_target: false
+      lower: 20
       private_id: false
       selectable: false
       synthesizable: true
@@ -93,24 +138,36 @@ schema:
       upper: 55
       use_auto_bounds: false
     income:
-      bounded: true
+      bounded: false
       cardinality: 2
+      discrete: false
+      is_feature: false
+      is_target: true
+      min_step: 1.0
       private_id: false
       selectable: false
       synthesizable: true
       type: string
       use_auto_bounds: false
     lastname:
-      bounded: true
+      bounded: false
       cardinality: 18144
+      discrete: false
+      is_feature: true
+      is_target: false
+      min_step: 1.0
       private_id: false
       selectable: false
       synthesizable: true
       type: string
       use_auto_bounds: false
     marital-status:
-      bounded: true
+      bounded: false
       cardinality: 7
+      discrete: false
+      is_feature: true
+      is_target: false
+      min_step: 1.0
       private_id: false
       selectable: false
       synthesizable: true
@@ -118,53 +175,77 @@ schema:
       use_auto_bounds: false
     max_ids: 1
     native-country:
-      bounded: true
+      bounded: false
       cardinality: 42
+      discrete: false
+      is_feature: true
+      is_target: false
+      min_step: 1.0
       private_id: false
       selectable: false
       synthesizable: true
       type: string
       use_auto_bounds: false
     occupation:
-      bounded: true
+      bounded: false
       cardinality: 15
+      discrete: false
+      is_feature: true
+      is_target: false
+      min_step: 1.0
       private_id: false
       selectable: false
       synthesizable: true
       type: string
       use_auto_bounds: false
     race:
-      bounded: true
+      bounded: false
       cardinality: 5
+      discrete: false
+      is_feature: true
+      is_target: false
+      min_step: 1.0
       private_id: false
       selectable: false
       synthesizable: true
       type: string
       use_auto_bounds: false
     relationship:
-      bounded: true
+      bounded: false
       cardinality: 6
+      discrete: false
+      is_feature: true
+      is_target: false
+      min_step: 1.0
       private_id: false
       selectable: false
       synthesizable: true
       type: string
       use_auto_bounds: false
     row_privacy: false
-    rows: 51925
+    rows: 51607
     sample_max_ids: true
     sex:
-      bounded: true
+      bounded: false
       cardinality: 2
+      discrete: false
+      is_feature: true
+      is_target: false
+      min_step: 1.0
       private_id: false
       selectable: false
       synthesizable: true
       type: string
       use_auto_bounds: false
     use_dpsu: false
-    use_original_header: true
+    use_original_header: false
     workclass:
-      bounded: true
+      bounded: false
       cardinality: 9
+      discrete: false
+      is_feature: true
+      is_target: false
+      min_step: 1.0
       private_id: false
       selectable: false
       synthesizable: true

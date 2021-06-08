@@ -69,8 +69,8 @@ class UserModel(NeuralNetworkClassification):
             # na_values=self.na_values_d,
         )
 
-        X = dataset_df.iloc[:,:-1]
-        y = dataset_df.iloc[:,-1]
+        X = dataset_df.loc[:,self.data_source.feature_cols]
+        y = dataset_df.loc[:,self.data_source.target_cols]
 
         # do the train test split
         X_train, X_test, y_train, y_test =\
@@ -144,25 +144,25 @@ class CalledWhatever(BasePreprocess):
         self.le_params = None
         
         # columns
-        self.column_names_list = [
-            'lastname',
-            'firstname',
-            'age',
-            'workclass',
-            'fnlwgt',
-            'education',
-            'education-num',
-            'marital-status',
-            'occupation',
-            'relationship',
-            'race',
-            'sex',
-            'capital-gain',
-            'capital-loss',
-            'hours-per-week',
-            'native-country',
-            'income'
-        ]
+        # self.column_names_list = [
+        #     'lastname',
+        #     'firstname',
+        #     'age',
+        #     'workclass',
+        #     'fnlwgt',
+        #     'education',
+        #     'education-num',
+        #     'marital-status',
+        #     'occupation',
+        #     'relationship',
+        #     'race',
+        #     'sex',
+        #     'capital-gain',
+        #     'capital-loss',
+        #     'hours-per-week',
+        #     'native-country',
+        #     'income'
+        # ]
 
         self.columns_types_list = [
             {
@@ -364,10 +364,10 @@ class CalledWhatever(BasePreprocess):
         import pandas as pd
         import numpy as np
 
-        column_names_list = self.column_names_list
+        # column_names_list = self.column_names_list
         columns_types_list = self.columns_types_list
 
-        x.columns = column_names_list[:-1]
+        # x.columns = column_names_list[:-1]
 
         # Do the same NaN value substitution as in read_csv
         x.replace(to_replace=self.na_values_d, value=np.nan, inplace=True)
