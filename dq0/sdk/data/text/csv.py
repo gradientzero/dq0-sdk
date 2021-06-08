@@ -63,4 +63,3 @@ class CSV(Source):
             'header_row {}, header_columns {} and kwargs {}'.format(
                 self.use_original_header, self. header_row,
                 self.header_columns, kwargs))
-
