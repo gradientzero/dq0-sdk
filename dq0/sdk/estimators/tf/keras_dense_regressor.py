@@ -20,7 +20,7 @@ class Keras_Dense_Regressor(NN_Regressor, RegressorMixin, Estimator):
 
     def __init__(self, optimizer='Adam',
                  loss=tf.keras.losses.MeanAbsoluteError(),
-                 metrics=['mae'], batch_size=250, epochs=2, n_layers=[10, 10], **kwargs):
+                 metrics=['mae', 'mse'], batch_size=250, epochs=2, n_layers=[10, 10], **kwargs):
         super().__init__(**kwargs)
         self.optimizer = optimizer
         self.loss = loss
@@ -37,7 +37,8 @@ class Keras_Dense_Regressor(NN_Regressor, RegressorMixin, Estimator):
 
     def setup_model(self, input_shape=None, n_layers=[10, 10],
                     optimizer='Adam', loss=tf.keras.losses.MeanAbsoluteError(),
-                    metrics=['mae'], batch_size=250, epochs=2, **kwargs):
+                    metrics=['mae', 'mse'], batch_size=250, epochs=2,
+                    **kwargs):
         self.optimizer = optimizer
         self.loss = loss
         self.metrics = metrics

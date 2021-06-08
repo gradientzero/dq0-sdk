@@ -39,6 +39,7 @@ class Metadata:
         self.type = None
         self.schemas = None
         self.privacy_column = None
+        self.metadata_is_public = False
         if filename is not None:
             self.read_from_yaml_file(filename)
         elif yaml is not None:
@@ -71,6 +72,7 @@ class Metadata:
         self.type = meta["type"] if "type" in meta else None
         self.schemas = {}
         self.privacy_column = meta["privacy_column"] if "privacy_column" in meta else None
+        self.metadata_is_public = bool(meta.pop("metadata_is_public", False))
         self.header = meta["header_columns"] if "header_columns" in meta else None
 
         for key in meta.keys():
@@ -98,6 +100,7 @@ class Metadata:
                 meta["type"] = self.type
             if self.privacy_column is not None:
                 meta["privacy_column"] = self.privacy_column
+            meta["metadata_is_public"] = self.metadata_is_public
 
         if self.schemas is not None and len(self.schemas) > 0:
             for schema in self.schemas:
