@@ -1,8 +1,8 @@
-description: description
-name: medical_insurance
+description: 600 binary features, y = label, taken from shokri and jayaraman
+name: Purchase-10
 privacy_column: ''
 schema:
-  connection: /Users/wolfganggross/code/dq0-privacy-checker/tests/integration_tests/purchase_10_600/_data/../../../../../dq0-sdk/dq0/examples/purchase_10_600/_data/purchase_10_600_target_dataset.csv
+  connection: /Users/cl/Documents/projects/gradient0/dq0-sdk/dq0/examples/purchase_10_600/_data/purchase_10_600_target_dataset.csv
   table:
     '0':
       lower: 0.0
@@ -3005,7 +3005,7 @@ schema:
       type: float
       upper: 1.0
     rows: 21004
-    y:
+    target_label:
       lower: 0
       synthesizable: true
       type: int

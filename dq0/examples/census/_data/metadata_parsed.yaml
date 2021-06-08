@@ -3,18 +3,18 @@ description: 'This data was extracted from the 1994 Census bureau database by Ro
   of reasonably clean records was extracted using the following conditions: ((AAGE>16)
   && (AGI>100) && (AFNLWGT>1) && (HRSWK>0)). The prediction task is to determine whether
   a person makes over $50K a year.'
-name: Adult Census Income
+name: census
 privacy_column: fnlwgt
 schema:
   connection: ../dq0-sdk/dq0/examples/census/_data/adult_with_rand_names.csv
-  privacy_budget: 0
-  privacy_budget_interval_days: 0
+  privacy_budget: 1000
+  privacy_budget_interval_days: 30
   privacy_level: 2
-  size: 0
+  size: 40000
   synth_allowed: false
   table:
     age:
-      bounded: false
+      bounded: true
       cardinality: 0
       lower: 20
       private_id: false
@@ -24,7 +24,7 @@ schema:
       upper: 61
       use_auto_bounds: false
     capital-gain:
-      bounded: false
+      bounded: true
       cardinality: 0
       lower: 0
       private_id: false
@@ -34,7 +34,7 @@ schema:
       upper: 4064
       use_auto_bounds: false
     capital-loss:
-      bounded: false
+      bounded: true
       cardinality: 0
       lower: 0
       private_id: false
@@ -47,7 +47,7 @@ schema:
     clamp_columns: true
     clamp_counts: false
     education:
-      bounded: false
+      bounded: true
       cardinality: 16
       private_id: false
       selectable: false
@@ -55,7 +55,7 @@ schema:
       type: string
       use_auto_bounds: false
     education-num:
-      bounded: false
+      bounded: true
       cardinality: 0
       lower: 6
       private_id: false
@@ -65,7 +65,7 @@ schema:
       upper: 14
       use_auto_bounds: false
     firstname:
-      bounded: false
+      bounded: true
       cardinality: 3298
       private_id: false
       selectable: false
@@ -73,7 +73,7 @@ schema:
       type: string
       use_auto_bounds: false
     fnlwgt:
-      bounded: false
+      bounded: true
       cardinality: 0
       lower: 45868
       private_id: false
@@ -83,7 +83,7 @@ schema:
       upper: 349148
       use_auto_bounds: false
     hours-per-week:
-      bounded: false
+      bounded: true
       cardinality: 0
       lower: 21
       private_id: false
@@ -93,7 +93,7 @@ schema:
       upper: 55
       use_auto_bounds: false
     income:
-      bounded: false
+      bounded: true
       cardinality: 2
       private_id: false
       selectable: false
@@ -101,7 +101,7 @@ schema:
       type: string
       use_auto_bounds: false
     lastname:
-      bounded: false
+      bounded: true
       cardinality: 18144
       private_id: false
       selectable: false
@@ -109,7 +109,7 @@ schema:
       type: string
       use_auto_bounds: false
     marital-status:
-      bounded: false
+      bounded: true
       cardinality: 7
       private_id: false
       selectable: false
@@ -118,7 +118,7 @@ schema:
       use_auto_bounds: false
     max_ids: 1
     native-country:
-      bounded: false
+      bounded: true
       cardinality: 42
       private_id: false
       selectable: false
@@ -126,7 +126,7 @@ schema:
       type: string
       use_auto_bounds: false
     occupation:
-      bounded: false
+      bounded: true
       cardinality: 15
       private_id: false
       selectable: false
@@ -134,7 +134,7 @@ schema:
       type: string
       use_auto_bounds: false
     race:
-      bounded: false
+      bounded: true
       cardinality: 5
       private_id: false
       selectable: false
@@ -142,7 +142,7 @@ schema:
       type: string
       use_auto_bounds: false
     relationship:
-      bounded: false
+      bounded: true
       cardinality: 6
       private_id: false
       selectable: false
@@ -153,7 +153,7 @@ schema:
     rows: 51925
     sample_max_ids: true
     sex:
-      bounded: false
+      bounded: true
       cardinality: 2
       private_id: false
       selectable: false
@@ -163,7 +163,7 @@ schema:
     use_dpsu: false
     use_original_header: true
     workclass:
-      bounded: false
+      bounded: true
       cardinality: 9
       private_id: false
       selectable: false
