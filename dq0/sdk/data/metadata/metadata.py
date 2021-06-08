@@ -73,7 +73,7 @@ class Metadata:
         self.schemas = {}
         self.privacy_column = meta["privacy_column"] if "privacy_column" in meta else None
         self.metadata_is_public = bool(meta.pop("metadata_is_public", False))
-        self.header = meta["header_columns"] if "header_columns" in meta else None
+        # self.header = meta["header_columns"] if "header_columns" in meta else None
 
         for key in meta.keys():
             if key not in self.__dict__ and isinstance(meta[key], dict):
@@ -309,6 +309,7 @@ class Table():
             name,
             use_original_header=True,
             header_row=None,
+            header_columns=None,
             row_privacy=False,
             rows=0,
             max_ids=1,
@@ -329,6 +330,7 @@ class Table():
         self.name = name
         self.use_original_header = use_original_header
         self.header_row = header_row
+        self.header_columns = header_columns
         self.row_privacy = row_privacy
         self.rows = rows
         self.max_ids = max_ids
@@ -346,6 +348,7 @@ class Table():
         use_original_header = bool(meta.pop(
             "use_original_header", True))
         header_row = meta.pop("header_row", None)
+        header_columns = meta.pop("header_columns", None)
         row_privacy = bool(meta.pop("row_privacy", False))
         rows = int(meta.pop("rows", 0))
         max_ids = int(meta.pop("max_ids", 1))
@@ -362,6 +365,7 @@ class Table():
             table,
             use_original_header=use_original_header,
             header_row=header_row,
+            header_columns=header_columns,
             row_privacy=row_privacy,
             rows=rows,
             max_ids=max_ids,
@@ -384,6 +388,8 @@ class Table():
                 meta["use_original_header"] = self.use_original_header
         if self.header_row is not None:
             meta["header_row"] = self.header_row
+        if self.header_columns is not None:
+            meta["header_columns"] = self.header_columns
         if self.row_privacy is not None:
             meta["row_privacy"] = self.row_privacy
         if self.rows is not None:

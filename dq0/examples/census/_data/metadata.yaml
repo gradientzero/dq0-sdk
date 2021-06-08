@@ -9,7 +9,8 @@ privacy_column: fnlwgt
 schema:
   connection: ../dq0-sdk/dq0/examples/census/_data/adult_with_rand_names.csv
   table:
-    use_original_header: true
+    use_original_header: false
+    header_columns: ['lastname', 'firstname', 'age', 'workclass', 'fnlwgt', 'education', 'education-num', 'marital-status', 'occupation', 'relationship', 'race', 'sex', 'capital-gain', 'capital-loss', 'hours-per-week', 'native-country', 'income']
     age:
       lower: 20
       synthesizable: true
