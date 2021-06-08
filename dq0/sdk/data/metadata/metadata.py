@@ -215,6 +215,17 @@ class Metadata:
             target_cols = None
         return feature_cols, target_cols
 
+    def get_col_types(self):
+        """get all column names and type from all tables"""
+        col_types = {}
+
+        tables = self.get_all_tables()
+        for m_table in tables:
+            for key in m_table.columns:
+                col = m_table.columns[key]
+                col_types[key] = col.type
+        return col_types
+
     def get_header(self):
         tables = self.get_all_tables()
         header = []
