@@ -62,10 +62,10 @@ class UserModel(NeuralNetworkClassification):
         
         # read the data via the attached input data source
         dataset_df = self.data_source.read(
-            sep=',',
-            header=None,
-            index_col=None,
-            skipinitialspace=True,
+            # sep=',',
+            # header=None,
+            # index_col=None,
+            # skipinitialspace=True,
             # na_values=self.na_values_d,
         )
 
