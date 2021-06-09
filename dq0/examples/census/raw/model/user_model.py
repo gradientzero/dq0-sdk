@@ -68,10 +68,10 @@ class UserModel(NeuralNetworkClassification):
             # skipinitialspace=True,
             # na_values=self.na_values_d,
         )
-
-        X = dataset_df.loc[:,self.data_source.feature_cols]
-        y = dataset_df.loc[:,self.data_source.target_cols]
-
+        
+        X = dataset_df.loc[:,self.data_source.feature_cols]  # results in alphabetically ordered columns
+        y = dataset_df.loc[:,self.data_source.target_cols].values
+        
         # do the train test split
         X_train, X_test, y_train, y_test =\
             train_test_split(X,
@@ -80,7 +80,7 @@ class UserModel(NeuralNetworkClassification):
                              )
 
         # preprocess the data
-        self.ud_preprocessor_name = CalledWhatever()
+        self.ud_preprocessor_name = CalledWhatever(data_source=self.data_source)
         X_train, y_train = self.ud_preprocessor_name.run(X_train.copy(), y_train, train=True)
         X_test, y_test = self.ud_preprocessor_name.run(X_test.copy(), y_test)
 
@@ -135,211 +135,14 @@ class CalledWhatever(BasePreprocess):
     Note: all preprocessing required at predict must be included
 
     """
-    def __init__(self):
+    def __init__(self, data_source=None):
         super().__init__()
+        self.data_source = data_source
         self.per_feature_imputation_value_ts = None
         self.categories = 'auto'
         self.ohe_params = None
         self.scaler_params = None
         self.le_params = None
-        
-        # columns
-        # self.column_names_list = [
-        #     'lastname',
-        #     'firstname',
-        #     'age',
-        #     'workclass',
-        #     'fnlwgt',
-        #     'education',
-        #     'education-num',
-        #     'marital-status',
-        #     'occupation',
-        #     'relationship',
-        #     'race',
-        #     'sex',
-        #     'capital-gain',
-        #     'capital-loss',
-        #     'hours-per-week',
-        #     'native-country',
-        #     'income'
-        # ]
-
-        self.columns_types_list = [
-            {
-                'name': 'age',
-                'type': 'int'
-            },
-            {
-                'name': 'workclass',
-                'type': 'string',
-                'values': [
-                    'Private',
-                    'Self-emp-not-inc',
-                    'Self-emp-inc',
-                    'Federal-gov',
-                    'Local-gov',
-                    'State-gov',
-                    'Without-pay',
-                    'Never-worked',
-                    'Unknown'
-                ]
-            },
-            {
-                'name': 'fnlwgt',
-                'type': 'int'
-            },
-            {
-                'name': 'education',
-                'type': 'string',
-                'values': [
-                    'Bachelors',
-                    'Some-college',
-                    '11th',
-                    'HS-grad',
-                    'Prof-school',
-                    'Assoc-acdm',
-                    'Assoc-voc',
-                    '9th',
-                    '7th-8th',
-                    '12th',
-                    'Masters',
-                    '1st-4th',
-                    '10th',
-                    'Doctorate',
-                    '5th-6th',
-                    'Preschool'
-                ]
-            },
-            {
-                'name': 'education-num',
-                'type': 'int'
-            },
-            {
-                'name': 'marital-status',
-                'type': 'string',
-                'values': [
-                    'Married-civ-spouse',
-                    'Divorced',
-                    'Never-married',
-                    'Separated',
-                    'Widowed',
-                    'Married-spouse-absent',
-                    'Married-AF-spouse'
-                ]
-            },
-            {
-                'name': 'occupation',
-                'type': 'string',
-                'values': [
-                    'Tech-support',
-                    'Craft-repair',
-                    'Other-service',
-                    'Sales',
-                    'Exec-managerial',
-                    'Prof-specialty',
-                    'Handlers-cleaners',
-                    'Machine-op-inspct',
-                    'Adm-clerical',
-                    'Farming-fishing',
-                    'Transport-moving',
-                    'Priv-house-serv',
-                    'Protective-serv',
-                    'Armed-Forces',
-                    'Unknown'
-                ]
-            },
-            {
-                'name': 'relationship',
-                'type': 'string',
-                'values': [
-                    'Wife',
-                    'Own-child',
-                    'Husband',
-                    'Not-in-family',
-                    'Other-relative',
-                    'Unmarried'
-                ]
-            },
-            {
-                'name': 'race',
-                'type': 'string',
-                'values': [
-                    'White',
-                    'Asian-Pac-Islander',
-                    'Amer-Indian-Eskimo',
-                    'Other',
-                    'Black'
-                ]
-            },
-            {
-                'name': 'sex',
-                'type': 'string',
-                'values': [
-                    'Female',
-                    'Male'
-                ]
-            },
-            {
-                'name': 'capital-gain',
-                'type': 'int'
-            },
-            {
-                'name': 'capital-loss',
-                'type': 'int'
-            },
-            {
-                'name': 'hours-per-week',
-                'type': 'int'
-            },
-            {
-                'name': 'native-country',
-                'type': 'string',
-                'values': [
-                    'United-States',
-                    'Cambodia',
-                    'England',
-                    'Puerto-Rico',
-                    'Canada',
-                    'Germany',
-                    'Outlying-US(Guam-USVI-etc)',
-                    'India',
-                    'Japan',
-                    'Greece',
-                    'South',
-                    'China',
-                    'Cuba',
-                    'Iran',
-                    'Honduras',
-                    'Philippines',
-                    'Italy',
-                    'Poland',
-                    'Jamaica',
-                    'Vietnam',
-                    'Mexico',
-                    'Portugal',
-                    'Ireland',
-                    'France',
-                    'Dominican-Republic',
-                    'Laos',
-                    'Ecuador',
-                    'Taiwan',
-                    'Haiti',
-                    'Columbia',
-                    'Hungary',
-                    'Guatemala',
-                    'Nicaragua',
-                    'Scotland',
-                    'Thailand',
-                    'Yugoslavia',
-                    'El-Salvador',
-                    'Trinadad&Tobago',
-                    'Peru',
-                    'Hong',
-                    'Holand-Netherlands',
-                    'Unknown'
-                ]
-            }
-        ]
 
         self.na_values_d = {
             'capital-gain': 99999,
@@ -348,9 +151,6 @@ class CalledWhatever(BasePreprocess):
             'workclass': '?',
             'native-country': '?',
             'occupation': '?'}
-        
-        # define target feature
-        self.target_feature = 'income'
 
     def run(self, x, y=None, train=False):
         """Preprocess the data
@@ -364,38 +164,30 @@ class CalledWhatever(BasePreprocess):
         import pandas as pd
         import numpy as np
 
-        # column_names_list = self.column_names_list
-        columns_types_list = self.columns_types_list
-
-        # x.columns = column_names_list[:-1]
-
         # Do the same NaN value substitution as in read_csv
         x.replace(to_replace=self.na_values_d, value=np.nan, inplace=True)
 
         # drop unused columns
         x.drop(['lastname', 'firstname'], axis=1, inplace=True)
-        # column_names_list.remove('lastname')
-        # column_names_list.remove('firstname')
 
-        # get categorical features
-        categorical_features_list = [
-            col['name'] for col in columns_types_list
-            if col['type'] == 'string']
-
-        # get quantitative features
-        quantitative_features_list = [
-            col['name'] for col in columns_types_list
-            if col['type'] == 'int' or col['type'] == 'float']
+        # get cat and numeric columns
+        if self.data_source.col_types is not None:
+            categorical_features_list = [
+                k for k, v in self.data_source.col_types.items() 
+                if (v in ['string', '']) and (k in x.columns)]
+            quantitative_features_list = [
+                k for k, v in self.data_source.col_types.items() 
+                if (v in ['int', 'float']) and (k in x.columns)]
 
         # Impute cat nan values
         x[categorical_features_list] = x[
-                    categorical_features_list].fillna('Unknown')
-        
+            categorical_features_list].fillna('Unknown')
+
         # impute numeric nan values
         if train:
             self.per_feature_imputation_value_ts = \
-                        x[quantitative_features_list].median(axis=0)
-        
+                x[quantitative_features_list].median(axis=0)
+
         x[quantitative_features_list] = x[
                 quantitative_features_list].fillna(
                 self.per_feature_imputation_value_ts, axis=0)
@@ -423,20 +215,20 @@ class CalledWhatever(BasePreprocess):
         else:
             raise ValueError('self.scaler_params cannot be None')
         x[quantitative_features_list] = scaler.transform(x[quantitative_features_list])
-       
+
         # label target
         if y is not None:
+            if y.ndim > 1:
+                _y = y.ravel()
             le = sklearn.preprocessing.LabelEncoder()
-            le.fit(y)
+            le.fit(_y)
             if train:
                 self.le_params = le.get_params()
-                print(le.classes_)
-                print(self.le_params)
             if self.le_params is not None:
                 le.set_params(**self.le_params)
             else:
                 raise ValueError('self.le_params cannot be None')
-        
-            y = le.transform(y)
+
+            y = le.transform(_y)
 
         return x, y
