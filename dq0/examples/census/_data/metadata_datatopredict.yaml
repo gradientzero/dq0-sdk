@@ -65,18 +65,12 @@ schema:
     - capital-loss
     - hours-per-week
     - native-country
-    - income
     hours-per-week:
       is_feature: true
       lower: 20
       synthesizable: true
       type: int
       upper: 55
-    income:
-      cardinality: 2
-      is_target: true
-      synthesizable: true
-      type: string
     lastname:
       cardinality: 18144
       is_feature: true
