@@ -10,8 +10,9 @@ All rights reserved
 import os
 
 import dq0.sdk
+from dq0.sdk.data.metadata import Metadata
 from dq0.sdk.data.utils import util
-from dq0.examples.census.raw.model.user_model import UserModel
+from dq0.examples.census.raw_meta.model.user_model import UserModel
 
 
 if __name__ == '__main__':
@@ -21,13 +22,16 @@ if __name__ == '__main__':
     # set seed of random number generator to ensure reproducibility of results
     util.initialize_rnd_numbers_generators_state()
 
-    # path to input
-    path = '../_data/adult_with_rand_names.csv'
+    # path to metadata
+    path = '../_data/metadata.yaml'
     filepath = os.path.join(os.path.dirname(
         os.path.abspath(__file__)), path)
 
     # init input data source
-    data_source = dq0.sdk.data.text.CSV(filepath)
+    metadata = Metadata(filepath)
+    data_source = dq0.sdk.data.text.CSV(
+        next(iter(metadata.schemas.values())).connection,
+        metadata.to_metadata_ml())
 
     # create model
     model = UserModel()

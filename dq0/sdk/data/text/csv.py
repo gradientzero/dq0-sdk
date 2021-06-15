@@ -21,20 +21,26 @@ class CSV(Source):
         path (:obj:`str`): Absolute path to the CSV file.
     """
 
-    def __init__(self, path, use_original_header=None, header_row=None,
-                 header_columns=None, feature_cols=None, target_cols=None,
-                 col_types=None):
+    def __init__(self, path, meta_ml=None):
         super().__init__(path)
         self.type = 'csv'
-        self.feature_cols = feature_cols
-        self.target_cols = target_cols
-        self.use_original_header = use_original_header
-        self.header_row = header_row
-        self.header_columns = header_columns
-        self.col_types = col_types
-        # if header is not None:
-        #     if len(header) == 1:
-        #         self.has_header = True
+        self.meta_ml = meta_ml
+
+        self.use_original_header = True
+        self.header_row = None
+        self.header_columns = None
+        if meta_ml is not None:
+            table = self.meta_ml.get_all_tables()[0]  # Since there is only one table as tested in data_connector
+            self.use_original_header = getattr(table, "use_original_header", self.use_original_header)
+            self.header_row = getattr(table, "header_row", self.header_row)
+            self.header_columns = getattr(table, "header_columns", self.header_columns)
+            
+            feature_cols, target_cols = self.meta_ml.get_feature_target_cols()
+            self.feature_cols = feature_cols
+            self.target_cols = target_cols
+
+            col_types = self.meta_ml.get_col_types()
+            self.col_types = col_types
 
     def read(self, **kwargs):
         """Read CSV data sources

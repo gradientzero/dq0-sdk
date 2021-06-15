@@ -61,13 +61,7 @@ class UserModel(NeuralNetworkClassification):
             fatal_error('No data source found', logger=logger)
         
         # read the data via the attached input data source
-        dataset_df = self.data_source.read(
-            # sep=',',
-            # header=None,
-            # index_col=None,
-            # skipinitialspace=True,
-            # na_values=self.na_values_d,
-        )
+        dataset_df = self.data_source.read()
         
         X = dataset_df.loc[:,self.data_source.feature_cols]  # results in alphabetically ordered columns
         y = dataset_df.loc[:,self.data_source.target_cols].values
