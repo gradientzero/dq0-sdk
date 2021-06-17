@@ -6,9 +6,9 @@ implementing subclasses.
 """
 
 from . import binary, image, sql, text, utils
+from .base_preprocess import BasePreprocess
 from .source import Source
 from .transform import Transform
-from .base_preprocess import BasePreprocess
 
 __all__ = [
     'Source',

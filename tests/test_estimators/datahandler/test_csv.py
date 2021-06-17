@@ -8,6 +8,7 @@ All rights reserved
 import os
 import pathlib
 
+from dq0.sdk.data.metadata import Metadata
 from dq0.sdk.data.text.csv import CSV
 from dq0.sdk.estimators.data_handler.csv import CSVDataHandler
 
@@ -19,9 +20,10 @@ PATH_TO_CM_CONFIG_CLASSIFICATION = os.path.join(DIR_PATH + '/mc_classification.y
 
 
 def test_CSVDataHandler_setup_data_001():
-    feature_cols = ['a', 'b']
-    target_cols = ['c']
-    data_source = CSV(path=os.path.join(FILEPATH, 'test.csv'), feature_cols=feature_cols, target_cols=target_cols)
+    metadata = Metadata(filename=os.path.join(FILEPATH, 'test.yaml'))
+    data_source = CSV(
+        next(iter(metadata.schemas.values())).connection,
+        metadata.to_metadata_ml())
     data_handler = CSVDataHandler()
     X_train, X_test, y_train, y_test = data_handler.setup_data(data_source=data_source)
     print(X_train)
@@ -29,11 +31,12 @@ def test_CSVDataHandler_setup_data_001():
 
 
 def test_CSVDataHandler_setup_data_002():
-    feature_cols = ['a', 'b']
-    target_cols = ['c']
     # test with pipeline
     config_path = os.path.join(DIR_PATH, '..', '..', 'test_pipeline', 'pipeline_config.yaml')
-    data_source = CSV(path=os.path.join(FILEPATH, 'test.csv'), feature_cols=feature_cols, target_cols=target_cols)
+    metadata = Metadata(filename=os.path.join(FILEPATH, 'test.yaml'))
+    data_source = CSV(
+        next(iter(metadata.schemas.values())).connection,
+        metadata.to_metadata_ml())
     print(DIR_PATH + '/../dq0/sdk/pipeline/transformer/transformer.py')
     data_handler = CSVDataHandler(pipeline_config_path=config_path, transformers_root_dir=DIR_PATH + '/../../../dq0/sdk/pipeline/transformer/transformer.py')
     X_train, X_test, y_train, y_test = data_handler.setup_data(data_source=data_source)
@@ -42,14 +45,14 @@ def test_CSVDataHandler_setup_data_002():
 
 
 def test_CSVDataHandler_census():
-    feature_cols = ['lastname', 'firstname', 'age', 'workclass', 'fnlwgt', 'education', 'education-num', 'marital-status', 'occupation', 'relationship',
-                    'race', 'sex', 'capital-gain', 'capital-loss', 'hours-per-week', 'native-country']
-    target_cols = ['income']
     # test with pipeline
     dir_path = os.path.dirname(os.path.realpath(__file__))
     config_path = os.path.join(dir_path, '..', '..', '..', 'dq0', 'examples', 'census', '_data', 'pipeline_config.yaml')
-    data_path = os.path.join(dir_path, '..', '..', '..', 'dq0', 'examples', 'census', '_data', 'adult_with_rand_names_w_header.csv')
-    data_source = CSV(path=data_path, feature_cols=feature_cols, target_cols=target_cols)
+    meta_path = os.path.join(dir_path, '..', '..', '..', 'dq0', 'examples', 'census', '_data', 'metadata_header.yaml')
+    metadata = Metadata(filename=meta_path)
+    data_source = CSV(
+        next(iter(metadata.schemas.values())).connection,
+        metadata.to_metadata_ml())
     data_handler = CSVDataHandler(pipeline_config_path=config_path, transformers_root_dir='./dq0/sdk/pipeline/transformer/transformer.py')
     X_train, X_test, y_train, y_test = data_handler.setup_data(data_source=data_source)
     print(X_train)

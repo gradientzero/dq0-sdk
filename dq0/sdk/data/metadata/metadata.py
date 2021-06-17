@@ -170,7 +170,7 @@ class Metadata:
         """Produces a ML specfic copy of metadata object"""
         yaml_str = self.to_yaml(ml=True)
         return Metadata(yaml=yaml_str)
-    
+
     def get_all_tables(self, only_names=False):
         """Helper function that returns all available tables (across schemas) in this metadata."""
         if self.schemas is None:
@@ -244,7 +244,7 @@ class Metadata:
         for m_table in tables:
             header.append(m_table.header_row)
         return header
-    
+
 
 class Schema():
     """Schema class.
@@ -332,7 +332,7 @@ class Table():
             self,
             name,
             use_original_header=True,
-            header_row=None,
+            header_row=0,
             header_columns=None,
             row_privacy=False,
             rows=0,
@@ -371,7 +371,7 @@ class Table():
         """Create a table instance from the meta yaml part."""
         use_original_header = bool(meta.pop(
             "use_original_header", True))
-        header_row = meta.pop("header_row", None)
+        header_row = meta.pop("header_row", 0)
         header_columns = meta.pop("header_columns", None)
         row_privacy = bool(meta.pop("row_privacy", False))
         rows = int(meta.pop("rows", 0))

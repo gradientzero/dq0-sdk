@@ -4,45 +4,38 @@ privacy_column: ''
 schema:
   connection: ../dq0-sdk/dq0/examples/medical_insurance/_data/datasets_13720_18513_insurance.csv
   table:
-    use_original_header: true
     age:
       lower: 19
       synthesizable: true
       type: int
       upper: 61
-      is_feature: True
     bmi:
-      lower: 21.755
+      lower: 21.47
       synthesizable: true
       type: float
-      upper: 40.32215248439653
-      is_feature: True
+      upper: 40.95445627319398
     charges:
-      lower: 1828.5647575782523
+      lower: 2016.7138040631087
       synthesizable: true
       type: float
-      upper: 40935.42269449338
-      is_target: True
+      upper: 40089.474201056415
     children:
       lower: 0
       synthesizable: true
       type: int
       upper: 3
-      is_feature: True
+    header_row: 0
     region:
       cardinality: 4
       synthesizable: true
       type: string
-      is_feature: True
-    rows: 1400
+    rows: 1421
     sex:
       cardinality: 2
       synthesizable: true
       type: string
-      is_feature: True
     smoker:
       cardinality: 2
       synthesizable: true
       type: string
-      is_feature: True
 type: CSV

@@ -42,7 +42,7 @@ class CSVDataHandler(BasicDataHandler):
         input_cols_first_step = self.pipeline.steps_input_cols[0]
         for col in input_cols_first_step:
             if col not in self.data.columns:
-                raise ValueError(f"Column '{col}' not in the header of the CSV file. Check if header is present and if it matches the input columns the pipeline config.")
+                raise ValueError(f"Column '{col}' not in the header of the CSV file. Check if header is present and if it matches the input columns the pipeline config.")  # noqa
 
         # run pipeline
         if self.pipeline is not None:

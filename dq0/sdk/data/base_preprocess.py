@@ -1,5 +1,15 @@
+# -*- coding: utf-8 -*-
+"""Preprocess abstract base class
+
+The source class serves as the base class for all preprocessing in user models.
+
+Implementing subclasses have to define at least run
+
+Copyright 2020, Gradient Zero
+All rights reserved
+"""
 from abc import abstractmethod
-import pickle
+
 
 class BasePreprocess(object):
     def __init__(self):
@@ -25,4 +35,3 @@ class BasePreprocess(object):
     def predict(self, x):
         """ wrapper of run for mlflow """
         return self.run(x=x)
-

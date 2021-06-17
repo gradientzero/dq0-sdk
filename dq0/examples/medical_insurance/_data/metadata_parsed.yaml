@@ -1,9 +1,10 @@
 description: description
+metadata_is_public: false
 name: medical_insurance
 privacy_column: ''
 schema:
   connection: ../dq0-sdk/dq0/examples/medical_insurance/_data/datasets_13720_18513_insurance.csv
-  privacy_budget: 0
+  privacy_budget: 0.0
   privacy_budget_interval_days: 0
   privacy_level: 2
   size: 0
@@ -12,6 +13,9 @@ schema:
     age:
       bounded: false
       cardinality: 0
+      discrete: false
+      is_feature: false
+      is_target: false
       lower: 19
       private_id: false
       selectable: false
@@ -22,27 +26,36 @@ schema:
     bmi:
       bounded: false
       cardinality: 0
-      lower: 21.755
+      discrete: false
+      is_feature: false
+      is_target: false
+      lower: 21.47
       private_id: false
       selectable: false
       synthesizable: true
       type: float
-      upper: 40.32215248439653
+      upper: 40.95445627319398
       use_auto_bounds: false
     censor_dims: false
     charges:
       bounded: false
       cardinality: 0
-      lower: 1828.5647575782523
+      discrete: false
+      is_feature: false
+      is_target: false
+      lower: 2016.7138040631087
       private_id: false
       selectable: false
       synthesizable: true
       type: float
-      upper: 40935.42269449338
+      upper: 40089.474201056415
       use_auto_bounds: false
     children:
       bounded: false
       cardinality: 0
+      discrete: false
+      is_feature: false
+      is_target: false
       lower: 0
       private_id: false
       selectable: false
@@ -52,21 +65,30 @@ schema:
       use_auto_bounds: false
     clamp_columns: true
     clamp_counts: false
+    header_row: 0
     max_ids: 1
     region:
       bounded: false
       cardinality: 4
+      discrete: false
+      is_feature: false
+      is_target: false
+      min_step: 1.0
       private_id: false
       selectable: false
       synthesizable: true
       type: string
       use_auto_bounds: false
     row_privacy: false
-    rows: 1400
+    rows: 1421
     sample_max_ids: true
     sex:
       bounded: false
       cardinality: 2
+      discrete: false
+      is_feature: false
+      is_target: false
+      min_step: 1.0
       private_id: false
       selectable: false
       synthesizable: true
@@ -75,6 +97,10 @@ schema:
     smoker:
       bounded: false
       cardinality: 2
+      discrete: false
+      is_feature: false
+      is_target: false
+      min_step: 1.0
       private_id: false
       selectable: false
       synthesizable: true

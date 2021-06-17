@@ -33,6 +33,7 @@ schema['connection'] = connection
 
 table = schema['table'] = {}
 table['rows'] = n_rows
+table['header_row'] = 0
 # add columns
 for c in df.columns:
     column = table[c] = {}
