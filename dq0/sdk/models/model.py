@@ -116,7 +116,7 @@ class Model(Project):
         """Setup data function
 
         This function can be used by child classes to prepare data or perform
-        other tasks that dont need to be repeated for every training run.
+        other tasks that do not need to be repeated for every training run.
         """
         pass
 

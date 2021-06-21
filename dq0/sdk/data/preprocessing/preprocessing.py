@@ -27,12 +27,14 @@ def handle_missing_data(dataset_df,
 
     Args:
         dataset_df (:obj:`pandas.DataFrame`): the data frame to transform.
-        mode (:obj:`str`): either 'imputation' or 'dropping' to fill or drop missing values.
-        imputation_method_for_cat_feats (:obj:`str`): either 'unknown' or 'most_common_cat'.
-            'unkowon' will replace all missing categorical feature values by 'Unknown'.
-            'most_common_cat' will replace the missing values with the most common categorical feature.
-        imputation_method_for_quant_feats (:obj:`str`): Will replace the missing quantitative feature values
-            with either 'mean' or 'median' value.
+            mode (:obj:`str`): either 'imputation' or 'dropping' to fill or drop
+            missing values.
+        imputation_method_for_cat_feats (:obj:`str`): either 'unknown' or
+            'most_common_cat'. 'Unknown' will replace all missing
+            categorical feature values ´by 'unknown'. 'Most_common_cat' will
+            replace the missing values with the most common categorical feature.
+        imputation_method_for_quant_feats (:obj:`str`): Will replace the missing
+            quantitative feature values with either 'mean' or 'median' value.
         categorical_features_list (:obj:`list`): list of categorical features
         quantitative_features_list (:obj:`list`): list of quantitative features
 

@@ -7,7 +7,6 @@ Neural network model definition for the Census dataset.
 
 import logging
 
-from dq0.sdk.data.utils import util
 from dq0.sdk.errors import fatal_error
 from dq0.sdk.models.tf import NeuralNetworkClassification
 

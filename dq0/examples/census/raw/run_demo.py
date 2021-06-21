@@ -10,8 +10,8 @@ All rights reserved
 import os
 
 import dq0.sdk
-from dq0.sdk.data.utils import util
 from dq0.examples.census.raw.model.user_model import UserModel
+from dq0.sdk.data.utils import util
 
 
 if __name__ == '__main__':

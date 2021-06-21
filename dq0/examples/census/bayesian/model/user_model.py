@@ -6,6 +6,7 @@ All rights reserved
 """
 
 import logging
+import sys
 
 from dq0.sdk.errors.errors import fatal_error
 from dq0.sdk.models.bayes.naive_bayesian_model import NaiveBayesianModel
@@ -76,9 +77,9 @@ class UserModel(NaiveBayesianModel):
             X_train_df = X_train_df.values
         if isinstance(X_test_df, pd.DataFrame):
             X_test_df = X_test_df.values
-        if isinstance(y_train_ts, pd.DataFrame):
+        if isinstance(y_train_ts, pd.Series):
             y_train_ts = y_train_ts.values
-        if isinstance(y_test_ts, pd.DataFrame):
+        if isinstance(y_test_ts, pd.Series):
             y_test_ts = y_test_ts.values
 
         # prepare data
@@ -96,8 +97,8 @@ class UserModel(NaiveBayesianModel):
 
         # back to column vector. Transform one-dimensional array into column
         # vector via newaxis
-        y_train_ts = y_train_ts[:, np.newaxis]
-        y_test_ts = y_test_ts[:, np.newaxis]
+        y_train_ts = y_train_ts.reshape(-1, 1)  # y_train_ts[:, np.newaxis]
+        y_test_ts = y_test_ts.reshape(-1, 1)  # y_test_ts[:, np.newaxis]
 
         # set attributes
         self.X_train = X_train_df

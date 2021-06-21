@@ -718,8 +718,8 @@ def visualize_continuous_distribution(series, output_folder, **kwargs):
               file_with_fig=output_folder + series.name + fn_suffix + '.png')
 
 
-def save_figure(fig, figure_name, dpi=300, tracker=None,
-                tracker_output_path=None, output_folder_path=None):
+def save_figure(fig, figure_name, tracker=None, tracker_output_path=None,
+                output_folder_path=None, **params_for_savefig):
     """
     Save figure referenced by input figure handle "fig". It also closes the
     figure.
@@ -727,17 +727,22 @@ def save_figure(fig, figure_name, dpi=300, tracker=None,
     Args:
         fig: figure handle
         figure_name: name of figure (without file extension)
-        dpi (int): dots per inch. For printing and most screens, 150 is pretty
-            good, 300 is clear, and 600 is spectacular. 1200 or higher can
-            come in handy if you want to be able to do a lot of zooming in,
-            but your image can start to get very big on disk at that
-            resolution. Default: 300.
         tracker: instance of tracker
         tracker_output_path (str): path to folder where the figure will be
             saved.
         output_folder_path (str): path to folder where the figure will be
             saved, if not saved via tracker.
+        params_for_savefig: parameters for Matplotlib fig.savefig() call.
     """
+
+    # if params_for_savefig is None:
+    #   params_for_savefig = {'dpi': 300}
+    # elif dpi not in params_for_savefig:
+    #   params_for_savefig['dpi'] = 300
+    # dpi: dots per inch. For printing and most screens, 150 is pretty good,
+    # 300 is clear, and 600 is spectacular. 1200 or higher can come in handy
+    # if you want to be able to do a lot of zooming in, but your image can
+    # start to get very big on disk at that resolution.
 
     if (tracker is None) != (tracker_output_path is None):
         logger.fatal('"tracker" and "tracker_output_path" must be both '
@@ -755,14 +760,15 @@ def save_figure(fig, figure_name, dpi=300, tracker=None,
 
         # first, write the image into a named temporary file
         with tempfile.NamedTemporaryFile(suffix=".png") as tmp_file:
-            fig.savefig(tmp_file, format="png", dpi=dpi)
+            fig.savefig(tmp_file, format="png", **params_for_savefig)
             tracker.log_file(tmp_file.name, destination_path=destination_path)
 
         # do not leave fig in RAM...
         plt.close(fig)
 
     elif output_folder_path is not None:
-        fig.savefig(output_folder_path + figure_name + '.png', dpi=dpi)
+        fig.savefig(output_folder_path + figure_name + '.png',
+                    **params_for_savefig)
         # do not leave fig in RAM...
         plt.close(fig)
 
