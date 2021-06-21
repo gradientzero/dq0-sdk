@@ -72,8 +72,25 @@ schema['connection'] = connection
 table = schema['table'] = {}
 table['rows'] = n_rows
 table['use_original_header'] = False
-table['header_columns'] = ['lastname', 'firstname', 'age', 'workclass', 'fnlwgt', 'education', 'education-num', 'marital-status', 'occupation', 'relationship', 'race', 'sex', 'capital-gain', 'capital-loss', 'hours-per-week', 'native-country', 'income']
-    
+table['header_columns'] = [
+    'lastname',
+    'firstname',
+    'age',
+    'workclass',
+    'fnlwgt',
+    'education',
+    'education-num',
+    'marital-status',
+    'occupation',
+    'relationship',
+    'race',
+    'sex',
+    'capital-gain',
+    'capital-loss',
+    'hours-per-week',
+    'native-country',
+    'income']
+
 # add columns
 for c in df.columns:
     column = table[c] = {}

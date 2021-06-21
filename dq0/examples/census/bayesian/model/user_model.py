@@ -6,7 +6,6 @@ All rights reserved
 """
 
 import logging
-import sys
 
 from dq0.sdk.errors.errors import fatal_error
 from dq0.sdk.models.bayes.naive_bayesian_model import NaiveBayesianModel

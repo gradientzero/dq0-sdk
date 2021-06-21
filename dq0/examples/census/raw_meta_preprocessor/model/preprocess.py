@@ -27,7 +27,7 @@ logger = logging.getLogger('dq0.' + __name__)
 
 class CalledWhatever(BasePreprocess):
     """ Derived from dq0.sdk.data.base_preprocess.BasePreprocess class
-    
+
     User defined preprocessing class used
     to preprocess data in setup_data() during training run
     and later for predict.
@@ -42,7 +42,7 @@ class CalledWhatever(BasePreprocess):
         self.ohe_params = None
         self.scaler_params = None
         self.le_params = None
-        
+
         # columns
         self.column_names_list = [
             'lastname',
@@ -248,7 +248,7 @@ class CalledWhatever(BasePreprocess):
             'workclass': '?',
             'native-country': '?',
             'occupation': '?'}
-        
+
         # define target feature
         self.target_feature = 'income'
 
@@ -289,15 +289,15 @@ class CalledWhatever(BasePreprocess):
 
         # Impute cat nan values
         x[categorical_features_list] = x[
-                    categorical_features_list].fillna('Unknown')
-        
+            categorical_features_list].fillna('Unknown')
+
         # impute numeric nan values
         if train:
             self.per_feature_imputation_value_ts = \
-                        x[quantitative_features_list].median(axis=0)
-        
+                x[quantitative_features_list].median(axis=0)
+
         x[quantitative_features_list] = x[
-                quantitative_features_list].fillna(
+            quantitative_features_list].fillna(
                 self.per_feature_imputation_value_ts, axis=0)
 
         # get dummy columns
@@ -323,7 +323,7 @@ class CalledWhatever(BasePreprocess):
         else:
             raise ValueError('self.scaler_params cannot be None')
         x[quantitative_features_list] = scaler.transform(x[quantitative_features_list])
-       
+
         # label target
         if y is not None:
             le = sklearn.preprocessing.LabelEncoder()
@@ -336,7 +336,7 @@ class CalledWhatever(BasePreprocess):
                 le.set_params(**self.le_params)
             else:
                 raise ValueError('self.le_params cannot be None')
-        
+
             y = le.transform(y)
 
         return x, y

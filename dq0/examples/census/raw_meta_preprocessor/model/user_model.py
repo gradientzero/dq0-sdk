@@ -59,13 +59,13 @@ class UserModel(NeuralNetworkClassification):
         # get the input dataset
         if self.data_source is None:
             fatal_error('No data source found', logger=logger)
-        
+
         # read the data via the attached input data source
         dataset_df = self.data_source.read()
-        
-        X = dataset_df.loc[:,self.data_source.feature_cols]  # results in alphabetically ordered columns
-        y = dataset_df.loc[:,self.data_source.target_cols].values
-        
+
+        X = dataset_df.loc[:, self.data_source.feature_cols]  # results in alphabetically ordered columns
+        y = dataset_df.loc[:, self.data_source.target_cols].values
+
         # do the train test split
         X_train, X_test, y_train, y_test =\
             train_test_split(X,
@@ -121,7 +121,7 @@ class UserModel(NeuralNetworkClassification):
 
 class CalledWhatever(BasePreprocess):
     """ Derived from dq0.sdk.data.base_preprocess.BasePreprocess class
-    
+
     User defined preprocessing class used
     to preprocess data in setup_data() during training run
     and later for predict.
@@ -167,10 +167,10 @@ class CalledWhatever(BasePreprocess):
         # get cat and numeric columns
         if self.data_source.col_types is not None:
             categorical_features_list = [
-                k for k, v in self.data_source.col_types.items() 
+                k for k, v in self.data_source.col_types.items()
                 if (v in ['string', '']) and (k in x.columns)]
             quantitative_features_list = [
-                k for k, v in self.data_source.col_types.items() 
+                k for k, v in self.data_source.col_types.items()
                 if (v in ['int', 'float']) and (k in x.columns)]
 
         # Impute cat nan values
@@ -183,7 +183,7 @@ class CalledWhatever(BasePreprocess):
                 x[quantitative_features_list].median(axis=0)
 
         x[quantitative_features_list] = x[
-                quantitative_features_list].fillna(
+            quantitative_features_list].fillna(
                 self.per_feature_imputation_value_ts, axis=0)
 
         # get dummy columns
