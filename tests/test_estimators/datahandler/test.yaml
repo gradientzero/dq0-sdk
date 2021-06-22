@@ -1,0 +1,15 @@
+description: 'Test data'
+name: Test
+schema:
+  connection: ../dq0-sdk/tests/test_estimators/datahandler/test.csv
+  table:
+    a:
+      is_feature: true
+      type: int
+    b:
+      is_feature: true
+      type: int
+    c:
+      is_target: true
+      type: int
+type: CSV

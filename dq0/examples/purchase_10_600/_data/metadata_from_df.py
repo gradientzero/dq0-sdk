@@ -10,8 +10,8 @@ import pandas as pd
 import yaml
 
 
-name = 'medical_insurance'
-description = 'description'
+name = 'Purchase-10'
+description = '600 binary features, y = label, taken from shokri and jayaraman'
 type_ = 'CSV'
 connection = './dq0/examples/purchase_10_600/_data/purchase_10_600_target_dataset.csv'
 

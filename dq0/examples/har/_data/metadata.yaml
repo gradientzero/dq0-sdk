@@ -10,9 +10,10 @@ schema:
       type: int
       upper: 75
     body_mass_index:
-      cardinality: 4
+      lower: 22.0
       synthesizable: true
-      type: string
+      type: float
+      upper: 28.6
     class:
       cardinality: 5
       synthesizable: true
@@ -21,11 +22,13 @@ schema:
       cardinality: 2
       synthesizable: true
       type: string
+    header_row: 0
     how_tall_in_meters:
-      cardinality: 4
+      lower: 1.58
       synthesizable: true
-      type: string
-    rows: 181040
+      type: float
+      upper: 1.71
+    rows: 156288
     user:
       cardinality: 4
       synthesizable: true
@@ -36,7 +39,7 @@ schema:
       type: int
       upper: 83
     x1:
-      lower: -23
+      lower: -25
       synthesizable: true
       type: int
       upper: 6
@@ -44,55 +47,55 @@ schema:
       lower: -491
       synthesizable: true
       type: int
-      upper: 18
+      upper: 16
     x3:
       lower: -62
       synthesizable: true
       type: int
-      upper: 66
+      upper: 65
     x4:
-      lower: -210
+      lower: -219
       synthesizable: true
       type: int
-      upper: -98
+      upper: -96
     y1:
-      lower: 32
+      lower: 40
       synthesizable: true
       type: int
-      upper: 119
+      upper: 112
     y2:
-      lower: -515
+      lower: -514
       synthesizable: true
       type: int
-      upper: 93
+      upper: 94
     y3:
-      lower: 58
+      lower: 61
       synthesizable: true
       type: int
-      upper: 159
+      upper: 157
     y4:
-      lower: -128
+      lower: -126
       synthesizable: true
       type: int
-      upper: -68
+      upper: -71
     z1:
-      lower: -145
+      lower: -150
       synthesizable: true
       type: int
-      upper: -27
+      upper: -23
     z2:
-      lower: -606
+      lower: -614
       synthesizable: true
       type: int
-      upper: -21
+      upper: -18
     z3:
-      lower: -132
+      lower: -126
       synthesizable: true
       type: int
-      upper: -65
+      upper: -66
     z4:
-      lower: -179
+      lower: -174
       synthesizable: true
       type: int
-      upper: -143
+      upper: -141
 type: CSV

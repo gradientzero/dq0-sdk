@@ -52,7 +52,8 @@ class PipelineConfig:
         steps_input_cols = []
         for pipeline_config_step in pipeline_config:
             key = list(pipeline_config_step.keys())[0]
-            steps_input_cols.append(pipeline_config_step[key]['input_col'])
+            if 'input_col' in pipeline_config_step[key]:
+                steps_input_cols.append(pipeline_config_step[key]['input_col'])
         return steps_input_cols
 
     def get_steps_from_config(self, root_dir='./dq0/sdk/pipeline/transformer/transformer.py'):

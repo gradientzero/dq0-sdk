@@ -1,9 +1,10 @@
 description: https://github.com/fbarth/humanActivityRecognition
+metadata_is_public: false
 name: Human Activity Recognition
 privacy_column: ''
 schema:
   connection: ../dq0-sdk/dq0/examples/har/_data/dataset-har-PUC-Rio-ugulino.csv
-  privacy_budget: 0
+  privacy_budget: 0.0
   privacy_budget_interval_days: 0
   privacy_level: 2
   size: 0
@@ -12,6 +13,9 @@ schema:
     age:
       bounded: false
       cardinality: 0
+      discrete: false
+      is_feature: false
+      is_target: false
       lower: 28
       private_id: false
       selectable: false
@@ -21,11 +25,16 @@ schema:
       use_auto_bounds: false
     body_mass_index:
       bounded: false
-      cardinality: 4
+      cardinality: 0
+      discrete: false
+      is_feature: false
+      is_target: false
+      lower: 22.0
       private_id: false
       selectable: false
       synthesizable: true
-      type: string
+      type: float
+      upper: 28.6
       use_auto_bounds: false
     censor_dims: false
     clamp_columns: true
@@ -33,6 +42,10 @@ schema:
     class:
       bounded: false
       cardinality: 5
+      discrete: false
+      is_feature: false
+      is_target: false
+      min_step: 1.0
       private_id: false
       selectable: false
       synthesizable: true
@@ -41,28 +54,42 @@ schema:
     gender:
       bounded: false
       cardinality: 2
+      discrete: false
+      is_feature: false
+      is_target: false
+      min_step: 1.0
       private_id: false
       selectable: false
       synthesizable: true
       type: string
       use_auto_bounds: false
+    header_row: 0
     how_tall_in_meters:
       bounded: false
-      cardinality: 4
+      cardinality: 0
+      discrete: false
+      is_feature: false
+      is_target: false
+      lower: 1.58
       private_id: false
       selectable: false
       synthesizable: true
-      type: string
+      type: float
+      upper: 1.71
       use_auto_bounds: false
     max_ids: 1
     row_privacy: false
-    rows: 181040
+    rows: 156288
     sample_max_ids: true
     use_dpsu: false
     use_original_header: true
     user:
       bounded: false
       cardinality: 4
+      discrete: false
+      is_feature: false
+      is_target: false
+      min_step: 1.0
       private_id: false
       selectable: false
       synthesizable: true
@@ -71,6 +98,9 @@ schema:
     weight:
       bounded: false
       cardinality: 0
+      discrete: false
+      is_feature: false
+      is_target: false
       lower: 55
       private_id: false
       selectable: false
@@ -81,7 +111,10 @@ schema:
     x1:
       bounded: false
       cardinality: 0
-      lower: -23
+      discrete: false
+      is_feature: false
+      is_target: false
+      lower: -25
       private_id: false
       selectable: false
       synthesizable: true
@@ -91,111 +124,144 @@ schema:
     x2:
       bounded: false
       cardinality: 0
+      discrete: false
+      is_feature: false
+      is_target: false
       lower: -491
       private_id: false
       selectable: false
       synthesizable: true
       type: int
-      upper: 18
+      upper: 16
       use_auto_bounds: false
     x3:
       bounded: false
       cardinality: 0
+      discrete: false
+      is_feature: false
+      is_target: false
       lower: -62
       private_id: false
       selectable: false
       synthesizable: true
       type: int
-      upper: 66
+      upper: 65
       use_auto_bounds: false
     x4:
       bounded: false
       cardinality: 0
-      lower: -210
+      discrete: false
+      is_feature: false
+      is_target: false
+      lower: -219
       private_id: false
       selectable: false
       synthesizable: true
       type: int
-      upper: -98
+      upper: -96
       use_auto_bounds: false
     y1:
       bounded: false
       cardinality: 0
-      lower: 32
+      discrete: false
+      is_feature: false
+      is_target: false
+      lower: 40
       private_id: false
       selectable: false
       synthesizable: true
       type: int
-      upper: 119
+      upper: 112
       use_auto_bounds: false
     y2:
       bounded: false
       cardinality: 0
-      lower: -515
+      discrete: false
+      is_feature: false
+      is_target: false
+      lower: -514
       private_id: false
       selectable: false
       synthesizable: true
       type: int
-      upper: 93
+      upper: 94
       use_auto_bounds: false
     y3:
       bounded: false
       cardinality: 0
-      lower: 58
+      discrete: false
+      is_feature: false
+      is_target: false
+      lower: 61
       private_id: false
       selectable: false
       synthesizable: true
       type: int
-      upper: 159
+      upper: 157
       use_auto_bounds: false
     y4:
       bounded: false
       cardinality: 0
-      lower: -128
+      discrete: false
+      is_feature: false
+      is_target: false
+      lower: -126
       private_id: false
       selectable: false
       synthesizable: true
       type: int
-      upper: -68
+      upper: -71
       use_auto_bounds: false
     z1:
       bounded: false
       cardinality: 0
-      lower: -145
+      discrete: false
+      is_feature: false
+      is_target: false
+      lower: -150
       private_id: false
       selectable: false
       synthesizable: true
       type: int
-      upper: -27
+      upper: -23
       use_auto_bounds: false
     z2:
       bounded: false
       cardinality: 0
-      lower: -606
+      discrete: false
+      is_feature: false
+      is_target: false
+      lower: -614
       private_id: false
       selectable: false
       synthesizable: true
       type: int
-      upper: -21
+      upper: -18
       use_auto_bounds: false
     z3:
       bounded: false
       cardinality: 0
-      lower: -132
+      discrete: false
+      is_feature: false
+      is_target: false
+      lower: -126
       private_id: false
       selectable: false
       synthesizable: true
       type: int
-      upper: -65
+      upper: -66
       use_auto_bounds: false
     z4:
       bounded: false
       cardinality: 0
-      lower: -179
+      discrete: false
+      is_feature: false
+      is_target: false
+      lower: -174
       private_id: false
       selectable: false
       synthesizable: true
       type: int
-      upper: -143
+      upper: -141
       use_auto_bounds: false
 type: CSV

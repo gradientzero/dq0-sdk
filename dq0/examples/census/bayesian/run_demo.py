@@ -10,8 +10,9 @@ All rights reserved
 import os
 
 import dq0.sdk.data as data
-from dq0.sdk.data.utils import util
 from dq0.examples.census.bayesian.model.user_model import UserModel
+from dq0.sdk.data.utils import util
+
 
 import tensorflow as tf
 # At program startup, activate eager execution in order to call

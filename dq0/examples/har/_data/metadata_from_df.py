@@ -13,11 +13,12 @@ import yaml
 name = 'Human Activity Recognition'
 description = 'https://github.com/fbarth/humanActivityRecognition'
 type_ = 'CSV'
-connection = './dq0/examples/har/_data/dataset-har-PUC-Rio-ugulino.csv'
+connection = '../dq0-sdk/dq0/examples/har/_data/dataset-har-PUC-Rio-ugulino.csv'
 
 df = pd.read_csv(
     connection,
-    sep=';')
+    sep=';',
+    decimal=',')
 n_rows = df.shape[0]
 n_rows = int(n_rows + np.random.randint(-int(0.1 * n_rows), int(0.1 * n_rows), 1)[0])
 # print(type(n_rows))
@@ -30,10 +31,11 @@ meta_d['type'] = type_
 meta_d['privacy_column'] = ''
 
 schema = meta_d['schema'] = {}
-schema['connection'] = '../dq0-sdk/' + connection[2:]
+schema['connection'] = connection
 
 table = schema['table'] = {}
 table['rows'] = n_rows
+table['header_row'] = 0
 # add columns
 for c in df.columns:
     column = table[c] = {}

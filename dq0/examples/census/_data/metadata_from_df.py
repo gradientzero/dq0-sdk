@@ -29,6 +29,16 @@ column_names_list = [
     'income'
 ]
 
+na_values_d = {
+    'capital-gain': 99999,
+    'capital-loss': 99999,
+    'hours-per-week': 99,
+    'workclass': '?',
+    'native-country': '?',
+    'occupation': '?'}
+
+target_col = 'income'
+
 name = 'Adult Census Income'
 description = 'This data was extracted from the 1994 Census bureau ' \
               'database by Ronny Kohavi and Barry Becker (Data Mining and ' \
@@ -43,7 +53,8 @@ connection = '../dq0-sdk/dq0/examples/census/_data/adult_with_rand_names' \
 
 df = pd.read_csv(
     connection,
-    names=column_names_list)
+    names=column_names_list,
+    na_values=na_values_d)
 n_rows = df.shape[0]
 n_rows = int(n_rows + np.random.randint(-int(0.1 * n_rows), int(0.1 * n_rows), 1)[0])
 # print(type(n_rows))
@@ -60,6 +71,26 @@ schema['connection'] = connection
 
 table = schema['table'] = {}
 table['rows'] = n_rows
+table['use_original_header'] = False
+table['header_columns'] = [
+    'lastname',
+    'firstname',
+    'age',
+    'workclass',
+    'fnlwgt',
+    'education',
+    'education-num',
+    'marital-status',
+    'occupation',
+    'relationship',
+    'race',
+    'sex',
+    'capital-gain',
+    'capital-loss',
+    'hours-per-week',
+    'native-country',
+    'income']
+
 # add columns
 for c in df.columns:
     column = table[c] = {}
@@ -87,6 +118,10 @@ for c in df.columns:
         column['lower'] = lower
     if upper is not None:
         column['upper'] = upper
+    if c == target_col:
+        column['is_target'] = True
+    else:
+        column['is_feature'] = True
 
 meta_yaml = yaml.dump(meta_d)
 print(meta_yaml)

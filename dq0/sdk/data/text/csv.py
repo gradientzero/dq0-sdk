@@ -21,14 +21,26 @@ class CSV(Source):
         path (:obj:`str`): Absolute path to the CSV file.
     """
 
-    def __init__(self, path, feature_cols=None, target_cols=None, header=None):
+    def __init__(self, path, meta_ml=None):
         super().__init__(path)
         self.type = 'csv'
-        self.feature_cols = feature_cols
-        self.target_cols = target_cols
-        if header is not None:
-            if len(header) == 1:
-                self.has_header = True
+        self.meta_ml = meta_ml
+
+        self.use_original_header = True
+        self.header_row = 0  # default assumes single header row
+        self.header_columns = None
+        if meta_ml is not None:
+            table = self.meta_ml.get_all_tables()[0]  # Since there is only one table as tested in data_connector
+            self.use_original_header = getattr(table, "use_original_header", self.use_original_header)
+            self.header_row = getattr(table, "header_row", self.header_row)
+            self.header_columns = getattr(table, "header_columns", self.header_columns)
+
+            feature_cols, target_cols = self.meta_ml.get_feature_target_cols()
+            self.feature_cols = feature_cols
+            self.target_cols = target_cols
+
+            col_types = self.meta_ml.get_col_types()
+            self.col_types = col_types
 
     def read(self, **kwargs):
         """Read CSV data sources
@@ -39,4 +51,22 @@ class CSV(Source):
         Returns:
             CSV data as pandas dataframe
         """
-        return pd.read_csv(self.path, **kwargs)
+
+        if kwargs is not None:  # prioritize kwargs over metadata
+            header = kwargs.pop("header", self.header_row)
+            names = kwargs.pop("names", self.header_columns)
+            skiprows = kwargs.pop("skiprows", [])
+
+        if not self.use_original_header:  # covers MutliIndex column names
+            if isinstance(self.header_row, list) and len(self.header_row) > 1:
+                header = 0
+                skiprows = skiprows + self.header_row
+
+        try:
+            return pd.read_csv(self.path, header=header, names=names, skiprows=skiprows, **kwargs)
+        except Exception:
+            print(
+                'Failed to load CSV with use_original_header {}, '
+                'header_row {}, header_columns {} and kwargs {}'.format(
+                    self.use_original_header, self. header_row,
+                    self.header_columns, kwargs))

@@ -15,10 +15,10 @@ All rights reserved
 
 from pathlib import Path
 
-from dq0.sdk.data.preprocessing import preprocessing
-from dq0.sdk.data.utils import util
 from dq0.examples.newsgroups._data.dump_text_labels_to_df_csv import \
     _dump_text_and_labels_to_csv
+from dq0.sdk.data.preprocessing import preprocessing
+from dq0.sdk.data.utils import util
 
 import pandas as pd
 

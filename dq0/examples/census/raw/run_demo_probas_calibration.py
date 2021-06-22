@@ -10,10 +10,10 @@ All rights reserved
 import os
 
 import dq0.sdk
+from dq0.examples.census.raw.model.user_model import UserModel
 from dq0.makedp.trainer.tf.probability_calibration. \
     neural_network_probs_calibration import CalibratedNeuralNetworkClassifier
 from dq0.sdk.data.utils import util
-from dq0.examples.census.raw.model.user_model import UserModel
 
 
 # TODO this should not stay in the SDK since it imports from dq0.makedp!
