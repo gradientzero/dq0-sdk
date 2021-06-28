@@ -17,7 +17,6 @@ from dq0.sdk.models.model import Model
 import numpy as np
 
 import sklearn
-from sklearn.calibration import CalibratedClassifierCV
 
 logger = logging.getLogger()
 
@@ -163,11 +162,6 @@ class NaiveBayesianModel(Model):
               'dataset:')
         util.estimate_freq_of_labels(self.y_train)
 
-        if self.calibrate_posterior_probabilities:
-            self.model = CalibratedClassifierCV(
-                self.model, cv=5, method=self.calibration_method
-            )
-
         self.model.fit(self.X_train, self.y_train)
 
         self._print_fit_log()
@@ -179,19 +173,8 @@ class NaiveBayesianModel(Model):
         else:
             partial_str = ''
 
-        if not self.calibrate_posterior_probabilities:
-            calibration_descr = ''
-        else:
-            if self.calibration_method == 'sigmoid':
-                calibration_method_descr = 'logistic regression'
-            elif self.calibration_method == 'isotonic':
-                calibration_method_descr = 'isotonic regression'
-
-            calibration_descr = ' Calibrated its posterior probabilities ' \
-                                'by using ' + calibration_method_descr + '.'
-
         print('\nLearned a' + partial_str + ' model from',
-              self.X_train.shape[0], 'examples.' + calibration_descr)
+              self.X_train.shape[0], 'examples.')
 
     def evaluate(self, test_data=True):
         """Model evaluate implementation.
