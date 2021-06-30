@@ -334,6 +334,11 @@ class Table():
             use_original_header=True,
             header_row=0,
             header_columns=None,
+            sep=',',
+            decimal='.',
+            na_values=None,
+            index_col=None,
+            skipinitialspace=False,
             row_privacy=False,
             rows=0,
             max_ids=1,
@@ -355,6 +360,11 @@ class Table():
         self.use_original_header = use_original_header
         self.header_row = header_row
         self.header_columns = header_columns
+        self.sep = sep
+        self.decimal = decimal
+        self.na_values = na_values
+        self.index_col = index_col
+        self.skipinitialspace = skipinitialspace
         self.row_privacy = row_privacy
         self.rows = rows
         self.max_ids = max_ids
@@ -373,6 +383,11 @@ class Table():
             "use_original_header", True))
         header_row = meta.pop("header_row", 0)
         header_columns = meta.pop("header_columns", None)
+        sep = meta.pop("sep", ',')
+        decimal = meta.pop("decimal", '.')
+        na_values = meta.pop("na_values", None)
+        index_col = meta.pop("index_col", None)
+        skipinitialspace = meta.pop("skipinitialspace", False)
         row_privacy = bool(meta.pop("row_privacy", False))
         rows = int(meta.pop("rows", 0))
         max_ids = int(meta.pop("max_ids", 1))
@@ -390,6 +405,11 @@ class Table():
             use_original_header=use_original_header,
             header_row=header_row,
             header_columns=header_columns,
+            sep=sep,
+            decimal=decimal,
+            na_values=na_values,
+            index_col=index_col,
+            skipinitialspace=skipinitialspace,
             row_privacy=row_privacy,
             rows=rows,
             max_ids=max_ids,
@@ -413,6 +433,16 @@ class Table():
                 meta["use_original_header"] = self.use_original_header
             if self.header_columns is not None:
                 meta["header_columns"] = self.header_columns
+            if self.sep is not None:
+                meta["sep"] = self.sep
+            if self.decimal is not None:
+                meta["decimal"] = self.decimal
+            if self.na_values is not None:
+                meta["na_values"] = self.na_values
+            if self.index_col is not None:
+                meta["index_col"] = self.index_col
+            if self.skipinitialspace is not None:
+                meta["skipinitialspace"] = self.skipinitialspace
         if self.header_row is not None:
             meta["header_row"] = self.header_row
         if not ml:

@@ -37,6 +37,9 @@ Database:
         tau: 99
         use_original_header: true
         header_row: '1,2'
+        na_values:
+            weight: '?'
+            height: '??'
         user_id:
             private_id: true
             type: int
@@ -92,6 +95,11 @@ Database:
     assert metadata.schemas['Database'].tables['Table1'].tau == 99
     assert metadata.schemas['Database'].tables['Table1'].use_original_header is True
     assert metadata.schemas['Database'].tables['Table1'].header_row == '1,2'
+    assert metadata.schemas['Database'].tables['Table1'].sep == ','
+    assert metadata.schemas['Database'].tables['Table1'].decimal == '.'
+    assert metadata.schemas['Database'].tables['Table1'].na_values == {'weight': '?', 'height': '??'}
+    assert metadata.schemas['Database'].tables['Table1'].index_col == None
+    assert metadata.schemas['Database'].tables['Table1'].skipinitialspace == False
     assert len(metadata.schemas['Database'].tables['Table1'].columns.keys()) == 5
     assert metadata.schemas['Database'].tables['Table1'].columns['user_id'].name == "user_id"
     assert metadata.schemas['Database'].tables['Table1'].columns['weight'].name == "weight"
@@ -153,7 +161,7 @@ Database:
     assert metadata.description == "new description 2"
     assert metadata.metadata_is_public is False
 
-    # test drop columns
+    # test drop columns (drops column 'height')
     metadata.drop_columns_with_key_value('synthesizable', False)
     assert len(metadata.schemas['Database'].tables['Table1'].columns) == 4
 
@@ -170,6 +178,15 @@ Database:
     assert 'selectable' not in sm_dict['Collection']['Database']['Table1']['weight']
     assert sm_dict['Collection']['Database']['Table1']['weight']['upper'] == 100.5
     assert sm_dict['Collection']['Database']['Table1']['email']['cardinality'] == 123
+
+    # test to_dict ml
+    ml_dict = metadata.to_dict_ml()
+    assert 'Collection' not in ml_dict
+    assert 'sample_max_ids' not in ml_dict['Database']['Table1']
+    assert 'synthesizable' not in ml_dict['Database']['Table1']['weight']
+    assert ml_dict['Database']['Table1']['sep'] == ','
+    assert ml_dict['Database']['Table1']['decimal'] == '.'
+    assert ml_dict['Database']['Table1']['na_values'] == {'weight': '?', 'height': '??'}
 
     # clean up
     os.remove('test.yaml')
