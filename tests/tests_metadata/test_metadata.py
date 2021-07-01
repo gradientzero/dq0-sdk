@@ -36,7 +36,9 @@ Database:
         clamp_columns: true
         tau: 99
         use_original_header: true
-        header_row: '1,2'
+        header_row:
+        - 1
+        - 2
         na_values:
             weight: '?'
             height: '??'
@@ -94,12 +96,12 @@ Database:
     assert metadata.schemas['Database'].tables['Table1'].clamp_columns is True
     assert metadata.schemas['Database'].tables['Table1'].tau == 99
     assert metadata.schemas['Database'].tables['Table1'].use_original_header is True
-    assert metadata.schemas['Database'].tables['Table1'].header_row == '1,2'
+    assert metadata.schemas['Database'].tables['Table1'].header_row == [1, 2]
     assert metadata.schemas['Database'].tables['Table1'].sep == ','
     assert metadata.schemas['Database'].tables['Table1'].decimal == '.'
     assert metadata.schemas['Database'].tables['Table1'].na_values == {'weight': '?', 'height': '??'}
-    assert metadata.schemas['Database'].tables['Table1'].index_col == None
-    assert metadata.schemas['Database'].tables['Table1'].skipinitialspace == False
+    assert metadata.schemas['Database'].tables['Table1'].index_col is None
+    assert metadata.schemas['Database'].tables['Table1'].skipinitialspace is False
     assert len(metadata.schemas['Database'].tables['Table1'].columns.keys()) == 5
     assert metadata.schemas['Database'].tables['Table1'].columns['user_id'].name == "user_id"
     assert metadata.schemas['Database'].tables['Table1'].columns['weight'].name == "weight"

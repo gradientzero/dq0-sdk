@@ -10,16 +10,16 @@ schema:
   table:
     age:
       is_feature: true
-      lower: 20
+      lower: 19
       synthesizable: true
       type: int
-      upper: 60
+      upper: 59
     capital-gain:
       is_feature: true
       lower: 0
       synthesizable: true
       type: int
-      upper: 2463
+      upper: 0
     capital-loss:
       is_feature: true
       lower: 0
@@ -33,7 +33,7 @@ schema:
       type: string
     education-num:
       is_feature: true
-      lower: 5
+      lower: 6
       synthesizable: true
       type: int
       upper: 14
@@ -44,10 +44,10 @@ schema:
       type: string
     fnlwgt:
       is_feature: true
-      lower: 57233
+      lower: 39824
       synthesizable: true
       type: int
-      upper: 354632
+      upper: 334679
     header_columns:
     - lastname
     - firstname
@@ -71,7 +71,7 @@ schema:
       lower: 20
       synthesizable: true
       type: int
-      upper: 55
+      upper: 60
     income:
       cardinality: 2
       is_target: true
@@ -87,6 +87,13 @@ schema:
       is_feature: true
       synthesizable: true
       type: string
+    na_values:
+      capital-gain: 99999
+      capital-loss: 99999
+      hours-per-week: 99
+      native-country: '?'
+      occupation: '?'
+      workclass: '?'
     native-country:
       cardinality: 42
       is_feature: true
@@ -107,12 +114,13 @@ schema:
       is_feature: true
       synthesizable: true
       type: string
-    rows: 51607
+    rows: 50511
     sex:
       cardinality: 2
       is_feature: true
       synthesizable: true
       type: string
+    skipinitialspace: true
     use_original_header: false
     workclass:
       cardinality: 9

@@ -72,7 +72,6 @@ class CSV(Source):
             index_col = kwargs.pop("index_col", self.index_col)
             skipinitialspace = kwargs.pop("skipinitialspace", self.skipinitialspace)
 
-
         if not self.use_original_header:  # covers MutliIndex column names
             if isinstance(self.header_row, list) and len(self.header_row) > 1:
                 header = 0
@@ -93,4 +92,3 @@ class CSV(Source):
                 'na_values {} and kwargs {}'.format(
                     self.use_original_header, header, names, skiprows,
                     sep, decimal, na_values, kwargs))
-        

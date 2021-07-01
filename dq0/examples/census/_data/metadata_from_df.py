@@ -90,6 +90,8 @@ table['header_columns'] = [
     'hours-per-week',
     'native-country',
     'income']
+table['na_values'] = na_values_d
+table['skipinitialspace'] = True
 
 # add columns
 for c in df.columns:

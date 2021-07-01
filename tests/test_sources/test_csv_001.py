@@ -12,8 +12,10 @@ from dq0.sdk.data.text.csv import CSV
 
 import numpy as np
 
+import pandas as pd
 
-def test_csv():
+
+def test_csv_001():
     # prepare yaml file
     content = '''description: 'This data was extracted from the 1994 Census bureau database by Ronny
   Kohavi and Barry Becker (Data Mining and Visualization, Silicon Graphics). A set
@@ -170,7 +172,7 @@ type: CSV
     # test na_values are present
     assert df.iloc[0, 8] == '?'
     assert df.iloc[0, -3] == 99
-    
+
     # add na_values to data_source
     data_source.na_values = na_values
 
@@ -178,7 +180,7 @@ type: CSV
     df = data_source.read()
 
     # test na_values are nan
-    na_bool = df.iloc[[0],:].isna()
+    na_bool = df.iloc[[0], :].isna()
     assert na_bool.iloc[0, 8]
     assert na_bool.iloc[0, -3]
 
@@ -190,15 +192,39 @@ type: CSV
     data_source.use_original_header = True
     df = data_source.read()
     assert df.shape == (10, 1)
-    
+
     data_source.sep = ';'
     df = data_source.read()
     assert df.shape == (10, 17)
 
-    # TODO: add decimal test, ...
+    # add float column with comma for deicmal
+    df['float'] = '1,0'
+    df.to_csv('test.csv', index=False, sep=';')
+
+    # test decimal
+    df = data_source.read()
+    assert df.dtypes[-1] == 'object'
+    data_source.decimal = ','
+    df = data_source.read()
+    assert df.dtypes[-1] == 'float64'
+
+    # test skiprows as kwargs
+    df = data_source.read(**{'skiprows': np.arange(1, 6)})
+    assert df.shape == (5, 18)
+
+    # test multicolumn index
+    columns = pd.MultiIndex.from_product([df.columns, ['test']])
+    df.columns = columns
+    df.to_csv('test.csv', index=False, sep=';')
+    data_source.header_row = [0, 1]
+    df = data_source.read()
+    assert df.columns.__class__.__name__ == 'MultiIndex'
+
+    # test mutliindex with skiprows
+    df = data_source.read(**{'skiprows': [2]})
+    assert df.columns.__class__.__name__ == 'MultiIndex'
+    assert df.shape[0] == 4
 
     # clean up
     os.remove('test.yaml')
     os.remove('test.csv')
-
-
