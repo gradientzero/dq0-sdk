@@ -6,6 +6,8 @@ A query object will be created at runtime from a project instance.
 Copyright 2020, Gradient Zero
 All rights reserved
 """
+import base64
+
 from dq0.sdk.cli import Project
 from dq0.sdk.cli.api import Client, routes
 from dq0.sdk.cli.data import Data
@@ -58,31 +60,62 @@ class Query:
         """Returns used dataset names as a single comma-separated string"""
         return ','.join([dataset.name for dataset in self.datasets_used])
 
-    def execute(self, query, epsilon=1.0, tau=0.0, private_column='', permissions=None, params=None):
+    def get_dataset_uuids(self, datasets=None):
+        """Returns used dataset uuids as a single comma-separated string"""
+        if not datasets:
+            datasets = self.datasets_used
+
+        data_uuids = []
+        for dataset in datasets:
+            if isinstance(dataset, Data):
+                data_uuids.append(dataset.uuid)
+            elif type(dataset) == str:
+                data_uuids.append(dataset)
+
+        return ','.join(data_uuids)
+
+    def execute(self, query, args):
         """Run a query on the data sources defined by this Query instance.
 
         Args:
             query: string containing SQL
-            epsilon: float; Epsilon value for differential private query. Default: 1.0
-            tau: float; Tau threshold value for private query. Default: 0.0
-            private_column: string; Private column for this query. Leave empty or omit for default value from metadata.
-            permissions: optional; e.g. 'households<75'
-            params: optional; e.g. 'p1=123'
+            args:
+                entry-point: string;
+                epsilon: float; Epsilon value for differential private query. Default: 1.0
+                tau: float; Tau threshold value for private query. Default: 0.0
+                private_column: string; Private column for this query. Leave empty or omit for default value from metadata.
+                permissions: optional; e.g. 'households<75'
+                params: optional; e.g. 'p1=123'
         Returns:
             :obj:`dq0.sdk.cli.runner.QueryRunner` instance
         """
+        if not isinstance(args, dict):
+            raise TypeError('args need to passed as a dict')
+
+        response = self.project._deploy()
+        checkSDKResponse(response)
+        self.project.update_commit_uuid(response['message'])
+
+        if 'epsilon' not in args:
+            args['epsilon'] = '1.0'
+        if 'tau' not in args:
+            args['tau'] = '0'
+        if 'entry-point' not in args:
+            args['entry-point'] = 'execute'
+        args['job-type'] = 'query.run'
+
+        query_encoded = base64.b64encode(query.encode('UTF-8'))
+        args['query-encoded'] = query_encoded.decode('UTF-8')
+
         if not self.datasets_used:
-            raise DQ0SDKError('Please specify which datasets to use for query')
+            raise DQ0SDKError('Please specify which datasets to use for query using the .for_data() method')
         response = self.client.post(
-            route=routes.query.create,
-            data={'query': query,
-                  'datasets': self.get_dataset_names(),
-                  'epsilon': epsilon,
-                  'tau': tau,
-                  'private_column': private_column,
-                  'permissions': permissions,
-                  'params': params,
-                  'project_uuid': self.project.project_uuid
+            route=routes.runs.create,
+            data={'datasets': self.get_dataset_uuids(),
+                  'project_uuid': self.project.project_uuid,
+                  'commit_uuid': self.project.commit_uuid,
+                  'job-type': 'query.run',
+                  'args': args
                   }
         )
         checkSDKResponse(response)
