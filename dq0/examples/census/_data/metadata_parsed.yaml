@@ -20,12 +20,12 @@ schema:
       discrete: false
       is_feature: true
       is_target: false
-      lower: 20
+      lower: 19
       private_id: false
       selectable: false
       synthesizable: true
       type: int
-      upper: 60
+      upper: 59
       use_auto_bounds: false
     capital-gain:
       bounded: false
@@ -38,7 +38,7 @@ schema:
       selectable: false
       synthesizable: true
       type: int
-      upper: 2463
+      upper: 0
       use_auto_bounds: false
     capital-loss:
       bounded: false
@@ -56,6 +56,7 @@ schema:
     censor_dims: false
     clamp_columns: true
     clamp_counts: false
+    decimal: .
     education:
       bounded: false
       cardinality: 16
@@ -74,7 +75,7 @@ schema:
       discrete: false
       is_feature: true
       is_target: false
-      lower: 5
+      lower: 6
       private_id: false
       selectable: false
       synthesizable: true
@@ -99,12 +100,12 @@ schema:
       discrete: false
       is_feature: true
       is_target: false
-      lower: 57233
+      lower: 39824
       private_id: false
       selectable: false
       synthesizable: true
       type: int
-      upper: 354632
+      upper: 334679
       use_auto_bounds: false
     header_columns:
     - lastname
@@ -124,6 +125,7 @@ schema:
     - hours-per-week
     - native-country
     - income
+    header_row: 0
     hours-per-week:
       bounded: false
       cardinality: 0
@@ -135,7 +137,7 @@ schema:
       selectable: false
       synthesizable: true
       type: int
-      upper: 55
+      upper: 60
       use_auto_bounds: false
     income:
       bounded: false
@@ -174,6 +176,13 @@ schema:
       type: string
       use_auto_bounds: false
     max_ids: 1
+    na_values:
+      capital-gain: 99999
+      capital-loss: 99999
+      hours-per-week: 99
+      native-country: '?'
+      occupation: '?'
+      workclass: '?'
     native-country:
       bounded: false
       cardinality: 42
@@ -223,8 +232,9 @@ schema:
       type: string
       use_auto_bounds: false
     row_privacy: false
-    rows: 51607
+    rows: 50511
     sample_max_ids: true
+    sep: ','
     sex:
       bounded: false
       cardinality: 2
@@ -237,6 +247,7 @@ schema:
       synthesizable: true
       type: string
       use_auto_bounds: false
+    skipinitialspace: true
     use_dpsu: false
     use_original_header: false
     workclass:

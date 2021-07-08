@@ -20,6 +20,7 @@ Copyright 2020, Gradient Zero
 
 import logging
 
+from dq0.sdk.data.base_preprocess import BasePreprocess
 from dq0.sdk.errors.errors import fatal_error
 from dq0.sdk.models.tf import NeuralNetworkRegression
 
@@ -28,7 +29,7 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import OrdinalEncoder
 from sklearn.preprocessing import minmax_scale
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 class UserModel(NeuralNetworkRegression):
@@ -54,36 +55,21 @@ class UserModel(NeuralNetworkRegression):
             fatal_error('No data source found', logger=logger)
 
         data = self.data_source.read()
-        X, y = self._prepare_data(data)
+        y = data['charges'].values
+        X = data.drop(labels=['charges'], axis=1)
 
         X_train, X_test, y_train, y_test = train_test_split(X, y)
+
+        # preprocess the data
+        self.instance_preproc = Preprocessor(data_source=self.data_source)
+        X_train, _ = self.instance_preproc.run(X_train.copy(), train=True)
+        X_test, _ = self.instance_preproc.run(X_test.copy())
 
         # set attributes
         self.X_train = X_train
         self.y_train = y_train
         self.X_test = X_test
         self.y_test = y_test
-
-    def _prepare_data(self, data_df):
-        """Helper function to prepare the input data."""
-
-        y = data_df['charges'].values
-        X_df = data_df.drop(labels=['charges'], axis=1)
-
-        # apply different transformations to subsets of the columns
-        columnTransformer = ColumnTransformer(
-            transformers=[
-                ('one_hot_encoder', OneHotEncoder(), ['region']),
-                ('binary_encoder', OrdinalEncoder(), ['sex', 'smoker'])
-            ],
-            remainder='passthrough'
-        )
-        X = columnTransformer.fit_transform(X_df)
-
-        X_scale = minmax_scale(X)
-        y_scale = y
-
-        return X_scale, y_scale
 
     def setup_model(self, **kwargs):
         """Setup model function
@@ -113,3 +99,58 @@ class UserModel(NeuralNetworkRegression):
         self.metrics = ['mean_absolute_error', 'mean_absolute_percentage_error']
         self.loss = tf.keras.losses.MeanAbsoluteError()
         # As an alternative, define the loss function with a string
+
+
+class Preprocessor(BasePreprocess):
+    """ Derived from dq0.sdk.data.base_preprocess.BasePreprocess class
+
+    User defined preprocessing class used
+    to preprocess data in setup_data() during training run
+    and later for predict.
+
+    Note: all preprocessing required at predict must be included
+
+    """
+    def __init__(self, data_source=None):
+        super().__init__()
+        self.ct_params = None
+        self.x_minmax_scaler_params = None
+        self.y_minmax_scaler_params = None
+
+    def run(self, x, y=None, train=False):
+        """Preprocess the data
+
+        Preprocess the data set and store transformer parameters.
+
+        Returns:
+            preprocessed data
+        """
+
+        from sklearn.compose import ColumnTransformer
+        from sklearn.preprocessing import OneHotEncoder
+        from sklearn.preprocessing import OrdinalEncoder
+        from sklearn.preprocessing import MinMaxScaler
+
+        # apply different transformations to subsets of the columns
+        columnTransformer = ColumnTransformer(
+            transformers=[
+                ('one_hot_encoder', OneHotEncoder(), ['region']),
+                ('binary_encoder', OrdinalEncoder(), ['sex', 'smoker'])
+            ],
+            remainder='passthrough'
+        )
+
+        columnTransformer.fit(x)
+        if train:
+            self.ct_params = columnTransformer.get_params()
+        columnTransformer.set_params(**self.ct_params)
+        x = columnTransformer.transform(x)
+
+        x_minmax_scaler = MinMaxScaler()
+        x_minmax_scaler.fit(x)
+        if train:
+            self.x_minmax_scaler_params = x_minmax_scaler.get_params()
+        x_minmax_scaler.set_params(**self.x_minmax_scaler_params)
+        X_scale = x_minmax_scaler.transform(x)
+        
+        return X_scale, None

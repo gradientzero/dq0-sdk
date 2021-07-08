@@ -1,0 +1,36 @@
+description: description
+name: medical_insurance
+privacy_column: ''
+schema:
+  connection: ../dq0-sdk/dq0/examples/medical_insurance/_data/datasets_13720_18513_insurance_xdata.csv
+  table:
+    age:
+      lower: 19
+      synthesizable: true
+      type: int
+      upper: 61
+    bmi:
+      lower: 21.47
+      synthesizable: true
+      type: float
+      upper: 40.95445627319398
+    children:
+      lower: 0
+      synthesizable: true
+      type: int
+      upper: 3
+    header_row: 0
+    region:
+      cardinality: 4
+      synthesizable: true
+      type: string
+    rows: 1421
+    sex:
+      cardinality: 2
+      synthesizable: true
+      type: string
+    smoker:
+      cardinality: 2
+      synthesizable: true
+      type: string
+type: CSV

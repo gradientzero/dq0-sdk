@@ -53,6 +53,9 @@ class UserModel(NeuralNetworkClassification):
         manually before calling `setup_data()`.
 
         Use `self.data_source.read()` to read the attached data.
+
+        NOTE: this example takes the column names, na_values and skipinitialspace
+        from the metadata  
         """
         from sklearn.model_selection import train_test_split
 
@@ -68,10 +71,7 @@ class UserModel(NeuralNetworkClassification):
 
         # do the train test split
         X_train, X_test, y_train, y_test =\
-            train_test_split(X,
-                             y,
-                             test_size=0.33
-                             )
+            train_test_split(X, y, test_size=0.3)
 
         # preprocess the data
         self.ud_preprocessor_name = CalledWhatever(data_source=self.data_source)
@@ -138,14 +138,6 @@ class CalledWhatever(BasePreprocess):
         self.scaler_params = None
         self.le_params = None
 
-        self.na_values_d = {
-            'capital-gain': 99999,
-            'capital-loss': 99999,
-            'hours-per-week': 99,
-            'workclass': '?',
-            'native-country': '?',
-            'occupation': '?'}
-
     def run(self, x, y=None, train=False):
         """Preprocess the data
 
@@ -157,9 +149,6 @@ class CalledWhatever(BasePreprocess):
         import sklearn.preprocessing
         import pandas as pd
         import numpy as np
-
-        # Do the same NaN value substitution as in read_csv
-        x.replace(to_replace=self.na_values_d, value=np.nan, inplace=True)
 
         # drop unused columns
         x.drop(['lastname', 'firstname'], axis=1, inplace=True)
