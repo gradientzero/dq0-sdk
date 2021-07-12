@@ -443,8 +443,8 @@ class Table():
                 meta["index_col"] = self.index_col
             if self.skipinitialspace is not None:
                 meta["skipinitialspace"] = self.skipinitialspace
-        if self.header_row is not None:
-            meta["header_row"] = self.header_row
+            if self.header_row is not None:
+                meta["header_row"] = self.header_row
         if not ml:
             if self.row_privacy is not None:
                 meta["row_privacy"] = self.row_privacy
