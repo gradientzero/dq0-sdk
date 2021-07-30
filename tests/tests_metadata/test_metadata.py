@@ -259,3 +259,35 @@ Database1:
     assert metadata1.schemas['Database1'].tables['Table3'].row_privacy is False
     assert metadata1.schemas['Database2'].tables['Table2'].rows == 2000
     assert metadata1.schemas['Database2'].tables['Table2'].columns['email'].type == 'string'
+
+
+# python -m pytest -c /dev/null tests/tests_metadata/test_metadata.py::test_metadata_with_budget
+def test_metadata_with_budget():
+    content ='''
+name: Adult_Census_Income_Highest
+description: "..."
+type: CSV
+tags: ""
+privacy_column: ""
+metadata_is_public: false
+schema:
+  connection: my.csv
+  privacy_level: 2
+  table:
+    rows: 50511
+    use_original_header: false
+    budget_epsilon: 1000
+    budget_delta: 500
+    age:
+      is_feature: true
+      lower: 19
+      synthesizable: true
+      type: int
+      upper: 59
+    '''
+    # load metadata
+    metadata1 = Metadata(yaml=content)
+    assert metadata1.schemas['schema'].connection == 'my.csv'
+    assert metadata1.schemas['schema'].tables['table'].rows == 50511
+    assert 'budget_epsilon' not in metadata1.schemas['schema'].tables['table'].__dict__
+    assert 'budget_delta' not in metadata1.schemas['schema'].tables['table'].__dict__

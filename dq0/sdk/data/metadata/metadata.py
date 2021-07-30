@@ -399,7 +399,9 @@ class Table():
         tau = int(meta.pop("tau")) if 'tau' in meta else None
         columns = {}
         for column in meta.keys():
-            columns[column] = Column.from_meta(column, meta[column])
+            # if property is not primitive
+            if hasattr(meta[column], '__dict__'):
+                columns[column] = Column.from_meta(column, meta[column])
         return Table(
             table,
             use_original_header=use_original_header,
