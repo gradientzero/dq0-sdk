@@ -159,6 +159,7 @@ class Metadata:
 
         Args:
             sm: True to return the dict with the non-smartnoise properties stripped.
+            ml: True to return the dict with non-ml properties stripped
 
         Returns:
             metadata as yaml string
@@ -254,30 +255,18 @@ class Schema():
     Attributes:
         connection: data source connection URI
         name: name of the database
-        size: the size of this database
-        privacy_budget: parsed privacy budget property.
-        privacy_budget_interval_days: parsed privacy budget reset interval in days.
-        synth_allowed: true to allow synthesized data for exploration
         privacy_level: 0, 1, 2 in ascending order of privacy protection (default is 2).
         tables: parsed database metadata.
     """
     def __init__(
             self,
             name,
-            size=0,
             connection='',
-            privacy_budget=0,
-            privacy_budget_interval_days=0,
-            synth_allowed=False,
             privacy_level=2,
             tables=None):
         """Creates a new schema object."""
         self.name = name
-        self.size = size
         self.connection = connection
-        self.privacy_budget = privacy_budget
-        self.privacy_budget_interval_days = privacy_budget_interval_days
-        self.synth_allowed = synth_allowed
         self.privacy_level = privacy_level
         self.tables = tables
 
@@ -285,21 +274,13 @@ class Schema():
     def from_meta(schema, meta):
         """Create a schema instance from the meta yaml part."""
         connection = meta.pop("connection", '')
-        size = int(meta.pop("size", 0))
-        privacy_budget = float(meta.pop("privacy_budget", 0))
-        privacy_budget_interval_days = int(meta.pop("privacy_budget_interval_days", 0))
-        synth_allowed = bool(meta.pop("synth_allowed", False))
         privacy_level = int(meta.pop("privacy_level", 2))
         tables = {}
         for table in meta.keys():
             tables[table] = Table.from_meta(table, meta[table])
         return Schema(
             schema,
-            size=size,
             connection=connection,
-            privacy_budget=privacy_budget,
-            privacy_budget_interval_days=privacy_budget_interval_days,
-            synth_allowed=synth_allowed,
             privacy_level=privacy_level,
             tables=tables
         )
@@ -311,14 +292,6 @@ class Schema():
             if self.connection is not None:
                 meta["connection"] = self.connection
             if not ml:
-                if self.size is not None:
-                    meta["size"] = self.size
-                if self.privacy_budget is not None:
-                    meta["privacy_budget"] = self.privacy_budget
-                if self.privacy_budget_interval_days is not None:
-                    meta["privacy_budget_interval_days"] = self.privacy_budget_interval_days
-                if self.synth_allowed is not None:
-                    meta["synth_allowed"] = self.synth_allowed
                 if self.privacy_level is not None:
                     meta["privacy_level"] = self.privacy_level
         for table in self.tables:
@@ -331,6 +304,9 @@ class Table():
     def __init__(
             self,
             name,
+            synth_allowed=False,
+            budget_epsilon=0,
+            budget_delta=0,
             use_original_header=True,
             header_row=0,
             header_columns=None,
@@ -357,6 +333,9 @@ class Table():
             columns: columns of the table
         """
         self.name = name
+        self.synth_allowed = synth_allowed
+        self.budget_epsilon = budget_epsilon
+        self.budget_delta = budget_delta
         self.use_original_header = use_original_header
         self.header_row = header_row
         self.header_columns = header_columns
@@ -379,6 +358,9 @@ class Table():
     @staticmethod
     def from_meta(table, meta):
         """Create a table instance from the meta yaml part."""
+        synth_allowed = bool(meta.pop("synth_allowed", False))
+        budget_epsilon = meta.pop("budget_epsilon", 0)
+        budget_delta = meta.pop("budget_delta", 0)
         use_original_header = bool(meta.pop(
             "use_original_header", True))
         header_row = meta.pop("header_row", 0)
@@ -399,11 +381,15 @@ class Table():
         tau = int(meta.pop("tau")) if 'tau' in meta else None
         columns = {}
         for column in meta.keys():
-            # if property is not primitive
-            if hasattr(meta[column], '__dict__'):
-                columns[column] = Column.from_meta(column, meta[column])
+            columns[column] = Column.from_meta(column, meta[column])
+            # # if property is not primitive
+            # if hasattr(meta[column], '__dict__'):
+            #     columns[column] = Column.from_meta(column, meta[column])
         return Table(
             table,
+            synth_allowed=synth_allowed,
+            budget_epsilon=budget_epsilon,
+            budget_delta=budget_delta,
             use_original_header=use_original_header,
             header_row=header_row,
             header_columns=header_columns,
@@ -431,6 +417,12 @@ class Table():
             if not ml:
                 if self.tau is not None:
                     meta["tau"] = self.tau
+                if self.synth_allowed is not None:
+                    meta["synth_allowed"] = self.synth_allowed
+            if self.budget_epsilon is not None:
+                meta["budget_epsilon"] = self.budget_epsilon
+            if self.budget_delta is not None:
+                meta["budget_delta"] = self.budget_delta
             if self.use_original_header is not None:
                 meta["use_original_header"] = self.use_original_header
             if self.header_columns is not None:
