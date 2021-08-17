@@ -10,6 +10,9 @@ import pandas as pd
 import yaml
 
 
+feature_cols = ['age', 'sex', 'bmi', 'children', 'smoker', 'region']
+label_cols = ['charges']
+
 name = 'medical_insurance'
 description = 'description'
 type_ = 'CSV'
@@ -61,6 +64,11 @@ for c in df.columns:
         column['lower'] = lower
     if upper is not None:
         column['upper'] = upper
+    
+    if c in feature_cols:
+        column['is_feature'] = True
+    if c in label_cols:
+        column['is_target'] = True
 
 meta_yaml = yaml.dump(meta_d)
 print(meta_yaml)

@@ -5,21 +5,25 @@ schema:
   connection: ../dq0-sdk/dq0/examples/medical_insurance/_data/datasets_13720_18513_insurance.csv
   table:
     age:
+      is_feature: true
       lower: 19
       synthesizable: true
       type: int
-      upper: 61
+      upper: 60
     bmi:
-      lower: 21.47
+      is_feature: true
+      lower: 22.61
       synthesizable: true
       type: float
-      upper: 40.95445627319398
+      upper: 39.5
     charges:
-      lower: 2016.7138040631087
+      is_target: true
+      lower: 1878.2308457069084
       synthesizable: true
       type: float
-      upper: 40089.474201056415
+      upper: 41033.64864482995
     children:
+      is_feature: true
       lower: 0
       synthesizable: true
       type: int
@@ -27,15 +31,18 @@ schema:
     header_row: 0
     region:
       cardinality: 4
+      is_feature: true
       synthesizable: true
       type: string
-    rows: 1421
+    rows: 1335
     sex:
       cardinality: 2
+      is_feature: true
       synthesizable: true
       type: string
     smoker:
       cardinality: 2
+      is_feature: true
       synthesizable: true
       type: string
 type: CSV
