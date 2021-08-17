@@ -382,9 +382,6 @@ class Table():
         columns = {}
         for column in meta.keys():
             columns[column] = Column.from_meta(column, meta[column])
-            # # if property is not primitive
-            # if hasattr(meta[column], '__dict__'):
-            #     columns[column] = Column.from_meta(column, meta[column])
         return Table(
             table,
             synth_allowed=synth_allowed,

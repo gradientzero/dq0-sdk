@@ -48,7 +48,7 @@ def test_CSVDataHandler_census():
     # test with pipeline
     dir_path = os.path.dirname(os.path.realpath(__file__))
     config_path = os.path.join(dir_path, '..', '..', '..', 'dq0', 'examples', 'census', '_data', 'pipeline_config.yaml')
-    meta_path = os.path.join(dir_path, '..', '..', '..', 'dq0', 'examples', 'census', '_data', 'metadata_header.yaml')
+    meta_path = os.path.join(dir_path, '..', '..', '..', 'dq0', 'examples', 'census', '_data', 'adult_with_rand_names_w_header.yaml')
     metadata = Metadata(filename=meta_path)
     data_source = CSV(
         next(iter(metadata.schemas.values())).connection,

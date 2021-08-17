@@ -69,6 +69,5 @@ print(meta_yaml)
 
 meta_dq0 = Metadata(yaml=meta_yaml)
 
-with open(os.path.join(os.path.split(connection)[0], 'metadata.yaml'), 'w') as f:
+with open(os.path.join(os.path.split(connection)[0], 'dataset-har-PUC-Rio-ugulino.yaml'), 'w') as f:
     yaml.dump(meta_d, f)
-meta_dq0.to_yaml_file(os.path.join(os.path.split(connection)[0], 'metadata_parsed.yaml'))

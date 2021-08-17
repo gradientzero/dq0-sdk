@@ -186,15 +186,15 @@ type: CSV
 
     # change separator
     df.to_csv('test.csv', index=False, sep=';')
+    data_source.use_original_header = True
 
     # test reads with different separator
     data_source.path = 'test.csv'
-    data_source.use_original_header = True
-    df = data_source.read()
+    df = data_source.read(names=None)
     assert df.shape == (10, 1)
 
     data_source.sep = ';'
-    df = data_source.read()
+    df = data_source.read(names=None)
     assert df.shape == (10, 17)
 
     # add float column with comma for deicmal
@@ -209,7 +209,7 @@ type: CSV
     assert df.dtypes[-1] == 'float64'
 
     # test skiprows as kwargs
-    df = data_source.read(**{'skiprows': np.arange(1, 6)})
+    df = data_source.read(names=None, skiprows=np.arange(1, 6))
     assert df.shape == (5, 18)
 
     # test multicolumn index
@@ -217,14 +217,18 @@ type: CSV
     df.columns = columns
     df.to_csv('test.csv', index=False, sep=';')
     data_source.header_row = [0, 1]
-    df = data_source.read()
+    df = data_source.read(names=None)
     assert df.columns.__class__.__name__ == 'MultiIndex'
 
     # test mutliindex with skiprows
-    df = data_source.read(**{'skiprows': [2]})
+    df = data_source.read(names=None, skiprows=[2])
     assert df.columns.__class__.__name__ == 'MultiIndex'
     assert df.shape[0] == 4
 
     # clean up
     os.remove('test.yaml')
     os.remove('test.csv')
+
+
+if __name__ == "__main__":
+  test_csv_001()
