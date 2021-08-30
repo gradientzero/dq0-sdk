@@ -78,8 +78,7 @@ class CSV(Source):
                 skiprows = skiprows + self.header_row
             elif names is not None:
                 header = None
-        else:
-            names = None
+
         try:
             return pd.read_csv(self.path, header=header, names=names,
                                skiprows=skiprows, sep=sep, decimal=decimal,

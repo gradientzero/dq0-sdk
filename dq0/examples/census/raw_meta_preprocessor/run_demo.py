@@ -23,7 +23,7 @@ if __name__ == '__main__':
     util.initialize_rnd_numbers_generators_state()
 
     # path to metadata
-    path = '../_data/metadata.yaml'
+    path = '../_data/adult_with_rand_names.yaml'
     filepath = os.path.join(os.path.dirname(
         os.path.abspath(__file__)), path)
 

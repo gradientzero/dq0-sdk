@@ -20,12 +20,11 @@ privacy_column: 'user_id'
 metadata_is_public: true
 Database:
     connection: 'user@db'
-    size: 1001
-    privacy_budget: 1000
-    privacy_budget_interval_days: 30
-    synth_allowed: true
     privacy_level: 1
     Table1:
+        synth_allowed: true
+        budget_epsilon: 1000
+        budget_delta: 500
         row_privacy: true
         rows: 2000
         max_ids: 1
@@ -81,11 +80,10 @@ Database:
     assert metadata.privacy_column == 'user_id'
     assert metadata.metadata_is_public is True
     assert metadata.schemas['Database'].connection == "user@db"
-    assert metadata.schemas['Database'].size == 1001
-    assert metadata.schemas['Database'].privacy_budget == 1000
-    assert metadata.schemas['Database'].privacy_budget_interval_days == 30
     assert metadata.schemas['Database'].privacy_level == 1
-    assert metadata.schemas['Database'].synth_allowed is True
+    assert metadata.schemas['Database'].tables['Table1'].synth_allowed is True
+    assert metadata.schemas['Database'].tables['Table1'].budget_epsilon == 1000
+    assert metadata.schemas['Database'].tables['Table1'].budget_delta == 500
     assert metadata.schemas['Database'].tables['Table1'].row_privacy is True
     assert metadata.schemas['Database'].tables['Table1'].rows == 2000
     assert metadata.schemas['Database'].tables['Table1'].max_ids == 1
@@ -132,7 +130,7 @@ Database:
     assert metadata.schemas['Database'].tables['Table1'].columns['email'].mask == "(.*)@(.*).{3}$"
 
     # change metadata
-    metadata.schemas['Database'].privacy_budget = 1234
+    metadata.schemas['Database'].tables['Table1'].budget_epsilon = 1234
     metadata.description = 'new description'
     metadata.metadata_is_public = False
 
@@ -143,12 +141,12 @@ Database:
     metadata = Metadata(yaml=yaml_string)
 
     # test again
-    assert metadata.schemas['Database'].privacy_budget == 1234
+    assert metadata.schemas['Database'].tables['Table1'].budget_epsilon == 1234
     assert metadata.description == "new description"
     assert metadata.metadata_is_public is False
 
     # change metadata
-    metadata.schemas['Database'].privacy_budget = 5678
+    metadata.schemas['Database'].tables['Table1'].budget_epsilon = 5678
     metadata.description = 'new description 2'
     metadata.metadata_is_public = None
 
@@ -159,7 +157,7 @@ Database:
     metadata = Metadata(yaml=meta_string)
 
     # test again
-    assert metadata.schemas['Database'].privacy_budget == 5678
+    assert metadata.schemas['Database'].tables['Table1'].budget_epsilon == 5678
     assert metadata.description == "new description 2"
     assert metadata.metadata_is_public is False
 
@@ -201,11 +199,10 @@ description: 'some description'
 type: 'CSV'
 Database1:
     connection: 'user1@db'
-    privacy_budget: 1000
-    privacy_budget_interval_days: 30
-    synth_allowed: true
     privacy_level: 1
     Table1:
+        budget_epsilon: 1000
+        synth_allowed: true
         row_privacy: true
         rows: 1000
         user_id:
@@ -218,11 +215,10 @@ description: 'some description'
 type: 'CSV'
 Database2:
     connection: 'user@db'
-    privacy_budget: 1001
-    privacy_budget_interval_days: 30
-    synth_allowed: true
     privacy_level: 1
     Table2:
+        budget_epsilon: 1001
+        synth_allowed: true
         row_privacy: false
         rows: 2000
         email:
@@ -235,11 +231,10 @@ description: 'some description'
 type: 'CSV'
 Database1:
     connection: 'user3@db'
-    privacy_budget: 1000
-    privacy_budget_interval_days: 30
-    synth_allowed: true
     privacy_level: 1
     Table3:
+        synth_allowed: true
+        budget_epsilon: 1000
         row_privacy: false
         rows: 3000
         weight:
@@ -254,40 +249,8 @@ Database1:
     metadata1.combine_with(metadata3)
 
     assert metadata1.schemas['Database1'].connection == 'user1@db'
-    assert metadata1.schemas['Database2'].privacy_budget == 1001
+    assert metadata1.schemas['Database2'].tables['Table2'].budget_epsilon == 1001
     assert metadata1.schemas['Database1'].tables['Table1'].row_privacy is True
     assert metadata1.schemas['Database1'].tables['Table3'].row_privacy is False
     assert metadata1.schemas['Database2'].tables['Table2'].rows == 2000
     assert metadata1.schemas['Database2'].tables['Table2'].columns['email'].type == 'string'
-
-
-# python -m pytest -c /dev/null tests/tests_metadata/test_metadata.py::test_metadata_with_budget
-def test_metadata_with_budget():
-    content ='''
-name: Adult_Census_Income_Highest
-description: "..."
-type: CSV
-tags: ""
-privacy_column: ""
-metadata_is_public: false
-schema:
-  connection: my.csv
-  privacy_level: 2
-  table:
-    rows: 50511
-    use_original_header: false
-    budget_epsilon: 1000
-    budget_delta: 500
-    age:
-      is_feature: true
-      lower: 19
-      synthesizable: true
-      type: int
-      upper: 59
-    '''
-    # load metadata
-    metadata1 = Metadata(yaml=content)
-    assert metadata1.schemas['schema'].connection == 'my.csv'
-    assert metadata1.schemas['schema'].tables['table'].rows == 50511
-    assert 'budget_epsilon' not in metadata1.schemas['schema'].tables['table'].__dict__
-    assert 'budget_delta' not in metadata1.schemas['schema'].tables['table'].__dict__
