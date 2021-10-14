@@ -8,6 +8,7 @@ All rights reserved
 """
 
 import copy
+from distutils.util import strtobool
 import os
 
 import yaml
@@ -77,6 +78,7 @@ class Metadata:
 
         for key in meta.keys():
             if key not in self.__dict__ and isinstance(meta[key], dict):
+                print(f"key: {key} meta: {meta} and meta[key]: {meta[key]}")
                 self.schemas[key] = Schema.from_meta(key, meta[key])
 
     def to_dict(self, sm=False, ml=False):  # noqa: C901
@@ -275,8 +277,13 @@ class Schema():
         """Create a schema instance from the meta yaml part."""
         connection = meta.pop("connection", '')
         privacy_level = int(meta.pop("privacy_level", 2))
+        privacy_budget = float(meta.pop("privacy_budget", 0.0))
+        privacy_budget_interval_days = int(meta.pop("privacy_budget_interval_days", 0))
+        size = int(meta.pop("size", 0))
+        synth_allowed = bool(meta.pop("synth_allowed", False))
         tables = {}
         for table in meta.keys():
+            print(f"table: {table}\nmeta: {meta}\nmeta[table]: {meta[table]}\n")
             tables[table] = Table.from_meta(table, meta[table])
         return Schema(
             schema,
@@ -357,6 +364,7 @@ class Table():
 
     @staticmethod
     def from_meta(table, meta):
+        print(f"meta at this point: {meta}")
         """Create a table instance from the meta yaml part."""
         synth_allowed = bool(meta.pop("synth_allowed", False))
         budget_epsilon = meta.pop("budget_epsilon", 0)
