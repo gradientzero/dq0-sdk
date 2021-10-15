@@ -4,15 +4,7 @@ from dq0.sdk.data.metadata.connector.meta_connector import MetaConnector
 class MetaConnectorCSV(MetaConnector):
     @staticmethod
     def fromYamlDict(yaml_dict):
-        if yaml_dict is None:
-            raise Exception("yaml_dict is None")
-        if not isinstance(yaml_dict, dict):
-            raise Exception("yaml_dict is not a dict instance")
-        type_name = yaml_dict['type_name'] if 'type_name' in yaml_dict else None
-        if not MetaConnector.isValidTypeName(type_name):
-            raise Exception(f"invalid type_name {type_name if type_name is not None else 'None'}")
-        if type_name != MetaConnector.TYPE_NAME_CSV:
-            raise Exception(f"type_name must be {MetaConnector.TYPE_NAME_CSV} was {type_name}")
+        MetaConnector.verifyYamlDict(yaml_dict, MetaConnector.TYPE_NAME_CSV)
         use_original_header = bool(yaml_dict.pop('use_original_header', True))
         header_row = yaml_dict.pop('header_row', 0)
         header_columns = yaml_dict.pop('header_columns', None)

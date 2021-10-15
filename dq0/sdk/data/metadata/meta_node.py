@@ -18,12 +18,21 @@ class MetaNode:
         return False
 
     @staticmethod
-    def fromYamlDict(yaml_dict):
+    def verifyYamlDict(yaml_dict, expected_type_name=None):
         if yaml_dict is None:
             raise Exception("yaml_dict is None")
         if not isinstance(yaml_dict, dict):
             raise Exception("yaml_dict is not a dict instance")
-        type_name = yaml_dict.pop('type_name', None)
+        type_name = yaml_dict['type_name'] if 'type_name' in yaml_dict else None
+        if not MetaNode.isValidTypeName(type_name):
+            raise Exception(f"invalid type_name {type_name if type_name is not None else 'None'}")
+        if expected_type_name is not None and type_name != expected_type_name:
+            raise Exception(f"type_name must be {expected_type_name} was {type_name}")
+        return type_name
+
+    @staticmethod
+    def fromYamlDict(yaml_dict):
+        type_name = MetaNode.verifyYamlDict(yaml_dict)
         name = yaml_dict.pop('name', None)
         description = yaml_dict.pop('description', None)
         is_public = bool(yaml_dict.pop('is_public', False))
