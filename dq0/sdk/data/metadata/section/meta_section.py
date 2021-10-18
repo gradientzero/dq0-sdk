@@ -4,6 +4,7 @@ from dq0.sdk.data.metadata.section.meta_section_column_smart_noise import MetaSe
 from dq0.sdk.data.metadata.section.meta_section_schema_privacy import MetaSectionSchemaPrivacy
 from dq0.sdk.data.metadata.section.meta_section_table_differential_privacy import MetaSectionTableDifferentialPrivacy
 from dq0.sdk.data.metadata.section.meta_section_table_other import MetaSectionTableOther
+from dq0.sdk.data.metadata.section.meta_section_table_privacy import MetaSectionTablePrivacy
 from dq0.sdk.data.metadata.section.meta_section_table_smart_noise import MetaSectionTableSmartNoise
 
 
@@ -21,6 +22,7 @@ class MetaSection:
     TYPE_NAME_SCHEMA_PRIVACY = 'schema_privacy'
     TYPE_NAME_TABLE_DIFFERENTIAL_PRIVACY = 'table_differential_privacy'
     TYPE_NAME_TABLE_OTHER = 'table_other'
+    TYPE_NAME_TABLE_PRIVACY = 'table_privacy'
     TYPE_NAME_TABLE_SMART_NOISE = 'table_smart_noise'
 
     @staticmethod
@@ -41,6 +43,7 @@ class MetaSection:
                 type_name == MetaSection.TYPE_NAME_SCHEMA_PRIVACY or \
                 type_name == MetaSection.TYPE_NAME_TABLE_DIFFERENTIAL_PRIVACY or \
                 type_name == MetaSection.TYPE_NAME_TABLE_OTHER or \
+                type_name == MetaSection.TYPE_NAME_TABLE_PRIVACY or \
                 type_name == MetaSection.TYPE_NAME_TABLE_SMART_NOISE:
             return True
         return False
@@ -87,6 +90,8 @@ class MetaSection:
             return MetaSectionTableDifferentialPrivacy.fromYamlDict(yaml_dict)
         if type_name == MetaSection.TYPE_NAME_TABLE_OTHER:
             return MetaSectionTableOther.fromYamlDict(yaml_dict)
+        if type_name == MetaSection.TYPE_NAME_TABLE_PRIVACY:
+            return MetaSectionTablePrivacy.fromYamlDict(yaml_dict)
         if type_name == MetaSection.TYPE_NAME_TABLE_SMART_NOISE:
             return MetaSectionTableSmartNoise.fromYamlDict(yaml_dict)
         raise Exception(f"no factory configured for type_name {type_name}")

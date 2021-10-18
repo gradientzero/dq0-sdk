@@ -23,3 +23,20 @@ class Metadata:
             verify = MetaVerifier.verify
         verify(root_node)
         self.root_node = root_node
+
+    def filter(self, filter):
+        if filter is None:
+            raise Exception("filter is None")
+        return Metadata(filter(self.root_node))
+
+    def to_dict(self):
+        if self.root_node is None:
+            return {}
+        return self.root_node.to_dict()
+
+    def merge_with(self, other):
+        if other is None:
+            raise Exception("other is None")
+        if other.root_node is None:
+            raise Exception("other.root_node is None")
+        return Metadata(self.root_node.merge_with(other.root_node))
