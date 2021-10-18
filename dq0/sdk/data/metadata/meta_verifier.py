@@ -3,13 +3,17 @@ from dq0.sdk.data.metadata.meta_node import MetaNode
 
 class MetaVerifier:
     @staticmethod
-    def verify(node, expected_type_names=None):
+    def check(node):
         if node is None:
             raise Exception("node is none")
         if not isinstance(node, MetaNode):
             raise Exception("node is not an instance of MetaNode")
         if node.type_name is None:
             raise Exception("node.type_name is none")
+
+    @staticmethod
+    def verify(node, expected_type_names=None):
+        MetaVerifier.check(node)
         if expected_type_names is not None and node.type_name not in expected_type_names:
             raise Exception(f"node.type_name {node.type_name} is not in expected type_names {expected_type_names}")
         if node.sections is not None:

@@ -19,6 +19,29 @@ class MetaSectionColumn(MetaSection):
         self.data_type_name = data_type_name
         self.selectable = selectable
 
+    def copy(self):
+        return MetaSectionColumn(self.name, self.data_type_name, self.selectable)
+
+    def to_dict(self):
+        dct = super().to_dict()
+        dct["data_type_name"] = self.data_type_name
+        dct["selectable"] = self.selectable
+        return dct
+
+    def merge_precheck_with(self, other):
+        if not super().merge_precheck_with(other):
+            return False
+        if self.data_type_name != other.data_type_name:
+            raise Exception(f"sections with matching super precheck cannot have diverging data_type_names {self.data_type_name} <--> {other.data_type_name}")
+        if self.selectable != other.selectable:
+            raise Exception(f"sections with matching super precheck cannot have diverging selectable flags {self.selectable} <--> {other.selectable}")
+        return True        
+
+    def merge_with(self, other):
+        if not self.merge_precheck_with(other):
+            raise Exception("cannot merge sections that fail the precheck")
+        return self.copy()
+
 
 class MetaSectionColumnBooleanDatetime(MetaSection):
     @staticmethod
@@ -34,6 +57,26 @@ class MetaSectionColumnBooleanDatetime(MetaSection):
             synthesizable=False):
         super().__init__(MetaSection.TYPE_NAME_COLUMN_BOOLEAN_DATETIME, name)
         self.synthesizable = synthesizable
+
+    def copy(self):
+        return MetaSectionColumnBooleanDatetime(self.name, self.synthesizable)
+
+    def to_dict(self):
+        dct = super().to_dict()
+        dct["synthesizable"] = self.synthesizable
+        return dct
+
+    def merge_precheck_with(self, other):
+        if not super().merge_precheck_with(other):
+            return False
+        if self.synthesizable != other.synthesizable:
+            raise Exception(f"sections with matching super precheck cannot have diverging synthesizable flags {self.synthesizable} <--> {other.synthesizable}")
+        return True        
+
+    def merge_with(self, other):
+        if not self.merge_precheck_with(other):
+            raise Exception("cannot merge sections that fail the precheck")
+        return self.copy()
 
 
 class MetaSectionColumnFloat(MetaSection):
@@ -69,6 +112,44 @@ class MetaSectionColumnFloat(MetaSection):
         self.min_step = min_step
         self.synthesizable = synthesizable
 
+    def copy(self):
+        return MetaSectionColumnFloat(self.name, self.use_auto_bounds, self.auto_bounds_prob, self.auto_lower, self.auto_upper, self.discrete, self.min_step, self.synthesizable)
+
+    def to_dict(self):
+        dct = super().to_dict()
+        dct["use_auto_bounds"] = self.use_auto_bounds
+        dct["auto_bounds_prob"] = self.auto_bounds_prob
+        dct["auto_lower"] = self.auto_lower
+        dct["auto_upper"] = self.auto_upper
+        dct["discrete"] = self.discrete
+        dct["min_step"] = self.min_step
+        dct["synthesizable"] = self.synthesizable
+        return dct
+
+    def merge_precheck_with(self, other):
+        if not super().merge_precheck_with(other):
+            return False
+        if self.use_auto_bounds != other.use_auto_bounds:
+            raise Exception(f"sections with matching super precheck cannot have diverging use_auto_bounds flags {self.use_auto_bounds} <--> {other.use_auto_bounds}")
+        if self.auto_bounds_prob != other.auto_bounds_prob:
+            raise Exception(f"sections with matching super precheck cannot have diverging auto_bounds_probs {self.auto_bounds_prob} <--> {other.auto_bounds_prob}")
+        if self.auto_lower != other.auto_lower:
+            raise Exception(f"sections with matching super precheck cannot have diverging auto_lower bounds {self.auto_lower} <--> {other.auto_lower}")
+        if self.auto_upper != other.auto_upper:
+            raise Exception(f"sections with matching super precheck cannot have diverging auto_upper bounds {self.auto_upper} <--> {other.auto_upper}")
+        if self.discrete != other.discrete:
+            raise Exception(f"sections with matching super precheck cannot have diverging discrete flags {self.discrete} <--> {other.discrete}")
+        if self.min_step != other.min_step:
+            raise Exception(f"sections with matching super precheck cannot have diverging min_steps {self.min_step} <--> {other.min_step}")
+        if self.synthesizable != other.synthesizable:
+            raise Exception(f"sections with matching super precheck cannot have diverging synthesizable flags {self.synthesizable} <--> {other.synthesizable}")
+        return True        
+
+    def merge_with(self, other):
+        if not self.merge_precheck_with(other):
+            raise Exception("cannot merge sections that fail the precheck")
+        return self.copy()
+
 
 class MetaSectionColumnInt(MetaSection):
     @staticmethod
@@ -103,6 +184,44 @@ class MetaSectionColumnInt(MetaSection):
         self.min_step = min_step
         self.synthesizable = synthesizable
 
+    def copy(self):
+        return MetaSectionColumnInt(self.name, self.use_auto_bounds, self.auto_bounds_prob, self.auto_lower, self.auto_upper, self.discrete, self.min_step, self.synthesizable)
+
+    def to_dict(self):
+        dct = super().to_dict()
+        dct["use_auto_bounds"] = self.use_auto_bounds
+        dct["auto_bounds_prob"] = self.auto_bounds_prob
+        dct["auto_lower"] = self.auto_lower
+        dct["auto_upper"] = self.auto_upper
+        dct["discrete"] = self.discrete
+        dct["min_step"] = self.min_step
+        dct["synthesizable"] = self.synthesizable
+        return dct
+
+    def merge_precheck_with(self, other):
+        if not super().merge_precheck_with(other):
+            return False
+        if self.use_auto_bounds != other.use_auto_bounds:
+            raise Exception(f"sections with matching super precheck cannot have diverging use_auto_bounds flags {self.use_auto_bounds} <--> {other.use_auto_bounds}")
+        if self.auto_bounds_prob != other.auto_bounds_prob:
+            raise Exception(f"sections with matching super precheck cannot have diverging auto_bounds_probs {self.auto_bounds_prob} <--> {other.auto_bounds_prob}")
+        if self.auto_lower != other.auto_lower:
+            raise Exception(f"sections with matching super precheck cannot have diverging auto_lower bounds {self.auto_lower} <--> {other.auto_lower}")
+        if self.auto_upper != other.auto_upper:
+            raise Exception(f"sections with matching super precheck cannot have diverging auto_upper bounds {self.auto_upper} <--> {other.auto_upper}")
+        if self.discrete != other.discrete:
+            raise Exception(f"sections with matching super precheck cannot have diverging discrete flags {self.discrete} <--> {other.discrete}")
+        if self.min_step != other.min_step:
+            raise Exception(f"sections with matching super precheck cannot have diverging min_steps {self.min_step} <--> {other.min_step}")
+        if self.synthesizable != other.synthesizable:
+            raise Exception(f"sections with matching super precheck cannot have diverging synthesizable flags {self.synthesizable} <--> {other.synthesizable}")
+        return True        
+
+    def merge_with(self, other):
+        if not self.merge_precheck_with(other):
+            raise Exception("cannot merge sections that fail the precheck")
+        return self.copy()
+
 
 class MetaSectionColumnString(MetaSection):
     @staticmethod
@@ -127,3 +246,32 @@ class MetaSectionColumnString(MetaSection):
         self.mask = mask
         self.cardinality = cardinality
         self.synthesizable = synthesizable
+
+    def copy(self):
+        return MetaSectionColumnString(self.name, self.allowed_values, self.mask, self.cardinality, self.synthesizable)
+
+    def to_dict(self):
+        dct = super().to_dict()
+        dct["allowed_values"] = self.allowed_values
+        dct["mask"] = self.mask
+        dct["cardinality"] = self.cardinality
+        dct["synthesizable"] = self.synthesizable
+        return dct
+
+    def merge_precheck_with(self, other):
+        if not super().merge_precheck_with(other):
+            return False
+        if self.allowed_values != other.allowed_values:
+            raise Exception(f"sections with matching super precheck cannot have diverging allowed_values {self.allowed_values} <--> {other.allowed_values}")
+        if self.mask != other.mask:
+            raise Exception(f"sections with matching super precheck cannot have diverging masks {self.mask} <--> {other.mask}")
+        if self.cardinality != other.cardinality:
+            raise Exception(f"sections with matching super precheck cannot have diverging cardinalities {self.cardinality} <--> {other.cardinality}")
+        if self.synthesizable != other.synthesizable:
+            raise Exception(f"sections with matching super precheck cannot have diverging synthesizable flags {self.synthesizable} <--> {other.synthesizable}")
+        return True        
+
+    def merge_with(self, other):
+        if not self.merge_precheck_with(other):
+            raise Exception("cannot merge sections that fail the precheck")
+        return self.copy()

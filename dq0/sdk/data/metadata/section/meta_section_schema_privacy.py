@@ -15,3 +15,23 @@ class MetaSectionSchemaPrivacy(MetaSection):
             privacy_level=2):
         super().__init__(MetaSection.TYPE_NAME_SCHEMA_PRIVACY, name)
         self.privacy_level = privacy_level
+
+    def copy(self):
+        return MetaSectionSchemaPrivacy(self.name, self.privacy_level)
+
+    def to_dict(self):
+        dct = super().to_dict()
+        dct["privacy_level"] = self.privacy_level
+        return dct
+
+    def merge_precheck_with(self, other):
+        if not super().merge_precheck_with(other):
+            return False
+        if self.privacy_level != other.privacy_level:
+            raise Exception(f"sections with matching super precheck cannot have diverging privacy_levels {self.privacy_level} <--> {other.privacy_level}")
+        return True        
+
+    def merge_with(self, other):
+        if not self.merge_precheck_with(other):
+            raise Exception("cannot merge sections that fail the precheck")
+        return self.copy()

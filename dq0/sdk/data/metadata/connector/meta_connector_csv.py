@@ -34,3 +34,44 @@ class MetaConnectorCSV(MetaConnector):
         self.na_values = na_values
         self.index_col = index_col
         self.skipinitialspace = skipinitialspace
+
+    def copy(self):
+        return MetaConnectorCSV(self.use_original_header, self.header_row, self.header_columns, self.sep, self.decimal, self.na_values, self.index_col, self.skipinitialspace)
+
+    def to_dict(self):
+        dct = super().to_dict()
+        dct["use_original_header"] = self.use_original_header
+        dct["header_row"] = self.header_row
+        dct["header_columns"] = self.header_columns
+        dct["sep"] = self.sep
+        dct["decimal"] = self.decimal
+        dct["na_values"] = self.na_values
+        dct["index_col"] = self.index_col
+        dct["skipinitialspace"] = self.skipinitialspace
+        return dct
+
+    def merge_precheck_with(self, other):
+        if not super.merge_precheck_with(other):
+            return False
+        if self.use_original_header != other.use_original_header:
+            raise Exception(f"use_original_header must match for merge but {self.use_original_header} <--> {other.use_original_header if other.use_original_header is not None else 'None'}")
+        if self.header_row != other.header_row:
+            raise Exception(f"header_row must match for merge but {self.header_row} <--> {other.header_row if other.header_row is not None else 'None'}")
+        if self.header_columns != other.header_columns:
+            raise Exception(f"header_columns must match for merge but {self.header_columns} <--> {other.header_columns if other.header_columns is not None else 'None'}")
+        if self.sep != other.sep:
+            raise Exception(f"sep must match for merge but {self.sep} <--> {other.sep if other.sep is not None else 'None'}")
+        if self.decimal != other.decimal:
+            raise Exception(f"decimal must match for merge but {self.decimal} <--> {other.decimal if other.decimal is not None else 'None'}")
+        if self.na_values != other.na_values:
+            raise Exception(f"na_values must match for merge but {self.na_values} <--> {other.na_values if other.na_values is not None else 'None'}")
+        if self.index_col != other.index_col:
+            raise Exception(f"index_col must match for merge but {self.index_col} <--> {other.index_col if other.index_col is not None else 'None'}")
+        if self.skipinitialspace != other.skipinitialspace:
+            raise Exception(f"skipinitialspace must match for merge but {self.skipinitialspace} <--> {other.skipinitialspace if other.skipinitialspace is not None else 'None'}")
+        return True
+
+    def merge_with(self, other):
+        if not self.merge_precheck_with(other):
+            raise Exception("cannot merge connectors that fail the precheck")
+        return self.copy()
