@@ -173,7 +173,7 @@ class MetaSectionColumnInt(MetaSection):
             auto_lower=None,
             auto_upper=None,
             discrete=False,
-            min_step=1.0,
+            min_step=1,
             synthesizable=True):
         super().__init__(MetaSection.TYPE_NAME_COLUMN_INT, name)
         self.use_auto_bounds = use_auto_bounds

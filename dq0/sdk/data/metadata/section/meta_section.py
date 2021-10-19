@@ -132,7 +132,9 @@ class MetaSection:
     def __init__(
             self,
             type_name,
-            name):
+            name=None):
+        if not MetaSection.isValidTypeName(type_name):
+            raise Exception(f"invalid type_name {type_name if type_name is not None else 'None'}")
         self.type_name = type_name
         self.name = name
 
