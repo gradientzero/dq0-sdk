@@ -31,14 +31,10 @@ class MetaFilter:
             node.child_nodes = modified_child_nodes
         return node
 
-
-class MetaFilterMachineLearning(MetaFilter):
     @staticmethod
-    def filter(node):
+    def filterMachineLearning(node):
         return super().filter(node, [MetaSection.TYPE_NAME_COLUMN_MACHINE_LEARNING])
 
-
-class MetaFilterSmartNoise(MetaFilter):
     @staticmethod
-    def filter(node):
+    def filterSmartNoise(node):
         return super().filter(node, [MetaSection.TYPE_NAME_TABLE_SMART_NOISE, MetaSection.TYPE_NAME_COLUMN_SMART_NOISE, MetaSection.TYPE_NAME_COLUMN_SMART_NOISE_FLOAT, MetaSection.TYPE_NAME_COLUMN_SMART_NOISE_INT, MetaSection.TYPE_NAME_COLUMN_SMART_NOISE_STRING])

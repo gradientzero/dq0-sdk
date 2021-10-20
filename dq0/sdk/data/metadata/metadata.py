@@ -7,16 +7,16 @@ from dq0.sdk.data.metadata.meta_verifier import MetaVerifier
 
 class Metadata:
     @staticmethod
-    def from_yaml_file(filename):
+    def from_yaml_file(filename, verify=None):
         if not os.path.isfile(filename):
             raise FileNotFoundError(f"Could not find {filename}")
         with open(filename) as file:
-            return Metadata.from_yaml(file)  
+            return Metadata.from_yaml(file, verify)  
 
     @staticmethod
-    def from_yaml(yaml_content):
+    def from_yaml(yaml_content, verify=None):
         yaml_dict = yaml.load(yaml_content, Loader=yaml.FullLoader)
-        return Metadata(MetaNode.fromYamlDict(yaml_dict))
+        return Metadata(MetaNode.fromYamlDict(yaml_dict, verify))
 
     def __init__(self, root_node, verify=None):
         if verify is None:

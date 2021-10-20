@@ -8,6 +8,7 @@ All rights reserved
 """
 
 from dq0.sdk.data.source import Source
+from dq0.sdk.data.metadata.meta_utils import MetaUtils
 
 import pandas as pd
 
@@ -35,21 +36,21 @@ class CSV(Source):
         self.index_col = None
         self.skipinitialspace = False
         if meta_ml is not None:
-            table = self.meta_ml.get_all_tables()[0]  # Since there is only one table as tested in data_connector
-            self.use_original_header = getattr(table, "use_original_header", self.use_original_header)
-            self.header_row = getattr(table, "header_row", self.header_row)
-            self.header_columns = getattr(table, "header_columns", self.header_columns)
-            self.sep = getattr(table, "sep", self.sep)
-            self.decimal = getattr(table, "decimal", self.decimal)
-            self.na_values = getattr(table, "na_values", self.na_values)
-            self.index_col = getattr(table, "index_col", self.index_col)
-            self.skipinitialspace = getattr(table, "skipinitialspace", self.skipinitialspace)
+            table_connector = self.meta_ml.root_node.child_nodes[0].child_nodes[0].child_nodes[0].connector  # Since there is only one table as tested in data_connector
+            self.use_original_header = getattr(table_connector, "use_original_header", self.use_original_header)
+            self.header_row = getattr(table_connector, "header_row", self.header_row)
+            self.header_columns = getattr(table_connector, "header_columns", self.header_columns)
+            self.sep = getattr(table_connector, "sep", self.sep)
+            self.decimal = getattr(table_connector, "decimal", self.decimal)
+            self.na_values = getattr(table_connector, "na_values", self.na_values)
+            self.index_col = getattr(table_connector, "index_col", self.index_col)
+            self.skipinitialspace = getattr(table_connector, "skipinitialspace", self.skipinitialspace)
 
-            feature_cols, target_cols = self.meta_ml.get_feature_target_cols()
+            feature_cols, target_cols = MetaUtils.get_feature_target_cols_from_meta(meta_ml)
             self.feature_cols = feature_cols
             self.target_cols = target_cols
 
-            col_types = self.meta_ml.get_col_types()
+            col_types = MetaUtils.get_col_types(meta_ml)
             self.col_types = col_types
 
     def read(self, **kwargs):
