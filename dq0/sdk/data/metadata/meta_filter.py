@@ -1,5 +1,6 @@
 from dq0.sdk.data.metadata.meta_node import MetaNode
 from dq0.sdk.data.metadata.section.meta_section import MetaSection
+from dq0.sdk.data.metadata.section.meta_section_type import MetaSectionType
 
 
 class MetaFilter:
@@ -33,8 +34,8 @@ class MetaFilter:
 
     @staticmethod
     def filterMachineLearning(node):
-        return super().filter(node, [MetaSection.TYPE_NAME_COLUMN_MACHINE_LEARNING])
+        return MetaFilter.filter(node, [MetaSectionType.TYPE_NAME_COLUMN_MACHINE_LEARNING])
 
     @staticmethod
     def filterSmartNoise(node):
-        return super().filter(node, [MetaSection.TYPE_NAME_TABLE_SMART_NOISE, MetaSection.TYPE_NAME_COLUMN_SMART_NOISE, MetaSection.TYPE_NAME_COLUMN_SMART_NOISE_FLOAT, MetaSection.TYPE_NAME_COLUMN_SMART_NOISE_INT, MetaSection.TYPE_NAME_COLUMN_SMART_NOISE_STRING])
+        return MetaFilter.filter(node, [MetaSectionType.TYPE_NAME_TABLE_SMART_NOISE, MetaSectionType.TYPE_NAME_COLUMN_SMART_NOISE, MetaSectionType.TYPE_NAME_COLUMN_SMART_NOISE_FLOAT, MetaSectionType.TYPE_NAME_COLUMN_SMART_NOISE_INT, MetaSectionType.TYPE_NAME_COLUMN_SMART_NOISE_STRING])

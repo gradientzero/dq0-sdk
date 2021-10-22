@@ -1,4 +1,5 @@
 from dq0.sdk.data.metadata.meta_node import MetaNode
+from dq0.sdk.data.metadata.meta_node_type import MetaNodeType
 
 
 class MetaVerifier:
@@ -26,15 +27,15 @@ class MetaVerifier:
             expected_type_name = None
             type_name = None
             for child_node in node.child_nodes:
-                if node.type_name == MetaNode.TYPE_NAME_DATASET:
-                    type_name = MetaVerifier.verify(child_node, [MetaNode.TYPE_NAME_DATABASE])
-                elif node.type_name == MetaNode.TYPE_NAME_DATABASE:
-                    type_name = MetaVerifier.verify(child_node, [MetaNode.TYPE_NAME_SCHEMA, MetaNode.TYPE_NAME_TABLE])
-                elif node.type_name == MetaNode.TYPE_NAME_SCHEMA:
-                    type_name = MetaVerifier.verify(child_node, [MetaNode.TYPE_NAME_TABLE])
-                elif node.type_name == MetaNode.TYPE_NAME_TABLE:
-                    type_name = MetaVerifier.verify(child_node, [MetaNode.TYPE_NAME_COLUMN])
-                elif node.type_name == MetaNode.TYPE_NAME_COLUMN:
+                if node.type_name == MetaNodeType.TYPE_NAME_DATASET:
+                    type_name = MetaVerifier.verify(child_node, [MetaNodeType.TYPE_NAME_DATABASE])
+                elif node.type_name == MetaNodeType.TYPE_NAME_DATABASE:
+                    type_name = MetaVerifier.verify(child_node, [MetaNodeType.TYPE_NAME_SCHEMA, MetaNodeType.TYPE_NAME_TABLE])
+                elif node.type_name == MetaNodeType.TYPE_NAME_SCHEMA:
+                    type_name = MetaVerifier.verify(child_node, [MetaNodeType.TYPE_NAME_TABLE])
+                elif node.type_name == MetaNodeType.TYPE_NAME_TABLE:
+                    type_name = MetaVerifier.verify(child_node, [MetaNodeType.TYPE_NAME_COLUMN])
+                elif node.type_name == MetaNodeType.TYPE_NAME_COLUMN:
                     type_name = MetaVerifier.verify(child_node, [])
                 else:
                     raise Exception(f"node.type_name {node.type_name} unknown")
@@ -58,18 +59,18 @@ class MetaVerifier:
         if node.child_nodes is not None:
             expected_type_name = None
             type_name = None
-            if (node.type_name == MetaNode.TYPE_NAME_DATASET or node.type_name == MetaNode.TYPE_NAME_DATABASE or node.type_name == MetaNode.TYPE_NAME_SCHEMA) and 1 != len(node.child_nodes):
+            if (node.type_name == MetaNodeType.TYPE_NAME_DATASET or node.type_name == MetaNodeType.TYPE_NAME_DATABASE or node.type_name == MetaNodeType.TYPE_NAME_SCHEMA) and 1 != len(node.child_nodes):
                 raise Exception(f"node of type {node.type_name} must have exactly one child node, has {len(node.child_nodes)}")
             for child_node in node.child_nodes:
-                if node.type_name == MetaNode.TYPE_NAME_DATASET:
-                    type_name = MetaVerifier.verify(child_node, [MetaNode.TYPE_NAME_DATABASE])
-                elif node.type_name == MetaNode.TYPE_NAME_DATABASE:
-                    type_name = MetaVerifier.verify(child_node, [MetaNode.TYPE_NAME_SCHEMA])
-                elif node.type_name == MetaNode.TYPE_NAME_SCHEMA:
-                    type_name = MetaVerifier.verify(child_node, [MetaNode.TYPE_NAME_TABLE])
-                elif node.type_name == MetaNode.TYPE_NAME_TABLE:
-                    type_name = MetaVerifier.verify(child_node, [MetaNode.TYPE_NAME_COLUMN])
-                elif node.type_name == MetaNode.TYPE_NAME_COLUMN:
+                if node.type_name == MetaNodeType.TYPE_NAME_DATASET:
+                    type_name = MetaVerifier.verify(child_node, [MetaNodeType.TYPE_NAME_DATABASE])
+                elif node.type_name == MetaNodeType.TYPE_NAME_DATABASE:
+                    type_name = MetaVerifier.verify(child_node, [MetaNodeType.TYPE_NAME_SCHEMA])
+                elif node.type_name == MetaNodeType.TYPE_NAME_SCHEMA:
+                    type_name = MetaVerifier.verify(child_node, [MetaNodeType.TYPE_NAME_TABLE])
+                elif node.type_name == MetaNodeType.TYPE_NAME_TABLE:
+                    type_name = MetaVerifier.verify(child_node, [MetaNodeType.TYPE_NAME_COLUMN])
+                elif node.type_name == MetaNodeType.TYPE_NAME_COLUMN:
                     type_name = MetaVerifier.verify(child_node, [])
                 else:
                     raise Exception(f"node.type_name {node.type_name} unknown")

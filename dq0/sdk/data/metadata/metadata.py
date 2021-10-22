@@ -1,7 +1,7 @@
 import os
 import yaml
 
-from dq0.sdk.data.metadata.meta_node import MetaNode
+from dq0.sdk.data.metadata.meta_node_factory import MetaNodeFactory
 from dq0.sdk.data.metadata.meta_verifier import MetaVerifier
 
 
@@ -16,7 +16,7 @@ class Metadata:
     @staticmethod
     def from_yaml(yaml_content, verify=None):
         yaml_dict = yaml.load(yaml_content, Loader=yaml.FullLoader)
-        return Metadata(MetaNode.fromYamlDict(yaml_dict, verify))
+        return Metadata(MetaNodeFactory.fromYamlDict(yaml_dict), verify)
 
     def __init__(self, root_node, verify=None):
         if verify is None:
@@ -33,6 +33,9 @@ class Metadata:
         if self.root_node is None:
             return {}
         return self.root_node.to_dict()
+
+    def to_yaml(self):
+        return yaml.dump(self.to_dict())
 
     def merge_with(self, other):
         if other is None:

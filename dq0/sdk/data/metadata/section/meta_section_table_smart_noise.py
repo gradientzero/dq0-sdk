@@ -1,21 +1,8 @@
+from dq0.sdk.data.metadata.section.meta_section_type import MetaSectionType
 from dq0.sdk.data.metadata.section.meta_section import MetaSection
 
 
 class MetaSectionTableSmartNoise(MetaSection):
-    @staticmethod
-    def fromYamlDict(yaml_dict):
-        MetaSection.verifyYamlDict(yaml_dict, MetaSection.TYPE_NAME_TABLE_SMART_NOISE)
-        name = yaml_dict.pop('name', None)
-        row_privacy = bool(yaml_dict.pop('row_privacy', False))
-        rows = int(yaml_dict.pop('rows', 0))
-        max_ids = int(yaml_dict.pop('max_ids', 1))
-        sample_max_ids = bool(yaml_dict.pop('sample_max_ids', True))
-        use_dpsu = bool(yaml_dict.pop('use_dpsu', False))
-        clamp_counts = bool(yaml_dict.pop('clamp_counts', False))
-        clamp_columns = bool(yaml_dict.pop('clamp_columns', True))
-        censor_dims = bool(yaml_dict.pop('censor_dims', False))
-        return MetaSectionTableSmartNoise(name, row_privacy, rows, max_ids, sample_max_ids, use_dpsu, clamp_counts, clamp_columns, censor_dims)
-
     def __init__(
             self,
             name,
@@ -27,7 +14,7 @@ class MetaSectionTableSmartNoise(MetaSection):
             clamp_counts=False,
             clamp_columns=True,
             censor_dims=False):
-        super().__init__(MetaSection.TYPE_NAME_TABLE_SMART_NOISE, name)
+        super().__init__(MetaSectionType.TYPE_NAME_TABLE_SMART_NOISE, name)
         self.row_privacy = row_privacy
         self.rows = rows
         self.max_ids = max_ids
@@ -41,16 +28,18 @@ class MetaSectionTableSmartNoise(MetaSection):
         return MetaSectionTableSmartNoise(self.name, self.row_privacy, self.rows, self.max_ids, self.sample_max_ids, self.use_dpsu, self.clamp_counts, self.clamp_columns, self.censor_dims)
 
     def to_dict(self):
-        dct = super().to_dict()
-        dct["row_privacy"] = self.row_privacy
-        dct["rows"] = self.rows
-        dct["max_ids"] = self.max_ids
-        dct["sample_max_ids"] = self.sample_max_ids
-        dct["use_dpsu"] = self.use_dpsu
-        dct["clamp_counts"] = self.clamp_counts
-        dct["clamp_columns"] = self.clamp_columns
-        dct["censor_dims"] = self.censor_dims
-        return dct
+        super_dct = super().to_dict()
+        dct = {k: v for k, v in [
+            ('row_privacy', self.row_privacy),
+            ('rows', self.rows),
+            ('max_ids', self.max_ids),
+            ('sample_max_ids', self.sample_max_ids),
+            ('use_dpsu', self.use_dpsu),
+            ('clamp_counts', self.clamp_counts),
+            ('clamp_columns', self.clamp_columns),
+            ('censor_dims', self.censor_dims),
+            ] if v is not None}
+        return {**super_dct, **dct}
 
     def merge_precheck_with(self, other):
         if not super().merge_precheck_with(other):

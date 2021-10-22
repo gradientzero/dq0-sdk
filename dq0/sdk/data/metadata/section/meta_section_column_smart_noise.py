@@ -1,28 +1,24 @@
+from dq0.sdk.data.metadata.section.meta_section_type import MetaSectionType
 from dq0.sdk.data.metadata.section.meta_section import MetaSection
 
 
 class MetaSectionColumnSmartNoise(MetaSection):
-    @staticmethod
-    def fromYamlDict(yaml_dict):
-        MetaSection.verifyYamlDict(yaml_dict, MetaSection.TYPE_NAME_COLUMN_SMART_NOISE)
-        name = yaml_dict.pop('name', None)
-        private_id = bool(yaml_dict.pop('private_id', False))
-        return MetaSectionColumnSmartNoise(name, private_id)
-
     def __init__(
             self,
             name=None,
             private_id=False):
-        super().__init__(MetaSection.TYPE_NAME_COLUMN_SMART_NOISE, name)
+        super().__init__(MetaSectionType.TYPE_NAME_COLUMN_SMART_NOISE, name)
         self.private_id = private_id
 
     def copy(self):
         return MetaSectionColumnSmartNoise(self.name, self.private_id)
 
     def to_dict(self):
-        dct = super().to_dict()
-        dct["private_id"] = self.private_id
-        return dct
+        super_dct = super().to_dict()
+        dct = {k: v for k, v in [
+            ('private_id', self.private_id),
+            ] if v is not None}
+        return {**super_dct, **dct}
 
     def merge_precheck_with(self, other):
         if not super().merge_precheck_with(other):
@@ -38,22 +34,13 @@ class MetaSectionColumnSmartNoise(MetaSection):
 
 
 class MetaSectionColumnSmartNoiseFloat(MetaSection):
-    @staticmethod
-    def fromYamlDict(yaml_dict):
-        MetaSection.verifyYamlDict(yaml_dict, MetaSection.TYPE_NAME_COLUMN_SMART_NOISE_FLOAT)
-        name = yaml_dict.pop('name', None)
-        bounded = bool(yaml_dict.pop('bounded', False))
-        lower = float(yaml_dict.pop('lower', 0.0))
-        upper = float(yaml_dict.pop('upper', 0.0))
-        return MetaSectionColumnSmartNoiseFloat(name, bounded, lower, upper)
-
     def __init__(
             self,
             name=None,
             bounded=False,
             lower=None,
             upper=None):
-        super().__init__(MetaSection.TYPE_NAME_COLUMN_SMART_NOISE_FLOAT, name)
+        super().__init__(MetaSectionType.TYPE_NAME_COLUMN_SMART_NOISE_FLOAT, name)
         self.bounded = bounded
         self.lower = lower
         self.upper = upper
@@ -62,11 +49,13 @@ class MetaSectionColumnSmartNoiseFloat(MetaSection):
         return MetaSectionColumnSmartNoiseFloat(self.name, self.bounded, self.lower, self.upper)
 
     def to_dict(self):
-        dct = super().to_dict()
-        dct["bounded"] = self.bounded
-        dct["lower"] = self.lower
-        dct["upper"] = self.upper
-        return dct
+        super_dct = super().to_dict()
+        dct = {k: v for k, v in [
+            ('bounded', self.bounded),
+            ('lower', self.lower),
+            ('upper', self.upper),
+            ] if v is not None}
+        return {**super_dct, **dct}
 
     def merge_precheck_with(self, other):
         if not super().merge_precheck_with(other):
@@ -86,22 +75,13 @@ class MetaSectionColumnSmartNoiseFloat(MetaSection):
 
 
 class MetaSectionColumnSmartNoiseInt(MetaSection):
-    @staticmethod
-    def fromYamlDict(yaml_dict):
-        MetaSection.verifyYamlDict(yaml_dict, MetaSection.TYPE_NAME_COLUMN_SMART_NOISE_INT)
-        name = yaml_dict.pop('name', None)
-        bounded = bool(yaml_dict.pop('bounded', False))
-        lower = int(yaml_dict.pop('lower', 0))
-        upper = int(yaml_dict.pop('upper', 0))
-        return MetaSectionColumnSmartNoiseInt(name, bounded, lower, upper)
-
     def __init__(
             self,
             name=None,
             bounded=False,
             lower=None,
             upper=None):
-        super().__init__(MetaSection.TYPE_NAME_COLUMN_SMART_NOISE_INT, name)
+        super().__init__(MetaSectionType.TYPE_NAME_COLUMN_SMART_NOISE_INT, name)
         self.bounded = bounded
         self.lower = lower
         self.upper = upper
@@ -110,11 +90,13 @@ class MetaSectionColumnSmartNoiseInt(MetaSection):
         return MetaSectionColumnSmartNoiseInt(self.name, self.bounded, self.lower, self.upper)
 
     def to_dict(self):
-        dct = super().to_dict()
-        dct["bounded"] = self.bounded
-        dct["lower"] = self.lower
-        dct["upper"] = self.upper
-        return dct
+        super_dct = super().to_dict()
+        dct = {k: v for k, v in [
+            ('bounded', self.bounded),
+            ('lower', self.lower),
+            ('upper', self.upper),
+            ] if v is not None}
+        return {**super_dct, **dct}
 
     def merge_precheck_with(self, other):
         if not super().merge_precheck_with(other):
@@ -134,27 +116,22 @@ class MetaSectionColumnSmartNoiseInt(MetaSection):
 
 
 class MetaSectionColumnSmartNoiseString(MetaSection):
-    @staticmethod
-    def fromYamlDict(yaml_dict):
-        MetaSection.verifyYamlDict(yaml_dict, MetaSection.TYPE_NAME_COLUMN_SMART_NOISE_STRING)
-        name = yaml_dict.pop('name', None)
-        cardinality = int(yaml_dict.pop('cardinality', 0))
-        return MetaSectionColumnSmartNoiseInt(name, cardinality)
-
     def __init__(
             self,
             name=None,
             cardinality=0):
-        super().__init__(MetaSection.TYPE_NAME_COLUMN_SMART_NOISE_STRING, name)
+        super().__init__(MetaSectionType.TYPE_NAME_COLUMN_SMART_NOISE_STRING, name)
         self.cardinality = cardinality
 
     def copy(self):
         return MetaSectionColumnSmartNoiseString(self.name, self.cardinality)
 
     def to_dict(self):
-        dct = super().to_dict()
-        dct["cardinality"] = self.cardinality
-        return dct
+        super_dct = super().to_dict()
+        dct = {k: v for k, v in [
+            ('cardinality', self.cardinality),
+            ] if v is not None}
+        return {**super_dct, **dct}
 
     def merge_precheck_with(self, other):
         if not super().merge_precheck_with(other):

@@ -1,21 +1,14 @@
+from dq0.sdk.data.metadata.section.meta_section_type import MetaSectionType
 from dq0.sdk.data.metadata.section.meta_section import MetaSection
 
 
 class MetaSectionTableOther(MetaSection):
-    @staticmethod
-    def fromYamlDict(yaml_dict):
-        MetaSection.verifyYamlDict(yaml_dict, MetaSection.TYPE_NAME_TABLE_OTHER)
-        name = yaml_dict.pop('name', None)
-        synth_allowed = bool(yaml_dict.pop('synth_allowed', False))
-        tau = float(yaml_dict.pop('tau', 0.0))
-        return MetaSectionTableOther(name, synth_allowed, tau)
-
     def __init__(
             self, 
             name, 
             synth_allowed=False,
             tau=0.0):
-        super().__init__(MetaSection.TYPE_NAME_TABLE_OTHER, name)
+        super().__init__(MetaSectionType.TYPE_NAME_TABLE_OTHER, name)
         self.synth_allowed = synth_allowed
         self.tau = tau
 
@@ -23,10 +16,12 @@ class MetaSectionTableOther(MetaSection):
         return MetaSectionTableOther(self.name, self.synth_allowed, self.tau)
 
     def to_dict(self):
-        dct = super().to_dict()
-        dct["synth_allowed"] = self.synth_allowed
-        dct["tau"] = self.tau
-        return dct
+        super_dct = super().to_dict()
+        dct = {k: v for k, v in [
+            ('synth_allowed', self.synth_allowed),
+            ('tau', self.tau),
+            ] if v is not None}
+        return {**super_dct, **dct}
 
     def merge_precheck_with(self, other):
         if not super().merge_precheck_with(other):

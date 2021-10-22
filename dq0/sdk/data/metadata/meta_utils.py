@@ -1,5 +1,5 @@
 from dq0.sdk.data.metadata.connector.meta_connector import MetaConnector
-from dq0.sdk.data.metadata.section.meta_section import MetaSection
+from dq0.sdk.data.metadata.section.meta_section_type import MetaSectionType
 
 
 class MetaUtils:
@@ -10,7 +10,7 @@ class MetaUtils:
         for meta_node_table in metadata.root_node.child_nodes[0].child_nodes[0].child_nodes:
             for meta_node_column in meta_node_table.child_nodes:
                 for section in meta_node_column.sections:
-                    if section.type_name == MetaSection.TYPE_NAME_COLUMN_MACHINE_LEARNING:
+                    if section.type_name == MetaSectionType.TYPE_NAME_COLUMN_MACHINE_LEARNING:
                         if section.is_feature:
                             feature_columns.append(meta_node_column.name)
                         if section.is_target:
@@ -33,7 +33,7 @@ class MetaUtils:
         for meta_node_table in metadata.root_node.child_nodes[0].child_nodes[0].child_nodes:
             for meta_node_column in meta_node_table.child_nodes:
                 for section in meta_node_column.sections:   
-                    if section.type_name == MetaSection.TYPE_NAME_COLUMN:
+                    if section.type_name == MetaSectionType.TYPE_NAME_COLUMN:
                         col_types[meta_node_column.name] = section.data_type_name
                         break
         if len(col_types.keys()) == 0:

@@ -1,21 +1,8 @@
+from dq0.sdk.data.metadata.connector.meta_connector_type import MetaConnectorType
 from dq0.sdk.data.metadata.connector.meta_connector import MetaConnector
 
 
 class MetaConnectorCSV(MetaConnector):
-    @staticmethod
-    def fromYamlDict(yaml_dict):
-        MetaConnector.verifyYamlDict(yaml_dict, MetaConnector.TYPE_NAME_CSV)
-        uri = yaml_dict.pop('uri', None)
-        use_original_header = bool(yaml_dict.pop('use_original_header', True))
-        header_row = yaml_dict.pop('header_row', 0)
-        header_columns = yaml_dict.pop('header_columns', None)
-        sep = yaml_dict.pop('sep', ',')
-        decimal = yaml_dict.pop('decimal', '.')
-        na_values = yaml_dict.pop('na_values', None)
-        index_col = yaml_dict.pop('index_col', None)
-        skipinitialspace = bool(yaml_dict.pop('skipinitialspace', False))
-        return MetaConnectorCSV(uri, use_original_header, header_row, header_columns, sep, decimal, na_values, index_col, skipinitialspace)
-
     def __init__(
             self,
             uri=None,
@@ -27,7 +14,7 @@ class MetaConnectorCSV(MetaConnector):
             na_values=None,
             index_col=None,
             skipinitialspace=False):
-        super().__init__(MetaConnector.TYPE_NAME_CSV)
+        super().__init__(MetaConnectorType.TYPE_NAME_CSV)
         self.uri = uri
         self.use_original_header = use_original_header
         self.header_row = header_row
@@ -42,17 +29,19 @@ class MetaConnectorCSV(MetaConnector):
         return MetaConnectorCSV(self.uri, self.use_original_header, self.header_row, self.header_columns, self.sep, self.decimal, self.na_values, self.index_col, self.skipinitialspace)
 
     def to_dict(self):
-        dct = super().to_dict()
-        dct["uri"] = self.uri
-        dct["use_original_header"] = self.use_original_header
-        dct["header_row"] = self.header_row
-        dct["header_columns"] = self.header_columns
-        dct["sep"] = self.sep
-        dct["decimal"] = self.decimal
-        dct["na_values"] = self.na_values
-        dct["index_col"] = self.index_col
-        dct["skipinitialspace"] = self.skipinitialspace
-        return dct
+        super_dct = super().to_dict()
+        dct = {k: v for k, v in [
+            ('uri', self.uri),
+            ('use_original_header', self.use_original_header),
+            ('header_row', self.header_row),
+            ('header_columns', self.header_columns),
+            ('sep', self.sep),
+            ('decimal', self.decimal),
+            ('na_values', self.na_values),
+            ('index_col', self.index_col),
+            ('skipinitialspace', self.skipinitialspace),
+            ] if v is not None}
+        return {**super_dct, **dct}
 
     def merge_precheck_with(self, other):
         if not super.merge_precheck_with(other):
