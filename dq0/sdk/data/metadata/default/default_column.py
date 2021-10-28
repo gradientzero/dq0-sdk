@@ -109,4 +109,5 @@ class DefaultColumn:
                 data_type_name = tmp_attribute.value
             elif tmp_attribute.key == 'cardinality':
                 cardinality = tmp_attribute.value
-        return Attribute.merge_many_with_many(list_a=DefaultColumn.getDefaultAttributesFor(data_type_name=data_type_name, cardinality=cardinality), list_b=column_attributes_list, overwrite=True)
+        default_column_attributes_list = DefaultColumn.getDefaultAttributesFor(data_type_name=data_type_name, cardinality=cardinality)
+        return Attribute.merge_many_with_many(list_a=default_column_attributes_list, list_b=column_attributes_list, overwrite=True) if column_attributes_list is not None else default_column_attributes_list

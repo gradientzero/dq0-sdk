@@ -12,4 +12,5 @@ class DefaultDataset:
     def mergeDefaultAttributesWith(dataset_attributes_list):
         if not isinstance(dataset_attributes_list, list):
             raise Exception("dataset_attributes_list is not of list type")
-        return Attribute.merge_many_with_many(list_a=DefaultDataset.defaultAttributesDataset(), list_b=dataset_attributes_list, overwrite=True) if dataset_attributes_list is not None else None
+        default_dataset_attributes_list = DefaultDataset.defaultAttributesDataset()
+        return Attribute.merge_many_with_many(list_a=default_dataset_attributes_list, list_b=dataset_attributes_list, overwrite=True) if dataset_attributes_list is not None else default_dataset_attributes_list

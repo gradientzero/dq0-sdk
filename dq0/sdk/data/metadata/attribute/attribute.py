@@ -55,8 +55,6 @@ class Attribute:
     def __init__(self, type_name, key):
         if not AttributeType.isValidTypeName(type_name=type_name):
             raise Exception(f"invalid type_name {type_name if type_name is not None else 'None'}")
-        if key is None:
-            raise Exception("key is None")
         self.type_name = type_name
         self.key = key
 

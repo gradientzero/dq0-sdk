@@ -22,8 +22,8 @@ class NodeFactory:
             apply_default_attributes = DefaultApplicator.applyDefaultAttributes
         NodeFactory.verifyYamlDict(yaml_dict=yaml_dict)
         type_name = yaml_dict.pop('type_name', None)
-        attributes_yaml_list = yaml_dict.pop('attributes', None)
-        attributes = apply_default_attributes([AttributeFactory.fromYamlDict(yaml_dict=attribute_yaml_dict) for attribute_yaml_dict in attributes_yaml_list]) if attributes_yaml_list is not None else None
+        attributes_yaml_list = yaml_dict.pop('attributes', [])
+        attributes = apply_default_attributes([AttributeFactory.fromYamlDict(yaml_dict=attribute_yaml_dict) for attribute_yaml_dict in attributes_yaml_list])
         child_nodes_yaml_list = yaml_dict.pop('child_nodes', None)
         child_nodes = [NodeFactory.fromYamlDict(yaml_dict=child_node_yaml_dict) for child_node_yaml_dict in child_nodes_yaml_list] if child_nodes_yaml_list is not None else None
         return Node(type_name=type_name, attributes=attributes, child_nodes=child_nodes)

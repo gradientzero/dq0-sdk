@@ -7,154 +7,264 @@ All rights reserved
 
 import os
 
+from dq0.sdk.data.metadata.filter.filter import Filter
+from dq0.sdk.data.metadata.filter.filter_machine_learning import FilterMachineLearning
+from dq0.sdk.data.metadata.filter.filter_regular import FilterRegular
+from dq0.sdk.data.metadata.filter.filter_smart_noise import FilterSmartNoise
 from dq0.sdk.data.metadata.metadata import Metadata
-from dq0.sdk.data.metadata.meta_filter import MetaFilter
-from dq0.sdk.data.metadata.meta_verifier import MetaVerifier
-from dq0.sdk.data.metadata.section.meta_section import MetaSection
-from dq0.sdk.data.metadata.section.meta_section_type import MetaSectionType
+from dq0.sdk.data.metadata.verifier import Verifier
 
 
 def test_metadata():
     # prepare yaml file
     content = '''type_name: 'dataset'
-name: 'test_ds'
-description: 'some description'
-is_public: true
-sections:
+attributes:
     -
-        type_name: 'dataset_tags'
-        name: 'test_section_ds_tags'
-        tags:
-            - 'tag1'
-            - 'tag2'
+        type_name: 'string'
+        key: 'name'
+        value: 'test_ds'
+    -
+        type_name: 'string'
+        key: 'description'
+        value: "some description"
+    -
+        type_name: 'list'
+        key: 'dataset_tags'
+        value:
+            -
+                type_name: 'string'
+                value: 'tag1'
+            -
+                type_name: 'string'
+                value: 'tag2'
+    -
+        type_name: 'boolean'
+        key: 'metadata_is_public'
+        value: true
 child_nodes:
     -
         type_name: 'database'
-        name: 'test_db'
+        attributes: None
         child_nodes:
             -
                 type_name: 'schema'
-                name: 'test_sch'
+                attributes: None
                 child_nodes:
                     -
                         type_name: 'table'
-                        name: 'test_tab'
-                        connector:
-                            type_name: 'csv'
-                            uri: 'user@db'
-                            use_original_header: true
-                            header_row:
-                                - 1
-                                - 2
-                            na_values:
-                                weight: '?'
-                                height: '??'
-                        sections:
+                        attributes:
                             -
-                                type_name: 'table_differential_privacy'
-                                name: 'test_section_tab_dp'
-                                budget_epsilon: 1000
-                                budget_delta: 500
+                                type_name: 'list'
+                                key: 'connector'
+                                value:
+                                    -
+                                        type_name: 'string'
+                                        key: 'type_name'
+                                        value: 'csv'
+                                    -
+                                        type_name: 'string'
+                                        key: 'uri'
+                                        value: 'user@db'
+                                    -
+                                        type_name: 'boolean'
+                                        key: 'use_original_header'
+                                        value: true
+                                    -
+                                        type_name: 'list'
+                                        key: 'header_row'
+                                        value:
+                                            -
+                                                type_name: 'int'
+                                                value: 1
+                                            -
+                                                type_name: 'int'
+                                                value: 2
+                                    -
+                                        type_name: 'list'
+                                        key: 'na_values'
+                                        value:
+                                            -
+                                                type_name: 'string'
+                                                key: 'weight'
+                                                value: '?'
+                                            -
+                                                type_name: 'string'
+                                                key: 'height'
+                                                value: '??'
                             -
-                                type_name: 'table_smart_noise'
-                                name: 'test_section_tab_sm'
-                                row_privacy: true
-                                rows: 2000
-                                max_ids: 1
-                                sample_max_ids: true
-                                use_dpsu: true
-                                clamp_counts: true
-                                clamp_columns: true
-                                censor_dims: true
+                                type_name: 'int'
+                                key: 'privacy_level'
+                                value: 1
                             -
-                                type_name: 'table_other'
-                                name: 'test_section_tab_oth'
-                                synth_allowed: true
-                                tau: 99
+                                type_name: 'string'
+                                key: 'privacy_column'
+                                value: 'user_id'
                             -
-                                type_name: 'table_privacy'
-                                name: 'test_section_tab_priv'
-                                privacy_level: 1
-                                privacy_column: 'user_id'
+                                type_name: 'float'
+                                key: 'budget_epsilon'
+                                value: 1000.0
+                            -
+                                type_name: 'float'
+                                key: 'budget_delta'
+                                value: 500.0
+                            -
+                                type_name: 'boolean'
+                                key: 'synth_allowed'
+                                value: true
+                            -
+                                type_name: 'float'
+                                key: 'tau'
+                                value: 99.0
+                            -
+                                type_name: 'boolean'
+                                key: 'row_privacy'
+                                value: true
+                            -
+                                type_name: 'int'
+                                key: 'rows'
+                                value: 2000
+                            -
+                                type_name: 'int'
+                                key: 'max_ids'
+                                value: 1
+                            -
+                                type_name: 'boolean'
+                                key: 'sample_max_ids'
+                                value: true
+                            -
+                                type_name: 'boolean'
+                                key: 'use_dpsu'
+                                value: true
+                            -
+                                type_name: 'boolean'
+                                key: 'clamp_counts'
+                                value: true
+                            -
+                                type_name: 'boolean'
+                                key: 'clamp_columns'
+                                value: true
+                            -
+                                type_name: 'boolean'
+                                key: 'censor_dims'
+                                value: true
                         child_nodes:
                             -
                                 type_name: 'column'
-                                name: 'user_id'
-                                sections:
+                                attributes:
                                     -
-                                        type_name: 'column'
-                                        name: 'test_section_col_user_id'
-                                        data_type_name: 'int'
+                                        type_name: 'string'
+                                        key: 'name'
+                                        value: 'user_id'
                                     -
-                                        type_name: 'column_smart_noise'
-                                        name: 'test_section_col_sm_user_id'
-                                        private_id: true
+                                        type_name: 'string'
+                                        key: 'data_type_name'
+                                        value: 'int'
+                                    -
+                                        type_name: 'boolean'
+                                        key: 'private_id'
+                                        value: true
                             -
                                 type_name: 'column'
-                                name: 'weight'
-                                sections:
+                                attributes:
                                     -
-                                        type_name: 'column'
-                                        name: 'test_section_col_weight'
-                                        data_type_name: 'float'
-                                        selectable: true
+                                        type_name: 'string'
+                                        key: 'name'
+                                        value: 'weight'
                                     -
-                                        type_name: 'column_smart_noise_float'
-                                        name: 'test_section_col_sm_float_weight'
-                                        bounded: true
-                                        lower: 0.0
-                                        upper: 100.5
+                                        type_name: 'string'
+                                        key: 'data_type_name'
+                                        value: 'float'
+                                    -
+                                        type_name: 'boolean'
+                                        key: 'selectable'
+                                        value: true
+                                    -
+                                        type_name: 'boolean'
+                                        key: 'bounded'
+                                        value: true
+                                    -
+                                        type_name: 'float'
+                                        key: 'lower'
+                                        value: 0.0
+                                    -
+                                        type_name: 'float'
+                                        key: 'upper'
+                                        value: 100.5
                             -
                                 type_name: 'column'
-                                name: 'height'
-                                sections:
+                                attributes:
                                     -
-                                        type_name: 'column'
-                                        name: 'test_section_col_height'
-                                        data_type_name: 'float'
+                                        type_name: 'string'
+                                        key: 'name'
+                                        value: 'height'
                                     -
-                                        type_name: 'column_float'
-                                        name: 'test_section_col_float_height'
-                                        use_auto_bounds: true
-                                        auto_bounds_prob: 0.8
-                                        discrete: true
-                                        min_step: 0.5
-                                        synthesizable: false
+                                        type_name: 'string'
+                                        key: 'data_type_name'
+                                        value: 'float'
                                     -
-                                        type_name: 'column_smart_noise_float'
-                                        name: 'test_section_col_sm_float_height'
-                                        bounded: true
+                                        type_name: 'boolean'
+                                        key: 'bounded'
+                                        value: true
+                                    -
+                                        type_name: 'boolean'
+                                        key: 'use_auto_bounds'
+                                        value: true
+                                    -
+                                        type_name: 'float'
+                                        key: 'auto_bounds_prob'
+                                        value: 0.8
+                                    -
+                                        type_name: 'boolean'
+                                        key: 'discrete'
+                                        value: true
+                                    -
+                                        type_name: 'float'
+                                        key: 'min_step'
+                                        value: 0.5
+                                    -
+                                        type_name: 'boolean'
+                                        key: 'synthesizable'
+                                        value: false
                             -
                                 type_name: 'column'
-                                name: 'name'
-                                sections:
+                                attributes:
                                     -
-                                        type_name: 'column'
-                                        name: 'test_section_col_name'
-                                        data_type_name: 'string'
+                                        type_name: 'string'
+                                        key: 'name'
+                                        value: 'name'
                                     -
-                                        type_name: 'column_string'
-                                        name: 'test_section_col_string_name'
-                                        synthesizable: true
+                                        type_name: 'string'
+                                        key: 'data_type_name'
+                                        value: 'string'
+                                    -
+                                        type_name: 'boolean'
+                                        key: 'synthesizable'
+                                        value: true
                             -
                                 type_name: 'column'
-                                name: 'email'
-                                sections:
+                                attributes:
                                     -
-                                        type_name: 'column'
-                                        name: 'test_section_col_email'
-                                        data_type_name: 'string'
+                                        type_name: 'string'
+                                        key: 'name'
+                                        value: 'email'
                                     -
-                                        type_name: 'column_string'
-                                        name: 'test_section_col_string_email'
-                                        mask: '(.*)@(.*).{3}$'
-                                        cardinality: 123
+                                        type_name: 'string'
+                                        key: 'data_type_name'
+                                        value: 'string'
+                                    -
+                                        type_name: 'string'
+                                        key: 'mask'
+                                        value: '(.*)@(.*).{3}$'
+                                    -
+                                        type_name: 'int'
+                                        key: 'cardinality'
+                                        value: 123
 '''
     with open('test.yaml', 'w') as f:
         f.write(content)
 
     # load metadata
-    metadata = Metadata.from_yaml_file('test.yaml', MetaVerifier.verifySingleTable)
+    metadata = Metadata.from_yaml_file(filename='test.yaml', apply_default_attributes=None, verify=Verifier.verifyAllSingleWithSchema)
 
     # test
     assert metadata.root_node.type_name == 'dataset'
@@ -411,135 +521,243 @@ child_nodes:
 def test_combine_metadata():
     # prepare yaml file
     content1 = '''type_name: 'dataset'
-name: 'test_ds'
-description: 'some description'
+attributes:
+    -
+        type_name: 'string'
+        key: 'name'
+        value: 'test_ds'
+    -
+        type_name: 'string'
+        key: 'description'
+        value: "some description"
 child_nodes:
     -
         type_name: 'database'
-        name: 'test_db_1'
+        attributes:
+            -
+                type_name: 'string'
+                key: 'name'
+                value: 'test_db_1'
         child_nodes:
             -
                 type_name: 'schema'
-                name: 'test_sch'
+                attributes: None
                 child_nodes:
                     -
                         type_name: 'table'
-                        name: 'test_tab_1'
-                        connector:
-                            type_name: 'csv'
-                            uri: 'user1@db'
-                        sections:
+                        attributes:
                             -
-                                type_name: 'table_differential_privacy'
-                                budget_epsilon: 1000
+                                type_name: 'string'
+                                key: 'name'
+                                value: 'test_tab_1'
                             -
-                                type_name: 'table_smart_noise'
-                                row_privacy: true
-                                rows: 1000
+                                type_name: 'list'
+                                key: 'connector'
+                                value:
+                                    -
+                                        type_name: 'string'
+                                        key: 'type_name'
+                                        value: 'csv'
+                                    -
+                                        type_name: 'string'
+                                        key: 'uri'
+                                        value: 'user1@db'
                             -
-                                type_name: 'table_other'
-                                synth_allowed: true
+                                type_name: 'int'
+                                key: 'privacy_level'
+                                value: 1
                             -
-                                type_name: 'table_privacy'
-                                privacy_level: 1
+                                type_name: 'float'
+                                key: 'budget_epsilon'
+                                value: 1000.0
+                            -
+                                type_name: 'boolean'
+                                key: 'synth_allowed'
+                                value: true
+                            -
+                                type_name: 'boolean'
+                                key: 'row_privacy'
+                                value: true
+                            -
+                                type_name: 'int'
+                                key: 'rows'
+                                value: 1000
                         child_nodes:
                             -
                                 type_name: 'column'
-                                name: 'user_id'
-                                sections:
+                                attributes:
                                     -
-                                        type_name: 'column'
-                                        data_type_name: 'int'
+                                        type_name: 'string'
+                                        key: 'name'
+                                        value: 'user_id'
                                     -
-                                        type_name: 'column_smart_noise'
-                                        private_id: true
+                                        type_name: 'string'
+                                        key: 'data_type_name'
+                                        value: 'int'
+                                    -
+                                        type_name: 'boolean'
+                                        key: 'private_id'
+                                        value: true
 '''
 
     content2 = '''type_name: 'dataset'
-name: 'test_ds'
-description: 'some description'
+attributes:
+    -
+        type_name: 'string'
+        key: 'name'
+        value: 'test_ds'
+    -
+        type_name: 'string'
+        key: 'description'
+        value: "some description"
 child_nodes:
     -
         type_name: 'database'
-        name: 'test_db_2'
+        attributes:
+            -
+                type_name: 'string'
+                key: 'name'
+                value: 'test_db_2'
         child_nodes:
             -
                 type_name: 'schema'
-                name: 'test_sch'
+                attributes: None
                 child_nodes:
                     -
                         type_name: 'table'
-                        name: 'test_tab_2'
-                        connector:
-                            type_name: 'csv'
-                            uri: 'user2@db'
-                        sections:
+                        attributes:
                             -
-                                type_name: 'table_differential_privacy'
-                                budget_epsilon: 1001
+                                type_name: 'string'
+                                key: 'name'
+                                value: 'test_tab_2'
                             -
-                                type_name: 'table_smart_noise'
-                                row_privacy: false
-                                rows: 2000
+                                type_name: 'list'
+                                key: 'connector'
+                                value:
+                                    -
+                                        type_name: 'string'
+                                        key: 'type_name'
+                                        value: 'csv'
+                                    -
+                                        type_name: 'string'
+                                        key: 'uri'
+                                        value: 'user2@db'
                             -
-                                type_name: 'table_other'
-                                synth_allowed: true
+                                type_name: 'int'
+                                key: 'privacy_level'
+                                value: 1
                             -
-                                type_name: 'table_privacy'
-                                privacy_level: 1
+                                type_name: 'float'
+                                key: 'budget_epsilon'
+                                value: 1001.0
+                            -
+                                type_name: 'boolean'
+                                key: 'synth_allowed'
+                                value: true
+                            -
+                                type_name: 'boolean'
+                                key: 'row_privacy'
+                                value: false
+                            -
+                                type_name: 'int'
+                                key: 'rows'
+                                value: 2000
                         child_nodes:
                             -
                                 type_name: 'column'
-                                name: 'email'
-                                sections:
+                                attributes:
                                     -
-                                        type_name: 'column'
-                                        data_type_name: 'string'
+                                        type_name: 'string'
+                                        key: 'name'
+                                        value: 'email'
                                     -
-                                        type_name: 'column_smart_noise'
-                                        private_id: true
+                                        type_name: 'string'
+                                        key: 'data_type_name'
+                                        value: 'string'
+                                    -
+                                        type_name: 'boolean'
+                                        key: 'private_id'
+                                        value: true
 '''
 
     content3 = '''type_name: 'dataset'
-name: 'test_ds'
-description: 'some description'
+attributes:
+    -
+        type_name: 'string'
+        key: 'name'
+        value: 'test_ds'
+    -
+        type_name: 'string'
+        key: 'description'
+        value: "some description"
+    -
+        type_name: 'boolean'
+        key: 'metadata_is_public'
+        value: true
 child_nodes:
     -
         type_name: 'database'
-        name: 'test_db_1'
+        attributes:
+            -
+                type_name: 'string'
+                key: 'name'
+                value: 'test_db_1'
         child_nodes:
             -
                 type_name: 'schema'
-                name: 'test_sch'
+                attributes: None
                 child_nodes:
                     -
                         type_name: 'table'
-                        name: 'test_tab_3'
-                        connector:
-                            type_name: 'csv'
-                            uri: 'user3@db'
-                        sections:
+                        attributes:
                             -
-                                type_name: 'table_differential_privacy'
-                                budget_epsilon: 1000
+                                type_name: 'string'
+                                key: 'name'
+                                value: 'test_tab_3'
                             -
-                                type_name: 'table_smart_noise'
-                                row_privacy: false
-                                rows: 3000
+                                type_name: 'list'
+                                key: 'connector'
+                                value:
+                                    -
+                                        type_name: 'string'
+                                        key: 'type_name'
+                                        value: 'csv'
+                                    -
+                                        type_name: 'string'
+                                        key: 'uri'
+                                        value: 'user3@db'
                             -
-                                type_name: 'table_other'
-                                synth_allowed: true
+                                type_name: 'int'
+                                key: 'privacy_level'
+                                value: 1
                             -
-                                type_name: 'table_privacy'
-                                privacy_level: 1
+                                type_name: 'float'
+                                key: 'budget_epsilon'
+                                value: 1000.0
+                            -
+                                type_name: 'boolean'
+                                key: 'synth_allowed'
+                                value: true
+                            -
+                                type_name: 'boolean'
+                                key: 'row_privacy'
+                                value: false
+                            -
+                                type_name: 'int'
+                                key: 'rows'
+                                value: 3000
                         child_nodes:
                             -
                                 type_name: 'column'
-                                name: 'weight'
-                                sections:
+                                attributes:
                                     -
-                                        type_name: 'column'
-                                        data_type_name: 'int'
+                                        type_name: 'string'
+                                        key: 'name'
+                                        value: 'weight'
+                                    -
+                                        type_name: 'string'
+                                        key: 'data_type_name'
+                                        value: 'int'
 '''
 
     # load metadata
