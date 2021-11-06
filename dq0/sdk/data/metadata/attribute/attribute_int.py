@@ -1,5 +1,7 @@
 from dq0.sdk.data.metadata.attribute.attribute_type import AttributeType
 from dq0.sdk.data.metadata.attribute.attribute import Attribute
+from dq0.sdk.data.metadata.merge_exception import MergeException
+from dq0.sdk.data.metadata.utils import Utils as MetaUtils
 
 
 class AttributeInt(Attribute):
@@ -11,12 +13,14 @@ class AttributeInt(Attribute):
             raise Exception("value is not of type int")
         self.value = value
 
+    def __str__(self):
+        return MetaUtils.str_from(self.key) + ": " + MetaUtils.str_from(self.value)
+
+    def __repr__(self):
+        return "AttributeInt(key=" + MetaUtils.repr_from(self.key) + ", value=" + MetaUtils.repr_from(self.value) + ')'
+
     def copy(self):
-        return AttributeInt(
-            type_name=self.type_name,
-            key=self.key,
-            value=self.value,
-            )
+        return AttributeInt(key=self.key, value=self.value)
 
     def to_dict(self):
         super_dict = super().to_dict()
@@ -25,14 +29,16 @@ class AttributeInt(Attribute):
             ] if tmp_value is not None}
         return {**super_dict, **self_dict}
 
-    def merge_check_with(self, other, overwrite=False):
-        if not super().merge_check_with(other=other, overwrite=overwrite):
+    def is_mergeable_with(self, other, overwrite=False):
+        if not super().is_mergeable_with(other=other, overwrite=overwrite):
+            print(f"super not mergeable <-- AttributeInt.is_mergeable_with:(self={self} other={other} overwrite={overwrite})")
             return False
         if not overwrite and self.value != other.value:
-            raise Exception("attributes with matching type and key may not have different values if overwrite is False")
+            print(f"value mismatch on no overwrite <-- AttributeInt.is_mergeable_with:(self={self} other={other} overwrite={overwrite})")
+            return False
         return True
 
     def merge_with(self, other, overwrite=False):
-        if not self.merge_check_with(other=other, overwrite=overwrite):
-            raise Exception("cannot merge attributes that fail the merge check")
+        if not self.is_mergeable_with(other=other, overwrite=overwrite):
+            raise MergeException(f"cannot merge attributes that are not mergeable; self: {self} other: {other}")
         return other.copy() if overwrite else self.copy()

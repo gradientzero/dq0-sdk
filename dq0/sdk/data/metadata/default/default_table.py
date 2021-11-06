@@ -28,4 +28,4 @@ class DefaultTable:
         if not isinstance(table_attributes_list, list):
             raise Exception("table_attributes_list is not of list type")
         default_table_attributes_list = DefaultTable.defaultAttributesTable()
-        return Attribute.merge_many_with_many(list_a=default_table_attributes_list, list_b=table_attributes_list, overwrite=True) if table_attributes_list is not None else default_table_attributes_list
+        return Attribute.merge_many(list_a=default_table_attributes_list, list_b=table_attributes_list, overwrite=True) if table_attributes_list is not None else default_table_attributes_list

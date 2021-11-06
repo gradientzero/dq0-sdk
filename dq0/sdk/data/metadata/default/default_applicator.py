@@ -8,7 +8,7 @@ from dq0.sdk.data.metadata.node.node_type import NodeType
 
 class DefaultApplicator:
     @staticmethod
-    def applyDefaultAttributes(node_type_name, attributes_list):
+    def applyDefaultAttributes(node_type_name, attributes_list=[]):
         new_attributes_list = attributes_list
         if \
                 node_type_name == NodeType.TYPE_NAME_DATASET or \

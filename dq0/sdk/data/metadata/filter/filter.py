@@ -27,7 +27,7 @@ class Filter:
             return None
         node = node.copy()
         node.attributes = Filter.filter_attributes(node_type_name=node.type_name, attributes=node.attributes, retain_attributes=retain_attributes)
-        node.child_nodes = Filter.filter_nodes(nodes=node.child_nodes, retain_nodes=retain_nodes)
+        node.child_nodes = Filter.filter_nodes(nodes=node.child_nodes, retain_nodes=retain_nodes, retain_attributes=retain_attributes)
         return node
 
     @staticmethod
@@ -46,19 +46,19 @@ class Filter:
             return retain_attributes is None
         if retain_attributes is None:
             return True
-        for tmp_node_type_name, tmp_attributes_map in retain_attributes:
+        for tmp_node_type_name, tmp_attributes_map in retain_attributes.items():
             if tmp_node_type_name is None or tmp_node_type_name == node_type_name:
-                if attribute.key in tmp_attributes_map:
+                if attribute.key in tmp_attributes_map if tmp_attributes_map is not None else {}:
                     tmp_attributes_value = tmp_attributes_map[attribute.key]
                     return tmp_attributes_value is None or tmp_attributes_value == attribute.value
         return False
 
     @staticmethod
-    def filter_nodes(nodes, retain_nodes):
+    def filter_nodes(nodes, retain_nodes=None, retain_attributes=None):
         filtered_nodes = []
         for tmp_node in nodes if nodes is not None else []:
             if Filter.node_matches(node=tmp_node, retain_nodes=retain_nodes):
-                filtered_nodes.append(tmp_node)
+                filtered_nodes.append(Filter.filter(node=tmp_node, retain_nodes=retain_nodes, retain_attributes=retain_attributes))
         if len(filtered_nodes) == 0:
             return None
         return filtered_nodes
@@ -68,7 +68,7 @@ class Filter:
         Filter.check(node)
         if retain_nodes is None:
             return True
-        for node_type_name, attributes_map in retain_nodes if retain_nodes is not None else []:
+        for node_type_name, attributes_map in retain_nodes.items() if retain_nodes is not None else {}:
             if node_type_name is None or node_type_name == node.type_name:
                 if attributes_map is None:
                     return True
@@ -80,7 +80,7 @@ class Filter:
     def attributes_match(attributes, match_attributes):
         if attributes is None:
             return match_attributes is None
-        for match_attribute_key, match_attribute_value in match_attributes if match_attributes is not None else []:
+        for match_attribute_key, match_attribute_value in match_attributes.items() if match_attributes is not None else {}:
             found = False
             for tmp_attribute in attributes:
                 if match_attribute_key is None or match_attribute_key == tmp_attribute.key:

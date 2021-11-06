@@ -9,7 +9,7 @@ class NodeFactory:
         if yaml_dict is None:
             raise Exception("yaml_dict is None")
         if not isinstance(yaml_dict, dict):
-            raise Exception("yaml_dict is not a dict instance")
+            raise Exception(f"yaml_dict is not a dict instance, is of type {type(yaml_dict)} instead")
         type_name = yaml_dict['type_name'] if 'type_name' in yaml_dict else None
         if not NodeType.isValidTypeName(type_name):
             raise Exception(f"invalid type_name {type_name if type_name is not None else 'None'}")
@@ -22,8 +22,8 @@ class NodeFactory:
             apply_default_attributes = DefaultApplicator.applyDefaultAttributes
         NodeFactory.verifyYamlDict(yaml_dict=yaml_dict)
         type_name = yaml_dict.pop('type_name', None)
-        attributes_yaml_list = yaml_dict.pop('attributes', [])
-        attributes = apply_default_attributes([AttributeFactory.fromYamlDict(yaml_dict=attribute_yaml_dict) for attribute_yaml_dict in attributes_yaml_list])
+        attributes_yaml_list = yaml_dict.pop('attributes', None)
+        attributes = apply_default_attributes(node_type_name=type_name, attributes_list=[AttributeFactory.fromYamlDict(yaml_dict=attribute_yaml_dict) for attribute_yaml_dict in attributes_yaml_list] if attributes_yaml_list is not None else [])
         child_nodes_yaml_list = yaml_dict.pop('child_nodes', None)
-        child_nodes = [NodeFactory.fromYamlDict(yaml_dict=child_node_yaml_dict) for child_node_yaml_dict in child_nodes_yaml_list] if child_nodes_yaml_list is not None else None
+        child_nodes = [NodeFactory.fromYamlDict(yaml_dict=child_node_yaml_dict, apply_default_attributes=apply_default_attributes) for child_node_yaml_dict in child_nodes_yaml_list] if child_nodes_yaml_list is not None else None
         return Node(type_name=type_name, attributes=attributes, child_nodes=child_nodes)

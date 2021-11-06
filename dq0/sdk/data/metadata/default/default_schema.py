@@ -15,4 +15,4 @@ class DefaultSchema:
         if not isinstance(schema_attributes_list, list):
             raise Exception("schema_attributes_list is not of list type")
         default_schema_attributes_list = DefaultSchema.defaultAttributesSchema()
-        return Attribute.merge_many_with_many(list_a=default_schema_attributes_list, list_b=schema_attributes_list, overwrite=True) if schema_attributes_list is not None else default_schema_attributes_list
+        return Attribute.merge_many(list_a=default_schema_attributes_list, list_b=schema_attributes_list, overwrite=True) if schema_attributes_list is not None else default_schema_attributes_list

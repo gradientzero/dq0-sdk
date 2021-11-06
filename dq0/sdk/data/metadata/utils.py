@@ -1,5 +1,60 @@
 class Utils:
     @staticmethod
+    def str_from(object):
+        if object is None:
+            return 'None'
+        else:
+            return str(object)
+
+    @staticmethod
+    def str_from_list(list):
+        if list is None:
+            return " None"
+        if len(list) == 0:
+            return " []"
+        return_string = ''
+        for element in list:
+            return_string += "\n   " + Utils.str_from(element).replace('\n', "\n   ")
+        return return_string
+
+    @staticmethod
+    def str_from_dict(dict):
+        if dict is None:
+            return " None"
+        if len(dict) == 0:
+            return " {}"
+        return_string = ''
+        for element_key, element_value in list:
+            return_string += "\n   " + Utils.str_from(element_key) + ':' + Utils.str_from(element_value).replace('\n', "\n   ")
+        return return_string
+
+    @staticmethod
+    def repr_from(object):
+        if object is None:
+            return 'None'
+        else:
+            return repr(object)
+
+    @staticmethod
+    def repr_from_dict(dict):
+        if dict is None:
+            return 'None'
+        return_string = '{'
+        for element_key, element_value in dict.items():
+            return_string += Utils.repr_from(element_key) + ':' + Utils.repr_from(element_value) + ','
+        return_string += '}'
+        return return_string
+
+    def repr_from_list(list):
+        if list is None:
+            return 'None'
+        return_string = '['
+        for element in list:
+            return_string += Utils.repr_from(element) + ','
+        return_string += ']'
+        return return_string
+
+    @staticmethod
     def get_feature_target_cols_from_meta(metadata):
         feature_columns = []
         target_columns = []

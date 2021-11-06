@@ -44,11 +44,9 @@ attributes:
 child_nodes:
     -
         type_name: 'database'
-        attributes: None
         child_nodes:
             -
                 type_name: 'schema'
-                attributes: None
                 child_nodes:
                     -
                         type_name: 'table'
@@ -264,259 +262,225 @@ child_nodes:
         f.write(content)
 
     # load metadata
-    metadata = Metadata.from_yaml_file(filename='test.yaml', apply_default_attributes=None, verify=Verifier.verifyAllSingleWithSchema)
+    metadata = Metadata.from_yaml_file(filename='test.yaml', apply_default_attributes=None, verify_func=Verifier.verifyAllSingleWithSchema)
+
+    # print metadata
+    print(metadata)
 
     # test
     assert metadata.root_node.type_name == 'dataset'
-    assert metadata.root_node.name == 'test_ds'
-    assert metadata.root_node.description == "some description"
-    assert metadata.root_node.is_public is True
-    assert 'tag1' in metadata.root_node.sections[0].tags
-    assert 'tag2' in metadata.root_node.sections[0].tags
-    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].connector.type_name == 'csv'
-    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].connector.uri == 'user@db'
-    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].connector.use_original_header is True
-    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].connector.header_row == [1, 2]
-    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].connector.sep == ','
-    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].connector.decimal == '.'
-    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].connector.na_values == {'weight': '?', 'height': '??'}
-    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].connector.index_col is None
-    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].connector.skipinitialspace is False
-    table_privacy_section = None
-    table_other_section = None
-    table_differential_privacy_section = None
-    table_smart_noise_section = None
-    for section in metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].sections:
-        if section.type_name == 'table_privacy':
-            table_privacy_section = section
-        elif section.type_name == 'table_other':
-            table_other_section = section
-        elif section.type_name == 'table_differential_privacy':
-            table_differential_privacy_section = section
-        elif section.type_name == 'table_smart_noise':
-            table_smart_noise_section = section
-    assert table_privacy_section.privacy_column == 'user_id'
-    assert table_privacy_section.privacy_level == 1
-    assert table_other_section.synth_allowed is True
-    assert table_other_section.tau == 99
-    assert table_differential_privacy_section.budget_epsilon == 1000
-    assert table_differential_privacy_section.budget_delta == 500
-    assert table_smart_noise_section.row_privacy is True
-    assert table_smart_noise_section.rows == 2000
-    assert table_smart_noise_section.max_ids == 1
-    assert table_smart_noise_section.sample_max_ids is True
-    assert table_smart_noise_section.use_dpsu is True
-    assert table_smart_noise_section.clamp_counts is True
-    assert table_smart_noise_section.clamp_columns is True
-    assert table_smart_noise_section.censor_dims is True
+    assert metadata.root_node.get_attribute(index=-1, key='name', value='test_ds') is not None
+    assert metadata.root_node.get_attribute(index=-1, key='description', value="some description") is not None
+    assert metadata.root_node.get_attribute(index=-1, key='dataset_tags', value=None).get_attribute(index=0, key=None, value='tag1') is not None
+    assert metadata.root_node.get_attribute(index=-1, key='dataset_tags', value=None).get_attribute(index=1, key=None, value='tag2') is not None
+    assert metadata.root_node.get_attribute(index=-1, key='metadata_is_public', value=True) is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].type_name == 'table'
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='connector', value=None) is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='connector', value=None).get_attribute(index=-1, key='type_name', value='csv') is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='connector', value=None).get_attribute(index=-1, key='uri', value='user@db') is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='connector', value=None).get_attribute(index=-1, key='use_original_header', value=True) is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='connector', value=None).get_attribute(index=-1, key='header_row', value=None).get_attribute(index=0, key=None, value=1) is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='connector', value=None).get_attribute(index=-1, key='header_row', value=None).get_attribute(index=1, key=None, value=2) is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='connector', value=None).get_attribute(index=-1, key='sep', value=',') is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='connector', value=None).get_attribute(index=-1, key='decimal', value='.') is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='connector', value=None).get_attribute(index=-1, key='na_values', value=None).get_attribute(index=-1, key='weight', value='?') is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='connector', value=None).get_attribute(index=-1, key='na_values', value=None).get_attribute(index=-1, key='height', value='??') is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='connector', value=None).get_attribute(index=-1, key='index_col', value=None) is None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='connector', value=None).get_attribute(index=-1, key='skipinitialspace', value=False) is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='privacy_column', value='user_id') is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='privacy_level', value=1) is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='synth_allowed', value=True) is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='tau', value=99.0) is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='budget_epsilon', value=1000.0) is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='budget_delta', value=500.0) is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='row_privacy', value=True) is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='rows', value=2000.0) is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='max_ids', value=1) is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='sample_max_ids', value=True) is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='use_dpsu', value=True) is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='clamp_counts', value=True) is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='clamp_columns', value=True) is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='censor_dims', value=True) is not None
     assert len(metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].child_nodes) == 5
-    column_user_id = None
-    column_weight = None
-    column_height = None
-    column_name = None
-    column_email = None
-    for column in metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].child_nodes:
-        if column.name == 'user_id':
-            column_user_id = column
-        elif column.name == 'weight':
-            column_weight = column
-        elif column.name == 'height':
-            column_height = column
-        elif column.name == 'name':
-            column_name = column
-        elif column.name == 'email':
-            column_email = column
-        else:
-            raise Exception(f"wrong column found; name: {column.name}")
-    assert column_user_id is not None
-    assert column_weight is not None
-    assert column_height is not None
-    assert column_name is not None
-    assert column_email is not None
-    column_user_id_column_section = None
-    column_user_id_column_smart_noise_section = None
-    for section in column_user_id.sections:
-        if section.type_name == 'column':
-            column_user_id_column_section = section
-        elif section.type_name == 'column_smart_noise':
-            column_user_id_column_smart_noise_section = section
-    assert column_user_id_column_section.data_type_name == 'int'
-    assert column_user_id_column_smart_noise_section.private_id is True
-    column_weight_column_section = None
-    column_weight_column_float_section = None
-    column_weight_column_smart_noise_section = None
-    column_weight_column_smart_noise_float_section = None
-    for section in column_weight.sections:
-        if section.type_name == 'column':
-            column_weight_column_section = section
-        elif section.type_name == 'column_float':
-            column_weight_column_float_section = section
-        elif section.type_name == 'column_smart_noise':
-            column_weight_column_smart_noise_section = section
-        elif section.type_name == 'column_smart_noise_float':
-            column_weight_column_smart_noise_float_section = section
-    assert column_weight_column_section.selectable is True
-    assert column_weight_column_float_section.synthesizable is True
-    assert column_weight_column_float_section.use_auto_bounds is False
-    assert column_weight_column_float_section.discrete is False
-    assert column_weight_column_smart_noise_section.private_id is False
-    assert column_weight_column_smart_noise_float_section.bounded is True
-    assert column_weight_column_smart_noise_float_section.lower == 0.0
-    assert column_weight_column_smart_noise_float_section.upper == 100.5
-    column_height_column_float_section = None
-    column_height_column_smart_noise_float_section = None
-    for section in column_height.sections:
-        if section.type_name == 'column_float':
-            column_height_column_float_section = section
-        elif section.type_name == 'column_smart_noise_float':
-            column_height_column_smart_noise_float_section = section
-    assert column_height_column_float_section.synthesizable is False
-    assert column_height_column_float_section.use_auto_bounds is True
-    assert column_height_column_float_section.auto_bounds_prob == 0.8
-    assert column_height_column_float_section.min_step == 0.5
-    assert column_height_column_float_section.discrete is True
-    assert column_height_column_smart_noise_float_section.bounded is True
-    column_name_column_string_section = None
-    for section in column_name.sections:
-        if section.type_name == 'column_string':
-            column_name_column_string_section = section
-    assert column_name_column_string_section.synthesizable is True
-    column_email_column_section = None
-    column_email_column_string_section = None
-    for section in column_email.sections:
-        if section.type_name == 'column':
-            column_email_column_section = section
-        elif section.type_name == 'column_string':
-            column_email_column_string_section = section
-    assert column_email_column_section.data_type_name == 'string'
-    assert column_email_column_section.selectable is False
-    assert column_email_column_string_section.mask == '(.*)@(.*).{3}$'
-    assert column_email_column_string_section.cardinality == 123
-    assert column_email_column_string_section.synthesizable is True
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'user_id'}).get_attribute(index=-1, key='name', value='user_id') is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'user_id'}).get_attribute(index=-1, key='data_type_name', value='int') is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'user_id'}).get_attribute(index=-1, key='private_id', value=True) is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'weight'}).get_attribute(index=-1, key='name', value='weight') is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'weight'}).get_attribute(index=-1, key='selectable', value=True) is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'weight'}).get_attribute(index=-1, key='synthesizable', value=True) is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'weight'}).get_attribute(index=-1, key='use_auto_bounds', value=False) is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'weight'}).get_attribute(index=-1, key='discrete', value=False) is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'weight'}).get_attribute(index=-1, key='private_id', value=False) is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'weight'}).get_attribute(index=-1, key='bounded', value=True) is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'weight'}).get_attribute(index=-1, key='lower', value=0.0) is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'weight'}).get_attribute(index=-1, key='upper', value=100.5) is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'height'}).get_attribute(index=-1, key='name', value='height') is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'height'}).get_attribute(index=-1, key='synthesizable', value=False) is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'height'}).get_attribute(index=-1, key='use_auto_bounds', value=True) is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'height'}).get_attribute(index=-1, key='auto_bounds_prob', value=0.8) is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'height'}).get_attribute(index=-1, key='min_step', value=0.5) is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'height'}).get_attribute(index=-1, key='discrete', value=True) is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'height'}).get_attribute(index=-1, key='bounded', value=True) is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'name'}).get_attribute(index=-1, key='name', value='name') is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'name'}).get_attribute(index=-1, key='synthesizable', value=True) is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'email'}).get_attribute(index=-1, key='name', value='email') is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'email'}).get_attribute(index=-1, key='data_type_name', value='string') is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'email'}).get_attribute(index=-1, key='selectable', value=False) is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'email'}).get_attribute(index=-1, key='mask', value='(.*)@(.*).{3}$') is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'email'}).get_attribute(index=-1, key='cardinality', value=123) is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'email'}).get_attribute(index=-1, key='synthesizable', value=True) is not None
 
     # change metadata
-    table_differential_privacy_section.budget_epsilon = 1234
-    metadata.root_node.description = "new description"
-    metadata.root_node.is_public = False
+    metadata.root_node.get_attribute(index=-1, key='description', value=None).value = "new description"
+    metadata.root_node.get_attribute(index=-1, key='metadata_is_public', value=None).value = False
+    metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='budget_epsilon', value=None).value = 1234.0
 
     # save metadata
     yaml_content = metadata.to_yaml()
 
     # reload metadata
-    metadata = Metadata.from_yaml(yaml_content, MetaVerifier.verifySingleTable)
+    metadata = Metadata.from_yaml(yaml_content=yaml_content, apply_default_attributes=None, verify_func=Verifier.verifyAllSingleWithSchema)
 
     # test again
-    for section in metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].sections:
-        if section.type_name == 'table_differential_privacy':
-            table_differential_privacy_section = section
-    assert table_differential_privacy_section.budget_epsilon == 1234
-    assert metadata.root_node.description == "new description"
-    assert metadata.root_node.is_public is False
+    assert metadata.root_node.get_attribute(index=-1, key='description', value="new description") is not None
+    assert metadata.root_node.get_attribute(index=-1, key='metadata_is_public', value=False) is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='budget_epsilon', value=1234.0) is not None
 
     # change metadata
-    table_differential_privacy_section.budget_epsilon = 5678
-    metadata.root_node.description = "new description 2"
-    metadata.root_node.is_public = None
+    metadata.root_node.get_attribute(index=-1, key='description', value=None).value = "new description 2"
+    metadata.root_node.remove_attribute(index=-1, key='metadata_is_public', value=None)
+    metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='budget_epsilon', value=None).value = 5678.0
 
     # dump metadata
     yaml_content = metadata.to_yaml()
 
     # reload metadata
-    metadata = Metadata.from_yaml(yaml_content, MetaVerifier.verifySingleTable)
+    metadata = Metadata.from_yaml(yaml_content=yaml_content, apply_default_attributes=None, verify_func=Verifier.verifyAllSingleWithSchema)
 
     # test again
-    for section in metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].sections:
-        if section.type_name == 'table_differential_privacy':
-            table_differential_privacy_section = section
-    assert table_differential_privacy_section.budget_epsilon == 5678
-    assert metadata.root_node.description == "new description 2"
-    assert metadata.root_node.is_public is False
+    assert metadata.root_node.get_attribute(index=-1, key='description', value="new description 2") is not None
+    assert metadata.root_node.get_attribute(index=-1, key='metadata_is_public', value=False) is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='budget_epsilon', value=5678.0) is not None
 
     # test drop columns (drops column 'height')
-    def test_filter(node):
-        MetaFilter.check(node)
-        node = node.copy()
-        for section in node.sections if node.sections is not None else []:
-            if (section.type_name == MetaSectionType.TYPE_NAME_COLUMN_BOOLEAN_DATETIME or section.type_name == MetaSectionType.TYPE_NAME_COLUMN_FLOAT or section.type_name == MetaSectionType.TYPE_NAME_COLUMN_INT or section.type_name == MetaSectionType.TYPE_NAME_COLUMN_STRING) and not section.synthesizable:
-                return None
-        if node.child_nodes is not None:
-            modified_child_nodes = []
-            for child_node in node.child_nodes:
-                modified_child_node = test_filter(child_node)
-                if modified_child_node is not None:
-                    modified_child_nodes.append(modified_child_node)
-            node.child_nodes = modified_child_nodes
-        return node
-    metadata = metadata.filter(test_filter)
+    metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].remove_child_node(index=-1, attributes_map={'synthesizable': False})
     assert len(metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].child_nodes) == 4
 
     # test to_dict
     metadata_dct = metadata.to_dict()
-    assert metadata_dct['name'] == 'test_ds'
-    table_smart_noise_section_dct = None
-    for section_dct in metadata_dct['child_nodes'][0]['child_nodes'][0]['child_nodes'][0]['sections']:
-        if section_dct['type_name'] == MetaSectionType.TYPE_NAME_TABLE_SMART_NOISE:
-            table_smart_noise_section_dct = section_dct
-    assert table_smart_noise_section_dct['row_privacy'] is True
+    attribute_name_dct = None
+    for attribute_dct in metadata_dct['attributes']:
+        if attribute_dct['key'] == 'name':
+            attribute_name_dct = attribute_dct
+            break
+    assert attribute_name_dct['value'] == 'test_ds'
+    attribute_row_privacy_dct = None
+    for attribute_dct in metadata_dct['child_nodes'][0]['child_nodes'][0]['child_nodes'][0]['attributes']:
+        if attribute_dct['key'] == 'row_privacy':
+            attribute_row_privacy_dct = attribute_dct
+            break
+    assert attribute_row_privacy_dct['value'] is True
     column_weight_dct = None
     for column_dct in metadata_dct['child_nodes'][0]['child_nodes'][0]['child_nodes'][0]['child_nodes']:
-        if column_dct['name'] == 'weight':
-            column_weight_dct = column_dct
-    column_weight_column_section_dct = None
-    for section_dct in column_weight_dct['sections']:
-        if section_dct['type_name'] == MetaSectionType.TYPE_NAME_COLUMN:
-            column_weight_column_section_dct = section_dct
-    assert column_weight_column_section_dct['selectable'] is True
+        for attribute_dct in column_dct['attributes']:
+            if attribute_dct['key'] == 'name' and attribute_dct['value'] == 'weight':
+                column_weight_dct = column_dct
+                break
+    attribute_selectable_dct = None
+    for attribute_dct in column_weight_dct['attributes']:
+        if attribute_dct['key'] == 'selectable':
+            attribute_selectable_dct = attribute_dct
+            break
+    assert attribute_selectable_dct['value'] is True
 
     # test to_dict sm
-    metadata_sm = metadata.filter(MetaFilter.filterSmartNoise)
+    metadata_sm = metadata.filter(filter_func=FilterSmartNoise.filter, verify_func=Verifier.verifyAllSingleWithSchema)
+    print(metadata_sm)
     metadata_sm_dct = metadata_sm.to_dict()
-    table_smart_noise_section_dct = None
-    for section_dct in metadata_sm_dct['child_nodes'][0]['child_nodes'][0]['child_nodes'][0]['sections']:
-        if section_dct['type_name'] == MetaSectionType.TYPE_NAME_TABLE_SMART_NOISE:
-            table_smart_noise_section_dct = section_dct
-    assert table_smart_noise_section_dct['row_privacy'] is True
+    attribute_name_dct = None
+    for attribute_dct in metadata_sm_dct['attributes'] if 'attributes' in metadata_sm_dct else []:
+        if attribute_dct['key'] == 'name':
+            attribute_name_dct = attribute_dct
+            break
+    assert attribute_name_dct is None
+    attribute_row_privacy_dct = None
+    for attribute_dct in metadata_sm_dct['child_nodes'][0]['child_nodes'][0]['child_nodes'][0]['attributes']:
+        if attribute_dct['key'] == 'row_privacy':
+            attribute_row_privacy_dct = attribute_dct
+            break
+    assert attribute_row_privacy_dct['value'] is True
     column_weight_dct = None
     column_email_dct = None
     for column_dct in metadata_sm_dct['child_nodes'][0]['child_nodes'][0]['child_nodes'][0]['child_nodes']:
-        if column_dct['name'] == 'weight':
-            column_weight_dct = column_dct
-        if column_dct['name'] == 'email':
-            column_email_dct = column_dct
-    column_weight_column_section_dct = None
-    column_weight_column_smart_noise_float_section_dct = None
-    for section_dct in column_weight_dct['sections']:
-        if section_dct['type_name'] == MetaSectionType.TYPE_NAME_COLUMN:
-            column_weight_column_section_dct = section_dct
-        if section_dct['type_name'] == MetaSectionType.TYPE_NAME_COLUMN_SMART_NOISE_FLOAT:
-            column_weight_column_smart_noise_float_section_dct = section_dct
-    assert column_weight_column_section_dct is None
-    assert column_weight_column_smart_noise_float_section_dct['upper'] == 100.5
+        for attribute_dct in column_dct['attributes']:
+            if attribute_dct['key'] == 'name' and attribute_dct['value'] == 'weight':
+                column_weight_dct = column_dct
+            if attribute_dct['key'] == 'name' and attribute_dct['value'] == 'email':
+                column_email_dct = column_dct
+    attribute_selectable_dct = None
+    attribute_upper_dct = None
+    attribute_cardinality_dct = None
+    for attribute_dct in column_weight_dct['attributes']:
+        if attribute_dct['key'] == 'selectable':
+            attribute_selectable_dct = attribute_dct
+        if attribute_dct['key'] == 'upper':
+            attribute_upper_dct = attribute_dct
+    for attribute_dct in column_email_dct['attributes']:
+        if attribute_dct['key'] == 'cardinality':
+            attribute_cardinality_dct = attribute_dct
+            break
+    assert attribute_selectable_dct is None
+    assert attribute_upper_dct['value'] == 100.5
+    assert attribute_cardinality_dct['value'] == 123
 
     # test to_dict ml
-    metadata_ml = metadata.filter(MetaFilter.filterMachineLearning)
+    metadata_ml = metadata.filter(filter_func=FilterMachineLearning.filter, verify_func=Verifier.verifyAllSingleWithSchema)
+    print(metadata_ml)
     metadata_ml_dct = metadata_ml.to_dict()
-    table_smart_noise_section_dct = None
-    for section_dct in metadata_ml_dct['child_nodes'][0]['child_nodes'][0]['child_nodes'][0]['sections']:
-        if section_dct['type_name'] == MetaSectionType.TYPE_NAME_TABLE_SMART_NOISE:
-            table_smart_noise_section_dct = section_dct
-    assert table_smart_noise_section_dct is None
+    attribute_connector_dct = None
+    attribute_sample_max_ids_dct = None
+    for attribute_dct in metadata_ml_dct['child_nodes'][0]['child_nodes'][0]['child_nodes'][0]['attributes']:
+        if attribute_dct['key'] == 'connector':
+            attribute_connector_dct = attribute_dct
+        if attribute_dct['key'] == 'sample_max_ids':
+            attribute_sample_max_ids_dct = attribute_dct
+    assert attribute_sample_max_ids_dct is None
     column_weight_dct = None
     for column_dct in metadata_ml_dct['child_nodes'][0]['child_nodes'][0]['child_nodes'][0]['child_nodes']:
-        if column_dct['name'] == 'weight':
-            column_weight_dct = column_dct
-    column_weight_column_float_section_dct = None
-    for section_dct in column_weight_dct['sections']:
-        if section_dct['type_name'] == MetaSectionType.TYPE_NAME_COLUMN_FLOAT:
-            column_weight_column_float_section_dct = section_dct
-    assert column_weight_column_float_section_dct is None
-    assert metadata_ml_dct['child_nodes'][0]['child_nodes'][0]['child_nodes'][0]['connector']['sep'] == ','
-    assert metadata_ml_dct['child_nodes'][0]['child_nodes'][0]['child_nodes'][0]['connector']['decimal'] == '.'
-    assert metadata_ml_dct['child_nodes'][0]['child_nodes'][0]['child_nodes'][0]['connector']['na_values'] == {'weight': '?', 'height': '??'}
+        for attribute_dct in column_dct['attributes']:
+            if attribute_dct['key'] == 'name' and attribute_dct['value'] == 'weight':
+                column_weight_dct = column_dct
+                break
+    attribute_synthesizable_dct = None
+    for attribute_dct in column_weight_dct['attributes']:
+        if attribute_dct['key'] == 'synthesizable':
+            attribute_synthesizable_dct = attribute_dct
+            break
+    assert attribute_synthesizable_dct is None
+    attribute_sep_dct = None
+    attribute_decimal_dct = None
+    attribute_na_values_dct = None
+    for attribute_dct in attribute_connector_dct['value']:
+        if attribute_dct['key'] == 'sep':
+            attribute_sep_dct = attribute_dct
+        if attribute_dct['key'] == 'decimal':
+            attribute_decimal_dct = attribute_dct
+        if attribute_dct['key'] == 'na_values':
+            attribute_na_values_dct = attribute_dct
+    assert attribute_sep_dct['value'] == ','
+    assert attribute_decimal_dct['value'] == '.'
+    attribute_na_value_weight_dct = None
+    attribute_na_value_height_dct = None
+    for attribute_dct in attribute_na_values_dct['value']:
+        if attribute_dct['key'] == 'weight':
+            attribute_na_value_weight_dct = attribute_dct
+        if attribute_dct['key'] == 'height':
+            attribute_na_value_height_dct = attribute_dct
+    assert attribute_na_value_weight_dct['value'] == '?'
+    assert attribute_na_value_height_dct['value'] == '??'
 
     # clean up
     os.remove('test.yaml')
-
 
 def test_combine_metadata():
     # prepare yaml file
@@ -541,7 +505,6 @@ child_nodes:
         child_nodes:
             -
                 type_name: 'schema'
-                attributes: None
                 child_nodes:
                     -
                         type_name: 'table'
@@ -621,7 +584,6 @@ child_nodes:
         child_nodes:
             -
                 type_name: 'schema'
-                attributes: None
                 child_nodes:
                     -
                         type_name: 'table'
@@ -690,10 +652,6 @@ attributes:
         type_name: 'string'
         key: 'description'
         value: "some description"
-    -
-        type_name: 'boolean'
-        key: 'metadata_is_public'
-        value: true
 child_nodes:
     -
         type_name: 'database'
@@ -705,7 +663,6 @@ child_nodes:
         child_nodes:
             -
                 type_name: 'schema'
-                attributes: None
                 child_nodes:
                     -
                         type_name: 'table'
@@ -761,55 +718,17 @@ child_nodes:
 '''
 
     # load metadata
-    metadata1 = Metadata.from_yaml(content1, MetaVerifier.verifySingleTable)
-    metadata2 = Metadata.from_yaml(content2, MetaVerifier.verifySingleTable)
-    metadata3 = Metadata.from_yaml(content3, MetaVerifier.verifySingleTable)
+    metadata1 = Metadata.from_yaml(yaml_content=content1, apply_default_attributes=None, verify_func=Verifier.verifyAllSingleWithSchema)
+    metadata2 = Metadata.from_yaml(yaml_content=content2, apply_default_attributes=None, verify_func=Verifier.verifyAllSingleWithSchema)
+    metadata3 = Metadata.from_yaml(yaml_content=content3, apply_default_attributes=None, verify_func=Verifier.verifyAllSingleWithSchema)
 
-    metadata_merged_a = metadata1.merge_with(metadata2)
-    metadata_merged_b = metadata_merged_a.merge_with(metadata3)
+    metadata_merged_a = metadata1.merge_with(other=metadata2, verify_func=Verifier.verify)
+    metadata_merged_b = metadata_merged_a.merge_with(other=metadata3, verify_func=Verifier.verify)
 
-    database_1 = None
-    database_2 = None
-    for database in metadata_merged_b.root_node.child_nodes:
-        if database.name == 'test_db_1':
-            database_1 = database
-        elif database.name == 'test_db_2':
-            database_2 = database
-    table_1 = None
-    table_3 = None
-    for table in database_1.child_nodes[0].child_nodes:
-        if table.name == 'test_tab_1':
-            table_1 = table
-        elif table.name == 'test_tab_3':
-            table_3 = table
-    table_2 = database_2.child_nodes[0].child_nodes[0]
-    assert table_1.connector.uri == 'user1@db'
-    table_1_smart_noise_section = None
-    for section in table_1.sections:
-        if section.type_name == MetaSectionType.TYPE_NAME_TABLE_SMART_NOISE:
-            table_1_smart_noise_section = section
-    assert table_1_smart_noise_section.row_privacy is True
-    table_2_smart_noise_section = None
-    table_2_differential_privacy_section = None
-    for section in table_2.sections:
-        if section.type_name == MetaSectionType.TYPE_NAME_TABLE_SMART_NOISE:
-            table_2_smart_noise_section = section
-        elif section.type_name == MetaSectionType.TYPE_NAME_TABLE_DIFFERENTIAL_PRIVACY:
-            table_2_differential_privacy_section = section
-    assert table_2_smart_noise_section.rows == 2000
-    assert table_2_differential_privacy_section.budget_epsilon == 1001
-    table_3_smart_noise_section = None
-    for section in table_3.sections:
-        if section.type_name == MetaSectionType.TYPE_NAME_TABLE_SMART_NOISE:
-            table_3_smart_noise_section = section
-    assert table_3_smart_noise_section.row_privacy is False
-    table_2_column_email = None
-    for column in table_2.child_nodes:
-        if column.name == 'email':
-            table_2_column_email = column
-    table_2_column_email_column_section = None
-    for section in table_2_column_email.sections:
-        if section.type_name == MetaSectionType.TYPE_NAME_COLUMN:
-            table_2_column_email_column_section = section
-    assert table_2_column_email_column_section.data_type_name == 'string'
+    assert metadata_merged_b.root_node.get_child_node(index=-1, attributes_map={'name': 'test_db_1'}).child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'test_tab_1'}).get_attribute(index=-1, key='connector', value=None).get_attribute(index=-1, key='uri', value='user1@db') is not None
+    assert metadata_merged_b.root_node.get_child_node(index=-1, attributes_map={'name': 'test_db_2'}).child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'test_tab_2'}).get_attribute(index=-1, key='budget_epsilon', value=1001.0) is not None
+    assert metadata_merged_b.root_node.get_child_node(index=-1, attributes_map={'name': 'test_db_1'}).child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'test_tab_1'}).get_attribute(index=-1, key='row_privacy', value=True) is not None
+    assert metadata_merged_b.root_node.get_child_node(index=-1, attributes_map={'name': 'test_db_1'}).child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'test_tab_3'}).get_attribute(index=-1, key='row_privacy', value=False) is not None
+    assert metadata_merged_b.root_node.get_child_node(index=-1, attributes_map={'name': 'test_db_2'}).child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'test_tab_2'}).get_attribute(index=-1, key='rows', value=2000) is not None
+    assert metadata_merged_b.root_node.get_child_node(index=-1, attributes_map={'name': 'test_db_2'}).child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'test_tab_2'}).get_child_node(index=-1, attributes_map={'name': 'email'}).get_attribute(index=-1, key='data_type_name', value='string') is not None
  

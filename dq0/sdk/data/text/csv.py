@@ -8,7 +8,7 @@ All rights reserved
 """
 
 from dq0.sdk.data.source import Source
-from dq0.sdk.data.metadata.meta_utils import MetaUtils
+from dq0.sdk.data.metadata.utils import Utils as MetaUtils
 
 import pandas as pd
 

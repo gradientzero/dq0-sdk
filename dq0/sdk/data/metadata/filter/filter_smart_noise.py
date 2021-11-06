@@ -19,6 +19,7 @@ class FilterSmartNoise(Filter):
                 'censor_dims': None,
             },
             'column': {
+                'name': None,
                 'data_type_name': None,
                 'bounded': None,
                 'lower': None,
