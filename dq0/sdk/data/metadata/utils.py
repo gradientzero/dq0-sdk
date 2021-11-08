@@ -1,20 +1,25 @@
 class Utils:
     @staticmethod
-    def str_from(object):
+    def str_from(object, quoted=False):
         if object is None:
-            return 'None'
+            return 'null'
+        elif quoted:
+            return "'" + str(object) + "'"
         else:
             return str(object)
 
     @staticmethod
-    def str_from_list(list):
+    def str_from_list(list, sort=False):
         if list is None:
-            return " None"
+            return " null"
         if len(list) == 0:
             return " []"
         return_string = ''
-        for element in list:
-            return_string += "\n   " + Utils.str_from(element).replace('\n', "\n   ")
+        tmp_list = [Utils.str_from(tmp_elem, quoted=False).replace('\n', "\n   ") for tmp_elem in list]
+        if sort:
+            tmp_list.sort()
+        for tmp_elem in tmp_list:
+            return_string += "\n   " + tmp_elem
         return return_string
 
     @staticmethod
@@ -24,8 +29,8 @@ class Utils:
         if len(dict) == 0:
             return " {}"
         return_string = ''
-        for element_key, element_value in list:
-            return_string += "\n   " + Utils.str_from(element_key) + ':' + Utils.str_from(element_value).replace('\n', "\n   ")
+        for element_key, element_value in dict.items():
+            return_string += "\n   " + Utils.str_from(element_key, quoted=True) + ':' + Utils.str_from(element_value).replace('\n', "\n   ")
         return return_string
 
     @staticmethod
@@ -49,8 +54,10 @@ class Utils:
         if list is None:
             return 'None'
         return_string = '['
-        for element in list:
-            return_string += Utils.repr_from(element) + ','
+        for index, element in enumerate(list):
+            return_string += Utils.repr_from(element)
+            if index < len(list) - 1:
+                return_string += ', '
         return_string += ']'
         return return_string
 

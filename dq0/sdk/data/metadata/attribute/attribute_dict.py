@@ -21,7 +21,7 @@ class AttributeDict(Attribute):
         self.value = value
 
     def __str__(self):
-        return MetaUtils.str_from(self.key) + ':' + MetaUtils.str_from_dict(self.value)
+        return super().__str__() + MetaUtils.str_from_dict(self.value)
 
     def __repr__(self):
         return "AttributeDict(key=" + MetaUtils.repr_from(self.key) + ", value=" + MetaUtils.repr_from_dict(self.value) + ')'
@@ -38,7 +38,7 @@ class AttributeDict(Attribute):
 
     def is_merge_compatible_with(self, other):
         if not super().is_merge_compatible_with(other=other):
-            print(f"super not merge compatible <-- AttributeDict.is_merge_compatible_with:(self={self} other={other})")    
+            # print(f"super not merge compatible <-- AttributeDict.is_merge_compatible_with:(self={self} other={other})")    
             return False
         if self.value is None or len(self.value) == 0:
             return True
@@ -46,16 +46,16 @@ class AttributeDict(Attribute):
             return True
         for tmp_key, tmp_attribute in self.value.items():
             if tmp_key in other.value and not tmp_attribute.is_merge_compatible_with(other=other.value[tmp_key]):
-                print(f"dict value not merge compatible for matching key <-- AttributeDict.is_merge_compatible_with:(self={self} other={other})")    
+                # print(f"dict value not merge compatible for matching key <-- AttributeDict.is_merge_compatible_with:(self={self} other={other})")    
                 return False
         return True
 
     def is_mergeable_with(self, other, overwrite=False):
         if not super().is_mergeable_with(other=other, overwrite=overwrite):
-            print(f"super not mergeable <-- AttributeDict.is_mergeable_with:(self={self} other={other} overwrite={overwrite})")
+            # print(f"super not mergeable <-- AttributeDict.is_mergeable_with:(self={self} other={other} overwrite={overwrite})")
             return False
         if not self.is_merge_compatible_with(other=other):
-            print(f"self not merge compatible <-- AttributeDict.is_mergeable_with:(self={self} other={other} overwrite={overwrite})")
+            # print(f"self not merge compatible <-- AttributeDict.is_mergeable_with:(self={self} other={other} overwrite={overwrite})")
             return False
         if self.value is None or len(self.value) == 0:
             return True
@@ -63,7 +63,7 @@ class AttributeDict(Attribute):
             return True
         for tmp_key, tmp_attribute in self.value.items():
             if tmp_key in other.value and not tmp_attribute.is_mergeable_with(other=other.value[tmp_key], overwrite=overwrite):
-                print(f"dict value not mergeable for matching key <-- AttributeDict.is_mergeable_with:(self={self} other={other} overwrite={overwrite})")
+                # print(f"dict value not mergeable for matching key <-- AttributeDict.is_mergeable_with:(self={self} other={other} overwrite={overwrite})")
                 return False
         return True
 

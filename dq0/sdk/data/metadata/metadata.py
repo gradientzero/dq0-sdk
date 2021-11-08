@@ -25,7 +25,7 @@ class Metadata:
         self.root_node = root_node
 
     def __str__(self):
-        return "Metadata:\n   " + str(self.root_node).replace('\n', "\n   ")
+        return str(self.root_node)
 
     def __repr__(self):
         return "Metadata(root_node=" + repr(self.root_node) + ", verify_func=None)"

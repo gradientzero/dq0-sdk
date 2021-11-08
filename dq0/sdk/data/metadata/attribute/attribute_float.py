@@ -14,7 +14,7 @@ class AttributeFloat(Attribute):
         self.value = value
 
     def __str__(self):
-        return MetaUtils.str_from(self.key) + ": " + MetaUtils.str_from(self.value)
+        return super().__str__() + ' ' + MetaUtils.str_from(self.value, quoted=False)
 
     def __repr__(self):
         return "AttributeFloat(key=" + MetaUtils.repr_from(self.key) + ", value=" + MetaUtils.repr_from(self.value) + ')'
@@ -31,10 +31,10 @@ class AttributeFloat(Attribute):
 
     def is_mergeable_with(self, other, overwrite=False):
         if not super().is_mergeable_with(other=other, overwrite=overwrite):
-            print(f"super not mergeable <-- AttributeFloat.is_mergeable_with:(self={self} other={other} overwrite={overwrite})")
+            # print(f"super not mergeable <-- AttributeFloat.is_mergeable_with:(self={self} other={other} overwrite={overwrite})")
             return False
         if not overwrite and self.value != other.value:
-            print(f"value mismatch on no overwrite <-- AttributeFloat.is_mergeable_with:(self={self} other={other} overwrite={overwrite})")
+            # print(f"value mismatch on no overwrite <-- AttributeFloat.is_mergeable_with:(self={self} other={other} overwrite={overwrite})")
             return False
         return True
 

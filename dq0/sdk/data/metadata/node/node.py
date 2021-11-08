@@ -77,16 +77,19 @@ class Node:
     def __init__(self, type_name, attributes=None, child_nodes=None):
         if not NodeType.isValidTypeName(type_name=type_name):
             raise Exception(f"invalid type_name {type_name if type_name is not None else 'None'}")
-        Attribute.init_check_many(list=attributes)
+        if Attribute.check_list_and_is_explicit_list(list=attributes, additional=None):
+            raise Exception("node may not have list of attributes with multiple null keys")
         Node.init_check_many(list=child_nodes)
         self.type_name = type_name
         self.attributes = attributes
         self.child_nodes = child_nodes
 
     def __str__(self):
-        return_string = MetaUtils.str_from(object=self.type_name) + ":\n"
-        return_string += "   attributes:" + MetaUtils.str_from_list(list=self.attributes).replace('\n', "\n   ") + '\n'
-        return_string += "   child_nodes:" + MetaUtils.str_from_list(list=self.child_nodes).replace('\n', "\n   ")
+        return_string = MetaUtils.str_from(object=self.type_name) + ':'
+        if self.attributes is not None and len(self.attributes) > 0:
+            return_string += "\n   attributes:" + MetaUtils.str_from_list(list=self.attributes, sort=False).replace('\n', "\n   ")
+        if self.child_nodes is not None and len(self.child_nodes) > 0:
+            return_string += "\n   child_nodes:" + MetaUtils.str_from_list(list=self.child_nodes, sort=False).replace('\n', "\n   ")
         return return_string
 
     def __repr__(self):
@@ -111,28 +114,28 @@ class Node:
 
     def is_merge_compatible_with(self, other):
         if other is None:
-            print(f"other is None <-- Node.is_merge_compatible_with:(self={self} other=None)")
+            # print(f"other is None <-- Node.is_merge_compatible_with:(self={self} other=None)")
             return False
         if self.type_name != other.type_name:
-            print(f"type_names mismatch <-- Node.is_merge_compatible_with:(self={self} other={other})")
+            # print(f"type_names mismatch <-- Node.is_merge_compatible_with:(self={self} other={other})")
             return False
         if not Attribute.are_merge_compatible(list_a=self.attributes, list_b=other.attributes):
-            print(f"attributes are not merge compatible <-- Node.is_merge_compatible_with:(self={self} other={other})")
+            # print(f"attributes are not merge compatible <-- Node.is_merge_compatible_with:(self={self} other={other})")
             return False
         if not Node.are_merge_compatible(list_a=self.child_nodes, list_b=other.child_nodes):
-            print(f"child_nodes are not merge compatible <-- Node.is_merge_compatible_with:(self={self} other={other})")
+            # print(f"child_nodes are not merge compatible <-- Node.is_merge_compatible_with:(self={self} other={other})")
             return False
         return True
 
     def is_mergeable_with(self, other, overwrite=False):
         if not self.is_merge_compatible_with(other=other):
-            print(f"self is not merge compatible <-- Node.is_mergeable_with:(self={self} other={other} overwrite={overwrite})")
+            # print(f"self is not merge compatible <-- Node.is_mergeable_with:(self={self} other={other} overwrite={overwrite})")
             return False
         if not Attribute.are_mergeable(list_a=self.attributes, list_b=other.attributes, overwrite=overwrite):
-            print(f"attributes are not mergeable <-- Node.is_mergeable_with:(self={self} other={other} overwrite={overwrite})")
+            # print(f"attributes are not mergeable <-- Node.is_mergeable_with:(self={self} other={other} overwrite={overwrite})")
             return False
         if not Node.are_mergeable(list_a=self.child_nodes, list_b=other.child_nodes, overwrite=overwrite):
-            print(f"child_nodes are not mergeable <-- Node.is_mergeable_with:(self={self} other={other} overwrite={overwrite})")
+            # print(f"child_nodes are not mergeable <-- Node.is_mergeable_with:(self={self} other={other} overwrite={overwrite})")
             return False
         return True
 
@@ -156,9 +159,11 @@ class Node:
         if attribute is None:
             raise Exception("attribute is none")
         if self.get_attribute(index=index, key=attribute.key, value=attribute.value) is not None:
-            raise Exception("duplicate attributes not allowed")
+            raise Exception("duplicate attributes not allowed")            
         if self.attributes is None:
             self.attributes = []
+        if Attribute.check_list_and_is_explicit_list(list=self.attributes, additional=attribute):
+            raise Exception("node may not have list of attributes with multiple null keys")
         if index < 0:
             index = len(self.attributes)
         self.attributes.insert(index, attribute)

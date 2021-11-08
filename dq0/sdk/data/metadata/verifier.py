@@ -18,7 +18,7 @@ class Verifier:
         Verifier.check(node)
         if expected_type_names is not None and node.type_name not in expected_type_names:
             raise Exception(f"node.type_name {node.type_name} is not in expected type_names {expected_type_names}")
-        Attribute.init_check_many(list=node.attributes)
+        Attribute.check_list_and_is_explicit_list(list=node.attributes, additional=None)
         if node.child_nodes is not None:
             expected_type_name = None
             type_name = None
@@ -46,7 +46,7 @@ class Verifier:
         Verifier.check(node=node)
         if expected_type_names is not None and node.type_name not in expected_type_names:
             raise Exception(f"node.type_name {node.type_name} is not in expected type_names {expected_type_names}")
-        Attribute.init_check_many(list=node.attributes)
+        Attribute.check_list_and_is_explicit_list(list=node.attributes, additional=None)
         if node.child_nodes is not None:
             expected_type_name = None
             type_name = None

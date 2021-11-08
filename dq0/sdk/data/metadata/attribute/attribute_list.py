@@ -13,13 +13,13 @@ class AttributeList(Attribute):
             raise Exception(f"value is not of type list, is of type {type(value)} instead")
         if len(value) == 0:
             raise Exception("list may not be empty")
-        for elem in value:
-            if not isinstance(elem, Attribute):
-                raise Exception(f"list element is not of type Attribute, is of type {type(value)} instead")
+        self.is_explicit_list = Attribute.check_list_and_is_explicit_list(list=value, additional=None)
+        for tmp_attribute in value:
+            tmp_attribute.set_explicit_list_element(is_explicit_list_element=self.is_explicit_list)
         self.value = value
 
     def __str__(self):
-        return MetaUtils.str_from(self.key) + ':' + MetaUtils.str_from_list(self.value)
+        return super().__str__() + MetaUtils.str_from_list(self.value, sort=False)
 
     def __repr__(self):
         return "AttributeList(key=" + MetaUtils.repr_from(self.key) + ", value=" + MetaUtils.repr_from_list(self.value) + ')'
@@ -36,22 +36,22 @@ class AttributeList(Attribute):
 
     def is_merge_compatible_with(self, other):
         if not super().is_merge_compatible_with(other=other):
-            print(f"super not merge compatible <-- AttributeList.is_merge_compatible_with:(self={self} other={other})")
+            # print(f"super not merge compatible <-- AttributeList.is_merge_compatible_with:(self={self} other={other})")
             return False
         if not Attribute.are_merge_compatible(list_a=self.value, list_b=other.value):
-            print(f"list not merge compatible <-- AttributeList.is_merge_compatible_with:(self={self} other={other})")
+            # print(f"list not merge compatible <-- AttributeList.is_merge_compatible_with:(self={self} other={other})")
             return False
         return True
 
     def is_mergeable_with(self, other, overwrite=False):
         if not super().is_mergeable_with(other=other, overwrite=overwrite):
-            print(f"super not mergeable <-- AttributeList.is_mergeable_with:(self={self} other={other} overwrite={overwrite})")
+            # print(f"super not mergeable <-- AttributeList.is_mergeable_with:(self={self} other={other} overwrite={overwrite})")
             return False
         if not self.is_merge_compatible_with(other=other):
-            print(f"self not merge compatible <-- AttributeList.is_mergeable_with:(self={self} other={other} overwrite={overwrite})")
+            # print(f"self not merge compatible <-- AttributeList.is_mergeable_with:(self={self} other={other} overwrite={overwrite})")
             return False
         if not Attribute.are_mergeable(list_a=self.value, list_b=other.value, overwrite=overwrite):
-            print(f"list not mergeable <-- AttributeList.is_mergeable_with:(self={self} other={other} overwrite={overwrite})")
+            # print(f"list not mergeable <-- AttributeList.is_mergeable_with:(self={self} other={other} overwrite={overwrite})")
             return False
         return True
 
@@ -60,6 +60,9 @@ class AttributeList(Attribute):
             raise MergeException(f"cannot merge attributes that are not mergeable; self: {self} other: {other}")
         merged = self.copy()
         merged.value = Attribute.merge_many(list_a=self.value, list_b=other.value, overwrite=overwrite)
+        merged.is_explicit_list = Attribute.check_list_and_is_explicit_list(list=merged.value, additional=None)
+        for tmp_attribute in merged.value:
+            tmp_attribute.set_explicit_list_element(is_explicit_list_element=merged.is_explicit_list)
         return merged
 
     def get_attribute(self, index=-1, key=None, value=None):
@@ -77,9 +80,12 @@ class AttributeList(Attribute):
             raise Exception("duplicate attributes not allowed")
         if self.value is None:
             self.value = []
+        self.is_explicit_list = Attribute.check_list_and_is_explicit_list(list=self.value, additional=attribute)
         if index < 0:
             index = len(self.value)
         self.value.insert(index, attribute)
+        for tmp_attribute in self.value:
+            tmp_attribute.set_explicit_list_element(is_explicit_list_element=self.is_explicit_list)
 
     def remove_attribute(self, index=-1, key=None, value=None):
         if index < 0 and key is None and value is None:
@@ -87,5 +93,8 @@ class AttributeList(Attribute):
         for tmp_index, tmp_attribute in enumerate(self.value if self.value is not None else []):
             if (index < 0 or index == tmp_index) and (key is None or key == tmp_attribute.key) and (value is None or value == tmp_attribute.value):
                 del self.value[tmp_index]
+                self.is_explicit_list = Attribute.check_list_and_is_explicit_list(list=self.value, additional=None)
+                for tmp_attribute in self.value:
+                    tmp_attribute.set_explicit_list_element(is_explicit_list_element=self.is_explicit_list)
                 return
         raise Exception("attribute not found")
