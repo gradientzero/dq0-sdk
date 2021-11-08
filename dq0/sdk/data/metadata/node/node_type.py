@@ -1,4 +1,5 @@
 class NodeType:
+    # No underscores allowed in these type names
     TYPE_NAME_DATASET = 'dataset'
     TYPE_NAME_DATABASE = 'database'
     TYPE_NAME_SCHEMA = 'schema'
@@ -6,7 +7,7 @@ class NodeType:
     TYPE_NAME_COLUMN = 'column'
 
     @staticmethod
-    def isValidTypeName(type_name):
+    def is_valid_type_name(type_name):
         if type_name is None:
             return False
         if \

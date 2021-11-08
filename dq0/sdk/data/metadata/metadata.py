@@ -2,6 +2,7 @@ import os
 import yaml
 
 from dq0.sdk.data.metadata.node.node_factory import NodeFactory
+from dq0.sdk.data.metadata.node.node import Node
 from dq0.sdk.data.metadata.verifier import Verifier
 
 
@@ -16,12 +17,14 @@ class Metadata:
     @staticmethod
     def from_yaml(yaml_content, apply_default_attributes=None, verify_func=None):
         yaml_dict = yaml.load(stream=yaml_content, Loader=yaml.FullLoader)
-        return Metadata(root_node=NodeFactory.fromYamlDict(yaml_dict=yaml_dict, apply_default_attributes=apply_default_attributes), verify_func=verify_func)
+        return Metadata(root_node=NodeFactory.from_yaml_content(yaml_content=yaml_dict, apply_default_attributes=apply_default_attributes, force_list=False), verify_func=verify_func)
 
     def __init__(self, root_node, verify_func=None):
         if verify_func is None:
             verify_func = Verifier.verify
         verify_func(root_node)
+        if not isinstance(root_node, Node):
+            raise Exception(f"root_node is not of type Node, is of type {type(root_node)} instead")
         self.root_node = root_node
 
     def __str__(self):

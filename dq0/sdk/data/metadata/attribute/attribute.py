@@ -95,7 +95,7 @@ class Attribute:
         return merged
 
     def __init__(self, type_name, key):
-        if not AttributeType.isValidTypeName(type_name=type_name):
+        if not AttributeType.is_valid_type_name(type_name=type_name):
             raise Exception(f"invalid type_name {type_name if type_name is not None else 'None'}")
         self.type_name = type_name
         self.key = key

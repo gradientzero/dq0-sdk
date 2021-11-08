@@ -5,7 +5,14 @@ Copyright 2020, Gradient Zero
 All rights reserved
 """
 
+# the unused imports are necessary for the repr evaluation
+from dq0.sdk.data.metadata.attribute.attribute_boolean import AttributeBoolean
+from dq0.sdk.data.metadata.attribute.attribute_float import AttributeFloat
+from dq0.sdk.data.metadata.attribute.attribute_int import AttributeInt
+from dq0.sdk.data.metadata.attribute.attribute_list import AttributeList
+from dq0.sdk.data.metadata.attribute.attribute_string import AttributeString
 from dq0.sdk.data.metadata.metadata import Metadata
+from dq0.sdk.data.metadata.node.node import Node
 from dq0.sdk.data.metadata.verifier import Verifier
 
 
@@ -256,21 +263,13 @@ child_nodes:
     # load metadata
     metadata = Metadata.from_yaml(yaml_content=content, apply_default_attributes=None, verify_func=Verifier.verifyAllSingleWithSchema)
 
-    print("\n\n+==========+==========+==========+==========+==========+==========+==========+==========+==========+\n\nTO_YAML():\n\n+----------+\n\n")
+    # test to_yaml
+    metadata2 = Metadata.from_yaml(yaml_content=metadata.to_yaml(), apply_default_attributes=None, verify_func=Verifier.verifyAllSingleWithSchema)
+    assert repr(metadata) == repr(metadata2)
 
-    # print metadata to_yaml function
-    print(metadata.to_yaml())
+    # test str
+    metadata3 = Metadata.from_yaml(yaml_content=str(metadata), apply_default_attributes=None, verify_func=Verifier.verifyAllSingleWithSchema)
+    assert repr(metadata) == repr(metadata3)
 
-    print("\n\n+==========+==========+==========+==========+==========+==========+==========+==========+==========+\n\nSTR():\n\n+----------+\n\n")
-
-    # print metadata str function
-    print(metadata)
-
-    print("\n\n+==========+==========+==========+==========+==========+==========+==========+==========+==========+\n\nREPR():\n\n+----------+\n\n")
-
-    # print metadata repr function
-    print(repr(metadata))
-
-    print("\n\n+==========+==========+==========+==========+==========+==========+==========+==========+==========+\n\n")
-
-    assert False
+    # test repr
+    assert repr(metadata) == repr(eval(repr(metadata)))

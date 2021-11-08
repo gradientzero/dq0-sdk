@@ -9,7 +9,7 @@ class Verifier:
         if node is None:
             raise Exception("node is none")
         if not isinstance(node, Node):
-            raise Exception("node is not an instance of Node")
+            raise Exception(f"node is not of type Node, is of type {type(Node)} instead")
         if node.type_name is None:
             raise Exception("node.type_name is none")
 

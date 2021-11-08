@@ -74,8 +74,8 @@ class Node:
             merged.append(elem_b.copy())
         return merged
 
-    def __init__(self, type_name, attributes=None, child_nodes=None):
-        if not NodeType.isValidTypeName(type_name=type_name):
+    def __init__(self, type_name, attributes=None, child_nodes=None, list_index=-1):
+        if not NodeType.is_valid_type_name(type_name=type_name):
             raise Exception(f"invalid type_name {type_name if type_name is not None else 'None'}")
         if Attribute.check_list_and_is_explicit_list(list=attributes, additional=None):
             raise Exception("node may not have list of attributes with multiple null keys")
@@ -83,9 +83,13 @@ class Node:
         self.type_name = type_name
         self.attributes = attributes
         self.child_nodes = child_nodes
+        for index, tmp_child_node in enumerate(self.child_nodes if self.child_nodes is not None else []):
+            tmp_child_node.list_index = index if 1 < len(self.child_nodes) else -1
+        self.list_index = list_index
 
     def __str__(self):
-        return_string = MetaUtils.str_from(object=self.type_name) + ':'
+        index_string = f"_{self.list_index}" if -1 < self.list_index else ''
+        return_string = MetaUtils.str_from(object=self.type_name, quoted=False) + index_string + ':'
         if self.attributes is not None and len(self.attributes) > 0:
             return_string += "\n   attributes:" + MetaUtils.str_from_list(list=self.attributes, sort=False).replace('\n', "\n   ")
         if self.child_nodes is not None and len(self.child_nodes) > 0:
@@ -103,6 +107,7 @@ class Node:
             type_name=self.type_name,
             attributes=[tmp_attribute.copy() for tmp_attribute in self.attributes] if self.attributes is not None else None,
             child_nodes=[tmp_child_node.copy() for tmp_child_node in self.child_nodes] if self.child_nodes is not None else None,
+            list_index=self.list_index
             )
 
     def to_dict(self):
@@ -145,6 +150,8 @@ class Node:
         merged = self.copy()
         merged.attributes = Attribute.merge_many(list_a=self.attributes, list_b=other.attributes, overwrite=overwrite)
         merged.child_nodes = Node.merge_many(list_a=self.child_nodes, list_b=other.child_nodes, overwrite=overwrite)
+        for index, tmp_child_node in enumerate(merged.child_nodes if merged.child_nodes is not None else []):
+            tmp_child_node.list_index = index if 1 < len(merged.child_nodes) else -1
         return merged
 
     def get_attribute(self, index=-1, key=None, value=None):
@@ -201,6 +208,8 @@ class Node:
         if index < 0:
             index = len(self.child_nodes)
         self.child_nodes.insert(index, child_node)
+        for index, tmp_child_node in enumerate(self.child_nodes if self.child_nodes is not None else []):
+            tmp_child_node.list_index = index if 1 < len(self.child_nodes) else -1
 
     def remove_child_node(self, index=-1, attributes_map=None):
         if index < 0 and attributes_map is None:
@@ -208,5 +217,7 @@ class Node:
         for tmp_index, tmp_child_node in enumerate(self.child_nodes if self.child_nodes is not None else []):
             if (index < 0 or index == tmp_index) and (attributes_map is None or tmp_child_node.matches_attribute_map(attributes_map=attributes_map)):
                 del self.child_nodes[tmp_index]
+                for index, tmp_child_node in enumerate(self.child_nodes if self.child_nodes is not None else []):
+                    tmp_child_node.list_index = index if 1 < len(self.child_nodes) else -1
                 return
         raise Exception("child_node not found")
