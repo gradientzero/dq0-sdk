@@ -105,7 +105,7 @@ class NodeFactory:
             attributes = apply_default_attributes(node_type_name=type_name, attributes_list=AttributeFactory.from_yaml_simple(yaml_simple_key=None, yaml_simple_value=attributes_yaml_content) if attributes_yaml_content is not None else [])
             child_nodes_yaml_content = yaml_simple_dict.pop('child_nodes', None)
             child_nodes = NodeFactory.from_yaml_content(yaml_content=child_nodes_yaml_content, apply_default_attributes=apply_default_attributes, force_list=True) if child_nodes_yaml_content is not None else None
-            nodes.append(Node(type_name=type_name, attributes=attributes, child_nodes=child_nodes))
+            nodes.append(Node(type_name=type_name, attributes=attributes, child_nodes=child_nodes, user_uuids=None, role_uuids=None))
             index += 1
             key = type_name + '_' + str(index)
         if not force_list and len(nodes) == 1:
