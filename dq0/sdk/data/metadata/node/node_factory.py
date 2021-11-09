@@ -45,7 +45,9 @@ class NodeFactory:
         attributes = apply_default_attributes(node_type_name=type_name, attributes_list=[AttributeFactory.from_yaml_dict(yaml_dict=attribute_yaml_dict) for attribute_yaml_dict in attributes_yaml_list] if attributes_yaml_list is not None else [])
         child_nodes_yaml_content = yaml_dict.pop('child_nodes', None)
         child_nodes = NodeFactory.from_yaml_content(yaml_content=child_nodes_yaml_content, apply_default_attributes=apply_default_attributes, force_list=True) if child_nodes_yaml_content is not None else None
-        return Node(type_name=type_name, attributes=attributes, child_nodes=child_nodes)
+        user_uuids = yaml_dict.pop('user_uuids', None)
+        role_uuids = yaml_dict.pop('role_uuids', None)
+        return Node(type_name=type_name, attributes=attributes, child_nodes=child_nodes, user_uuids=user_uuids, role_uuids=role_uuids)
 
     @staticmethod
     def verify_yaml_simple_and_get_type_name(yaml_simple, expected_type_name=None):

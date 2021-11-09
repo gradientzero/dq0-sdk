@@ -6,6 +6,7 @@ from dq0.sdk.data.metadata.attribute.attribute_int import AttributeInt
 from dq0.sdk.data.metadata.attribute.attribute_list import AttributeList
 from dq0.sdk.data.metadata.attribute.attribute_string import AttributeString
 from dq0.sdk.data.metadata.attribute.attribute_type import AttributeType
+from dq0.sdk.models import user
 
 
 class AttributeFactory:
@@ -32,18 +33,20 @@ class AttributeFactory:
         type_name = yaml_dict.pop('type_name', None)
         key = yaml_dict.pop('key', None)
         value = yaml_dict.pop('value', None)
+        user_uuids = yaml_dict.pop('user_uuids', None)
+        role_uuids = yaml_dict.pop('role_uuids', None)
         if type_name == AttributeType.TYPE_NAME_BOOLEAN:
-            return AttributeBoolean(key, value)
+            return AttributeBoolean(key=key, value=value, user_uuids=user_uuids, role_uuids=role_uuids)
         if type_name == AttributeType.TYPE_NAME_DATETIME:
-            return AttributeDatetime(key, value)
+            return AttributeDatetime(key=key, value=value, user_uuids=user_uuids, role_uuids=role_uuids)
         if type_name == AttributeType.TYPE_NAME_FLOAT:
-            return AttributeFloat(key, value)
+            return AttributeFloat(key=key, value=value, user_uuids=user_uuids, role_uuids=role_uuids)
         if type_name == AttributeType.TYPE_NAME_INT:
-            return AttributeInt(key, value)
+            return AttributeInt(key=key, value=value, user_uuids=user_uuids, role_uuids=role_uuids)
         if type_name == AttributeType.TYPE_NAME_LIST:
-            return AttributeList(key, [AttributeFactory.from_yaml_dict(yaml_dict=tmp_yaml_dict) for tmp_yaml_dict in value] if value is not None else None)
+            return AttributeList(key=key, value=[AttributeFactory.from_yaml_dict(yaml_dict=tmp_yaml_dict) for tmp_yaml_dict in value] if value is not None else None, user_uuids=user_uuids, role_uuids=role_uuids)
         if type_name == AttributeType.TYPE_NAME_STRING:
-            return AttributeString(key, value)
+            return AttributeString(key=key, value=value, user_uuids=user_uuids, role_uuids=role_uuids)
         raise Exception(f"no factory function configured for type_name {type_name if type_name is not None else 'None'}")
 
     @staticmethod

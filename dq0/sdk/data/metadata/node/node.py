@@ -74,32 +74,43 @@ class Node:
             merged.append(elem_b.copy())
         return merged
 
-    def __init__(self, type_name, attributes=None, child_nodes=None, list_index=-1):
+    def __init__(self, type_name, attributes=None, child_nodes=None, list_index=-1, user_uuids=None, role_uuids=None):
         if not NodeType.is_valid_type_name(type_name=type_name):
             raise Exception(f"invalid type_name {type_name if type_name is not None else 'None'}")
         if Attribute.check_list_and_is_explicit_list(list=attributes, additional=None):
             raise Exception("node may not have list of attributes with multiple null keys")
         Node.init_check_many(list=child_nodes)
+        if user_uuids is not None:
+            MetaUtils.check_uuids(user_uuids)
+        if role_uuids is not None:
+            MetaUtils.check_uuids(role_uuids)
         self.type_name = type_name
         self.attributes = attributes
         self.child_nodes = child_nodes
         for index, tmp_child_node in enumerate(self.child_nodes if self.child_nodes is not None else []):
             tmp_child_node.list_index = index if 1 < len(self.child_nodes) else -1
         self.list_index = list_index
+        self.user_uuids = user_uuids
+        self.role_uuids = role_uuids
 
-    def __str__(self):
+    def __str__(self, user_uuids=None, role_uuids=None):
+        if not MetaUtils.is_allowed(requested_a=user_uuids, allowed_a=self.user_uuids, requested_b=role_uuids, allowed_b=self.role_uuids):
+            return None
         index_string = f"_{self.list_index}" if -1 < self.list_index else ''
         return_string = MetaUtils.str_from(object=self.type_name, quoted=False) + index_string + ':'
         if self.attributes is not None and len(self.attributes) > 0:
-            return_string += "\n   attributes:" + MetaUtils.str_from_list(list=self.attributes, sort=False).replace('\n', "\n   ")
+            return_string += "\n   attributes:" + MetaUtils.restricted_str_from_list(list=self.attributes, sort=False, user_uuids=user_uuids, role_uuids=role_uuids).replace('\n', "\n   ")
         if self.child_nodes is not None and len(self.child_nodes) > 0:
-            return_string += "\n   child_nodes:" + MetaUtils.str_from_list(list=self.child_nodes, sort=False).replace('\n', "\n   ")
+            return_string += "\n   child_nodes:" + MetaUtils.restricted_str_from_list(list=self.child_nodes, sort=False, user_uuids=user_uuids, role_uuids=role_uuids).replace('\n', "\n   ")
         return return_string
 
     def __repr__(self):
         return_string = "Node(type_name=" + MetaUtils.repr_from(object=self.type_name) + ", "
         return_string += "attributes=" + MetaUtils.repr_from_list(list=self.attributes) + ", "
-        return_string += "child_nodes=" + MetaUtils.repr_from_list(list=self.child_nodes) + ')'
+        return_string += "child_nodes=" + MetaUtils.repr_from_list(list=self.child_nodes) + ", "
+        return_string += "list_index=" + MetaUtils.repr_from(object=self.list_index) + ", "
+        return_string += "user_uuids=" + MetaUtils.repr_from_list(list=self.user_uuids) + ", "
+        return_string += "role_uuids=" + MetaUtils.repr_from_list(list=self.role_uuids) + ')'
         return return_string
 
     def copy(self):
@@ -107,14 +118,21 @@ class Node:
             type_name=self.type_name,
             attributes=[tmp_attribute.copy() for tmp_attribute in self.attributes] if self.attributes is not None else None,
             child_nodes=[tmp_child_node.copy() for tmp_child_node in self.child_nodes] if self.child_nodes is not None else None,
-            list_index=self.list_index
+            list_index=self.list_index,
+            user_uuids=[tmp_user for tmp_user in self.user_uuids] if self.user_uuids is not None else None,
+            role_uuids=[tmp_role for tmp_role in self.role_uuids] if self.role_uuids is not None else None
             )
 
-    def to_dict(self):
+    def to_dict(self, user_uuids=None, role_uuids=None):
+        if not MetaUtils.is_allowed(requested_a=user_uuids, allowed_a=self.user_uuids, requested_b=role_uuids, allowed_b=self.role_uuids):
+            return None
         return {tmp_key: tmp_value for tmp_key, tmp_value in [
             ('type_name', self.type_name),
-            ('attributes', [tmp_attribute.to_dict() for tmp_attribute in self.attributes] if self.attributes is not None else None),
-            ('child_nodes', [tmp_child_node.to_dict() for tmp_child_node in self.child_nodes] if self.child_nodes is not None else None),
+            ('attributes', MetaUtils.list_map_to_dict(self.attributes, user_uuids=user_uuids, role_uuids=role_uuids)),
+            ('child_nodes', MetaUtils.list_map_to_dict(self.child_nodes, user_uuids=user_uuids, role_uuids=role_uuids)),
+            ('list_index', self.list_index),
+            ('user_uuids', [tmp_user for tmp_user in self.user_uuids] if self.user_uuids is not None else None),
+            ('role_uuids', [tmp_role for tmp_role in self.role_uuids] if self.role_uuids is not None else None)
             ] if tmp_value is not None}
 
     def is_merge_compatible_with(self, other):
@@ -152,6 +170,9 @@ class Node:
         merged.child_nodes = Node.merge_many(list_a=self.child_nodes, list_b=other.child_nodes, overwrite=overwrite)
         for index, tmp_child_node in enumerate(merged.child_nodes if merged.child_nodes is not None else []):
             tmp_child_node.list_index = index if 1 < len(merged.child_nodes) else -1
+        merged.list_index = -1
+        merged.user_uuids = MetaUtils.merge_uuids(self.user_uuids, other.user_uuids, overwrite=overwrite)
+        merged.role_uuids = MetaUtils.merge_uuids(self.role_uuids, other.role_uuids, overwrite=overwrite)
         return merged
 
     def get_attribute(self, index=-1, key=None, value=None):

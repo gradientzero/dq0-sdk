@@ -27,8 +27,8 @@ class Metadata:
             raise Exception(f"root_node is not of type Node, is of type {type(root_node)} instead")
         self.root_node = root_node
 
-    def __str__(self):
-        return str(self.root_node)
+    def __str__(self, user_uuids=None, role_uuids=None):
+        return self.root_node.__str__(user_uuids=user_uuids, role_uuids=role_uuids)
 
     def __repr__(self):
         return "Metadata(root_node=" + repr(self.root_node) + ", verify_func=None)"
@@ -38,19 +38,18 @@ class Metadata:
             raise Exception("filter_func is None")
         return Metadata(root_node=filter_func(node=self.root_node), verify_func=verify_func)
 
-    def to_dict(self):
-        if self.root_node is None:
-            return {}
-        return self.root_node.to_dict()
+    def to_dict(self, user_uuids=None, role_uuids=None):
+        tmp_dict = self.root_node.to_dict(user_uuids=user_uuids, role_uuids=role_uuids) if self.root_node is not None else None
+        return tmp_dict if tmp_dict is not None else {}
 
-    def to_yaml(self):
-        return yaml.dump(self.to_dict())
+    def to_yaml(self, user_uuids=None, role_uuids=None):
+        return yaml.dump(self.to_dict(user_uuids=user_uuids, role_uuids=role_uuids))
 
     def merge_with(self, other, verify_func=None):
         if other is None:
             raise Exception("other is None")
         if other.root_node is None:
             raise Exception("other.root_node is None")
-        print("==================================================================================================================================")
-        print("==================================================================================================================================")
+        # print("==================================================================================================================================")
+        # print("==================================================================================================================================")
         return Metadata(root_node=self.root_node.merge_with(other.root_node), verify_func=verify_func)

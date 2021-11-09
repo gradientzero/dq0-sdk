@@ -94,32 +94,50 @@ class Attribute:
             merged.append(elem_b.copy())
         return merged
 
-    def __init__(self, type_name, key):
+    def __init__(self, type_name, key, user_uuids=None, role_uuids=None):
         if not AttributeType.is_valid_type_name(type_name=type_name):
             raise Exception(f"invalid type_name {type_name if type_name is not None else 'None'}")
+        if user_uuids is not None:
+            MetaUtils.check_uuids(user_uuids)
+        if role_uuids is not None:
+            MetaUtils.check_uuids(role_uuids)
         self.type_name = type_name
         self.key = key
+        self.user_uuids = user_uuids
+        self.role_uuids = role_uuids
         self.is_explicit_list_element=False
 
-    def __str__(self):
+    def __str__(self, user_uuids=None, role_uuids=None):
+        if not MetaUtils.is_allowed(requested_a=user_uuids, allowed_a=self.user_uuids, requested_b=role_uuids, allowed_b=self.role_uuids):
+            return None
         if self.is_explicit_list_element:
             return "-"
         else:
             return MetaUtils.str_from(self.key, quoted=True) + ":"
 
     def __repr__(self):
-        return "Attribute(key=" + MetaUtils.repr_from(self.key) + ')'
+        return "Attribute(" + \
+            "type_name=" + MetaUtils.repr_from(self.type_name) + ", " + \
+            "key=" + MetaUtils.repr_from(self.key) + ", " + \
+            "user_uuids=" + MetaUtils.repr_from_list(list=self.user_uuids) + ", " + \
+            "role_uuids=" + MetaUtils.repr_from_list(list=self.role_uuids) + ')'
 
     def copy(self):
         return Attribute(
-            self.type_name,
-            self.key,
+                type_name=self.type_name,
+                key=self.key,
+                user_uuids=[tmp_user for tmp_user in self.user_uuids] if self.user_uuids is not None else None,
+                role_uuids=[tmp_role for tmp_role in self.role_uuids] if self.role_uuids is not None else None
             )
 
-    def to_dict(self):
+    def to_dict(self, user_uuids=None, role_uuids=None):
+        if not MetaUtils.is_allowed(requested_a=user_uuids, allowed_a=self.user_uuids, requested_b=role_uuids, allowed_b=self.role_uuids):
+            return None
         return {tmp_key: tmp_value for tmp_key, tmp_value in [
-            ('type_name', self.type_name),
-            ('key', self.key),
+                ('type_name', self.type_name),
+                ('key', self.key),
+                ('user_uuids', [tmp_user for tmp_user in self.user_uuids] if self.user_uuids is not None else None),
+                ('role_uuids', [tmp_role for tmp_role in self.role_uuids] if self.role_uuids is not None else None)
             ] if tmp_value is not None}
 
     def is_merge_compatible_with(self, other):
@@ -142,7 +160,10 @@ class Attribute:
     def merge_with(self, other, overwrite=False):
         if not self.is_mergeable_with(other=other, overwrite=overwrite):
             raise MergeException(f"cannot merge attributes that are not mergeable; self: {self} other: {other}")
-        return self.copy()
+        merged = self.copy()
+        merged.user_uuids = MetaUtils.merge_uuids(uuid_list_a=self.user_uuids, uuid_list_b=other.user_uuids, overwrite=overwrite)
+        merged.role_uuids = MetaUtils.merge_uuids(uuid_list_a=self.role_uuids, uuid_list_b=other.role_uuids, overwrite=overwrite)
+        return merged
 
     def set_explicit_list_element(self, is_explicit_list_element=True):
         if is_explicit_list_element and self.key is not None:

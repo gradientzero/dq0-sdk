@@ -2,35 +2,47 @@ from dq0.sdk.data.metadata.attribute.attribute_type import AttributeType
 from dq0.sdk.data.metadata.attribute.attribute import Attribute
 from dq0.sdk.data.metadata.merge_exception import MergeException
 from dq0.sdk.data.metadata.utils import Utils as MetaUtils
+from dq0.sdk.models import user
 
 
 class AttributeList(Attribute):
-    def __init__(self, key, value):
-        super().__init__(type_name=AttributeType.TYPE_NAME_LIST, key=key)
+    def __init__(self, key, value, user_uuids=None, role_uuids=None):
+        super().__init__(type_name=AttributeType.TYPE_NAME_LIST, key=key, user_uuids=user_uuids, role_uuids=role_uuids)
         if value is None:
             raise Exception("value is None")
         if not isinstance(value, list):
             raise Exception(f"value is not of type list, is of type {type(value)} instead")
-        if len(value) == 0:
-            raise Exception("list may not be empty")
         self.is_explicit_list = Attribute.check_list_and_is_explicit_list(list=value, additional=None)
         for tmp_attribute in value:
             tmp_attribute.set_explicit_list_element(is_explicit_list_element=self.is_explicit_list)
         self.value = value
 
-    def __str__(self):
-        return super().__str__() + MetaUtils.str_from_list(self.value, sort=False)
+    def __str__(self, user_uuids=None, role_uuids=None):
+        if not MetaUtils.is_allowed(requested_a=user_uuids, allowed_a=self.user_uuids, requested_b=role_uuids, allowed_b=self.role_uuids):
+            return None
+        return super().__str__() + MetaUtils.restricted_str_from_list(list=self.value, sort=False, user_uuids=user_uuids, role_uuids=role_uuids)
 
     def __repr__(self):
-        return "AttributeList(key=" + MetaUtils.repr_from(self.key) + ", value=" + MetaUtils.repr_from_list(self.value) + ')'
+        return "AttributeList(" + \
+            "key=" + MetaUtils.repr_from(self.key) + ", " + \
+            "value=" + MetaUtils.repr_from_list(self.value) + ", " + \
+            "user_uuids=" + MetaUtils.repr_from_list(list=self.user_uuids) + ", " + \
+            "role_uuids=" + MetaUtils.repr_from_list(list=self.role_uuids) + ')'
 
     def copy(self):
-        return AttributeList(key=self.key, value=[tmp_attribute.copy() for tmp_attribute in self.value] if self.value is not None else None)
+        return AttributeList(
+                key=self.key,
+                value=[tmp_attribute.copy() for tmp_attribute in self.value] if self.value is not None else None,
+                user_uuids=[tmp_user for tmp_user in self.user_uuids] if self.user_uuids is not None else None,
+                role_uuids=[tmp_role for tmp_role in self.role_uuids] if self.role_uuids is not None else None
+            )
 
-    def to_dict(self):
-        super_dict = super().to_dict()
+    def to_dict(self, user_uuids=None, role_uuids=None):
+        super_dict = super().to_dict(user_uuids=user_uuids, role_uuids=role_uuids)
+        if super_dict is None:
+            return None
         self_dict = {tmp_key: tmp_value for tmp_key, tmp_value in [
-            ('value', [tmp_attribute.to_dict() for tmp_attribute in self.value] if self.value is not None else None),
+                ('value', MetaUtils.list_map_to_dict(self.value, user_uuids=user_uuids, role_uuids=role_uuids)),
             ] if tmp_value is not None}
         return {**super_dict, **self_dict}
 
@@ -63,6 +75,8 @@ class AttributeList(Attribute):
         merged.is_explicit_list = Attribute.check_list_and_is_explicit_list(list=merged.value, additional=None)
         for tmp_attribute in merged.value:
             tmp_attribute.set_explicit_list_element(is_explicit_list_element=merged.is_explicit_list)
+        merged.user_uuids = MetaUtils.merge_uuids(uuid_list_a=self.user_uuids, uuid_list_b=other.user_uuids, overwrite=overwrite)
+        merged.role_uuids = MetaUtils.merge_uuids(uuid_list_a=self.role_uuids, uuid_list_b=other.role_uuids, overwrite=overwrite)
         return merged
 
     def get_attribute(self, index=-1, key=None, value=None):
