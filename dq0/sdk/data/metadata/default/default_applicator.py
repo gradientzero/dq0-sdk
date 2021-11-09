@@ -25,5 +25,5 @@ class DefaultApplicator:
         elif node_type_name == NodeType.TYPE_NAME_TABLE:
             new_attributes_list = DefaultTable.mergeDefaultAttributesWith(new_attributes_list)
         elif node_type_name == NodeType.TYPE_NAME_COLUMN:
-            new_attributes_list = DefaultColumn.mergeDefaultAttributesWith(new_attributes_list)
+            new_attributes_list = DefaultColumn.merge_default_attributes_with(new_attributes_list)
         return new_attributes_list

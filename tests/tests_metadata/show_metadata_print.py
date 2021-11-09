@@ -9,7 +9,7 @@ from dq0.sdk.data.metadata.metadata import Metadata
 from dq0.sdk.data.metadata.verifier import Verifier
 
 
-def test_metadata_print():
+def show_metadata_print():
     # prepare yaml file
     content = '''type_name: 'dataset'
 attributes:
@@ -148,9 +148,13 @@ child_nodes:
                                         key: 'name'
                                         value: 'user_id'
                                     -
-                                        type_name: 'string'
-                                        key: 'data_type_name'
-                                        value: 'int'
+                                        type_name: 'list'
+                                        key: 'data'
+                                        value:
+                                            -
+                                                type_name: 'string'
+                                                key: 'data_type_name'
+                                                value: 'int'
                                     -
                                         type_name: 'boolean'
                                         key: 'private_id'
@@ -252,6 +256,10 @@ child_nodes:
                                         key: 'cardinality'
                                         value: 123
 '''
+    # print original content
+    print("\n\n+==========+==========+==========+==========+==========+==========+==========+==========+==========+\n\nORIGINAL CONTENT:\n\n+----------+\n\n")
+
+    print(content)
 
     # load metadata
     metadata = Metadata.from_yaml(yaml_content=content, apply_default_attributes=None, verify_func=Verifier.verifyAllSingleWithSchema)
@@ -273,4 +281,6 @@ child_nodes:
 
     print("\n\n+==========+==========+==========+==========+==========+==========+==========+==========+==========+\n\n")
 
-    assert False
+
+if __name__ == "__main__":
+    show_metadata_print()

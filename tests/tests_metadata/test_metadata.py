@@ -154,9 +154,13 @@ child_nodes:
                                         key: 'name'
                                         value: 'user_id'
                                     -
-                                        type_name: 'string'
-                                        key: 'data_type_name'
-                                        value: 'int'
+                                        type_name: 'list'
+                                        key: 'data'
+                                        value:
+                                            -
+                                                type_name: 'string'
+                                                key: 'data_type_name'
+                                                value: 'int'
                                     -
                                         type_name: 'boolean'
                                         key: 'private_id'
@@ -303,7 +307,7 @@ child_nodes:
     assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='censor_dims', value=True) is not None
     assert len(metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].child_nodes) == 5
     assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'user_id'}).get_attribute(index=-1, key='name', value='user_id') is not None
-    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'user_id'}).get_attribute(index=-1, key='data_type_name', value='int') is not None
+    assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'user_id'}).get_attribute(index=-1, key='data', value=None).get_attribute(index=-1, key='data_type_name', value='int') is not None
     assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'user_id'}).get_attribute(index=-1, key='private_id', value=True) is not None
     assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'weight'}).get_attribute(index=-1, key='name', value='weight') is not None
     assert metadata.root_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'weight'}).get_attribute(index=-1, key='selectable', value=True) is not None
@@ -554,9 +558,13 @@ child_nodes:
                                         key: 'name'
                                         value: 'user_id'
                                     -
-                                        type_name: 'string'
-                                        key: 'data_type_name'
-                                        value: 'int'
+                                        type_name: 'list'
+                                        key: 'data'
+                                        value:
+                                            -
+                                                type_name: 'string'
+                                                key: 'data_type_name'
+                                                value: 'int'
                                     -
                                         type_name: 'boolean'
                                         key: 'private_id'
@@ -712,9 +720,13 @@ child_nodes:
                                         key: 'name'
                                         value: 'weight'
                                     -
-                                        type_name: 'string'
-                                        key: 'data_type_name'
-                                        value: 'int'
+                                        type_name: 'list'
+                                        key: 'data'
+                                        value:
+                                            -
+                                                type_name: 'string'
+                                                key: 'data_type_name'
+                                                value: 'int'
 '''
 
     # load metadata

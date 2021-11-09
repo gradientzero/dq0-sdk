@@ -155,9 +155,13 @@ child_nodes:
                                         key: 'name'
                                         value: 'user_id'
                                     -
-                                        type_name: 'string'
-                                        key: 'data_type_name'
-                                        value: 'int'
+                                        type_name: 'list'
+                                        key: 'data'
+                                        value:
+                                            -
+                                                type_name: 'string'
+                                                key: 'data_type_name'
+                                                value: 'int'
                                     -
                                         type_name: 'boolean'
                                         key: 'private_id'
