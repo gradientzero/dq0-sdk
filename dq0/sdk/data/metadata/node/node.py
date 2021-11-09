@@ -74,7 +74,7 @@ class Node:
             merged.append(elem_b.copy())
         return merged
 
-    def __init__(self, type_name, attributes=None, child_nodes=None, list_index=-1, user_uuids=None, role_uuids=None):
+    def __init__(self, type_name, attributes=None, child_nodes=None, user_uuids=None, role_uuids=None):
         if not NodeType.is_valid_type_name(type_name=type_name):
             raise Exception(f"invalid type_name {type_name if type_name is not None else 'None'}")
         if Attribute.check_list_and_is_explicit_list(list=attributes, additional=None):
@@ -89,9 +89,9 @@ class Node:
         self.child_nodes = child_nodes
         for index, tmp_child_node in enumerate(self.child_nodes if self.child_nodes is not None else []):
             tmp_child_node.list_index = index if 1 < len(self.child_nodes) else -1
-        self.list_index = list_index
         self.user_uuids = user_uuids
         self.role_uuids = role_uuids
+        self.list_index = -1
 
     def __str__(self, user_uuids=None, role_uuids=None):
         if not MetaUtils.is_allowed(requested_a=user_uuids, allowed_a=self.user_uuids, requested_b=role_uuids, allowed_b=self.role_uuids):
@@ -108,7 +108,6 @@ class Node:
         return_string = "Node(type_name=" + MetaUtils.repr_from(object=self.type_name) + ", "
         return_string += "attributes=" + MetaUtils.repr_from_list(list=self.attributes) + ", "
         return_string += "child_nodes=" + MetaUtils.repr_from_list(list=self.child_nodes) + ", "
-        return_string += "list_index=" + MetaUtils.repr_from(object=self.list_index) + ", "
         return_string += "user_uuids=" + MetaUtils.repr_from_list(list=self.user_uuids) + ", "
         return_string += "role_uuids=" + MetaUtils.repr_from_list(list=self.role_uuids) + ')'
         return return_string
@@ -118,7 +117,6 @@ class Node:
             type_name=self.type_name,
             attributes=[tmp_attribute.copy() for tmp_attribute in self.attributes] if self.attributes is not None else None,
             child_nodes=[tmp_child_node.copy() for tmp_child_node in self.child_nodes] if self.child_nodes is not None else None,
-            list_index=self.list_index,
             user_uuids=[tmp_user for tmp_user in self.user_uuids] if self.user_uuids is not None else None,
             role_uuids=[tmp_role for tmp_role in self.role_uuids] if self.role_uuids is not None else None
             )
@@ -130,7 +128,6 @@ class Node:
             ('type_name', self.type_name),
             ('attributes', MetaUtils.list_map_to_dict(self.attributes, user_uuids=user_uuids, role_uuids=role_uuids)),
             ('child_nodes', MetaUtils.list_map_to_dict(self.child_nodes, user_uuids=user_uuids, role_uuids=role_uuids)),
-            ('list_index', self.list_index),
             ('user_uuids', [tmp_user for tmp_user in self.user_uuids] if self.user_uuids is not None else None),
             ('role_uuids', [tmp_role for tmp_role in self.role_uuids] if self.role_uuids is not None else None)
             ] if tmp_value is not None}
