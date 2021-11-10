@@ -262,14 +262,14 @@ child_nodes:
                                         key: 'cardinality'
                                         value: 123
 '''
+    default_user_uuids = ['2dfe2aa3-7563-4cd5-9bbe-1b82add081fe', '9556e5f9-e419-45c9-ada4-4339c7937e1d']
+    default_role_uuids = ['2fd590a0-3e97-4230-bb40-3a5d6847f769', 'a4a231c0-f759-4d28-ad91-227c96d9408b']
+
     with open('test.yaml', 'w') as f:
         f.write(content)
 
     # load metadata
-    metadata = Metadata.from_yaml_file(filename='test.yaml', apply_default_attributes=None, verify_func=Verifier.verifyAllSingleWithSchema)
-
-    # print metadata
-    print(metadata)
+    metadata = Metadata.from_yaml_file(filename='test.yaml', apply_default_attributes=None, verify_func=Verifier.verify_all_single_with_schema, default_user_uuids=default_user_uuids, default_role_uuids=default_role_uuids)
 
     # test
     assert metadata.root_node.type_name == 'dataset'
@@ -343,7 +343,7 @@ child_nodes:
     yaml_content = metadata.to_yaml()
 
     # reload metadata
-    metadata = Metadata.from_yaml(yaml_content=yaml_content, apply_default_attributes=None, verify_func=Verifier.verifyAllSingleWithSchema)
+    metadata = Metadata.from_yaml(yaml_content=yaml_content, apply_default_attributes=None, verify_func=Verifier.verify_all_single_with_schema)
 
     # test again
     assert metadata.root_node.get_attribute(index=-1, key='description', value="new description") is not None
@@ -359,7 +359,7 @@ child_nodes:
     yaml_content = metadata.to_yaml()
 
     # reload metadata
-    metadata = Metadata.from_yaml(yaml_content=yaml_content, apply_default_attributes=None, verify_func=Verifier.verifyAllSingleWithSchema)
+    metadata = Metadata.from_yaml(yaml_content=yaml_content, apply_default_attributes=None, verify_func=Verifier.verify_all_single_with_schema)
 
     # test again
     assert metadata.root_node.get_attribute(index=-1, key='description', value="new description 2") is not None
@@ -398,7 +398,7 @@ child_nodes:
     assert attribute_selectable_dct['value'] is True
 
     # test to_dict sm
-    metadata_sm = metadata.filter(filter_func=FilterSmartNoise.filter, verify_func=Verifier.verifyAllSingleWithSchema)
+    metadata_sm = metadata.filter(filter_func=FilterSmartNoise.filter, verify_func=Verifier.verify_all_single_with_schema)
     print(metadata_sm)
     metadata_sm_dct = metadata_sm.to_dict()
     attribute_name_dct = None
@@ -438,7 +438,7 @@ child_nodes:
     assert attribute_cardinality_dct['value'] == 123
 
     # test to_dict ml
-    metadata_ml = metadata.filter(filter_func=FilterMachineLearning.filter, verify_func=Verifier.verifyAllSingleWithSchema)
+    metadata_ml = metadata.filter(filter_func=FilterMachineLearning.filter, verify_func=Verifier.verify_all_single_with_schema)
     print(metadata_ml)
     metadata_ml_dct = metadata_ml.to_dict()
     attribute_connector_dct = None
@@ -728,11 +728,13 @@ child_nodes:
                                                 key: 'data_type_name'
                                                 value: 'int'
 '''
+    default_user_uuids = ['2dfe2aa3-7563-4cd5-9bbe-1b82add081fe', '9556e5f9-e419-45c9-ada4-4339c7937e1d']
+    default_role_uuids = ['2fd590a0-3e97-4230-bb40-3a5d6847f769', 'a4a231c0-f759-4d28-ad91-227c96d9408b']
 
     # load metadata
-    metadata1 = Metadata.from_yaml(yaml_content=content1, apply_default_attributes=None, verify_func=Verifier.verifyAllSingleWithSchema)
-    metadata2 = Metadata.from_yaml(yaml_content=content2, apply_default_attributes=None, verify_func=Verifier.verifyAllSingleWithSchema)
-    metadata3 = Metadata.from_yaml(yaml_content=content3, apply_default_attributes=None, verify_func=Verifier.verifyAllSingleWithSchema)
+    metadata1 = Metadata.from_yaml(yaml_content=content1, apply_default_attributes=None, verify_func=Verifier.verify_all_single_with_schema, default_user_uuids=default_user_uuids, default_role_uuids=default_role_uuids)
+    metadata2 = Metadata.from_yaml(yaml_content=content2, apply_default_attributes=None, verify_func=Verifier.verify_all_single_with_schema, default_user_uuids=default_user_uuids, default_role_uuids=default_role_uuids)
+    metadata3 = Metadata.from_yaml(yaml_content=content3, apply_default_attributes=None, verify_func=Verifier.verify_all_single_with_schema, default_user_uuids=default_user_uuids, default_role_uuids=default_role_uuids)
 
     metadata_merged_a = metadata1.merge_with(other=metadata2, verify_func=Verifier.verify)
     metadata_merged_b = metadata_merged_a.merge_with(other=metadata3, verify_func=Verifier.verify)

@@ -42,7 +42,7 @@ class Verifier:
         return node.type_name
     
     @staticmethod
-    def verifyAllSingleWithSchema(node, expected_type_names=None):
+    def verify_all_single_with_schema(node, expected_type_names=None):
         Verifier.check(node=node)
         if expected_type_names is not None and node.type_name not in expected_type_names:
             raise Exception(f"node.type_name {node.type_name} is not in expected type_names {expected_type_names}")

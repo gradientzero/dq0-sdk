@@ -256,13 +256,16 @@ child_nodes:
                                         key: 'cardinality'
                                         value: 123
 '''
+    default_user_uuids = ['2dfe2aa3-7563-4cd5-9bbe-1b82add081fe', '9556e5f9-e419-45c9-ada4-4339c7937e1d']
+    default_role_uuids = ['2fd590a0-3e97-4230-bb40-3a5d6847f769', 'a4a231c0-f759-4d28-ad91-227c96d9408b']
+
     # print original content
     print("\n\n+==========+==========+==========+==========+==========+==========+==========+==========+==========+\n\nORIGINAL CONTENT:\n\n+----------+\n\n")
 
     print(content)
 
     # load metadata
-    metadata = Metadata.from_yaml(yaml_content=content, apply_default_attributes=None, verify_func=Verifier.verifyAllSingleWithSchema)
+    metadata = Metadata.from_yaml(yaml_content=content, apply_default_attributes=None, verify_func=Verifier.verify_all_single_with_schema, default_user_uuids=default_user_uuids, default_role_uuids=default_role_uuids)
 
     print("\n\n+==========+==========+==========+==========+==========+==========+==========+==========+==========+\n\nTO_YAML():\n\n+----------+\n\n")
 

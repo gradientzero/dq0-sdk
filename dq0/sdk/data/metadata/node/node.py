@@ -113,13 +113,15 @@ class Node:
         return return_string
 
     def copy(self):
-        return Node(
+        copied_node = Node(
             type_name=self.type_name,
             attributes=[tmp_attribute.copy() for tmp_attribute in self.attributes] if self.attributes is not None else None,
             child_nodes=[tmp_child_node.copy() for tmp_child_node in self.child_nodes] if self.child_nodes is not None else None,
             user_uuids=[tmp_user for tmp_user in self.user_uuids] if self.user_uuids is not None else None,
             role_uuids=[tmp_role for tmp_role in self.role_uuids] if self.role_uuids is not None else None
             )
+        copied_node.list_index = self.list_index
+        return copied_node
 
     def to_dict(self, user_uuids=None, role_uuids=None):
         if not MetaUtils.is_allowed(requested_a=user_uuids, allowed_a=self.user_uuids, requested_b=role_uuids, allowed_b=self.role_uuids):

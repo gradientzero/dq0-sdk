@@ -140,10 +140,12 @@ class Utils:
 
     @staticmethod
     def merge_uuids(uuid_list_a, uuid_list_b, overwrite=False):
-        if overwrite or uuid_list_a is None:
+        if uuid_list_a is None:
             return uuid_list_b
         if uuid_list_b is None:
             return uuid_list_a
+        if overwrite:
+            return uuid_list_b
         uuid_list = []
         for tmp_uuid in uuid_list_a:
             if tmp_uuid in uuid_list_b:

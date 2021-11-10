@@ -36,17 +36,17 @@ class NodeFactory:
             raise Exception(f"type_name must be {expected_type_name} was {type_name}")
 
     @staticmethod
-    def from_yaml_dict(yaml_dict, apply_default_attributes=None):
+    def from_yaml_dict(yaml_dict, apply_default_attributes=None, default_user_uuids=None, default_role_uuids=None):
         NodeFactory.verify_yaml_dict(yaml_dict=yaml_dict, expected_type_name=None)
         if apply_default_attributes is None:
-            apply_default_attributes = DefaultApplicator.applyDefaultAttributes
+            apply_default_attributes = DefaultApplicator.apply_default_attributes
         type_name = yaml_dict.pop('type_name', None)
         attributes_yaml_list = yaml_dict.pop('attributes', None)
-        attributes = apply_default_attributes(node_type_name=type_name, attributes_list=[AttributeFactory.from_yaml_dict(yaml_dict=attribute_yaml_dict) for attribute_yaml_dict in attributes_yaml_list] if attributes_yaml_list is not None else [])
+        attributes = apply_default_attributes(node_type_name=type_name, attributes_list=[AttributeFactory.from_yaml_dict(yaml_dict=attribute_yaml_dict) for attribute_yaml_dict in attributes_yaml_list] if attributes_yaml_list is not None else [], default_user_uuids=default_user_uuids, default_role_uuids=default_role_uuids)
         child_nodes_yaml_content = yaml_dict.pop('child_nodes', None)
-        child_nodes = NodeFactory.from_yaml_content(yaml_content=child_nodes_yaml_content, apply_default_attributes=apply_default_attributes, force_list=True) if child_nodes_yaml_content is not None else None
-        user_uuids = yaml_dict.pop('user_uuids', None)
-        role_uuids = yaml_dict.pop('role_uuids', None)
+        child_nodes = NodeFactory.from_yaml_content(yaml_content=child_nodes_yaml_content, apply_default_attributes=apply_default_attributes, force_list=True, default_user_uuids=default_user_uuids, default_role_uuids=default_role_uuids) if child_nodes_yaml_content is not None else None
+        user_uuids = yaml_dict.pop('user_uuids', default_user_uuids)
+        role_uuids = yaml_dict.pop('role_uuids', default_role_uuids)
         return Node(type_name=type_name, attributes=attributes, child_nodes=child_nodes, user_uuids=user_uuids, role_uuids=role_uuids)
 
     @staticmethod
@@ -90,10 +90,10 @@ class NodeFactory:
         return type_name
 
     @staticmethod
-    def from_yaml_simple(yaml_simple, apply_default_attributes=None, force_list=False):
+    def from_yaml_simple(yaml_simple, apply_default_attributes=None, force_list=False, default_user_uuids=None, default_role_uuids=None):
         type_name = NodeFactory.verify_yaml_simple_and_get_type_name(yaml_simple=yaml_simple, expected_type_name=None)
         if apply_default_attributes is None:
-            apply_default_attributes = DefaultApplicator.applyDefaultAttributes
+            apply_default_attributes = DefaultApplicator.apply_default_attributes
         nodes = []
         index = 0
         key = type_name
@@ -102,10 +102,10 @@ class NodeFactory:
         while key in yaml_simple:
             yaml_simple_dict = yaml_simple[key]
             attributes_yaml_content = yaml_simple_dict.pop('attributes', None)
-            attributes = apply_default_attributes(node_type_name=type_name, attributes_list=AttributeFactory.from_yaml_simple(yaml_simple_key=None, yaml_simple_value=attributes_yaml_content) if attributes_yaml_content is not None else [])
+            attributes = apply_default_attributes(node_type_name=type_name, attributes_list=AttributeFactory.from_yaml_simple(yaml_simple_key=None, yaml_simple_value=attributes_yaml_content) if attributes_yaml_content is not None else [], default_user_uuids=default_user_uuids, default_role_uuids=default_role_uuids)
             child_nodes_yaml_content = yaml_simple_dict.pop('child_nodes', None)
-            child_nodes = NodeFactory.from_yaml_content(yaml_content=child_nodes_yaml_content, apply_default_attributes=apply_default_attributes, force_list=True) if child_nodes_yaml_content is not None else None
-            nodes.append(Node(type_name=type_name, attributes=attributes, child_nodes=child_nodes, user_uuids=None, role_uuids=None))
+            child_nodes = NodeFactory.from_yaml_content(yaml_content=child_nodes_yaml_content, apply_default_attributes=apply_default_attributes, force_list=True, default_user_uuids=default_user_uuids, default_role_uuids=default_role_uuids) if child_nodes_yaml_content is not None else None
+            nodes.append(Node(type_name=type_name, attributes=attributes, child_nodes=child_nodes, user_uuids=default_user_uuids, role_uuids=default_role_uuids))
             index += 1
             key = type_name + '_' + str(index)
         if not force_list and len(nodes) == 1:
@@ -113,11 +113,11 @@ class NodeFactory:
         return nodes
 
     @staticmethod
-    def from_yaml_content(yaml_content, apply_default_attributes=None, force_list=False):
+    def from_yaml_content(yaml_content, apply_default_attributes=None, force_list=False, default_user_uuids=None, default_role_uuids=None):
         node_yaml_type = NodeFactory.get_node_yaml_type(yaml_content=yaml_content)
         if node_yaml_type == NodeFactory.NODE_YAML_TYPE_DICT:
-            return NodeFactory.from_yaml_dict(yaml_dict=yaml_content, apply_default_attributes=apply_default_attributes)
+            return NodeFactory.from_yaml_dict(yaml_dict=yaml_content, apply_default_attributes=apply_default_attributes, default_user_uuids=default_user_uuids, default_role_uuids=default_role_uuids)
         if node_yaml_type == NodeFactory.NODE_YAML_TYPE_LIST:
-            return [NodeFactory.from_yaml_content(yaml_content=tmp_yaml_content, apply_default_attributes=apply_default_attributes) for tmp_yaml_content in yaml_content]
+            return [NodeFactory.from_yaml_content(yaml_content=tmp_yaml_content, apply_default_attributes=apply_default_attributes, default_user_uuids=default_user_uuids, default_role_uuids=default_role_uuids) for tmp_yaml_content in yaml_content]
         if node_yaml_type == NodeFactory.NODE_YAML_TYPE_SIMPLE:
-            return NodeFactory.from_yaml_simple(yaml_simple=yaml_content, apply_default_attributes=apply_default_attributes, force_list=force_list)
+            return NodeFactory.from_yaml_simple(yaml_simple=yaml_content, apply_default_attributes=apply_default_attributes, force_list=force_list, default_user_uuids=default_user_uuids, default_role_uuids=default_role_uuids)

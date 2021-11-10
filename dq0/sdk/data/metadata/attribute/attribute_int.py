@@ -26,12 +26,14 @@ class AttributeInt(Attribute):
             "role_uuids=" + MetaUtils.repr_from_list(list=self.role_uuids) + ')'
 
     def copy(self):
-        return AttributeInt(
+        copied_attribute = AttributeInt(
                 key=self.key,
                 value=self.value,
                 user_uuids=[tmp_user for tmp_user in self.user_uuids] if self.user_uuids is not None else None,
                 role_uuids=[tmp_role for tmp_role in self.role_uuids] if self.role_uuids is not None else None
             )
+        copied_attribute.set_explicit_list_element(is_explicit_list_element=self.is_explicit_list_element)
+        return copied_attribute
 
     def to_dict(self, user_uuids=None, role_uuids=None):
         super_dict = super().to_dict(user_uuids=user_uuids, role_uuids=role_uuids)

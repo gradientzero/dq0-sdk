@@ -8,16 +8,16 @@ from dq0.sdk.data.metadata.verifier import Verifier
 
 class Metadata:
     @staticmethod
-    def from_yaml_file(filename, apply_default_attributes=None, verify_func=None):
+    def from_yaml_file(filename, apply_default_attributes=None, verify_func=None, default_user_uuids=None, default_role_uuids=None):
         if not os.path.isfile(filename):
             raise FileNotFoundError(f"Could not find {filename}")
         with open(filename) as file:
-            return Metadata.from_yaml(yaml_content=file, apply_default_attributes=apply_default_attributes, verify_func=verify_func)  
+            return Metadata.from_yaml(yaml_content=file, apply_default_attributes=apply_default_attributes, verify_func=verify_func, default_user_uuids=default_user_uuids, default_role_uuids=default_role_uuids)  
 
     @staticmethod
-    def from_yaml(yaml_content, apply_default_attributes=None, verify_func=None):
+    def from_yaml(yaml_content, apply_default_attributes=None, verify_func=None, default_user_uuids=None, default_role_uuids=None):
         yaml_dict = yaml.load(stream=yaml_content, Loader=yaml.FullLoader)
-        return Metadata(root_node=NodeFactory.from_yaml_content(yaml_content=yaml_dict, apply_default_attributes=apply_default_attributes, force_list=False), verify_func=verify_func)
+        return Metadata(root_node=NodeFactory.from_yaml_content(yaml_content=yaml_dict, apply_default_attributes=apply_default_attributes, force_list=False, default_user_uuids=default_user_uuids, default_role_uuids=default_role_uuids), verify_func=verify_func)
 
     def __init__(self, root_node, verify_func=None):
         if verify_func is None:
