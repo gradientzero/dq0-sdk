@@ -15,6 +15,7 @@ All rights reserved
 """
 
 from dq0.sdk.cli.api import routes
+from dq0.sdk.cli import Data
 from dq0.sdk.cli.runner import DataRunner, ModelRunner
 from dq0.sdk.errors import DQ0SDKError, checkSDKResponse
 
@@ -54,6 +55,7 @@ class Experiment:
             raise ValueError('You need to set the "name" argument')
         self.project = project
         self.name = name
+        self.datasets_used = None
 
     def get_last_model_run(self):
         """Returns the latest ModelRunner.
@@ -75,7 +77,21 @@ class Experiment:
         """
         return DataRunner(self.project)
 
-    def run(self, entry_point='train_use_dq0_makedp', args=''):
+    def get_dataset_uuids(self, datasets=None):
+        """Returns used dataset uuids as a single comma-separated string"""
+        if not datasets:
+            datasets = self.datasets_used
+
+        data_uuids = []
+        for dataset in datasets:
+            if isinstance(dataset, Data):
+                data_uuids.append(dataset.uuid)
+            elif type(dataset) == str:
+                data_uuids.append(dataset)
+
+        return ','.join(data_uuids)
+
+    def run(self, args, datasets=None):
         """Starts a training run
 
         It calls the CLI command `model train` and returns
@@ -84,25 +100,52 @@ class Experiment:
         Returns:
             A new instance of the ModelRunner class for the train run.
         """
+        if not isinstance(args, dict):
+            raise TypeError('args need to passed as a dict')
+
         response = self.project._deploy()
         checkSDKResponse(response)
         self.project.update_commit_uuid(response['message'])
 
+        data_uuids = self.get_dataset_uuids(datasets)
+
+        if not data_uuids or not len(data_uuids):
+            raise DQ0SDKError('No datasets provided. Please choose which datasets to use for this run using the'
+                              'datasets parameter or the .for_data() method')
+
         data = {
             'project_uuid': self.project.project_uuid,
             'commit_uuid': self.project.commit_uuid,
-            'ml_project_entry_point': entry_point,
-            'args': args
+            'experiment_name': self.name,
+            'args': args,
+            'datasets': data_uuids
         }
 
         response = self.project.client.post(routes.runs.create, data=data)
         checkSDKResponse(response)
-        print(response['message'])
+        print(response)
         try:
             job_uuid = response['message'].split(' ')[-1]
         except Exception:
             raise DQ0SDKError('Could not parse new commit uuid')
         return ModelRunner(self.project, job_uuid)
+
+    def for_data(self, data):
+        """
+        Specifiy which datasets are used in query.
+        Args:
+            data (:obj:`list`) list of :obj:`dq0.sdk.cli.Data` instances included in query. Alternatively, pass a single
+            :obj:`dq0.sdk.cli.Data` instance.
+
+        Returns:
+            :obj:`dq0.sdk.cli.Query` instance with set datasets
+        """
+        if isinstance(data, Data):
+            data = [data]
+        elif not isinstance(data, list):
+            raise DQ0SDKError('Please provide datasets either as list of Data objects or a single Data instance')
+        self.datasets_used = data
+        return self
 
     def preprocess(self):
         """Starts a preprocessing run
@@ -118,5 +161,5 @@ class Experiment:
 
         response = self.project.post(routes.data.preprocess, id=self.project.data_source_uuid)
         checkSDKResponse(response)
-        print(response['message'])
+        print(response)
         return DataRunner(self.project)

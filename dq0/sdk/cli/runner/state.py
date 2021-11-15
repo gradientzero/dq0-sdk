@@ -44,7 +44,7 @@ class State:
 
     def update(self, response):
         """Updates the state representation"""
-        self.message = response['job_state']
+        self.message = response.get('job_state')
         try:
             self.job_uuid = response.get('job_uuid')
             self.state = response.get('job_state')

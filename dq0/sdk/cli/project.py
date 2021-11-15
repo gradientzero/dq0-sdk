@@ -49,6 +49,8 @@ class Project:
 
     Args:
         name (:obj:`str`): The name of the new project
+        type (:obj:`str`): Type of project template to use. Can be either 'ml', 'query', 'synth' or 'estimator'.
+            Defaults to 'ml'.
         create (bool): True to create a new project via DQ0 CLI.
             Default is True.
 
@@ -62,10 +64,11 @@ class Project:
 
     """
 
-    def __init__(self, name=None, create=True):
+    def __init__(self, name=None, project_type='ml', create=True):
         if name is None:
             raise ValueError('You need to set the "name" argument')
         self.name = name
+        self.project_type = project_type
         self.commit_uuid = ''
         self.datasets = []
         self.experiment_name = ''
@@ -128,9 +131,11 @@ class Project:
             name (:obj:`str`): The name of the new project
         """
         working_dir = os.getcwd()
-        response = self.client.post(routes.project.create, data={'working_dir': working_dir, 'name': name})
+        response = self.client.post(routes.project.create, data={'working_dir': working_dir,
+                                                                 'name': name,
+                                                                 'type': self.project_type})
         checkSDKResponse(response)
-        print(response['message'])
+        print(response)
 
         # change to working directory where the new project was created
         os.chdir(working_dir)
@@ -242,7 +247,7 @@ class Project:
         else:
             raise ValueError('Missing required parameter: data (Data instance) or data_uuid and data_name')
 
-        print(response['message'])
+        print(response)
 
     def detach_data_source(self, data=None, data_uuid=None, data_name=None):
         """Detaches a new data source to the project.
@@ -270,7 +275,7 @@ class Project:
         else:
             raise ValueError('Missing required parameter: data (Data instance) or data_uuid and data_name')
 
-        print(response['message'])
+        print(response)
 
     def get_attached_data_sources(self):
         pass
