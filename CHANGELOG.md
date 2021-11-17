@@ -1,5 +1,17 @@
 ## Changelog
 
+### 1.1.4 (2021-11-17)
+- [#96](https://github.com/gradientzero/dq0-sdk/pull/96) DQ0-1076: cleaned up demo's and renamed metadata to match the corresponding csv filename (@clincolnoz)
+- [#95](https://github.com/gradientzero/dq0-sdk/pull/95) bug fix header_row for dq0-sql (@clincolnoz)
+- [#92](https://github.com/gradientzero/dq0-sdk/pull/92) DQ0-987: updates for dq0-predict (@clincolnoz)
+- [#88](https://github.com/gradientzero/dq0-sdk/pull/88) DQ0 958: Adds preprocessing class to census raw_meta_preprocess example to enable predict (@clincolnoz, @WolfgangGross)
+- [#86](https://github.com/gradientzero/dq0-sdk/pull/86) DQ0-976: added metadata_is_public (default false) to data metadata (@jonaboe)
+- [#85](https://github.com/gradientzero/dq0-sdk/pull/85) Dq0 966: Add error for missing headers (@WolfgangGross)
+- [#84](https://github.com/gradientzero/dq0-sdk/pull/84) DQ0-929: move dq0.sdk.examples to dq0.examples (@susdorf)
+- [#83](https://github.com/gradientzero/dq0-sdk/pull/83) DQ0-933: rm log_key (@WolfgangGross)
+- [#82](https://github.com/gradientzero/dq0-sdk/pull/82) DQ0-911: predictive probabilities now calibrated by default also for NN models (@WolfgangGross)
+- [#81](https://github.com/gradientzero/dq0-sdk/pull/81) merge into develop from master@1.0.10.2 (@susdorf, @clincolnoz, @actions)
+
 ### 1.0.10.2 (2021-04-19)
 - [#80](https://github.com/gradientzero/dq0-sdk/pull/80) merge into develop from master@1.0.10.1 (@susdorf, @clincolnoz, @actions)
 
