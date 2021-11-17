@@ -17,14 +17,14 @@ description: 'some description'
 tags: 'tag1,tag2'
 type: 'CSV'
 privacy_column: 'user_id'
+metadata_is_public: true
 Database:
     connection: 'user@db'
-    size: 1001
-    privacy_budget: 1000
-    privacy_budget_interval_days: 30
-    synth_allowed: true
     privacy_level: 1
     Table1:
+        synth_allowed: true
+        budget_epsilon: 1000
+        budget_delta: 500
         row_privacy: true
         rows: 2000
         max_ids: 1
@@ -35,7 +35,12 @@ Database:
         clamp_columns: true
         tau: 99
         use_original_header: true
-        header_row: '1,2'
+        header_row:
+        - 1
+        - 2
+        na_values:
+            weight: '?'
+            height: '??'
         user_id:
             private_id: true
             type: int
@@ -73,12 +78,12 @@ Database:
     assert metadata.tags == "tag1,tag2"
     assert metadata.type == "CSV"
     assert metadata.privacy_column == 'user_id'
+    assert metadata.metadata_is_public is True
     assert metadata.schemas['Database'].connection == "user@db"
-    assert metadata.schemas['Database'].size == 1001
-    assert metadata.schemas['Database'].privacy_budget == 1000
-    assert metadata.schemas['Database'].privacy_budget_interval_days == 30
     assert metadata.schemas['Database'].privacy_level == 1
-    assert metadata.schemas['Database'].synth_allowed is True
+    assert metadata.schemas['Database'].tables['Table1'].synth_allowed is True
+    assert metadata.schemas['Database'].tables['Table1'].budget_epsilon == 1000
+    assert metadata.schemas['Database'].tables['Table1'].budget_delta == 500
     assert metadata.schemas['Database'].tables['Table1'].row_privacy is True
     assert metadata.schemas['Database'].tables['Table1'].rows == 2000
     assert metadata.schemas['Database'].tables['Table1'].max_ids == 1
@@ -89,7 +94,12 @@ Database:
     assert metadata.schemas['Database'].tables['Table1'].clamp_columns is True
     assert metadata.schemas['Database'].tables['Table1'].tau == 99
     assert metadata.schemas['Database'].tables['Table1'].use_original_header is True
-    assert metadata.schemas['Database'].tables['Table1'].header_row == '1,2'
+    assert metadata.schemas['Database'].tables['Table1'].header_row == [1, 2]
+    assert metadata.schemas['Database'].tables['Table1'].sep == ','
+    assert metadata.schemas['Database'].tables['Table1'].decimal == '.'
+    assert metadata.schemas['Database'].tables['Table1'].na_values == {'weight': '?', 'height': '??'}
+    assert metadata.schemas['Database'].tables['Table1'].index_col is None
+    assert metadata.schemas['Database'].tables['Table1'].skipinitialspace is False
     assert len(metadata.schemas['Database'].tables['Table1'].columns.keys()) == 5
     assert metadata.schemas['Database'].tables['Table1'].columns['user_id'].name == "user_id"
     assert metadata.schemas['Database'].tables['Table1'].columns['weight'].name == "weight"
@@ -120,8 +130,9 @@ Database:
     assert metadata.schemas['Database'].tables['Table1'].columns['email'].mask == "(.*)@(.*).{3}$"
 
     # change metadata
-    metadata.schemas['Database'].privacy_budget = 1234
+    metadata.schemas['Database'].tables['Table1'].budget_epsilon = 1234
     metadata.description = 'new description'
+    metadata.metadata_is_public = False
 
     # save metadata
     yaml_string = metadata.to_yaml()
@@ -130,12 +141,14 @@ Database:
     metadata = Metadata(yaml=yaml_string)
 
     # test again
-    assert metadata.schemas['Database'].privacy_budget == 1234
+    assert metadata.schemas['Database'].tables['Table1'].budget_epsilon == 1234
     assert metadata.description == "new description"
+    assert metadata.metadata_is_public is False
 
     # change metadata
-    metadata.schemas['Database'].privacy_budget = 5678
+    metadata.schemas['Database'].tables['Table1'].budget_epsilon = 5678
     metadata.description = 'new description 2'
+    metadata.metadata_is_public = None
 
     # dump metadata
     meta_string = metadata.to_yaml()
@@ -144,10 +157,11 @@ Database:
     metadata = Metadata(yaml=meta_string)
 
     # test again
-    assert metadata.schemas['Database'].privacy_budget == 5678
+    assert metadata.schemas['Database'].tables['Table1'].budget_epsilon == 5678
     assert metadata.description == "new description 2"
+    assert metadata.metadata_is_public is False
 
-    # test drop columns
+    # test drop columns (drops column 'height')
     metadata.drop_columns_with_key_value('synthesizable', False)
     assert len(metadata.schemas['Database'].tables['Table1'].columns) == 4
 
@@ -165,6 +179,15 @@ Database:
     assert sm_dict['Collection']['Database']['Table1']['weight']['upper'] == 100.5
     assert sm_dict['Collection']['Database']['Table1']['email']['cardinality'] == 123
 
+    # test to_dict ml
+    ml_dict = metadata.to_dict_ml()
+    assert 'Collection' not in ml_dict
+    assert 'sample_max_ids' not in ml_dict['Database']['Table1']
+    assert 'synthesizable' not in ml_dict['Database']['Table1']['weight']
+    assert ml_dict['Database']['Table1']['sep'] == ','
+    assert ml_dict['Database']['Table1']['decimal'] == '.'
+    assert ml_dict['Database']['Table1']['na_values'] == {'weight': '?', 'height': '??'}
+
     # clean up
     os.remove('test.yaml')
 
@@ -176,11 +199,10 @@ description: 'some description'
 type: 'CSV'
 Database1:
     connection: 'user1@db'
-    privacy_budget: 1000
-    privacy_budget_interval_days: 30
-    synth_allowed: true
     privacy_level: 1
     Table1:
+        budget_epsilon: 1000
+        synth_allowed: true
         row_privacy: true
         rows: 1000
         user_id:
@@ -193,11 +215,10 @@ description: 'some description'
 type: 'CSV'
 Database2:
     connection: 'user@db'
-    privacy_budget: 1001
-    privacy_budget_interval_days: 30
-    synth_allowed: true
     privacy_level: 1
     Table2:
+        budget_epsilon: 1001
+        synth_allowed: true
         row_privacy: false
         rows: 2000
         email:
@@ -210,11 +231,10 @@ description: 'some description'
 type: 'CSV'
 Database1:
     connection: 'user3@db'
-    privacy_budget: 1000
-    privacy_budget_interval_days: 30
-    synth_allowed: true
     privacy_level: 1
     Table3:
+        synth_allowed: true
+        budget_epsilon: 1000
         row_privacy: false
         rows: 3000
         weight:
@@ -229,7 +249,7 @@ Database1:
     metadata1.combine_with(metadata3)
 
     assert metadata1.schemas['Database1'].connection == 'user1@db'
-    assert metadata1.schemas['Database2'].privacy_budget == 1001
+    assert metadata1.schemas['Database2'].tables['Table2'].budget_epsilon == 1001
     assert metadata1.schemas['Database1'].tables['Table1'].row_privacy is True
     assert metadata1.schemas['Database1'].tables['Table3'].row_privacy is False
     assert metadata1.schemas['Database2'].tables['Table2'].rows == 2000

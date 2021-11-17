@@ -1,6 +1,0 @@
-description: 'labelled images from https://www.cs.toronto.edu/~kriz/cifar.html'
-name: CIFAR10
-privacy_column: ''
-schema:
-  connection: ../dq0-sdk/dq0/sdk/examples/cifar/_data/cifar_dummy.csv
-type: CSV

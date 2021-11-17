@@ -49,25 +49,17 @@ def checkSDKResponse(response):
         raise DQ0SDKError(response['error'])
 
 
-def fatal_error(error_msg, logger=None, log_key_string=None):
+def fatal_error(error_msg, logger=None):
     """
     Handle fatal errors.
 
     Args:
         error_msg: string with error message
         logger: Logger instance
-        log_key_string (str): secret key to be appended to safe logging
-            messages (i.e., not harming data privacy). Safe logging messages
-            are shown to DQ0 users without waiting for approval by the data
-            owner / officer.
-
     """
 
     if logger is None:
         logger = logging.getLogger(__name__)
-
-    if log_key_string is not None:
-        error_msg += ' {}'.format(log_key_string)
 
     logger.fatal(error_msg)
 

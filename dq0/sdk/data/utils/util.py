@@ -66,6 +66,49 @@ def load_params_from_config_file(yaml_file_path):
         stop_at_first_privacy_breach, dp_epsilons_list
 
 
+def load_dataset_info_from_yaml(metadata, columns_list):
+    """
+    Load info about dataset columns from YAML data file. Per column info:
+    - column type
+
+    Args:
+        metadata (dq0.sdk.data.metadata.Metadata): Metadata object with info
+            about the dataset.
+        columns_list (list): ORDERED list of column names. The order of
+            columns names must match the order of columns in the data table.
+    Returns:
+        categorical_features_list, quantitative_features_list
+
+    """
+
+    # from dq0.sdk.data.metadata import Metadata  # noqa: E402, I202, I100
+    # metadata = Metadata(filename=path_to_yaml_data_file)
+
+    if len(metadata.schemas.keys()) > 1:
+        logger.fatal('Only one DB schema is handled!')
+        return 1
+
+    schema = list(metadata.schemas.values())[0]
+
+    if len(schema.tables.keys()) > 1:
+        logger.fatal('Only one table is handled!')
+        return 1
+
+    table = list(schema.tables.values())[0]
+
+    categorical_features_list = []
+    quantitative_features_list = []
+    for col_name in columns_list:
+        col_obj = table.columns[col_name]
+        # assert col_name == col_obj.name
+        if col_obj.type == 'string':
+            categorical_features_list.append(col_name)
+        else:  # if col_obj.type == 'int' or col_obj.type == 'float':
+            quantitative_features_list.append(col_name)
+
+    return categorical_features_list, quantitative_features_list
+
+
 def print_dataset_info(df_dataset, s_title):
     """Print some info about the given dataset.
 
@@ -1071,13 +1114,13 @@ def check_for_valid_numerical_encoding_of_labels(labels):
 
     labels = np.asarray(labels)  # cast into numpy.ndarray if not yet
 
-    assert labels.ndim <= 2
+    assert labels.ndim <= 2, 'labels.ndims <= 2 is False'
     if labels.ndim == 2:
-        assert labels.shape[1] == 1  # column vector
+        assert labels.shape[1] == 1, 'Is column vector'  # column vector
         labels = labels.flatten()  # flatten column vector
 
-    # unsigned integer, signed integer are valid type kind
-    numeric_kinds = set('ui')
+    # unsigned integer, signed integer, floats are valid type kind
+    numeric_kinds = set(['ui', 'i', 'f'])
     constraint_satisfied = labels.dtype.kind in numeric_kinds
     is_valid = is_valid and constraint_satisfied
 

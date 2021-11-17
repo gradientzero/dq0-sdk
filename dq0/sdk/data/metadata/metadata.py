@@ -21,7 +21,7 @@ class Metadata:
     Attributes:
         name: parsed name property.
         description: parsed description property
-        type: parsed type propertey.
+        type: parsed type property.
         schemas: parsed schema metadata (see class Schema below)
         privacy_column: the unique privacy column for this data set
     """
@@ -39,6 +39,7 @@ class Metadata:
         self.type = None
         self.schemas = None
         self.privacy_column = None
+        self.metadata_is_public = False
         if filename is not None:
             self.read_from_yaml_file(filename)
         elif yaml is not None:
@@ -71,13 +72,14 @@ class Metadata:
         self.type = meta["type"] if "type" in meta else None
         self.schemas = {}
         self.privacy_column = meta["privacy_column"] if "privacy_column" in meta else None
-        self.header = meta["header_columns"] if "header_columns" in meta else None
+        self.metadata_is_public = bool(meta.pop("metadata_is_public", False))
+        # self.header = meta["header_columns"] if "header_columns" in meta else None
 
         for key in meta.keys():
             if key not in self.__dict__ and isinstance(meta[key], dict):
                 self.schemas[key] = Schema.from_meta(key, meta[key])
 
-    def to_dict(self, sm=False):  # noqa: C901
+    def to_dict(self, sm=False, ml=False):  # noqa: C901
         """Returns a dict representation of this class.
 
         Args:
@@ -96,12 +98,14 @@ class Metadata:
                 meta["tags"] = self.tags
             if self.type is not None:
                 meta["type"] = self.type
-            if self.privacy_column is not None:
-                meta["privacy_column"] = self.privacy_column
+            if not ml:
+                if self.privacy_column is not None:
+                    meta["privacy_column"] = self.privacy_column
+                meta["metadata_is_public"] = self.metadata_is_public
 
         if self.schemas is not None and len(self.schemas) > 0:
             for schema in self.schemas:
-                meta[schema] = self.schemas[schema].to_dict(sm=sm)
+                meta[schema] = self.schemas[schema].to_dict(sm=sm, ml=ml)
 
         if sm:
             meta = {'Collection': meta}
@@ -112,6 +116,10 @@ class Metadata:
     def to_dict_sm(self):
         """Returns a dict representation of this metadata in smartnoise format."""
         return self.to_dict(sm=True)
+
+    def to_dict_ml(self):
+        """Returns a dict representation of this metadata in dq0 macine learning format."""
+        return self.to_dict(ml=True)
 
     def combine_with(self, metadata):
         """Combines two metadata instances.
@@ -135,28 +143,34 @@ class Metadata:
                     self.schemas[name].tables[table_name] = copy.deepcopy(table)
         return self
 
-    def to_yaml_file(self, filename, sm=False):
+    def to_yaml_file(self, filename, sm=False, ml=False):
         """Writes metadata to a yaml file at the given path.
 
         Args:
             filename: the path to the yaml file.
             sm: True to return the dict with the non-smartnoise properties stripped.
         """
-        meta = self.to_dict(sm=sm)
+        meta = self.to_dict(sm=sm, ml=ml)
         with open(filename, 'w') as outfile:
             yaml.dump(meta, outfile)
 
-    def to_yaml(self, sm=False):
+    def to_yaml(self, sm=False, ml=False):
         """Writes metadata to a yaml string.
 
         Args:
             sm: True to return the dict with the non-smartnoise properties stripped.
+            ml: True to return the dict with non-ml properties stripped
 
         Returns:
             metadata as yaml string
         """
-        meta = self.to_dict(sm=sm)
+        meta = self.to_dict(sm=sm, ml=ml)
         return yaml.dump(meta)
+
+    def to_metadata_ml(self):
+        """Produces a ML specfic copy of metadata object"""
+        yaml_str = self.to_yaml(ml=True)
+        return Metadata(yaml=yaml_str)
 
     def get_all_tables(self, only_names=False):
         """Helper function that returns all available tables (across schemas) in this metadata."""
@@ -212,6 +226,19 @@ class Metadata:
             target_cols = None
         return feature_cols, target_cols
 
+    def get_col_types(self):
+        """get all column names and type from all tables"""
+        col_types = {}
+
+        tables = self.get_all_tables()
+        for m_table in tables:
+            for key in m_table.columns:
+                col = m_table.columns[key]
+                col_types[key] = col.type
+        if len(col_types.keys()) == 0:
+            col_types = None
+        return col_types
+
     def get_header(self):
         tables = self.get_all_tables()
         header = []
@@ -228,30 +255,18 @@ class Schema():
     Attributes:
         connection: data source connection URI
         name: name of the database
-        size: the size of this database
-        privacy_budget: parsed privacy budget property.
-        privacy_budget_interval_days: parsed privacy budget reset interval in days.
-        synth_allowed: true to allow synthesized data for exploration
         privacy_level: 0, 1, 2 in ascending order of privacy protection (default is 2).
         tables: parsed database metadata.
     """
     def __init__(
             self,
             name,
-            size=0,
             connection='',
-            privacy_budget=0,
-            privacy_budget_interval_days=0,
-            synth_allowed=False,
             privacy_level=2,
             tables=None):
         """Creates a new schema object."""
         self.name = name
-        self.size = size
         self.connection = connection
-        self.privacy_budget = privacy_budget
-        self.privacy_budget_interval_days = privacy_budget_interval_days
-        self.synth_allowed = synth_allowed
         self.privacy_level = privacy_level
         self.tables = tables
 
@@ -259,43 +274,28 @@ class Schema():
     def from_meta(schema, meta):
         """Create a schema instance from the meta yaml part."""
         connection = meta.pop("connection", '')
-        size = int(meta.pop("size", 0))
-        privacy_budget = float(meta.pop("privacy_budget", 0))
-        privacy_budget_interval_days = int(meta.pop("privacy_budget_interval_days", 0))
-        synth_allowed = bool(meta.pop("synth_allowed", False))
         privacy_level = int(meta.pop("privacy_level", 2))
         tables = {}
         for table in meta.keys():
             tables[table] = Table.from_meta(table, meta[table])
         return Schema(
             schema,
-            size=size,
             connection=connection,
-            privacy_budget=privacy_budget,
-            privacy_budget_interval_days=privacy_budget_interval_days,
-            synth_allowed=synth_allowed,
             privacy_level=privacy_level,
             tables=tables
         )
 
-    def to_dict(self, sm=False):  # noqa: C901
+    def to_dict(self, sm=False, ml=False):  # noqa: C901
         """Returns a dict representation of this class."""
         meta = {}
         if not sm:
             if self.connection is not None:
                 meta["connection"] = self.connection
-            if self.size is not None:
-                meta["size"] = self.size
-            if self.privacy_budget is not None:
-                meta["privacy_budget"] = self.privacy_budget
-            if self.privacy_budget_interval_days is not None:
-                meta["privacy_budget_interval_days"] = self.privacy_budget_interval_days
-            if self.synth_allowed is not None:
-                meta["synth_allowed"] = self.synth_allowed
-            if self.privacy_level is not None:
-                meta["privacy_level"] = self.privacy_level
+            if not ml:
+                if self.privacy_level is not None:
+                    meta["privacy_level"] = self.privacy_level
         for table in self.tables:
-            meta[table] = self.tables[table].to_dict(sm=sm)
+            meta[table] = self.tables[table].to_dict(sm=sm, ml=ml)
         return meta
 
 
@@ -304,8 +304,17 @@ class Table():
     def __init__(
             self,
             name,
+            synth_allowed=False,
+            budget_epsilon=0,
+            budget_delta=0,
             use_original_header=True,
-            header_row=None,
+            header_row=0,
+            header_columns=None,
+            sep=',',
+            decimal='.',
+            na_values=None,
+            index_col=None,
+            skipinitialspace=False,
             row_privacy=False,
             rows=0,
             max_ids=1,
@@ -324,8 +333,17 @@ class Table():
             columns: columns of the table
         """
         self.name = name
+        self.synth_allowed = synth_allowed
+        self.budget_epsilon = budget_epsilon
+        self.budget_delta = budget_delta
         self.use_original_header = use_original_header
         self.header_row = header_row
+        self.header_columns = header_columns
+        self.sep = sep
+        self.decimal = decimal
+        self.na_values = na_values
+        self.index_col = index_col
+        self.skipinitialspace = skipinitialspace
         self.row_privacy = row_privacy
         self.rows = rows
         self.max_ids = max_ids
@@ -340,9 +358,18 @@ class Table():
     @staticmethod
     def from_meta(table, meta):
         """Create a table instance from the meta yaml part."""
+        synth_allowed = bool(meta.pop("synth_allowed", False))
+        budget_epsilon = meta.pop("budget_epsilon", 0)
+        budget_delta = meta.pop("budget_delta", 0)
         use_original_header = bool(meta.pop(
             "use_original_header", True))
-        header_row = meta.pop("header_row", None)
+        header_row = meta.pop("header_row", 0)
+        header_columns = meta.pop("header_columns", None)
+        sep = meta.pop("sep", ',')
+        decimal = meta.pop("decimal", '.')
+        na_values = meta.pop("na_values", None)
+        index_col = meta.pop("index_col", None)
+        skipinitialspace = meta.pop("skipinitialspace", False)
         row_privacy = bool(meta.pop("row_privacy", False))
         rows = int(meta.pop("rows", 0))
         max_ids = int(meta.pop("max_ids", 1))
@@ -357,8 +384,17 @@ class Table():
             columns[column] = Column.from_meta(column, meta[column])
         return Table(
             table,
+            synth_allowed=synth_allowed,
+            budget_epsilon=budget_epsilon,
+            budget_delta=budget_delta,
             use_original_header=use_original_header,
             header_row=header_row,
+            header_columns=header_columns,
+            sep=sep,
+            decimal=decimal,
+            na_values=na_values,
+            index_col=index_col,
+            skipinitialspace=skipinitialspace,
             row_privacy=row_privacy,
             rows=rows,
             max_ids=max_ids,
@@ -371,34 +407,54 @@ class Table():
             columns=columns
         )
 
-    def to_dict(self, sm=False):  # noqa: C901
+    def to_dict(self, sm=False, ml=False):  # noqa: C901
         """Returns a dict representation of this class."""
         meta = {}
         if not sm:
-            if self.tau is not None:
-                meta["tau"] = self.tau
+            if not ml:
+                if self.tau is not None:
+                    meta["tau"] = self.tau
+                if self.synth_allowed is not None:
+                    meta["synth_allowed"] = self.synth_allowed
+            if self.budget_epsilon is not None:
+                meta["budget_epsilon"] = self.budget_epsilon
+            if self.budget_delta is not None:
+                meta["budget_delta"] = self.budget_delta
             if self.use_original_header is not None:
                 meta["use_original_header"] = self.use_original_header
-        if self.header_row is not None:
-            meta["header_row"] = self.header_row
-        if self.row_privacy is not None:
-            meta["row_privacy"] = self.row_privacy
-        if self.rows is not None:
-            meta["rows"] = self.rows
-        if self.max_ids is not None:
-            meta["max_ids"] = self.max_ids
-        if self.sample_max_ids is not None:
-            meta["sample_max_ids"] = self.sample_max_ids
-        if self.use_dpsu is not None:
-            meta["use_dpsu"] = self.use_dpsu
-        if self.clamp_counts is not None:
-            meta["clamp_counts"] = self.clamp_counts
-        if self.clamp_columns is not None:
-            meta["clamp_columns"] = self.clamp_columns
-        if self.censor_dims is not None:
-            meta["censor_dims"] = self.censor_dims
+            if self.header_columns is not None:
+                meta["header_columns"] = self.header_columns
+            if self.sep is not None:
+                meta["sep"] = self.sep
+            if self.decimal is not None:
+                meta["decimal"] = self.decimal
+            if self.na_values is not None:
+                meta["na_values"] = self.na_values
+            if self.index_col is not None:
+                meta["index_col"] = self.index_col
+            if self.skipinitialspace is not None:
+                meta["skipinitialspace"] = self.skipinitialspace
+            if self.header_row is not None:
+                meta["header_row"] = self.header_row
+        if not ml:
+            if self.row_privacy is not None:
+                meta["row_privacy"] = self.row_privacy
+            if self.rows is not None:
+                meta["rows"] = self.rows
+            if self.max_ids is not None:
+                meta["max_ids"] = self.max_ids
+            if self.sample_max_ids is not None:
+                meta["sample_max_ids"] = self.sample_max_ids
+            if self.use_dpsu is not None:
+                meta["use_dpsu"] = self.use_dpsu
+            if self.clamp_counts is not None:
+                meta["clamp_counts"] = self.clamp_counts
+            if self.clamp_columns is not None:
+                meta["clamp_columns"] = self.clamp_columns
+            if self.censor_dims is not None:
+                meta["censor_dims"] = self.censor_dims
         for column in self.columns:
-            meta[column] = self.columns[column].to_dict(sm=sm)
+            meta[column] = self.columns[column].to_dict(sm=sm, ml=ml)
         return meta
 
 
@@ -523,42 +579,44 @@ class Column():
             is_target=is_target
         )
 
-    def to_dict(self, sm=False):  # noqa: C901
+    def to_dict(self, sm=False, ml=False):  # noqa: C901
         """Returns a dict representation of this class."""
         meta = {}
         if self.type is not None:
             meta["type"] = self.type
-        if self.bounded is not None:
-            meta["bounded"] = self.bounded
-        if self.lower is not None:
-            meta["lower"] = self.lower
-        if self.upper is not None:
-            meta["upper"] = self.upper
-        if self.private_id is not None:
-            meta["private_id"] = self.private_id
-        if self.cardinality is not None:
-            meta["cardinality"] = self.cardinality
+        if not ml:
+            if self.bounded is not None:
+                meta["bounded"] = self.bounded
+            if self.lower is not None:
+                meta["lower"] = self.lower
+            if self.upper is not None:
+                meta["upper"] = self.upper
+            if self.private_id is not None:
+                meta["private_id"] = self.private_id
+            if self.cardinality is not None:
+                meta["cardinality"] = self.cardinality
         if not sm:
-            if self.use_auto_bounds is not None:
-                meta["use_auto_bounds"] = self.use_auto_bounds
-            if self.auto_bounds_prob is not None:
-                meta["auto_bounds_prob"] = self.auto_bounds_prob
-            if self.auto_lower is not None:
-                meta["auto_lower"] = self.auto_lower
-            if self.auto_upper is not None:
-                meta["auto_upper"] = self.auto_upper
-            if self.allowed_values is not None:
-                meta["allowed_values"] = self.allowed_values
-            if self.selectable is not None:
-                meta["selectable"] = self.selectable
-            if self.mask is not None:
-                meta["mask"] = self.mask
-            if self.synthesizable is not None:
-                meta["synthesizable"] = self.synthesizable
-            if self.discrete is not None:
-                meta["discrete"] = self.discrete
-            if self.min_step is not None:
-                meta["min_step"] = self.min_step
+            if not ml:
+                if self.use_auto_bounds is not None:
+                    meta["use_auto_bounds"] = self.use_auto_bounds
+                if self.auto_bounds_prob is not None:
+                    meta["auto_bounds_prob"] = self.auto_bounds_prob
+                if self.auto_lower is not None:
+                    meta["auto_lower"] = self.auto_lower
+                if self.auto_upper is not None:
+                    meta["auto_upper"] = self.auto_upper
+                if self.allowed_values is not None:
+                    meta["allowed_values"] = self.allowed_values
+                if self.selectable is not None:
+                    meta["selectable"] = self.selectable
+                if self.mask is not None:
+                    meta["mask"] = self.mask
+                if self.synthesizable is not None:
+                    meta["synthesizable"] = self.synthesizable
+                if self.discrete is not None:
+                    meta["discrete"] = self.discrete
+                if self.min_step is not None:
+                    meta["min_step"] = self.min_step
             if self.is_feature is not None:
                 meta["is_feature"] = self.is_feature
             if self.is_target is not None:

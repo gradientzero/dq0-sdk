@@ -20,10 +20,8 @@ logger = logging.getLogger(__name__)
 class CSVDataHandler(BasicDataHandler):
     """Basic CSV Data Handler for all estimators"""
 
-    def __init__(self, pipeline_steps=None, pipeline_config_path=None, transformers_root_dir='.', log_key_string='.'):
-        super().__init__(pipeline_steps=pipeline_steps, pipeline_config_path=pipeline_config_path, transformers_root_dir=transformers_root_dir,
-                         log_key_string=log_key_string)
-        self.log_key_string = log_key_string
+    def __init__(self, pipeline_steps=None, pipeline_config_path=None, transformers_root_dir='.'):
+        super().__init__(pipeline_steps=pipeline_steps, pipeline_config_path=pipeline_config_path, transformers_root_dir=transformers_root_dir)
 
     def setup_data(self, data_source, train_size=0.66, **kwargs):
         """ Setup data from CSV file. Using the CSV data source.
@@ -31,7 +29,7 @@ class CSVDataHandler(BasicDataHandler):
 
         # Check if the data source is of expected type
         if not isinstance(data_source, dq0.sdk.data.text.csv.CSV):
-            raise ValueError("data_source attached to estimator and handled by the CSV data handler is not of Type: dq0.sdk.data.text.csv.CSV but: {}".format(type(data_source))) # noqa
+            raise ValueError("data_source attached to estimator and handled by the CSV data handler is not of Type: dq0.sdk.data.text.csv.CSV but: {}".format(type(data_source)))  # noqa:E501
         if not hasattr(data_source, 'feature_cols') and not hasattr(data_source, 'target_cols'):
             raise ValueError("CSV data source has not attribute feature_cols or target_cols. Please set this values on init or in the metadata")
 
@@ -39,6 +37,14 @@ class CSVDataHandler(BasicDataHandler):
         # Check type of data, must be pandas.DataFrame
         if not isinstance(self.data, pd.DataFrame):
             raise ValueError("Data loaded is not of type pandas.DataFrame, but: {}".format(type(self.data)))
+
+        # check if header is present and is matching the pipeline config columns
+        if self.pipeline is not None:
+            if len(self.pipeline.steps_input_cols) > 0:
+                input_cols_first_step = self.pipeline.steps_input_cols[0]
+                for col in input_cols_first_step:
+                    if col not in self.data.columns:
+                        raise ValueError(f"Column '{col}' not in the header of the CSV file. Check if header is present and if it matches the input columns the pipeline config.")  # noqa:E501
 
         # run pipeline
         if self.pipeline is not None:

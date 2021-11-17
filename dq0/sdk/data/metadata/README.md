@@ -8,6 +8,10 @@ The metadata properties include:
 * description
 * type
 * schemas
+* table level information, with
+  * privacy budget
+  * column names
+  * other misc information for loading
 * row level information, if applicable, with
   * row level privacy
 * columns, if applicable, with
@@ -16,8 +20,6 @@ The metadata properties include:
   * privacy constraints
   * masking: regex masks away groups, shows anything else
   * DP privacy ID info
-* initial privacy budget
-* privacy budget reset interval
 
 Metadata is stored in DQ0's central database. It can be defined in the web application or via yaml files. The inner definition in "Database" shall be compatible with [smartnoise metadata](https://github.com/opendifferentialprivacy/smartnoise-sdk/blob/master/sdk/Metadata.md). A yaml metadata definition can look like this:
 
@@ -27,11 +29,20 @@ description: 'some description'
 type: 'CSV'
 DatabaseSchema1:
     connection: 'user@db'
-    privacy_budget: 1000
-    privacy_budget_interval_days: 30
-    synth_allowed: true
     privacy_level: 2
     Table1:
+        synth_allowed: true
+        budget_epilon: 1000
+        budget_delta: 0.0001
+        sep: ';'
+        decimal: ','
+        na_values:
+            capital-gain: 99999
+            capital-loss: 99999
+            hours-per-week: 99
+            native-country: '?'
+            occupation: '?'
+            workclass: '?'
         row_privacy: true
         rows: 1000
         max_ids: 1

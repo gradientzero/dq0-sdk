@@ -18,19 +18,21 @@ logger = logging.getLogger(__name__)
 
 class Pipeline():
 
-    def __init__(self, steps=None, config_path=None, transformers_root_dir='.', log_key_string='', **kwargs):
+    def __init__(self, steps=None, config_path=None, transformers_root_dir='.', **kwargs):
         """
         Initialize with steps directly (standalone mode) or with config file. Both can not be given.
         params:
             steps: List of (name, transform) tuples (implementing fit/transform) that are chained, in the order in which they are chained.
             config_path: path to config file where the pipelien steps are given.
         """
-        self.log_key_string = log_key_string
+        # using steps as input (stand alone)
         if (steps is not None) and (config_path is None):
             self.pipeline = pipeline.Pipeline(steps)
+        # using config path
         elif (steps is None) and (config_path is not None):
             pp_config = pipeline_config.PipelineConfig(config_path=config_path)
-            steps = pp_config.get_steps_from_config(root_dir=transformers_root_dir, log_key_string=self.log_key_string)
+            steps = pp_config.get_steps_from_config(root_dir=transformers_root_dir)
+            self.steps_input_cols = pp_config.get_input_columns_per_step()  # use for checks later
             self.pipeline = pipeline.Pipeline(steps)
         else:
             fatal_error("Both steps and config_path are given. Only one should be given.")
