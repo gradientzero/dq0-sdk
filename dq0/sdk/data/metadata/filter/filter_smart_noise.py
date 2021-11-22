@@ -9,23 +9,23 @@ class FilterSmartNoise(Filter):
             'database': None,
             'schema': None,
             'table': {
-                'row_privacy': None,
-                'rows': None,
                 'max_ids': None,
+                'censor_dims': None,
+                'clamp_columns': None,
+                'clamp_counts': None,
+                'rows': None,
+                'row_privacy': None,
                 'sample_max_ids': None,
                 'use_dpsu': None,
-                'clamp_counts': None,
-                'clamp_columns': None,
-                'censor_dims': None,
             },
             'column': {
-                'name': None,
-                'data_type_name': None,
-                'bounded': None,
+                'cardinality': None,
                 'lower': None,
                 'upper': None,
+                'bounded': None,
+                'data_type_name': None,
+                'name': None,
                 'private_id': None,
-                'cardinality': None,
             }
         }
         return Filter.filter(node=node, retain_nodes=None, retain_attributes=retain_attributes)

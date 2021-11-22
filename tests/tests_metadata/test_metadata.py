@@ -1,18 +1,13 @@
-# -*- coding: utf-8 -*-
-"""Metadata tests.
-
-Copyright 2020, Gradient Zero
-All rights reserved
-"""
-
 import os
+from dq0.sdk.data.metadata import default
+from dq0.sdk.data.metadata.default.default import Default
+from dq0.sdk.data.metadata.default.default_permissions import DefaultPermissions
 
 from dq0.sdk.data.metadata.filter.filter import Filter
 from dq0.sdk.data.metadata.filter.filter_machine_learning import FilterMachineLearning
 from dq0.sdk.data.metadata.filter.filter_regular import FilterRegular
 from dq0.sdk.data.metadata.filter.filter_smart_noise import FilterSmartNoise
 from dq0.sdk.data.metadata.metadata import Metadata
-from dq0.sdk.data.metadata.verifier import Verifier
 
 
 def test_metadata():
@@ -262,14 +257,23 @@ child_nodes:
                                         key: 'cardinality'
                                         value: 123
 '''
-    default_user_uuids = ['2dfe2aa3-7563-4cd5-9bbe-1b82add081fe', '9556e5f9-e419-45c9-ada4-4339c7937e1d']
-    default_role_uuids = ['2fd590a0-3e97-4230-bb40-3a5d6847f769', 'a4a231c0-f759-4d28-ad91-227c96d9408b']
+    user_user_uuid = '2dfe2aa3-7563-4cd5-9bbe-1b82add081fe'
+    user_role_uuid = '2fd590a0-3e97-4230-bb40-3a5d6847f769'
+    owner_user_uuid = '9556e5f9-e419-45c9-ada4-4339c7937e1d'
+    owner_role_uuid = 'a4a231c0-f759-4d28-ad91-227c96d9408b'
+    owner_uuids = {owner_role_uuid, owner_user_uuid}
+    user_uuids = {user_role_uuid, user_user_uuid}
+    role_uuids = {
+        DefaultPermissions.OWNER_NAME: owner_uuids,
+        DefaultPermissions.USER_NAME: user_uuids,
+    }
+    default = Default(role_uuids=role_uuids)
 
     with open('test.yaml', 'w') as f:
         f.write(content)
 
     # load metadata
-    metadata = Metadata.from_yaml_file(filename='test.yaml', apply_default_attributes=None, verify_func=Verifier.verify_all_single_with_schema, default_user_uuids=default_user_uuids, default_role_uuids=default_role_uuids)
+    metadata = Metadata.from_yaml_file(filename='test.yaml', default=default)
 
     # test
     assert metadata.root_node.type_name == 'dataset'
@@ -343,7 +347,7 @@ child_nodes:
     yaml_content = metadata.to_yaml()
 
     # reload metadata
-    metadata = Metadata.from_yaml(yaml_content=yaml_content, apply_default_attributes=None, verify_func=Verifier.verify_all_single_with_schema)
+    metadata = Metadata.from_yaml(yaml_content=yaml_content, default=default)
 
     # test again
     assert metadata.root_node.get_attribute(index=-1, key='description', value="new description") is not None
@@ -359,7 +363,7 @@ child_nodes:
     yaml_content = metadata.to_yaml()
 
     # reload metadata
-    metadata = Metadata.from_yaml(yaml_content=yaml_content, apply_default_attributes=None, verify_func=Verifier.verify_all_single_with_schema)
+    metadata = Metadata.from_yaml(yaml_content=yaml_content, default=default)
 
     # test again
     assert metadata.root_node.get_attribute(index=-1, key='description', value="new description 2") is not None
@@ -398,7 +402,7 @@ child_nodes:
     assert attribute_selectable_dct['value'] is True
 
     # test to_dict sm
-    metadata_sm = metadata.filter(filter_func=FilterSmartNoise.filter, verify_func=Verifier.verify_all_single_with_schema)
+    metadata_sm = metadata.filter(filter_func=FilterSmartNoise.filter, default=default)
     print(metadata_sm)
     metadata_sm_dct = metadata_sm.to_dict()
     attribute_name_dct = None
@@ -438,7 +442,7 @@ child_nodes:
     assert attribute_cardinality_dct['value'] == 123
 
     # test to_dict ml
-    metadata_ml = metadata.filter(filter_func=FilterMachineLearning.filter, verify_func=Verifier.verify_all_single_with_schema)
+    metadata_ml = metadata.filter(filter_func=FilterMachineLearning.filter, default=default)
     print(metadata_ml)
     metadata_ml_dct = metadata_ml.to_dict()
     attribute_connector_dct = None
@@ -728,16 +732,25 @@ child_nodes:
                                                 key: 'data_type_name'
                                                 value: 'int'
 '''
-    default_user_uuids = ['2dfe2aa3-7563-4cd5-9bbe-1b82add081fe', '9556e5f9-e419-45c9-ada4-4339c7937e1d']
-    default_role_uuids = ['2fd590a0-3e97-4230-bb40-3a5d6847f769', 'a4a231c0-f759-4d28-ad91-227c96d9408b']
+    user_user_uuid = '2dfe2aa3-7563-4cd5-9bbe-1b82add081fe'
+    user_role_uuid = '2fd590a0-3e97-4230-bb40-3a5d6847f769'
+    owner_user_uuid = '9556e5f9-e419-45c9-ada4-4339c7937e1d'
+    owner_role_uuid = 'a4a231c0-f759-4d28-ad91-227c96d9408b'
+    owner_uuids = {owner_role_uuid, owner_user_uuid}
+    user_uuids = {user_role_uuid, user_user_uuid}
+    role_uuids = {
+        DefaultPermissions.OWNER_NAME: owner_uuids,
+        DefaultPermissions.USER_NAME: user_uuids,
+    }
+    default = Default(role_uuids=role_uuids)
 
     # load metadata
-    metadata1 = Metadata.from_yaml(yaml_content=content1, apply_default_attributes=None, verify_func=Verifier.verify_all_single_with_schema, default_user_uuids=default_user_uuids, default_role_uuids=default_role_uuids)
-    metadata2 = Metadata.from_yaml(yaml_content=content2, apply_default_attributes=None, verify_func=Verifier.verify_all_single_with_schema, default_user_uuids=default_user_uuids, default_role_uuids=default_role_uuids)
-    metadata3 = Metadata.from_yaml(yaml_content=content3, apply_default_attributes=None, verify_func=Verifier.verify_all_single_with_schema, default_user_uuids=default_user_uuids, default_role_uuids=default_role_uuids)
+    metadata1 = Metadata.from_yaml(yaml_content=content1, default=default)
+    metadata2 = Metadata.from_yaml(yaml_content=content2, default=default)
+    metadata3 = Metadata.from_yaml(yaml_content=content3, default=default)
 
-    metadata_merged_a = metadata1.merge_with(other=metadata2, verify_func=Verifier.verify)
-    metadata_merged_b = metadata_merged_a.merge_with(other=metadata3, verify_func=Verifier.verify)
+    metadata_merged_a = metadata1.merge_with(other=metadata2, default=default)
+    metadata_merged_b = metadata_merged_a.merge_with(other=metadata3, default=default)
 
     assert metadata_merged_b.root_node.get_child_node(index=-1, attributes_map={'name': 'test_db_1'}).child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'test_tab_1'}).get_attribute(index=-1, key='connector', value=None).get_attribute(index=-1, key='uri', value='user1@db') is not None
     assert metadata_merged_b.root_node.get_child_node(index=-1, attributes_map={'name': 'test_db_2'}).child_nodes[0].get_child_node(index=-1, attributes_map={'name': 'test_tab_2'}).get_attribute(index=-1, key='budget_epsilon', value=1001.0) is not None

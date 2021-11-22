@@ -1,20 +1,55 @@
-from dq0.sdk.data.metadata.attribute.attribute_boolean import AttributeBoolean
-from dq0.sdk.data.metadata.attribute.attribute_int import AttributeInt
 from dq0.sdk.data.metadata.attribute.attribute import Attribute
-from dq0.sdk.data.metadata.default.default_utils import DefaultUtils
+from dq0.sdk.data.metadata.attribute.attribute_type import AttributeType
+from dq0.sdk.data.metadata.default.default_table import DefaultTable
+from dq0.sdk.data.metadata.default.default_permissions import DefaultPermissions
+from dq0.sdk.data.metadata.node.node import Node
+from dq0.sdk.data.metadata.node.node_type import NodeType
+
 
 class DefaultSchema:
     @staticmethod
-    def default_attributes_schema(default_user_uuids=None, default_role_uuids=None):
-        return [
-            AttributeBoolean(key='metadata_is_public', value=False, user_uuids=default_user_uuids, role_uuids=default_role_uuids),
-            AttributeInt(key='privacy_level', value=2, user_uuids=default_user_uuids, role_uuids=default_role_uuids),
-        ]
+    def apply_defaults(node, role_uuids=None):
+        Node.check(node=node, allowed_type_names=None, allowed_permissions=None)
+        applied_attributes = DefaultSchema.apply_defaults_to_attributes(attributes=node.attributes, role_uuids=role_uuids)
+        applied_child_nodes = DefaultSchema.apply_defaults_to_child_nodes(child_nodes=node.child_nodes, role_uuids=role_uuids)
+        applied_permissions = DefaultPermissions.shared_node(role_uuids=role_uuids) if node.permissions is None else node.permissions.copy()
+        return Node(type_name=node.type_name, attributes=applied_attributes, child_nodes=applied_child_nodes, permissions=applied_permissions)
+        
+    @staticmethod
+    def apply_defaults_to_attributes(attributes, role_uuids=None):
+        Attribute.check_list(attribute_list=attributes, allowed_keys_type_names_permissions=None)
+        applied_attributes = [] if attributes is not None else None
+        for attribute in attributes if attributes is not None else []:
+            applied_attribute = attribute.copy()
+            applied_attribute.set_default_permissions(default_permissions=DefaultPermissions.shared_attribute(role_uuids=role_uuids))
+            applied_attributes.append(applied_attribute)
+        return applied_attributes
 
     @staticmethod
-    def merge_default_attributes_with(schema_attributes_list, default_user_uuids=None, default_role_uuids=None):
-        if not isinstance(schema_attributes_list, list):
-            raise Exception("schema_attributes_list is not of list type")
-        default_schema_attributes_list = DefaultSchema.default_attributes_schema(default_user_uuids=default_user_uuids, default_role_uuids=default_role_uuids)
-        tmp_schema_attributes_list = Attribute.merge_many(list_a=default_schema_attributes_list, list_b=schema_attributes_list, overwrite=True) if schema_attributes_list is not None else default_schema_attributes_list
-        return [DefaultUtils.merge_default_uuids_with(attribute=tmp_attribute, default_user_uuids=default_user_uuids, default_role_uuids=default_role_uuids) for tmp_attribute in tmp_schema_attributes_list] if tmp_schema_attributes_list is not None else None
+    def apply_defaults_to_child_nodes(child_nodes, role_uuids=None):
+        Node.check_list(node_list=child_nodes, allowed_type_names=None, allowed_permissions=None)
+        applied_child_nodes = [] if child_nodes is not None else None
+        for child_node in child_nodes if child_nodes is not None else []:
+            applied_child_nodes.append(DefaultTable.apply_defaults(node=child_node, role_uuids=role_uuids))
+        return applied_child_nodes
+
+    @staticmethod
+    def verify(node, role_uuids=None):
+        Node.check(node=node, allowed_type_names=[NodeType.TYPE_NAME_SCHEMA], allowed_permissions=DefaultPermissions.shared_node(role_uuids=role_uuids))
+        DefaultSchema.verify_attributes(attributes=node.attributes, role_uuids=role_uuids)
+        DefaultSchema.verify_child_nodes(child_nodes=node.child_nodes, role_uuids=role_uuids)
+
+    @staticmethod
+    def verify_attributes(attributes, role_uuids=None):
+        shared_attribute = DefaultPermissions.shared_attribute(role_uuids=role_uuids)
+        Attribute.check_list(attribute_list=attributes, allowed_keys_type_names_permissions={
+            'description': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
+            'metadata_is_public': ([AttributeType.TYPE_NAME_BOOLEAN], shared_attribute),
+            'name': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
+            'privacy_level': ([AttributeType.TYPE_NAME_INT], shared_attribute),
+        })
+
+    @staticmethod
+    def verify_child_nodes(child_nodes, role_uuids=None):
+        for child_node in child_nodes if child_nodes is not None else []:
+            DefaultTable.verify(node=child_node, role_uuids=role_uuids)

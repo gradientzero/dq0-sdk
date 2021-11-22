@@ -9,7 +9,6 @@ class FilterMachineLearning(Filter):
                 'name': None,
                 'description': None,
                 'tags': None,
-                'connector': None,
             },
             'database': {
                 'name': None,
@@ -19,7 +18,6 @@ class FilterMachineLearning(Filter):
             'schema': {
                 'name': None,
                 'description': None,
-                'connector': None,
             },
             'table': {
                 'name': None,
