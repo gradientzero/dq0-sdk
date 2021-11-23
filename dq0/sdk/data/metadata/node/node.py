@@ -119,9 +119,9 @@ class Node:
         index_string = f"_{self.list_index}" if -1 < self.list_index else ''
         return_string = MetaUtils.str_from(object=self.type_name, quoted=False) + index_string + ':'
         if self.attributes is not None and len(self.attributes) > 0:
-            return_string += "\n   attributes:" + MetaUtils.restricted_str_from_list(list=self.attributes, sort=False, request_uuids=request_uuids).replace('\n', "\n   ")
+            return_string += "\n  attributes:" + MetaUtils.restricted_str_from_list(list=self.attributes, sort=False, request_uuids=request_uuids).replace('\n', "\n  ")
         if self.child_nodes is not None and len(self.child_nodes) > 0:
-            return_string += "\n   child_nodes:" + MetaUtils.restricted_str_from_list(list=self.child_nodes, sort=False, request_uuids=request_uuids).replace('\n', "\n   ")
+            return_string += "\n  child_nodes:" + MetaUtils.restricted_str_from_list(list=self.child_nodes, sort=False, request_uuids=request_uuids).replace('\n', "\n    ")
         return return_string
 
     def __repr__(self):
@@ -191,7 +191,7 @@ class Node:
         if self.attributes != merged_attributes and not Permissions.is_allowed_with(permissions=self.permissions, action=Action.WRITE_ATTRIBUTES, request_uuids=request_uuids):
             Explanation.dynamic_add_message(explanation=explanation, message=f"Node[{self.type_name}].is_mergeable_with(...): writing attributes without write_attributes permission is not allowed")            
             return False
-        if not Node.are_mergeable(list_a=self.child_nodes, list_b=other.child_nodes, overwrite_value=overwrite_value, overwrite_permissions=overwrite_permissions, explanation=explanation):
+        if not Node.are_mergeable(list_a=self.child_nodes, list_b=other.child_nodes, overwrite_value=overwrite_value, overwrite_permissions=overwrite_permissions, request_uuids=request_uuids, explanation=explanation):
             Explanation.dynamic_add_message(explanation=explanation, message=f"Node[{self.type_name}].is_mergeable_with(...): child_nodes are not mergeable")            
             return False
         merged_child_nodes = Node.merge_many(list_a=self.child_nodes, list_b=other.child_nodes, overwrite_value=overwrite_value, overwrite_permissions=overwrite_permissions, request_uuids=request_uuids)

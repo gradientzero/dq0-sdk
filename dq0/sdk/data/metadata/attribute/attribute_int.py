@@ -18,7 +18,7 @@ class AttributeInt(Attribute):
         super_str = super().__str__(request_uuids=request_uuids)
         if super_str is None:
             return None
-        return super_str + ' ' + MetaUtils.str_from(object=self.value, quoted=False)
+        return super_str + ' ' + MetaUtils.str_from(object=self.value, quoted=False).replace('\n', "\n  ")
 
     def __repr__(self):
         return "AttributeInt(" + \

@@ -49,9 +49,9 @@ class DefaultDataset:
             'privacy_level': ([AttributeType.TYPE_NAME_INT], shared_attribute),
             'tags': ([AttributeType.TYPE_NAME_LIST], shared_attribute),
         })
-        dataset_tags_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'dataset_tags'] if attributes is not None else []
-        if 0 < len(dataset_tags_attributes):
-            Attribute.check_list(attribute_list=dataset_tags_attributes[0].value, allowed_keys_type_names_permissions={
+        tags_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'tags'] if attributes is not None else []
+        if 0 < len(tags_attributes):
+            Attribute.check_list(attribute_list=tags_attributes[0].value, allowed_keys_type_names_permissions={
                 None: ([AttributeType.TYPE_NAME_STRING], shared_attribute),
             })
 

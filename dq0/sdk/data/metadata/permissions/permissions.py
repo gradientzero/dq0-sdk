@@ -28,8 +28,6 @@ class Permissions:
         if not isinstance(internal_permissions, dict):
             raise Exception(f"internal_permissions is not of type dict, is of type {type(internal_permissions)} instead")
         for action, allowed_uuids in internal_permissions.items():
-            if action is None:
-                raise Exception("action is none")
             if not Action.is_valid_action(action=action):
                 raise Exception(f"action {action} is invalid")
             Permissions.check_internal_uuids(internal_uuids=allowed_uuids)
@@ -90,12 +88,15 @@ class Permissions:
             return " null"
         if len(internal_uuids) == 0:
             return " {}"
-        return_string = ''
+        return_string = ' {'
         tmp_list = list(internal_uuids)
         if sort:
             tmp_list.sort()
-        for tmp_elem in tmp_list:
-            return_string += "\n   " + tmp_elem
+        for index, tmp_elem in enumerate(tmp_list):
+            return_string += tmp_elem
+            if index < len(tmp_list) - 1:
+                return_string += ", "
+        return_string += '}'
         return return_string
 
     @staticmethod
@@ -129,11 +130,26 @@ class Permissions:
             return " {}"
         return_string = ''
         for action, allowed_uuids in self.permissions.items():
-            return_string += "\n   " + MetaUtils.str_from(action, quoted=True) + ':' + Permissions.str_from_internal_uuids(internal_uuids=allowed_uuids, sort=True).replace('\n', "\n   ")
+            return_string += "\n  " + MetaUtils.str_from(action, quoted=True) + ':' + Permissions.str_from_internal_uuids(internal_uuids=allowed_uuids, sort=True).replace('\n', "\n  ")
         return return_string
  
     def __repr__(self):
-        return "Permissions(permissions=" + repr(self.permissions) + ")"
+        repr_permissions = 'None'
+        if self.permissions is not None:
+            repr_permissions = '{'
+            sorted_actions = sorted(self.permissions.keys())
+            for action_index, action in enumerate(sorted_actions):
+                repr_permissions += repr(action) + ": {"
+                sorted_uuids = sorted(list(self.permissions[action]))
+                for uuid_index, uuid in enumerate(sorted_uuids):
+                    repr_permissions += repr(uuid)
+                    if uuid_index < len(sorted_uuids) - 1:
+                        repr_permissions += ", "
+                repr_permissions += '}'
+                if action_index < len(sorted_actions) - 1:
+                    repr_permissions += ", "
+            repr_permissions += '}'
+        return "Permissions(permissions=" + repr(self.permissions) + ')'
 
     def __eq__(self, other):
         if other is None or not isinstance(other, Permissions):
@@ -144,7 +160,7 @@ class Permissions:
         if self.permissions is None:
             return Permissions(permissions=None)
         copied_permissions = {}
-        for action, allowed_uuids in self.permissions:
+        for action, allowed_uuids in self.permissions.items():
             copied_permissions[action] = allowed_uuids.copy() if allowed_uuids is not None else None
         return Permissions(permissions=copied_permissions)
 
@@ -153,7 +169,7 @@ class Permissions:
             return None
         permissions_dict = {}
         for action, allowed_uuids in self.permissions.items():
-            permissions_dict[action] = [tmp_uuid for tmp_uuid in allowed_uuids] if allowed_uuids is not None else None
+            permissions_dict[action] = allowed_uuids
         return permissions_dict
 
     def is_merge_compatible_with(self, other, explanation=None):

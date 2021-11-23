@@ -24,11 +24,11 @@ class Utils:
         if len(list) == 0:
             return " []"
         return_string = ''
-        tmp_list = [Utils.str_from(tmp_elem, quoted=False).replace('\n', "\n   ") for tmp_elem in list]
+        tmp_list = [Utils.str_from(tmp_elem, quoted=False) for tmp_elem in list]
         if sort:
             tmp_list.sort()
         for tmp_elem in tmp_list:
-            return_string += "\n   " + tmp_elem
+            return_string += '\n' + tmp_elem
         return return_string
    
     @staticmethod
@@ -39,11 +39,10 @@ class Utils:
             return " []"
         return_string = ''
         tmp_list = [Utils.restricted_str_from(tmp_elem, quoted=False, request_uuids=request_uuids) for tmp_elem in list]
-        tmp_list = [tmp_elem.replace('\n', "\n   ") for tmp_elem in tmp_list if tmp_elem is not None]
         if sort:
             tmp_list.sort()
         for tmp_elem in tmp_list:
-            return_string += "\n   " + tmp_elem
+            return_string += '\n' + tmp_elem
         return return_string
 
     @staticmethod

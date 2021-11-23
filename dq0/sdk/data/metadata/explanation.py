@@ -16,11 +16,11 @@ class Explanation:
     def __str__(self):
         return_string = 'Explanation:'
         for index, message in enumerate(self.stack):
-            return_string += f"\n   ({index}): " + message.replace('\n', "\n   ")
+            return_string += "\n  " + f"({index}): " + message.replace('\n', "\n  ")
         return return_string
     
     def __repr__(self):
-        return "Explanation(stack=" + self.stack.__repr__() + ')'
+        return f"Explanation(stack={repr(self.stack)})"
     
     def add_message(self, message):
         if not isinstance(message, str):

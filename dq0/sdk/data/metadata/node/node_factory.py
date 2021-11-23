@@ -4,18 +4,30 @@ from dq0.sdk.data.metadata.node.node import Node
 from dq0.sdk.data.metadata.permissions.permissions_factory import PermissionsFactory
 
 class NodeFactory:
-    NODE_YAML_TYPE_DICT = "yaml_dict"
-    NODE_YAML_TYPE_LIST = "yaml_list"
-    NODE_YAML_TYPE_SIMPLE = "yaml_simple"
+    FORMAT_TYPE_FULL = 'full'
+    FORMAT_TYPE_SIMPLE = 'simple'
+    
+    NODE_YAML_TYPE_DICT = 'yaml_dict'
+    NODE_YAML_TYPE_LIST = 'yaml_list'
+    NODE_YAML_TYPE_SIMPLE = 'yaml_simple'
 
     @staticmethod
-    def get_node_yaml_type(yaml_content):
+    def get_node_yaml_type(yaml_content, format_type=None):
         if isinstance(yaml_content, list):
+            if format_type is not None:
+                raise Exception(f"when the yaml content is a list, the format type may not be given")
             return NodeFactory.NODE_YAML_TYPE_LIST
         if isinstance(yaml_content, dict):
-            if 'type_name' not in yaml_content:
+            if format_type is None:
+                if 'type_name' not in yaml_content:
+                    return NodeFactory.NODE_YAML_TYPE_SIMPLE
+                return NodeFactory.NODE_YAML_TYPE_DICT
+            elif format_type == NodeFactory.FORMAT_TYPE_FULL:
+                return NodeFactory.NODE_YAML_TYPE_DICT
+            elif format_type == NodeFactory.FORMAT_TYPE_SIMPLE:
                 return NodeFactory.NODE_YAML_TYPE_SIMPLE
-            return NodeFactory.NODE_YAML_TYPE_DICT
+            else:
+                raise Exception(f"format_type {format_type} is invalid")
         raise Exception(f"yaml_content is of unknown type {type(yaml_content)}")
 
     @staticmethod
@@ -94,8 +106,8 @@ class NodeFactory:
         return nodes
 
     @staticmethod
-    def from_yaml_content(yaml_content, force_list=False):
-        node_yaml_type = NodeFactory.get_node_yaml_type(yaml_content=yaml_content)
+    def from_yaml_content(yaml_content, format_type=None, force_list=False):
+        node_yaml_type = NodeFactory.get_node_yaml_type(yaml_content=yaml_content, format_type=format_type)
         if node_yaml_type == NodeFactory.NODE_YAML_TYPE_DICT:
             return NodeFactory.from_yaml_dict(yaml_dict=yaml_content)
         if node_yaml_type == NodeFactory.NODE_YAML_TYPE_LIST:

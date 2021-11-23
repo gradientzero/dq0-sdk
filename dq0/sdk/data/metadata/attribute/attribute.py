@@ -119,7 +119,7 @@ class Attribute:
         if self.is_explicit_list_element:
             return "-"
         else:
-            return MetaUtils.str_from(self.key, quoted=True) + ":"
+            return f"  {MetaUtils.str_from(self.key, quoted=True)}:"
 
     def __repr__(self):
         return "Attribute(" + \

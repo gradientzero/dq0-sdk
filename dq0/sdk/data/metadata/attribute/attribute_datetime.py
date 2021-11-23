@@ -19,7 +19,7 @@ class AttributeDatetime(Attribute):
         super_str = super().__str__(request_uuids=request_uuids)
         if super_str is None:
             return None
-        return super_str + ' ' + MetaUtils.str_from(object=self.value, quoted=True)
+        return super_str + ' ' + MetaUtils.str_from(object=self.value, quoted=True).replace('\n', "\n  ")
 
     def __repr__(self):
         return "AttributeDatetime(" + \

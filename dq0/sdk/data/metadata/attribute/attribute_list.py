@@ -21,7 +21,7 @@ class AttributeList(Attribute):
         super_str = super().__str__(request_uuids=request_uuids)
         if super_str is None:
             return None
-        return super_str + MetaUtils.restricted_str_from_list(list=self.value, sort=False, request_uuids=request_uuids)
+        return super_str + MetaUtils.restricted_str_from_list(list=self.value, sort=False, request_uuids=request_uuids).replace('\n', "\n  ")
 
     def __repr__(self):
         return "AttributeList(" + \
