@@ -72,7 +72,7 @@ class DefaultPermissions:
         })
 
     @staticmethod
-    def user_attribute(role_uuids=None):
+    def analyst_attribute(role_uuids=None):
         return Permissions(permissions={
             Action.READ: DefaultPermissions.select_uuids(role_uuids=role_uuids, role_names={DefaultPermissions.OWNER_NAME, DefaultPermissions.USER_NAME}),
             Action.WRITE_PERMISSIONS: DefaultPermissions.select_uuids(role_uuids=role_uuids, role_names={DefaultPermissions.OWNER_NAME}),

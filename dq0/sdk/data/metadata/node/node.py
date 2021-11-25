@@ -98,6 +98,25 @@ class Node:
             merged.append(elem_b.copy())
         return merged
 
+    @staticmethod
+    def attributes_list_matches_map(attributes_list, attributes_map):
+        if attributes_list is None:
+            return attributes_map is None
+        for key, value in attributes_map.items() if attributes_map is not None else {}:
+            tmp_attributes_list = None
+            if key is None:
+                tmp_attributes_list = [tmp_attribute for tmp_attribute in attributes_list if tmp_attribute is not None and tmp_attribute.value == value]
+            else:
+                tmp_attributes_list = [tmp_attribute for tmp_attribute in attributes_list if tmp_attribute is not None and tmp_attribute.key == key]
+            if 0 < len(tmp_attributes_list):
+                tmp_attribute = tmp_attributes_list[0]
+                if isinstance(value, dict):
+                    if not Node.attributes_list_matches_map(attributes_list=tmp_attribute.value, attributes_map=value):
+                        return False
+                elif tmp_attribute.value != value:
+                    return False        
+        return True
+
     def __init__(self, type_name, attributes=None, child_nodes=None, permissions=None):
         if not NodeType.is_valid_type_name(type_name=type_name):
             raise Exception(f"invalid type_name {type_name if type_name is not None else 'None'}")
@@ -235,7 +254,7 @@ class Node:
             raise Exception("duplicate attributes not allowed")            
         if self.attributes is None:
             self.attributes = []
-        if Attribute.check_list_and_is_explicit_list(list=self.attributes, additional=attribute):
+        if Attribute.check_list(attribute_list=self.attributes, allowed_keys_type_names_permissions=None):
             raise Exception("node may not have list of attributes with multiple null keys")
         if index < 0:
             index = len(self.attributes)
@@ -250,17 +269,11 @@ class Node:
                 return
         raise Exception("attribute not found")
 
-    def matches_attribute_map(self, attributes_map):
-        for tmp_key, tmp_value in attributes_map.items() if attributes_map is not None else {}:
-            if self.get_attribute(index=-1, key=tmp_key, value=tmp_value) is None:
-                return False
-        return True
-
     def get_child_node(self, index=-1, attributes_map=None):
         if index < 0 and attributes_map is None:
             return None
         for tmp_index, tmp_child_node in enumerate(self.child_nodes if self.child_nodes is not None else []):
-            if (index < 0 or index == tmp_index) and (attributes_map is None or tmp_child_node.matches_attribute_map(attributes_map=attributes_map)):
+            if (index < 0 or index == tmp_index) and (attributes_map is None or Node.attributes_list_matches_map(attributes_list=tmp_child_node.attributes, attributes_map=attributes_map)):
                 return tmp_child_node
         return None
 
@@ -281,7 +294,7 @@ class Node:
         if index < 0 and attributes_map is None:
             raise Exception("child_node not found")
         for tmp_index, tmp_child_node in enumerate(self.child_nodes if self.child_nodes is not None else []):
-            if (index < 0 or index == tmp_index) and (attributes_map is None or tmp_child_node.matches_attribute_map(attributes_map=attributes_map)):
+            if (index < 0 or index == tmp_index) and (attributes_map is None or Node.attributes_list_matches_map(attributes_list=tmp_child_node.attributes, attributes_map=attributes_map)):
                 del self.child_nodes[tmp_index]
                 for index, tmp_child_node in enumerate(self.child_nodes if self.child_nodes is not None else []):
                     tmp_child_node.list_index = index if 1 < len(self.child_nodes) else -1

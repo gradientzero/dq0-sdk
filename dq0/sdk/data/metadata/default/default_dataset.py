@@ -18,10 +18,15 @@ class DefaultDataset:
     @staticmethod
     def apply_defaults_to_attributes(attributes, role_uuids=None):
         Attribute.check_list(attribute_list=attributes, allowed_keys_type_names_permissions=None)
+        owner_attribute = DefaultPermissions.owner_attribute(role_uuids=role_uuids)
+        shared_attribute = DefaultPermissions.shared_attribute(role_uuids=role_uuids)
         applied_attributes = [] if attributes is not None else None
         for attribute in attributes if attributes is not None else []:
             applied_attribute = attribute.copy()
-            applied_attribute.set_default_permissions(default_permissions=DefaultPermissions.shared_attribute(role_uuids=role_uuids))
+            if applied_attribute.key in ['differential_privacy']:
+                applied_attribute.set_default_permissions(default_permissions=owner_attribute)
+            else:
+                applied_attribute.set_default_permissions(default_permissions=shared_attribute)
             applied_attributes.append(applied_attribute)
         return applied_attributes
 
@@ -41,18 +46,29 @@ class DefaultDataset:
 
     @staticmethod
     def verify_attributes(attributes, role_uuids=None):
+        owner_attribute = DefaultPermissions.owner_attribute(role_uuids=role_uuids)
         shared_attribute = DefaultPermissions.shared_attribute(role_uuids=role_uuids)
         Attribute.check_list(attribute_list=attributes, allowed_keys_type_names_permissions={
-            'description': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
-            'metadata_is_public': ([AttributeType.TYPE_NAME_BOOLEAN], shared_attribute),
-            'name': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
-            'privacy_level': ([AttributeType.TYPE_NAME_INT], shared_attribute),
-            'tags': ([AttributeType.TYPE_NAME_LIST], shared_attribute),
+            'data': ([AttributeType.TYPE_NAME_LIST], shared_attribute),
+            'differential_privacy': ([AttributeType.TYPE_NAME_LIST], owner_attribute),
         })
-        tags_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'tags'] if attributes is not None else []
-        if 0 < len(tags_attributes):
-            Attribute.check_list(attribute_list=tags_attributes[0].value, allowed_keys_type_names_permissions={
-                None: ([AttributeType.TYPE_NAME_STRING], shared_attribute),
+        data_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'data'] if attributes is not None else []
+        if 0 < len(data_attributes):
+            Attribute.check_list(attribute_list=data_attributes[0].value, allowed_keys_type_names_permissions={
+                'description': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
+                'metadata_is_public': ([AttributeType.TYPE_NAME_BOOLEAN], shared_attribute),
+                'name': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
+                'tags': ([AttributeType.TYPE_NAME_LIST], shared_attribute),
+            })
+            tags_attributes = [tmp_attribute for tmp_attribute in data_attributes[0].value if tmp_attribute.key == 'tags'] if data_attributes[0].value is not None else []
+            if 0 < len(tags_attributes):
+                Attribute.check_list(attribute_list=tags_attributes[0].value, allowed_keys_type_names_permissions={
+                    None: ([AttributeType.TYPE_NAME_STRING], shared_attribute),
+                })
+        differential_privacy_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'differential_privacy'] if attributes is not None else []
+        if 0 < len(differential_privacy_attributes):
+            Attribute.check_list(attribute_list=differential_privacy_attributes[0].value, allowed_keys_type_names_permissions={
+                'privacy_level': ([AttributeType.TYPE_NAME_INT], owner_attribute),
             })
 
     @staticmethod

@@ -149,7 +149,7 @@ class Permissions:
                 if action_index < len(sorted_actions) - 1:
                     repr_permissions += ", "
             repr_permissions += '}'
-        return "Permissions(permissions=" + repr(self.permissions) + ')'
+        return f"Permissions(permissions={repr_permissions})"
 
     def __eq__(self, other):
         if other is None or not isinstance(other, Permissions):

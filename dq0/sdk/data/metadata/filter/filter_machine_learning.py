@@ -6,32 +6,58 @@ class FilterMachineLearning(Filter):
     def filter(node):
         retain_attributes = {
             'dataset': {
-                'name': None,
-                'description': None,
-                'tags': None,
+                'data': {
+                    'description': None,
+                    'name': None,
+                    'tags': None,
+                },
             },
             'database': {
-                'name': None,
-                'description': None,
-                'connector': None,
+                'connector': {
+                    'type_name': None,
+                },
+                'data': {
+                    'description': None,
+                    'name': None,
+                },
             },
             'schema': {
-                'name': None,
-                'description': None,
+                'data': {
+                    'description': None,
+                    'name': None,
+                },
             },
             'table': {
-                'name': None,
-                'description': None,
-                'connector': None,
-                'budget_epsilon': None,
-                'budget_delta': None,
+                'connector': {
+                    'decimal': None,
+                    'header_columns': None,
+                    'header_row': None,
+                    'na_values': None,
+                    'sep': None,
+                    'skipinitialspace': None,
+                    'type_name': None,
+                    'uri': None,
+                    'use_original_header': None,
+                },
+                'data': {
+                    'description': None,
+                    'name': None,
+                },
+                'differential_privacy': {
+                    'budget_delta': None,
+                    'budget_epsilon': None,
+                },
             },
             'column': {
-                'name': None,
-                'description': None,
-                'data_type_name': None,
-                'is_feature': None,
-                'is_target': None,
+                'data': {
+                    'data_type_name': None,
+                    'description': None,
+                    'name': None,
+                },
+                'machine_learning': {
+                    'is_feature': None,
+                    'is_target': None,
+                },
             }
         }
         return Filter.filter(node=node, retain_nodes=None, retain_attributes=retain_attributes)

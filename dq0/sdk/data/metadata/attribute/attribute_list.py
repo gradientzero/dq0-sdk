@@ -83,7 +83,7 @@ class AttributeList(Attribute):
             raise MergeException(f"cannot merge attributes that are not mergeable; self: {self} other: {other} explanation: {explanation}")
         merged = self.copy()
         merged.value = Attribute.merge_many(attribute_list_a=self.value, attribute_list_b=other.value, overwrite_permissions=overwrite_permissions, request_uuids=request_uuids)
-        merged.is_explicit_list = Attribute.check_list_and_is_explicit_list(list=merged.value, additional=None)
+        merged.is_explicit_list = Attribute.check_list(attribute_list=merged.value, allowed_keys_type_names_permissions=None)
         for tmp_attribute in merged.value:
             tmp_attribute.set_explicit_list_element(is_explicit_list_element=merged.is_explicit_list)
         merged.permissions = Permissions.merge(permissions_a=self.permissions, permissions_b=other.permissions, overwrite=overwrite_permissions)           
@@ -111,7 +111,7 @@ class AttributeList(Attribute):
             raise Exception("duplicate attributes not allowed")
         if self.value is None:
             self.value = []
-        self.is_explicit_list = Attribute.check_list_and_is_explicit_list(list=self.value, additional=attribute)
+        self.is_explicit_list = Attribute.check_list(attribute_list=self.value, allowed_keys_type_names_permissions=None)
         if index < 0:
             index = len(self.value)
         self.value.insert(index, attribute)
@@ -124,7 +124,7 @@ class AttributeList(Attribute):
         for tmp_index, tmp_attribute in enumerate(self.value if self.value is not None else []):
             if (index < 0 or index == tmp_index) and (key is None or key == tmp_attribute.key) and (value is None or value == tmp_attribute.value):
                 del self.value[tmp_index]
-                self.is_explicit_list = Attribute.check_list_and_is_explicit_list(list=self.value, additional=None)
+                self.is_explicit_list = Attribute.check_list(attribute_list=self.value, allowed_keys_type_names_permissions=None)
                 for tmp_attribute in self.value:
                     tmp_attribute.set_explicit_list_element(is_explicit_list_element=self.is_explicit_list)
                 return

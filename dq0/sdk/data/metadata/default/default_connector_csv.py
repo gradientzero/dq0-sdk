@@ -34,7 +34,8 @@ class DefaultConnectorCSV:
         shared_attribute = DefaultPermissions.shared_attribute(role_uuids=role_uuids)
         Attribute.check_list(attribute_list=attributes, allowed_keys_type_names_permissions={
             'decimal': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
-            'header_row': ([AttributeType.TYPE_NAME_LIST], shared_attribute),
+            'header_columns': ([AttributeType.TYPE_NAME_LIST], shared_attribute),
+            'header_row': ([AttributeType.TYPE_NAME_BOOLEAN], shared_attribute),
             'na_values': ([AttributeType.TYPE_NAME_LIST], shared_attribute),
             'sep': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
             'skipinitialspace': ([AttributeType.TYPE_NAME_BOOLEAN], shared_attribute),
@@ -47,10 +48,10 @@ class DefaultConnectorCSV:
             raise Exception("csv connector attributes do not contain attribute type_name")
         if type_name_attributes[0].value != 'csv':
             raise Exception(f"csv connector type_name value {type_name_attributes[0].value} does not match 'csv'")
-        header_row_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'header_row'] if attributes is not None else []
-        if 0 < len(header_row_attributes):
-            Attribute.check_list(attribute_list=header_row_attributes[0].value, allowed_keys_type_names_permissions={
-                None: ([AttributeType.TYPE_NAME_INT], shared_attribute),
+        header_columns_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'header_columns'] if attributes is not None else []
+        if 0 < len(header_columns_attributes):
+            Attribute.check_list(attribute_list=header_columns_attributes[0].value, allowed_keys_type_names_permissions={
+                None: ([AttributeType.TYPE_NAME_STRING], shared_attribute),
             })
         na_value_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'na_values'] if attributes is not None else []
         if 0 < len(na_value_attributes):
