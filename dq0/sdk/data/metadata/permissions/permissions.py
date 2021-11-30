@@ -100,7 +100,7 @@ class Permissions:
         return return_string
 
     @staticmethod
-    def is_allowed_with(permissions, action, request_uuids=[], explanation=None):
+    def is_allowed_with(permissions, action, request_uuids=set(), explanation=None):
         Permissions.check_internal_uuids(internal_uuids=request_uuids)
         if action is not None and not Action.is_valid_action(action=action):
             raise Exception(f"action {action} is invalid")
@@ -199,7 +199,7 @@ class Permissions:
                 merged_permissions[action] = allowed_uuids.copy() if allowed_uuids is not None else None
         return Permissions(permissions=merged_permissions)
 
-    def is_allowed(self, action, request_uuids=[], explanation=None):
+    def is_allowed(self, action, request_uuids=set(), explanation=None):
         Permissions.check_internal_uuids(internal_uuids=request_uuids)
         if action is not None and not Action.is_valid_action(action=action):
             raise Exception(f"action {action} is invalid")

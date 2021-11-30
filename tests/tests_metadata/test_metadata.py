@@ -12,8 +12,8 @@ from dq0.sdk.data.metadata.metadata import Metadata
 
 def test_metadata():
     # prepare yaml file
-    content = '''metadata_format_type: 'full'
-metadata_format_version: 2021112301
+    content = '''metadata_default_version: 2021112301
+metadata_format_type: 'full'
 metadata_node:
   type_name: 'dataset'
   attributes:
@@ -513,8 +513,8 @@ metadata_node:
 
 def test_combine_metadata():
     # prepare yaml file
-    content1 = '''metadata_format_type: 'full'
-metadata_format_version: 2021112301
+    content1 = '''metadata_default_version: 2021112301
+metadata_format_type: 'full'
 metadata_node:
   type_name: 'dataset'
   attributes:
@@ -599,8 +599,8 @@ metadata_node:
               key: 'private_id'
               value: true
 '''
-    content2 = '''metadata_format_type: 'full'
-metadata_format_version: 2021112301
+    content2 = '''metadata_default_version: 2021112301
+metadata_format_type: 'full'
 metadata_node:
   type_name: 'dataset'
   attributes:
@@ -685,8 +685,8 @@ metadata_node:
               key: 'private_id'
               value: true
 '''
-    content3 = '''metadata_format_type: 'full'
-metadata_format_version: 2021112301
+    content3 = '''metadata_default_version: 2021112301
+metadata_format_type: 'full'
 metadata_node:
   type_name: 'dataset'
   attributes:
@@ -781,8 +781,8 @@ metadata_node:
     metadata2, _ = Metadata.from_yaml(yaml_content=content2, role_uuids=role_uuids)
     metadata3, _ = Metadata.from_yaml(yaml_content=content3, role_uuids=role_uuids)
 
-    metadata_merged_a = metadata1.merge_with(other=metadata2, overwrite_value=False, overwrite_permissions=False, request_uuids=owner_uuids, default=default)
-    metadata_merged_b = metadata_merged_a.merge_with(other=metadata3, overwrite_value=False, overwrite_permissions=False, request_uuids=owner_uuids, default=default)
+    metadata_merged_a = metadata1.merge_with(other=metadata2, overwrite_value=False, overwrite_permissions=False, request_uuids=owner_uuids, default=None)
+    metadata_merged_b = metadata_merged_a.merge_with(other=metadata3, overwrite_value=False, overwrite_permissions=False, request_uuids=owner_uuids, default=None)
 
     assert metadata_merged_b.node.get_child_node(index=-1, attributes_map={'data': {'name': 'test_db_1'}}).child_nodes[0].get_child_node(index=-1, attributes_map={'data': {'name': 'test_tab_1'}}).get_attribute(index=-1, key='connector', value=None).get_attribute(index=-1, key='uri', value='user1@db') is not None
     assert metadata_merged_b.node.get_child_node(index=-1, attributes_map={'data': {'name': 'test_db_2'}}).child_nodes[0].get_child_node(index=-1, attributes_map={'data': {'name': 'test_tab_2'}}).get_attribute(index=-1, key='differential_privacy', value=None).get_attribute(index=-1, key='budget_epsilon', value=1001.0) is not None

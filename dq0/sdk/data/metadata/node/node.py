@@ -54,7 +54,7 @@ class Node:
         return True
 
     @staticmethod
-    def are_mergeable(list_a, list_b, overwrite_value=False, overwrite_permissions=False, request_uuids=[], explanation=None):
+    def are_mergeable(list_a, list_b, overwrite_value=False, overwrite_permissions=False, request_uuids=set(), explanation=None):
         if not Node.are_merge_compatible(node_list_a=list_a, node_list_b=list_b):
             Explanation.dynamic_add_message(explanation=explanation, message=f"Node.are_mergeable(...): nodes are not compatible")
             return False
@@ -73,7 +73,7 @@ class Node:
         return True
 
     @staticmethod
-    def merge_many(list_a, list_b, overwrite_value=False, overwrite_permissions=False, request_uuids=[]):
+    def merge_many(list_a, list_b, overwrite_value=False, overwrite_permissions=False, request_uuids=set()):
         explanation = Explanation()
         if not Node.are_mergeable(list_a=list_a, list_b=list_b, overwrite_value=overwrite_value, overwrite_permissions=overwrite_permissions, request_uuids=request_uuids, explanation=explanation):
             raise MergeException(f"cannot merge nodes that are not mergeable; list_a: {list_a} list_b: {list_b} explanation: {explanation}")
@@ -132,7 +132,7 @@ class Node:
         self.permissions = permissions
         self.list_index = -1
 
-    def __str__(self, request_uuids=[]):
+    def __str__(self, request_uuids=set()):
         if not Permissions.is_allowed_with(permissions=self.permissions, action=Action.READ, request_uuids=request_uuids):
             return None
         index_string = f"_{self.list_index}" if -1 < self.list_index else ''
@@ -171,7 +171,7 @@ class Node:
         copied_node.list_index = self.list_index
         return copied_node
 
-    def to_dict(self, request_uuids=[]):
+    def to_dict(self, request_uuids=set()):
         if not Permissions.is_allowed_with(permissions=self.permissions, action=Action.READ, request_uuids=request_uuids):
             return None
         return {tmp_key: tmp_value for tmp_key, tmp_value in [
@@ -199,7 +199,7 @@ class Node:
             return False
         return True
 
-    def is_mergeable_with(self, other, overwrite_value=False, overwrite_permissions=False, request_uuids=[], explanation=None):
+    def is_mergeable_with(self, other, overwrite_value=False, overwrite_permissions=False, request_uuids=set(), explanation=None):
         if not self.is_merge_compatible_with(other=other, explanation=explanation):
             Explanation.dynamic_add_message(explanation=explanation, message=f"Node[{self.type_name}].is_mergeable_with(...): other is not compatible")            
             return False
@@ -226,7 +226,7 @@ class Node:
             return False
         return True
 
-    def merge_with(self, other, overwrite_value=False, overwrite_permissions=False, request_uuids=[]):
+    def merge_with(self, other, overwrite_value=False, overwrite_permissions=False, request_uuids=set()):
         explanation = Explanation()
         if not self.is_mergeable_with(other=other, overwrite_value=overwrite_value, overwrite_permissions=overwrite_permissions, request_uuids=request_uuids, explanation=explanation):
             raise MergeException(f"cannot merge nodes that are not mergeable; self: {self} other: {other} explanation: {explanation}")
@@ -239,13 +239,13 @@ class Node:
         merged.permissions = Permissions.merge(permissions_a=self.permissions, permissions_b=other.permissions, overwrite=overwrite_permissions)
         return merged
 
-    def get_attribute(self, index=-1, key=None, value=None):
+    def get_attribute(self, index=-1, key=None, value=None, default=None):
         if index < 0 and key is None and value is None:
-            return None
+            return default
         for tmp_index, tmp_attribute in enumerate(self.attributes if self.attributes is not None else []):
             if (index < 0 or index == tmp_index) and (key is None or key == tmp_attribute.key) and (value is None or value == tmp_attribute.value):
                 return tmp_attribute
-        return None
+        return default
 
     def add_attribute(self, attribute, index=-1):
         if attribute is None:

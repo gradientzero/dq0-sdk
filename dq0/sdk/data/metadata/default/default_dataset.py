@@ -73,5 +73,7 @@ class DefaultDataset:
 
     @staticmethod
     def verify_child_nodes(child_nodes, role_uuids=None):
+        if 1 < len(child_nodes):
+            raise Exception(f"dataset may only have a single database as child node")
         for child_node in child_nodes if child_nodes is not None else []:
             DefaultDatabase.verify(node=child_node, role_uuids=role_uuids)

@@ -36,22 +36,18 @@ class CSV(Source):
         self.index_col = None
         self.skipinitialspace = False
         if meta_ml is not None:
-            table_connector = self.meta_ml.root_node.child_nodes[0].child_nodes[0].child_nodes[0].connector  # Since there is only one table as tested in data_connector
-            self.use_original_header = getattr(table_connector, "use_original_header", self.use_original_header)
-            self.header_row = getattr(table_connector, "header_row", self.header_row)
-            self.header_columns = getattr(table_connector, "header_columns", self.header_columns)
-            self.sep = getattr(table_connector, "sep", self.sep)
-            self.decimal = getattr(table_connector, "decimal", self.decimal)
-            self.na_values = getattr(table_connector, "na_values", self.na_values)
-            self.index_col = getattr(table_connector, "index_col", self.index_col)
-            self.skipinitialspace = getattr(table_connector, "skipinitialspace", self.skipinitialspace)
-
-            feature_cols, target_cols = MetaUtils.get_feature_target_cols_from_meta(meta_ml)
-            self.feature_cols = feature_cols
-            self.target_cols = target_cols
-
-            col_types = MetaUtils.get_col_types(meta_ml)
-            self.col_types = col_types
+            table_connector = self.meta_ml.node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(key='connector')  # Since there is only one table as tested in data_connector
+            self.use_original_header = table_connector.get_attribute(key='use_original_header', default=self.use_original_header) if table_connector is not None else self.use_original_header
+            self.header_row = table_connector.get_attribute(key='header_row', default=self.header_row) if table_connector is not None else self.header_row
+            self.header_columns = MetaUtils.get_header_columns_from_meta(metadata=meta_ml)
+            self.sep = table_connector.get_attribute(key='sep', default=self.sep) if table_connector is not None else self.sep
+            self.decimal = table_connector.get_attribute(key='decimal', default=self.decimal) if table_connector is not None else self.decimal
+            tmp_na_values = table_connector.get_attribute(key='na_values') if table_connector is not None else None
+            self.na_values = tmp_na_values.to_dict() if tmp_na_values is not None else self.na_values
+            self.index_col = table_connector.get_attribute(key='index_col', default=self.index_col) if table_connector is not None else self.index_col
+            self.skipinitialspace = table_connector.get_attribute(key='skipinitialspace', default=self.skipinitialspace) if table_connector is not None else self.skipinitialspace
+            self.feature_cols, self.target_cols = MetaUtils.get_feature_target_cols_from_meta(metadata=meta_ml)
+            self.col_types = MetaUtils.get_col_types(metadata=meta_ml)
 
     def read(self, **kwargs):
         """Read CSV data sources

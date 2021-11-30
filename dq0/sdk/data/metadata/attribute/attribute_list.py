@@ -17,7 +17,7 @@ class AttributeList(Attribute):
             tmp_attribute.set_explicit_list_element(is_explicit_list_element=self.is_explicit_list)
         self.value = value
 
-    def __str__(self, request_uuids=[]):
+    def __str__(self, request_uuids=set()):
         super_str = super().__str__(request_uuids=request_uuids)
         if super_str is None:
             return None
@@ -43,7 +43,7 @@ class AttributeList(Attribute):
         copied_attribute.set_explicit_list_element(is_explicit_list_element=self.is_explicit_list_element)
         return copied_attribute
 
-    def to_dict(self, request_uuids=[]):
+    def to_dict(self, request_uuids=set()):
         super_dict = super().to_dict(request_uuids=request_uuids)
         if super_dict is None:
             return None
@@ -61,7 +61,7 @@ class AttributeList(Attribute):
             return False
         return True
 
-    def is_mergeable_with(self, other, overwrite_value=False, overwrite_permissions=False, request_uuids=[], explanation=None):
+    def is_mergeable_with(self, other, overwrite_value=False, overwrite_permissions=False, request_uuids=set(), explanation=None):
         if not self.is_merge_compatible_with(other=other, explanation=explanation):
             Explanation.dynamic_add_message(explanation=explanation, message=f"AttributeList.is_mergeable_with(...): not merge compatible")            
             return False
@@ -77,7 +77,7 @@ class AttributeList(Attribute):
             return False
         return True
 
-    def merge_with(self, other, overwrite_value=False, overwrite_permissions=False, request_uuids=[]):
+    def merge_with(self, other, overwrite_value=False, overwrite_permissions=False, request_uuids=set()):
         explanation = Explanation()
         if not self.is_mergeable_with(other=other, overwrite_value=overwrite_value, overwrite_permissions=overwrite_permissions, request_uuids=request_uuids, explanation=explanation):
             raise MergeException(f"cannot merge attributes that are not mergeable; self: {self} other: {other} explanation: {explanation}")
@@ -96,13 +96,13 @@ class AttributeList(Attribute):
         for attribute in self.value if self.value is not None else []:
             attribute.set_default_permissions(default_permissions=default_permissions)
 
-    def get_attribute(self, index=-1, key=None, value=None):
+    def get_attribute(self, index=-1, key=None, value=None, default=None):
         if index < 0 and key is None and value is None:
-            return None
+            return default
         for tmp_index, tmp_attribute in enumerate(self.value if self.value is not None else []):
             if (index < 0 or index == tmp_index) and (key is None or key == tmp_attribute.key) and (value is None or value == tmp_attribute.value):
                 return tmp_attribute
-        return None
+        return default
 
     def add_attribute(self, attribute, index=-1):
         if attribute is None:

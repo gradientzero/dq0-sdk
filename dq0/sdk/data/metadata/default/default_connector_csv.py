@@ -59,5 +59,3 @@ class DefaultConnectorCSV:
             for tmp_attribute in na_value_attributes[0].value:
                 if tmp_attribute.key is None:
                     raise Exception("na_values may not have none keys")
-                if tmp_attribute.type_name != AttributeType.TYPE_NAME_STRING:
-                    raise Exception(f"na_value must have type_name {AttributeType.TYPE_NAME_STRING}, has type_name {tmp_attribute.type_name} instead")

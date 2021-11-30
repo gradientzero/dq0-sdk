@@ -84,24 +84,31 @@ def load_dataset_info_from_yaml(metadata, columns_list):
     # from dq0.sdk.data.metadata import Metadata  # noqa: E402, I202, I100
     # metadata = Metadata(filename=path_to_yaml_data_file)
 
-    if len(metadata.schemas.keys()) > 1:
-        logger.fatal('Only one DB schema is handled!')
+    if 1 < len(metadata.node.child_nodes):
+        logger.fatal('Only one database is handled!')
         return 1
-
-    schema = list(metadata.schemas.values())[0]
-
-    if len(schema.tables.keys()) > 1:
+    if 1 < len(metadata.node.child_nodes[0].child_nodes):
+        logger.fatal('Only one schema is handled!')
+        return 1
+    if 1 < len(metadata.node.child_nodes[0].child_nodes[0].child_nodes):
         logger.fatal('Only one table is handled!')
         return 1
 
-    table = list(schema.tables.values())[0]
+    table = metadata.node.child_nodes[0].child_nodes[0].child_nodes[0]
 
     categorical_features_list = []
     quantitative_features_list = []
     for col_name in columns_list:
-        col_obj = table.columns[col_name]
-        # assert col_name == col_obj.name
-        if col_obj.type == 'string':
+        col_obj = table.get_child_node(attributes_map={'data': {'name': col_name}})
+        if col_obj is None:
+            logger.fatal(f"column {col_name} missing from metadata")
+            return 1
+        col_data = col_obj.get_attribute(key='data')
+        col_data_type_name = col_data.get_attribute(key='data_type_name') if col_data is not None else None
+        if col_data_type_name is None:
+            logger.fatal(f"data_type_name of column {col_name} missing from metadata")
+            return 1
+        if col_data_type_name.value == 'string':
             categorical_features_list.append(col_name)
         else:  # if col_obj.type == 'int' or col_obj.type == 'float':
             quantitative_features_list.append(col_name)

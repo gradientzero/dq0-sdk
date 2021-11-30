@@ -17,10 +17,10 @@ class Metadata:
     @staticmethod
     def from_yaml(yaml_content, role_uuids=None):
         yaml_dict = yaml.load(stream=yaml_content, Loader=yaml.FullLoader)
-        format_version = yaml_dict.pop('metadata_format_version', None)
+        default_version = yaml_dict.pop('metadata_default_version', None)
         format_type = yaml_dict.pop('metadata_format_type', None)
         node_dict = yaml_dict.pop('metadata_node', None)
-        default = Default.obtain_with(version=format_version, role_uuids=role_uuids)
+        default = Default.obtain_with(version=default_version, role_uuids=role_uuids)
         return Metadata(node=NodeFactory.from_yaml_content(yaml_content=node_dict, format_type=format_type, force_list=False), default=default), default
 
     def __init__(self, node, default=None):
@@ -34,7 +34,7 @@ class Metadata:
             default.verify(node=self.node)
             self.version = default.version(requested_version=self.version)
 
-    def __str__(self, request_uuids=[]):
+    def __str__(self, request_uuids=set()):
         return_string = f"metadata_default_version: {self.version}" + '\n'
         return_string += f"metadata_format_type: '{NodeFactory.FORMAT_TYPE_SIMPLE}'"
         node_string = self.node.__str__(request_uuids=request_uuids)
@@ -53,17 +53,17 @@ class Metadata:
             raise Exception("filter_func is None")
         return Metadata(node=filter_func(node=self.node.copy()), default=default)
 
-    def to_dict(self, request_uuids=[]):
+    def to_dict(self, request_uuids=set()):
         return {tmp_key: tmp_value for tmp_key, tmp_value in [
                 ('metadata_default_version', self.version),
                 ('metadata_format_type', NodeFactory.FORMAT_TYPE_FULL),
                 ('metadata_node', self.node.to_dict(request_uuids=request_uuids) if self.node is not None else None),
             ] if tmp_value is not None}
 
-    def to_yaml(self, request_uuids=[]):
+    def to_yaml(self, request_uuids=set()):
         return yaml.dump(self.to_dict(request_uuids=request_uuids))
 
-    def merge_with(self, other, overwrite_value=False, overwrite_permissions=False, request_uuids=[], default=None):
+    def merge_with(self, other, overwrite_value=False, overwrite_permissions=False, request_uuids=set(), default=None):
         if other is None:
             raise Exception("other is None")
         if other.node is None:

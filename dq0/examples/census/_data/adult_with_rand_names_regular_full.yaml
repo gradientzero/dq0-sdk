@@ -1,0 +1,618 @@
+metadata_default_version: 2021112301
+metadata_format_type: 'full'
+metadata_node:
+  type_name: 'dataset'
+  attributes:
+  - type_name: 'list'
+    key: 'data'
+    value:
+    - type_name: 'string'
+      key: 'description'
+      value: "This data was extracted from the 1994 Census bureau database by Ronny Kohavi and Barry Becker (Data Mining and Visualization, Silicon Graphics). A set of reasonably clean records was extracted using the following conditions: ((AAGE>16) && (AGI>100) && (AFNLWGT>1) && (HRSWK>0)). The prediction task is to determine whether a person makes over $50K a year."
+    - type_name: 'string'
+      key: 'name'
+      value: "Adult Census Income"
+  child_nodes:
+  - type_name: 'database'
+    child_nodes:
+    - type_name: 'schema'
+      child_nodes:
+      - type_name: 'table'
+        attributes:
+        - type_name: 'list'
+          key: 'connector'
+          value:
+          - type_name: 'list'
+            key: 'header_columns'
+            value:
+            - type_name: 'string'
+              value: 'lastname'
+            - type_name: 'string'
+              value: 'firstname'
+            - type_name: 'string'
+              value: 'age'
+            - type_name: 'string'
+              value: 'workclass'
+            - type_name: 'string'
+              value: 'fnlwgt'
+            - type_name: 'string'
+              value: 'education'
+            - type_name: 'string'
+              value: 'education-num'
+            - type_name: 'string'
+              value: 'marital-status'
+            - type_name: 'string'
+              value: 'occupation'
+            - type_name: 'string'
+              value: 'relationship'
+            - type_name: 'string'
+              value: 'race'
+            - type_name: 'string'
+              value: 'sex'
+            - type_name: 'string'
+              value: 'capital-gain'
+            - type_name: 'string'
+              value: 'capital-loss'
+            - type_name: 'string'
+              value: 'hours-per-week'
+            - type_name: 'string'
+              value: 'native-country'
+            - type_name: 'string'
+              value: 'income'
+          - type_name: 'list'
+            key: 'na_values'
+            value:
+            - type_name: 'int'
+              key: 'capital-gain'
+              value: 99999
+            - type_name: 'int'
+              key: 'capital-loss'
+              value: 99999
+            - type_name: 'int'
+              key: 'hours-per-week'
+              value: 99
+            - type_name: 'string'
+              key: 'native-country'
+              value: '?'
+            - type_name: 'string'
+              key: 'occupation'
+              value: '?'
+            - type_name: 'string'
+              key: 'workclass'
+              value: '?'
+          - type_name: 'boolean'
+            key: 'skipinitialspace'
+            value: true
+          - type_name: 'string'
+            key: 'type_name'
+            value: 'csv'
+          - type_name: 'string'
+            key: 'uri'
+            value: "../dq0-sdk/dq0/examples/census/_data/adult_with_rand_names.csv"
+          - type_name: 'boolean'
+            key: 'use_original_header'
+            value: true
+        - type_name: 'list'
+          key: 'differential_privacy'
+          value:
+          - type_name: 'string'
+            key: 'privacy_column'
+            value: 'fnlwgt'
+        - type_name: 'list'
+          key: 'differential_privacy_sql'
+          value:
+          - type_name: 'int'
+            key: 'rows'
+            value: 50511
+        child_nodes:
+        - type_name: 'column'
+          attributes:
+          - type_name: 'list'
+            key: 'data'
+            value:
+            - type_name: 'string'
+              key: 'data_type_name'
+              value: 'int'
+            - type_name: 'string'
+              key: 'name'
+              value: 'age'
+          - type_name: 'list'
+            key: 'data_synthesis'
+            value:
+            - type_name: 'boolean'
+              key: 'synthesizable'
+              value: true
+          - type_name: 'list'
+            key: 'differential_privacy'
+            value:
+            - type_name: 'int'
+              key: 'lower'
+              value: 19
+            - type_name: 'int'
+              key: 'upper'
+              value: 59
+          - type_name: 'list'
+            key: 'machine_learning'
+            value:
+            - type_name: 'boolean'
+              key: 'is_feature'
+              value: true
+        - type_name: 'column'
+          attributes:
+          - type_name: 'list'
+            key: 'data'
+            value:
+            - type_name: 'string'
+              key: 'data_type_name'
+              value: 'int'
+            - type_name: 'string'
+              key: 'name'
+              value: 'capital-gain'
+          - type_name: 'list'
+            key: 'data_synthesis'
+            value:
+            - type_name: 'boolean'
+              key: 'synthesizable'
+              value: true
+          - type_name: 'list'
+            key: 'differential_privacy'
+            value:
+            - type_name: 'int'
+              key: 'lower'
+              value: 0
+            - type_name: 'int'
+              key: 'upper'
+              value: 0
+          - type_name: 'list'
+            key: 'machine_learning'
+            value:
+            - type_name: 'boolean'
+              key: 'is_feature'
+              value: true
+        - type_name: 'column'
+          attributes:
+          - type_name: 'list'
+            key: 'data'
+            value:
+            - type_name: 'string'
+              key: 'data_type_name'
+              value: 'int'
+            - type_name: 'string'
+              key: 'name'
+              value: 'capital-loss'
+          - type_name: 'list'
+            key: 'data_synthesis'
+            value:
+            - type_name: 'boolean'
+              key: 'synthesizable'
+              value: true
+          - type_name: 'list'
+            key: 'differential_privacy'
+            value:
+            - type_name: 'int'
+              key: 'lower'
+              value: 0
+            - type_name: 'int'
+              key: 'upper'
+              value: 0
+          - type_name: 'list'
+            key: 'machine_learning'
+            value:
+            - type_name: 'boolean'
+              key: 'is_feature'
+              value: true
+        - type_name: 'column'
+          attributes:
+          - type_name: 'list'
+            key: 'data'
+            value:
+            - type_name: 'string'
+              key: 'data_type_name'
+              value: 'string'
+            - type_name: 'string'
+              key: 'name'
+              value: 'education'
+          - type_name: 'list'
+            key: 'data_synthesis'
+            value:
+            - type_name: 'boolean'
+              key: 'synthesizable'
+              value: true
+          - type_name: 'list'
+            key: 'differential_privacy'
+            value:
+            - type_name: 'int'
+              key: 'cardinality'
+              value: 16
+          - type_name: 'list'
+            key: 'machine_learning'
+            value:
+            - type_name: 'boolean'
+              key: 'is_feature'
+              value: true
+        - type_name: 'column'
+          attributes:
+          - type_name: 'list'
+            key: 'data'
+            value:
+            - type_name: 'string'
+              key: 'data_type_name'
+              value: 'int'
+            - type_name: 'string'
+              key: 'name'
+              value: 'education-num'
+          - type_name: 'list'
+            key: 'data_synthesis'
+            value:
+            - type_name: 'boolean'
+              key: 'synthesizable'
+              value: true
+          - type_name: 'list'
+            key: 'differential_privacy'
+            value:
+            - type_name: 'int'
+              key: 'lower'
+              value: 6
+            - type_name: 'int'
+              key: 'upper'
+              value: 14
+          - type_name: 'list'
+            key: 'machine_learning'
+            value:
+            - type_name: 'boolean'
+              key: 'is_feature'
+              value: true
+        - type_name: 'column'
+          attributes:
+          - type_name: 'list'
+            key: 'data'
+            value:
+            - type_name: 'string'
+              key: 'data_type_name'
+              value: 'string'
+            - type_name: 'string'
+              key: 'name'
+              value: 'firstname'
+          - type_name: 'list'
+            key: 'data_synthesis'
+            value:
+            - type_name: 'boolean'
+              key: 'synthesizable'
+              value: true
+          - type_name: 'list'
+            key: 'differential_privacy'
+            value:
+            - type_name: 'int'
+              key: 'cardinality'
+              value: 3298
+          - type_name: 'list'
+            key: 'machine_learning'
+            value:
+            - type_name: 'boolean'
+              key: 'is_feature'
+              value: true
+        - type_name: 'column'
+          attributes:
+          - type_name: 'list'
+            key: 'data'
+            value:
+            - type_name: 'string'
+              key: 'data_type_name'
+              value: 'int'
+            - type_name: 'string'
+              key: 'name'
+              value: 'fnlwgt'
+          - type_name: 'list'
+            key: 'data_synthesis'
+            value:
+            - type_name: 'boolean'
+              key: 'synthesizable'
+              value: true
+          - type_name: 'list'
+            key: 'differential_privacy'
+            value:
+            - type_name: 'int'
+              key: 'lower'
+              value: 39824
+            - type_name: 'int'
+              key: 'upper'
+              value: 334679
+          - type_name: 'list'
+            key: 'machine_learning'
+            value:
+            - type_name: 'boolean'
+              key: 'is_feature'
+              value: true
+        - type_name: 'column'
+          attributes:
+          - type_name: 'list'
+            key: 'data'
+            value:
+            - type_name: 'string'
+              key: 'data_type_name'
+              value: 'int'
+            - type_name: 'string'
+              key: 'name'
+              value: 'hours-per-week'
+          - type_name: 'list'
+            key: 'data_synthesis'
+            value:
+            - type_name: 'boolean'
+              key: 'synthesizable'
+              value: true
+          - type_name: 'list'
+            key: 'differential_privacy'
+            value:
+            - type_name: 'int'
+              key: 'lower'
+              value: 20
+            - type_name: 'int'
+              key: 'upper'
+              value: 60
+          - type_name: 'list'
+            key: 'machine_learning'
+            value:
+            - type_name: 'boolean'
+              key: 'is_feature'
+              value: true
+        - type_name: 'column'
+          attributes:
+          - type_name: 'list'
+            key: 'data'
+            value:
+            - type_name: 'string'
+              key: 'data_type_name'
+              value: 'string'
+            - type_name: 'string'
+              key: 'name'
+              value: 'income'
+          - type_name: 'list'
+            key: 'data_synthesis'
+            value:
+            - type_name: 'boolean'
+              key: 'synthesizable'
+              value: true
+          - type_name: 'list'
+            key: 'differential_privacy'
+            value:
+            - type_name: 'int'
+              key: 'cardinality'
+              value: 2
+          - type_name: 'list'
+            key: 'machine_learning'
+            value:
+            - type_name: 'boolean'
+              key: 'is_target'
+              value: true
+        - type_name: 'column'
+          attributes:
+          - type_name: 'list'
+            key: 'data'
+            value:
+            - type_name: 'string'
+              key: 'data_type_name'
+              value: 'string'
+            - type_name: 'string'
+              key: 'name'
+              value: 'lastname'
+          - type_name: 'list'
+            key: 'data_synthesis'
+            value:
+            - type_name: 'boolean'
+              key: 'synthesizable'
+              value: true
+          - type_name: 'list'
+            key: 'differential_privacy'
+            value:
+            - type_name: 'int'
+              key: 'cardinality'
+              value: 18144
+          - type_name: 'list'
+            key: 'machine_learning'
+            value:
+            - type_name: 'boolean'
+              key: 'is_feature'
+              value: true
+        - type_name: 'column'
+          attributes:
+          - type_name: 'list'
+            key: 'data'
+            value:
+            - type_name: 'string'
+              key: 'data_type_name'
+              value: 'string'
+            - type_name: 'string'
+              key: 'name'
+              value: 'marital-status'
+          - type_name: 'list'
+            key: 'data_synthesis'
+            value:
+            - type_name: 'boolean'
+              key: 'synthesizable'
+              value: true
+          - type_name: 'list'
+            key: 'differential_privacy'
+            value:
+            - type_name: 'int'
+              key: 'cardinality'
+              value: 7
+          - type_name: 'list'
+            key: 'machine_learning'
+            value:
+            - type_name: 'boolean'
+              key: 'is_feature'
+              value: true
+        - type_name: 'column'
+          attributes:
+          - type_name: 'list'
+            key: 'data'
+            value:
+            - type_name: 'string'
+              key: 'data_type_name'
+              value: 'string'
+            - type_name: 'string'
+              key: 'name'
+              value: 'native-country'
+          - type_name: 'list'
+            key: 'data_synthesis'
+            value:
+            - type_name: 'boolean'
+              key: 'synthesizable'
+              value: true
+          - type_name: 'list'
+            key: 'differential_privacy'
+            value:
+            - type_name: 'int'
+              key: 'cardinality'
+              value: 42
+          - type_name: 'list'
+            key: 'machine_learning'
+            value:
+            - type_name: 'boolean'
+              key: 'is_feature'
+              value: true
+        - type_name: 'column'
+          attributes:
+          - type_name: 'list'
+            key: 'data'
+            value:
+            - type_name: 'string'
+              key: 'data_type_name'
+              value: 'string'
+            - type_name: 'string'
+              key: 'name'
+              value: 'occupation'
+          - type_name: 'list'
+            key: 'data_synthesis'
+            value:
+            - type_name: 'boolean'
+              key: 'synthesizable'
+              value: true
+          - type_name: 'list'
+            key: 'differential_privacy'
+            value:
+            - type_name: 'int'
+              key: 'cardinality'
+              value: 15
+          - type_name: 'list'
+            key: 'machine_learning'
+            value:
+            - type_name: 'boolean'
+              key: 'is_feature'
+              value: true
+        - type_name: 'column'
+          attributes:
+          - type_name: 'list'
+            key: 'data'
+            value:
+            - type_name: 'string'
+              key: 'data_type_name'
+              value: 'string'
+            - type_name: 'string'
+              key: 'name'
+              value: 'race'
+          - type_name: 'list'
+            key: 'data_synthesis'
+            value:
+            - type_name: 'boolean'
+              key: 'synthesizable'
+              value: true
+          - type_name: 'list'
+            key: 'differential_privacy'
+            value:
+            - type_name: 'int'
+              key: 'cardinality'
+              value: 5
+          - type_name: 'list'
+            key: 'machine_learning'
+            value:
+            - type_name: 'boolean'
+              key: 'is_feature'
+              value: true
+        - type_name: 'column'
+          attributes:
+          - type_name: 'list'
+            key: 'data'
+            value:
+            - type_name: 'string'
+              key: 'data_type_name'
+              value: 'string'
+            - type_name: 'string'
+              key: 'name'
+              value: 'relationship'
+          - type_name: 'list'
+            key: 'data_synthesis'
+            value:
+            - type_name: 'boolean'
+              key: 'synthesizable'
+              value: true
+          - type_name: 'list'
+            key: 'differential_privacy'
+            value:
+            - type_name: 'int'
+              key: 'cardinality'
+              value: 6
+          - type_name: 'list'
+            key: 'machine_learning'
+            value:
+            - type_name: 'boolean'
+              key: 'is_feature'
+              value: true
+        - type_name: 'column'
+          attributes:
+          - type_name: 'list'
+            key: 'data'
+            value:
+            - type_name: 'string'
+              key: 'data_type_name'
+              value: 'string'
+            - type_name: 'string'
+              key: 'name'
+              value: 'sex'
+          - type_name: 'list'
+            key: 'data_synthesis'
+            value:
+            - type_name: 'boolean'
+              key: 'synthesizable'
+              value: true
+          - type_name: 'list'
+            key: 'differential_privacy'
+            value:
+            - type_name: 'int'
+              key: 'cardinality'
+              value: 2
+          - type_name: 'list'
+            key: 'machine_learning'
+            value:
+            - type_name: 'boolean'
+              key: 'is_feature'
+              value: true
+        - type_name: 'column'
+          attributes:
+          - type_name: 'list'
+            key: 'data'
+            value:
+            - type_name: 'string'
+              key: 'data_type_name'
+              value: 'string'
+            - type_name: 'string'
+              key: 'name'
+              value: 'workclass'
+          - type_name: 'list'
+            key: 'data_synthesis'
+            value:
+            - type_name: 'boolean'
+              key: 'synthesizable'
+              value: true
+          - type_name: 'list'
+            key: 'differential_privacy'
+            value:
+            - type_name: 'int'
+              key: 'cardinality'
+              value: 9
+          - type_name: 'list'
+            key: 'machine_learning'
+            value:
+            - type_name: 'boolean'
+              key: 'is_feature'
+              value: true

@@ -67,5 +67,7 @@ class DefaultSchema:
 
     @staticmethod
     def verify_child_nodes(child_nodes, role_uuids=None):
+        if 1 < len(child_nodes):
+            raise Exception(f"schema may only have a single table as child node")
         for child_node in child_nodes if child_nodes is not None else []:
             DefaultTable.verify(node=child_node, role_uuids=role_uuids)

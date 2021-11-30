@@ -14,7 +14,7 @@ class AttributeInt(Attribute):
             raise Exception(f"value {value} is not of type int, is of type {type(value)} instead")
         self.value = value
 
-    def __str__(self, request_uuids=[]):
+    def __str__(self, request_uuids=set()):
         super_str = super().__str__(request_uuids=request_uuids)
         if super_str is None:
             return None
@@ -40,7 +40,7 @@ class AttributeInt(Attribute):
         copied_attribute.set_explicit_list_element(is_explicit_list_element=self.is_explicit_list_element)
         return copied_attribute
 
-    def to_dict(self, request_uuids=[]):
+    def to_dict(self, request_uuids=set()):
         super_dict = super().to_dict(request_uuids=request_uuids)
         if super_dict is None:
             return None
@@ -49,7 +49,7 @@ class AttributeInt(Attribute):
             ] if tmp_value is not None}
         return {**super_dict, **self_dict}
 
-    def is_mergeable_with(self, other, overwrite_value=False, overwrite_permissions=False, request_uuids=[], explanation=None):
+    def is_mergeable_with(self, other, overwrite_value=False, overwrite_permissions=False, request_uuids=set(), explanation=None):
         if not super().is_mergeable_with(other=other, overwrite_value=overwrite_value, overwrite_permissions=overwrite_permissions, request_uuids=request_uuids, explanation=explanation):
             Explanation.dynamic_add_message(explanation=explanation, message=f"AttributeInt.is_mergeable_with(...): super() is not mergeable")            
             return False
@@ -61,7 +61,7 @@ class AttributeInt(Attribute):
             return False
         return True
 
-    def merge_with(self, other, overwrite_value=False, overwrite_permissions=False, request_uuids=[]):
+    def merge_with(self, other, overwrite_value=False, overwrite_permissions=False, request_uuids=set()):
         explanation = Explanation()
         if not self.is_mergeable_with(other=other, overwrite_value=overwrite_value, overwrite_permissions=overwrite_permissions, request_uuids=request_uuids, explanation=explanation):
             raise MergeException(f"cannot merge attributes that are not mergeable; self: {self} other: {other} explanation: {explanation}")

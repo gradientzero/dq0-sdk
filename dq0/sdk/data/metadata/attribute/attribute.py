@@ -56,7 +56,7 @@ class Attribute:
         return True
 
     @staticmethod
-    def are_mergeable(attribute_list_a, attribute_list_b, overwrite_value=False, overwrite_permissions=False, request_uuids=[], explanation=None):
+    def are_mergeable(attribute_list_a, attribute_list_b, overwrite_value=False, overwrite_permissions=False, request_uuids=set(), explanation=None):
         if not Attribute.are_merge_compatible(attribute_list_a=attribute_list_a, attribute_list_b=attribute_list_b, explanation=explanation):
             Explanation.dynamic_add_message(explanation=explanation, message=f"Attribute.are_mergeable(...): attributes are not compatible")
             return False
@@ -77,7 +77,7 @@ class Attribute:
         return True
 
     @staticmethod
-    def merge_many(attribute_list_a, attribute_list_b, overwrite_value=False, overwrite_permissions=False, request_uuids=[]):
+    def merge_many(attribute_list_a, attribute_list_b, overwrite_value=False, overwrite_permissions=False, request_uuids=set()):
         explanation = Explanation()
         if not Attribute.are_mergeable(attribute_list_a=attribute_list_a, attribute_list_b=attribute_list_b, overwrite_value=overwrite_value, overwrite_permissions=overwrite_permissions, request_uuids=request_uuids, explanation=explanation):
             raise MergeException(f"cannot merge attribute lists that are not mergeable; list_a: {attribute_list_a} list_b: {attribute_list_b} explanation: {explanation}")
@@ -113,7 +113,7 @@ class Attribute:
         self.permissions = permissions
         self.is_explicit_list_element=False
 
-    def __str__(self, request_uuids=[]):
+    def __str__(self, request_uuids=set()):
         if not Permissions.is_allowed_with(permissions=self.permissions, action=Action.READ, request_uuids=request_uuids):
             return None
         if self.is_explicit_list_element:
@@ -144,7 +144,7 @@ class Attribute:
         copied_attribute.set_explicit_list_element(is_explicit_list_element=self.is_explicit_list_element)
         return copied_attribute
 
-    def to_dict(self, request_uuids=[]):
+    def to_dict(self, request_uuids=set()):
         if not Permissions.is_allowed_with(permissions=self.permissions, action=Action.READ, request_uuids=request_uuids):
             return None
         return {tmp_key: tmp_value for tmp_key, tmp_value in [
@@ -168,7 +168,7 @@ class Attribute:
             return False
         return True
 
-    def is_mergeable_with(self, other, overwrite_value=False, overwrite_permissions=False, request_uuids=[], explanation=None):
+    def is_mergeable_with(self, other, overwrite_value=False, overwrite_permissions=False, request_uuids=set(), explanation=None):
         if not self.is_merge_compatible_with(other=other, explanation=explanation):
             Explanation.dynamic_add_message(explanation=explanation, message=f"Attribute[{self.type_name}].is_mergeable_with(...): other is not compatible")            
             return False
@@ -181,7 +181,7 @@ class Attribute:
             return False
         return True
 
-    def merge_with(self, other, overwrite_value=False, overwrite_permissions=False, request_uuids=[]):
+    def merge_with(self, other, overwrite_value=False, overwrite_permissions=False, request_uuids=set()):
         explanation = Explanation()
         if not self.is_mergeable_with(other=other, overwrite_value=overwrite_value, overwrite_permissions=overwrite_permissions, request_uuids=request_uuids, explanation=explanation):
             raise MergeException(f"cannot merge attributes that are not mergeable; self: {self} other: {other} explanation: {explanation}")

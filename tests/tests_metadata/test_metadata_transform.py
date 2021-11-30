@@ -13,8 +13,8 @@ from dq0.sdk.data.metadata.permissions.permissions import Permissions
 
 def test_metadata_transform():
     # prepare yaml file
-    content = '''metadata_format_type: 'full'
-metadata_format_version: 2021112301
+    content = '''metadata_default_version: 2021112301
+metadata_format_type: 'full'
 metadata_node:
   type_name: 'dataset'
   attributes:
