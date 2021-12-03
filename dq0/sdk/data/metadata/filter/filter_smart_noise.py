@@ -9,12 +9,14 @@ class FilterSmartNoise(Filter):
             'database': {},
             'schema': {},
             'table': {
-                'differential_privacy_sql': {
+                'data': {
+                    'rows': None,
+                },
+                'private_sql': {
                     'censor_dims': None,
                     'clamp_columns': None,
                     'clamp_counts': None,
                     'max_ids': None,
-                    'rows': None,
                     'row_privacy': None,
                     'sample_max_ids': None,
                     'use_dpsu': None,
@@ -25,14 +27,14 @@ class FilterSmartNoise(Filter):
                     'data_type_name': None,
                     'name': None,
                 },
-                'differential_privacy': {
+                'private_sql': {
+                    'private_id': None,
+                },
+                'private_sql_and_synthesis': {
                     'bounded': None,
                     'cardinality': None,
                     'lower': None,
                     'upper': None,
-                },
-                'differential_privacy_sql': {
-                    'private_id': None,
                 },
             }
         }

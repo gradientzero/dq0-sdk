@@ -1,17 +1,17 @@
 from dq0.sdk.data.metadata.attribute.attribute import Attribute
 from dq0.sdk.data.metadata.attribute.attribute_type import AttributeType
-from dq0.sdk.data.metadata.default.default_database import DefaultDatabase
-from dq0.sdk.data.metadata.default.default_permissions import DefaultPermissions
 from dq0.sdk.data.metadata.node.node import Node
 from dq0.sdk.data.metadata.node.node_type import NodeType
+from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
+from dq0.sdk.data.metadata.specification.dataset.standard.database import Database
 
 
-class DefaultDataset:
+class Dataset:
     @staticmethod
     def apply_defaults(node, role_uuids=None):
         Node.check(node=node, allowed_type_names=None, allowed_permissions=None)
-        applied_attributes = DefaultDataset.apply_defaults_to_attributes(attributes=node.attributes, role_uuids=role_uuids)
-        applied_child_nodes = DefaultDataset.apply_defaults_to_child_nodes(child_nodes=node.child_nodes, role_uuids=role_uuids)
+        applied_attributes = Dataset.apply_defaults_to_attributes(attributes=node.attributes, role_uuids=role_uuids)
+        applied_child_nodes = Dataset.apply_defaults_to_child_nodes(child_nodes=node.child_nodes, role_uuids=role_uuids)
         applied_permissions = DefaultPermissions.shared_node(role_uuids=role_uuids) if node.permissions is None else node.permissions.copy()
         return Node(type_name=node.type_name, attributes=applied_attributes, child_nodes=applied_child_nodes, permissions=applied_permissions)
         
@@ -35,14 +35,14 @@ class DefaultDataset:
         Node.check_list(node_list=child_nodes, allowed_type_names=None, allowed_permissions=None)
         applied_child_nodes = [] if child_nodes is not None else None
         for child_node in child_nodes if child_nodes is not None else []:
-            applied_child_nodes.append(DefaultDatabase.apply_defaults(node=child_node, role_uuids=role_uuids))
+            applied_child_nodes.append(Database.apply_defaults(node=child_node, role_uuids=role_uuids))
         return applied_child_nodes
 
     @staticmethod
     def verify(node, role_uuids=None):
         Node.check(node=node, allowed_type_names=[NodeType.TYPE_NAME_DATASET], allowed_permissions=DefaultPermissions.shared_node(role_uuids=role_uuids))
-        DefaultDataset.verify_attributes(attributes=node.attributes, role_uuids=role_uuids)
-        DefaultDataset.verify_child_nodes(child_nodes=node.child_nodes, role_uuids=role_uuids)
+        Dataset.verify_attributes(attributes=node.attributes, role_uuids=role_uuids)
+        Dataset.verify_child_nodes(child_nodes=node.child_nodes, role_uuids=role_uuids)
 
     @staticmethod
     def verify_attributes(attributes, role_uuids=None):
@@ -76,4 +76,4 @@ class DefaultDataset:
         if 1 < len(child_nodes):
             raise Exception(f"dataset may only have a single database as child node")
         for child_node in child_nodes if child_nodes is not None else []:
-            DefaultDatabase.verify(node=child_node, role_uuids=role_uuids)
+            Database.verify(node=child_node, role_uuids=role_uuids)

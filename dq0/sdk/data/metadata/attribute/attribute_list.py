@@ -52,6 +52,20 @@ class AttributeList(Attribute):
             ] if tmp_value is not None}
         return {**super_dict, **self_dict}
 
+    def to_list(self, request_uuids=set()):
+        if not Permissions.is_allowed_with(permissions=self.permissions, action=Action.READ, request_uuids=request_uuids):
+            return None
+        if not self.is_explicit_list:
+            return None
+        value_list = []
+        for elem in self.value if self.value is not None else []:
+            if elem is None or isinstance(elem, AttributeList):
+                continue
+            value_list.append(elem.value)
+        if len(value_list) == 0:
+            return None
+        return value_list
+
     def is_merge_compatible_with(self, other, explanation=None):
         if not super().is_merge_compatible_with(other=other, explanation=explanation):
             Explanation.dynamic_add_message(explanation=explanation, message=f"AttributeList.is_merge_compatible_with(...): super() is not compatible")                        
