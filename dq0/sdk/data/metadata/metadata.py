@@ -6,6 +6,8 @@ from dq0.sdk.data.metadata.specification.specification import Specification
 from dq0.sdk.data.metadata.specification.specification_factory import SpecificationFactory
 
 
+# The other_node and other_specifications are not used yet and may be removed or replaced.
+# They are here to demonstrate how to implement another root node next to the dataset root.
 class Metadata:
     @staticmethod
     def from_yaml_file(filename, role_uuids=None):
