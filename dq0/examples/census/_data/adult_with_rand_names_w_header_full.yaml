@@ -22,73 +22,12 @@ meta_dataset:
           - type_name: 'list'
             key: 'connector'
             value:
-            - type_name: 'list'
-              key: 'header_columns'
-              value:
-              - type_name: 'string'
-                value: 'lastname'
-              - type_name: 'string'
-                value: 'firstname'
-              - type_name: 'string'
-                value: 'age'
-              - type_name: 'string'
-                value: 'workclass'
-              - type_name: 'string'
-                value: 'fnlwgt'
-              - type_name: 'string'
-                value: 'education'
-              - type_name: 'string'
-                value: 'education-num'
-              - type_name: 'string'
-                value: 'marital-status'
-              - type_name: 'string'
-                value: 'occupation'
-              - type_name: 'string'
-                value: 'relationship'
-              - type_name: 'string'
-                value: 'race'
-              - type_name: 'string'
-                value: 'sex'
-              - type_name: 'string'
-                value: 'capital-gain'
-              - type_name: 'string'
-                value: 'capital-loss'
-              - type_name: 'string'
-                value: 'hours-per-week'
-              - type_name: 'string'
-                value: 'native-country'
-              - type_name: 'string'
-                value: 'income'
-            - type_name: 'list'
-              key: 'na_values'
-              value:
-              - type_name: 'int'
-                key: 'capital-gain'
-                value: 99999
-              - type_name: 'int'
-                key: 'capital-loss'
-                value: 99999
-              - type_name: 'int'
-                key: 'hours-per-week'
-                value: 99
-              - type_name: 'string'
-                key: 'native-country'
-                value: '?'
-              - type_name: 'string'
-                key: 'occupation'
-                value: '?'
-              - type_name: 'string'
-                key: 'workclass'
-                value: '?'
-            - type_name: 'boolean'
-              key: 'skipinitialspace'
-              value: true
             - type_name: 'string'
               key: 'type_name'
               value: 'csv'
             - type_name: 'string'
               key: 'uri'
-              value: "../dq0-sdk/dq0/examples/census/_data/adult_with_rand_names.csv"
+              value: "../dq0-sdk/dq0/examples/census/_data/adult_with_rand_names_w_header.csv"
             - type_name: 'boolean'
               key: 'use_original_header'
               value: true
@@ -97,7 +36,7 @@ meta_dataset:
             value:
             - type_name: 'int'
               key: 'rows'
-              value: 50511
+              value: 51925
           - type_name: 'list'
             key: 'differential_privacy'
             value:
@@ -127,10 +66,10 @@ meta_dataset:
               value:
               - type_name: 'int'
                 key: 'lower'
-                value: 19
+                value: 20
               - type_name: 'int'
                 key: 'upper'
-                value: 59
+                value: 61
             - type_name: 'list'
               key: 'private_synthesis'
               value:
@@ -162,7 +101,7 @@ meta_dataset:
                 value: 0
               - type_name: 'int'
                 key: 'upper'
-                value: 0
+                value: 4064
             - type_name: 'list'
               key: 'private_synthesis'
               value:
@@ -313,10 +252,10 @@ meta_dataset:
               value:
               - type_name: 'int'
                 key: 'lower'
-                value: 39824
+                value: 45868
               - type_name: 'int'
                 key: 'upper'
-                value: 334679
+                value: 349148
             - type_name: 'list'
               key: 'private_synthesis'
               value:
@@ -345,10 +284,10 @@ meta_dataset:
               value:
               - type_name: 'int'
                 key: 'lower'
-                value: 20
+                value: 21
               - type_name: 'int'
                 key: 'upper'
-                value: 60
+                value: 55
             - type_name: 'list'
               key: 'private_synthesis'
               value:

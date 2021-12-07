@@ -1,0 +1,21 @@
+meta_dataset:
+  format: simple
+  node:
+    dataset:
+      attributes:
+        'data':
+          'description': "labelled images from https://www.cs.toronto.edu/~kriz/cifar.html"
+          'name': 'CIFAR10'
+      child_nodes:
+        database:
+          child_nodes:
+            schema:
+              child_nodes:
+                table:
+                  attributes:
+                    'connector':
+                      'type_name': 'csv'
+                      'uri': "../dq0-sdk/dq0/examples/cifar/_data/cifar_dummy.csv"
+                    'differential_privacy':
+                      'privacy_column': ''
+  specification: 'dataset_standard_2021120201'

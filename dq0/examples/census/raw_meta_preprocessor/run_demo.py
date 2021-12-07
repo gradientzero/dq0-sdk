@@ -11,7 +11,8 @@ import os
 
 import dq0.sdk
 from dq0.examples.census.raw_meta_preprocessor.model.user_model import UserModel
-from dq0.sdk.data.metadata import Metadata
+from dq0.sdk.data.metadata.filter.filter_machine_learning import FilterMachineLearning
+from dq0.sdk.data.metadata.metadata import Metadata
 from dq0.sdk.data.utils import util
 
 
@@ -28,10 +29,10 @@ if __name__ == '__main__':
         os.path.abspath(__file__)), path)
 
     # init input data source
-    metadata = Metadata(filepath)
-    data_source = dq0.sdk.data.text.CSV(
-        next(iter(metadata.schemas.values())).connection,
-        metadata.to_metadata_ml())
+    metadata = Metadata.from_yaml_file(filename=filepath)
+    uri = metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(key='connector').get_attribute(key='uri').value
+    meta_ml = metadata.filter(dataset_filter_func=FilterMachineLearning.filter)
+    data_source = dq0.sdk.data.text.CSV(uri, meta_ml)
 
     # create model
     model = UserModel()

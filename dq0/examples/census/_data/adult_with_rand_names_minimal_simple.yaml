@@ -1,0 +1,19 @@
+meta_dataset:
+  format: simple
+  node:
+    dataset:
+      attributes:
+        'data':
+          'description': "some description"
+          'name': 'adult'
+      child_nodes:
+        database:
+          child_nodes:
+            schema:
+              child_nodes:
+                table:
+                  attributes:
+                    'connector':
+                      'type_name': 'csv'
+                      'uri': "/Users/wolfganggross/code/dq0-sdk/dq0/examples/census/_data/adult_with_rand_names.csv"
+  specification: 'dataset_standard_2021120201'

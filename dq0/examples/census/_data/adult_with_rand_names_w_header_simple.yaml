@@ -14,37 +14,11 @@ meta_dataset:
                 table:
                   attributes:
                     'connector':
-                      'header_columns':
-                      - 'lastname'
-                      - 'firstname'
-                      - 'age'
-                      - 'workclass'
-                      - 'fnlwgt'
-                      - 'education'
-                      - 'education-num'
-                      - 'marital-status'
-                      - 'occupation'
-                      - 'relationship'
-                      - 'race'
-                      - 'sex'
-                      - 'capital-gain'
-                      - 'capital-loss'
-                      - 'hours-per-week'
-                      - 'native-country'
-                      - 'income'
-                      'na_values':
-                        'capital-gain': 99999
-                        'capital-loss': 99999
-                        'hours-per-week': 99
-                        'native-country': '?'
-                        'occupation': '?'
-                        'workclass': '?'
-                      'skipinitialspace': true
                       'type_name': 'csv'
-                      'uri': "../dq0-sdk/dq0/examples/census/_data/adult_with_rand_names.csv"
+                      'uri': "../dq0-sdk/dq0/examples/census/_data/adult_with_rand_names_w_header.csv"
                       'use_original_header': true
                     'data':
-                      'rows': 50511
+                      'rows': 51925
                     'differential_privacy':
                       'privacy_column': 'fnlwgt'
                   child_nodes:
@@ -56,8 +30,8 @@ meta_dataset:
                         'machine_learning':
                           'is_feature': true
                         'private_sql_and_synthesis':
-                          'lower': 19
-                          'upper': 59
+                          'lower': 20
+                          'upper': 61
                         'private_synthesis':
                           'synthesizable': true
                     column_1:
@@ -69,7 +43,7 @@ meta_dataset:
                           'is_feature': true
                         'private_sql_and_synthesis':
                           'lower': 0
-                          'upper': 0
+                          'upper': 4064
                         'private_synthesis':
                           'synthesizable': true
                     column_2:
@@ -126,8 +100,8 @@ meta_dataset:
                         'machine_learning':
                           'is_feature': true
                         'private_sql_and_synthesis':
-                          'lower': 39824
-                          'upper': 334679
+                          'lower': 45868
+                          'upper': 349148
                         'private_synthesis':
                           'synthesizable': true
                     column_7:
@@ -138,8 +112,8 @@ meta_dataset:
                         'machine_learning':
                           'is_feature': true
                         'private_sql_and_synthesis':
-                          'lower': 20
-                          'upper': 60
+                          'lower': 21
+                          'upper': 55
                         'private_synthesis':
                           'synthesizable': true
                     column_8:

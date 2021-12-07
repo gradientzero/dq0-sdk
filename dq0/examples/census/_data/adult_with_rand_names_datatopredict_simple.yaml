@@ -31,20 +31,11 @@ meta_dataset:
                       - 'capital-loss'
                       - 'hours-per-week'
                       - 'native-country'
-                      - 'income'
-                      'na_values':
-                        'capital-gain': 99999
-                        'capital-loss': 99999
-                        'hours-per-week': 99
-                        'native-country': '?'
-                        'occupation': '?'
-                        'workclass': '?'
-                      'skipinitialspace': true
                       'type_name': 'csv'
-                      'uri': "../dq0-sdk/dq0/examples/census/_data/adult_with_rand_names.csv"
-                      'use_original_header': true
+                      'uri': "../dq0-sdk/dq0/examples/census/_data/datatopredict.csv"
+                      'use_original_header': false
                     'data':
-                      'rows': 50511
+                      'rows': 51607
                     'differential_privacy':
                       'privacy_column': 'fnlwgt'
                   child_nodes:
@@ -56,8 +47,8 @@ meta_dataset:
                         'machine_learning':
                           'is_feature': true
                         'private_sql_and_synthesis':
-                          'lower': 19
-                          'upper': 59
+                          'lower': 20
+                          'upper': 60
                         'private_synthesis':
                           'synthesizable': true
                     column_1:
@@ -69,7 +60,7 @@ meta_dataset:
                           'is_feature': true
                         'private_sql_and_synthesis':
                           'lower': 0
-                          'upper': 0
+                          'upper': 2463
                         'private_synthesis':
                           'synthesizable': true
                     column_2:
@@ -103,7 +94,7 @@ meta_dataset:
                         'machine_learning':
                           'is_feature': true
                         'private_sql_and_synthesis':
-                          'lower': 6
+                          'lower': 5
                           'upper': 14
                         'private_synthesis':
                           'synthesizable': true
@@ -126,8 +117,8 @@ meta_dataset:
                         'machine_learning':
                           'is_feature': true
                         'private_sql_and_synthesis':
-                          'lower': 39824
-                          'upper': 334679
+                          'lower': 57233
+                          'upper': 354632
                         'private_synthesis':
                           'synthesizable': true
                     column_7:
@@ -139,18 +130,7 @@ meta_dataset:
                           'is_feature': true
                         'private_sql_and_synthesis':
                           'lower': 20
-                          'upper': 60
-                        'private_synthesis':
-                          'synthesizable': true
-                    column_8:
-                      attributes:
-                        'data':
-                          'data_type_name': 'string'
-                          'name': 'income'
-                        'machine_learning':
-                          'is_target': true
-                        'private_sql_and_synthesis':
-                          'cardinality': 2
+                          'upper': 55
                         'private_synthesis':
                           'synthesizable': true
                     column_9:

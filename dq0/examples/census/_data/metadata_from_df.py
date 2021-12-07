@@ -47,7 +47,6 @@ description = 'This data was extracted from the 1994 Census bureau ' \
               '((AAGE>16) && (AGI>100) && (AFNLWGT>1) && (HRSWK>0)). The ' \
               'prediction task is to determine whether a person makes over ' \
               '$50K a year.'
-type_ = 'CSV'
 connection = '../dq0-sdk/dq0/examples/census/_data/adult_with_rand_names' \
              '.csv'
 
@@ -60,42 +59,119 @@ n_rows = int(n_rows + np.random.randint(-int(0.1 * n_rows), int(0.1 * n_rows), 1
 # print(type(n_rows))
 
 # create yaml
-meta_d = {}
-meta_d['name'] = name
-meta_d['description'] = description
-meta_d['type'] = type_
-meta_d['privacy_column'] = 'fnlwgt'
-
-schema = meta_d['schema'] = {}
-schema['connection'] = connection
-
-table = schema['table'] = {}
-table['rows'] = n_rows
-table['use_original_header'] = False
-table['header_columns'] = [
-    'lastname',
-    'firstname',
-    'age',
-    'workclass',
-    'fnlwgt',
-    'education',
-    'education-num',
-    'marital-status',
-    'occupation',
-    'relationship',
-    'race',
-    'sex',
-    'capital-gain',
-    'capital-loss',
-    'hours-per-week',
-    'native-country',
-    'income']
-table['na_values'] = na_values_d
-table['skipinitialspace'] = True
+meta_d = {'meta_dataset': {
+    'format': 'full',
+    'node': {
+        'type_name': 'dataset',
+        'attributes': [{
+            'type_name': 'list',
+            'key': 'data',
+            'value': [
+                {
+                    'type_name': 'string',
+                    'key': 'description',
+                    'value': description,
+                },
+                {
+                    'type_name': 'string',
+                    'key': 'name',
+                    'value': name,
+                },
+            ],
+        }],
+        'child_nodes': [
+            {
+                'type_name': 'database',
+                'child_nodes': [
+                    {
+                        'type_name': 'schema',
+                        'child_nodes': [
+                            {
+                                'type_name': 'table',
+                                'attributes': [
+                                    {
+                                        'type_name': 'list',
+                                        'key': 'connector',
+                                        'value': [
+                                            {
+                                                'type_name': 'list',
+                                                'key': 'header_columns',
+                                                'value': [
+                                                    {
+                                                        'type_name': 'string',
+                                                        'value': value,
+                                                    } for value in column_names_list
+                                                ],
+                                            },
+                                            {
+                                                'type_name': 'list',
+                                                'key': 'na_values',
+                                                'value': [
+                                                    {
+                                                        'type_name': 'int' if isinstance(value, int) else 'string',
+                                                        'key': key,
+                                                        'value': value,
+                                                    } for key, value in na_values_d.items()
+                                                ],
+                                            },
+                                            {
+                                                'type_name': 'boolean',
+                                                'key': 'skipinitialspace',
+                                                'value': True,
+                                            },
+                                            {
+                                                'type_name': 'string',
+                                                'key': 'type_name',
+                                                'value': 'csv',
+                                            },
+                                            {
+                                                'type_name': 'string',
+                                                'key': 'uri',
+                                                'value': connection,
+                                            },
+                                            {
+                                                'type_name': 'boolean',
+                                                'key': 'use_original_header',
+                                                'value': False,
+                                            },
+                                        ],
+                                    },
+                                    {
+                                        'type_name': 'list',
+                                        'key': 'data',
+                                        'value': [
+                                            {
+                                                'type_name': 'int',
+                                                'key': 'rows',
+                                                'value': n_rows,
+                                            },
+                                        ],
+                                    },
+                                    {
+                                        'type_name': 'list',
+                                        'key': 'differential_privacy',
+                                        'value': [
+                                            {
+                                                'type_name': 'string',
+                                                'key': 'privacy_column',
+                                                'value': 'fnlwgt',
+                                            },
+                                        ],
+                                    },
+                                ],
+                                'child_nodes': [],
+                            },
+                        ],
+                    },
+                ],
+            },
+        ],
+    },
+    'specification': 'dataset_standard_2021120201',
+}}
 
 # add columns
 for c in df.columns:
-    column = table[c] = {}
     dtype_ = df[c].dtype
     card = None
     lower = None
@@ -112,23 +188,76 @@ for c in df.columns:
         lower = float(df[c].quantile(np.random.uniform(0.05, 0.10, 1)))
         upper = float(df[c].quantile(np.random.uniform(0.9, 0.95, 1)))
 
-    column['type'] = dtype_
-    column['synthesizable'] = True
-    if card is not None:
-        column['cardinality'] = card
-    if lower is not None:
-        column['lower'] = lower
-    if upper is not None:
-        column['upper'] = upper
-    if c == target_col:
-        column['is_target'] = True
-    else:
-        column['is_feature'] = True
+    meta_d['meta_dataset']['node']['child_nodes'][0]['child_nodes'][0]['child_nodes'][0]['child_nodes'].append({
+        'type_name': 'column',
+        'attributes': [
+            {
+                'type_name': 'list',
+                'key': 'data',
+                'value': [
+                    {
+                        'type_name': 'string',
+                        'key': 'data_type_name',
+                        'value': dtype_,
+                    },
+                    {
+                        'type_name': 'string',
+                        'key': 'name',
+                        'value': c,
+                    },
+                ],
+            },
+            {
+                'type_name': 'list',
+                'key': 'machine_learning',
+                'value': [
+                    {
+                        'type_name': 'boolean',
+                        'key': 'is_target' if c == target_col else 'is_feature',
+                        'value': True,
+                    },
+                ],
+            },
+            {
+                'type_name': 'list',
+                'key': 'private_sql_and_synthesis',
+                'value': [
+                    {
+                        'type_name': 'int',
+                        'key': 'cardinality',
+                        'value': card,
+                    },
+                ] if card is not None else [
+                    {
+                        'type_name': dtype_,
+                        'key': 'lower',
+                        'value': lower,
+                    },
+                    {
+                        'type_name': dtype_,
+                        'key': 'upper',
+                        'value': upper,
+                    },
+                ],
+            },
+            {
+                'type_name': 'list',
+                'key': 'private_synthesis',
+                'value': [
+                    {
+                        'type_name': 'boolean',
+                        'key': 'synthesizable',
+                        'value': True,
+                    },
+                ],
+            },
+        ],
+    })
 
 meta_yaml = yaml.dump(meta_d)
 print(meta_yaml)
 
-meta_dq0 = Metadata(yaml=meta_yaml)
+meta_dq0 = Metadata.from_yaml(yaml_content=meta_yaml)
 
 with open(os.path.join(os.path.split(connection)[0], 'adult_with_rand_names.yaml'), 'w') as f:
     yaml.dump(meta_d, f)

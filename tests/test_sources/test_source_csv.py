@@ -6,8 +6,10 @@ All rights reserved
 """
 
 import os
+from dq0.sdk.data.metadata.filter.filter_machine_learning import FilterMachineLearning
 
-from dq0.sdk.data.metadata import Metadata
+from dq0.sdk.data.metadata.metadata import Metadata
+from dq0.sdk.data.metadata.utils import Utils as MetaUtils
 from dq0.sdk.data.text.csv import CSV
 
 import numpy as np
@@ -17,130 +19,245 @@ import pandas as pd
 
 def test_csv_001():
     # prepare yaml file
-    content = '''description: 'This data was extracted from the 1994 Census bureau database by Ronny
-  Kohavi and Barry Becker (Data Mining and Visualization, Silicon Graphics). A set
-  of reasonably clean records was extracted using the following conditions: ((AAGE>16)
-  && (AGI>100) && (AFNLWGT>1) && (HRSWK>0)). The prediction task is to determine whether
-  a person makes over $50K a year.'
-name: Adult Census Income
-privacy_column: fnlwgt
-schema:
-  connection: ../dq0-sdk/tests/test_sources/adult_with_rand_names.csv
-  table:
-    age:
-      is_feature: true
-      lower: 20
-      synthesizable: true
-      type: int
-      upper: 60
-    capital-gain:
-      is_feature: true
-      lower: 0
-      synthesizable: true
-      type: int
-      upper: 2463
-    capital-loss:
-      is_feature: true
-      lower: 0
-      synthesizable: true
-      type: int
-      upper: 0
-    education:
-      cardinality: 16
-      is_feature: true
-      synthesizable: true
-      type: string
-    education-num:
-      is_feature: true
-      lower: 5
-      synthesizable: true
-      type: int
-      upper: 14
-    firstname:
-      cardinality: 3298
-      is_feature: true
-      synthesizable: true
-      type: string
-    fnlwgt:
-      is_feature: true
-      lower: 57233
-      synthesizable: true
-      type: int
-      upper: 354632
-    header_columns:
-    - lastname
-    - firstname
-    - age
-    - workclass
-    - fnlwgt
-    - education
-    - education-num
-    - marital-status
-    - occupation
-    - relationship
-    - race
-    - sex
-    - capital-gain
-    - capital-loss
-    - hours-per-week
-    - native-country
-    - income
-    hours-per-week:
-      is_feature: true
-      lower: 20
-      synthesizable: true
-      type: int
-      upper: 55
-    income:
-      cardinality: 2
-      is_target: true
-      synthesizable: true
-      type: string
-    lastname:
-      cardinality: 18144
-      is_feature: true
-      synthesizable: true
-      type: string
-    marital-status:
-      cardinality: 7
-      is_feature: true
-      synthesizable: true
-      type: string
-    native-country:
-      cardinality: 42
-      is_feature: true
-      synthesizable: true
-      type: string
-    occupation:
-      cardinality: 15
-      is_feature: true
-      synthesizable: true
-      type: string
-    race:
-      cardinality: 5
-      is_feature: true
-      synthesizable: true
-      type: string
-    relationship:
-      cardinality: 6
-      is_feature: true
-      synthesizable: true
-      type: string
-    rows: 51607
-    sex:
-      cardinality: 2
-      is_feature: true
-      synthesizable: true
-      type: string
-    use_original_header: false
-    workclass:
-      cardinality: 9
-      is_feature: true
-      synthesizable: true
-      type: string
-    skipinitialspace: true
-type: CSV
-    '''
+    content = '''meta_dataset:
+  format: simple
+  node:
+    dataset:
+      attributes:
+        'data':
+          'description': "This data was extracted from the 1994 Census bureau database by Ronny Kohavi and Barry Becker (Data Mining and Visualization, Silicon Graphics). A set of reasonably clean records was extracted using the following conditions: ((AAGE>16) && (AGI>100) && (AFNLWGT>1) && (HRSWK>0)). The prediction task is to determine whether a person makes over $50K a year."
+          'metadata_is_public': true
+          'name': 'Adult Census Income'
+      child_nodes:
+        database:
+          child_nodes:
+            schema:
+              child_nodes:
+                table:
+                  attributes:
+                    'connector':
+                      'header_columns':
+                      - 'lastname'
+                      - 'firstname'
+                      - 'age'
+                      - 'workclass'
+                      - 'fnlwgt'
+                      - 'education'
+                      - 'education-num'
+                      - 'marital-status'
+                      - 'occupation'
+                      - 'relationship'
+                      - 'race'
+                      - 'sex'
+                      - 'capital-gain'
+                      - 'capital-loss'
+                      - 'hours-per-week'
+                      - 'native-country'
+                      - 'income'
+                      'skipinitialspace': true
+                      'type_name': 'csv'
+                      'uri': '../dq0-sdk/tests/test_sources/adult_with_rand_names.csv'
+                      'use_original_header': false
+                    'data':
+                      'rows': 51607
+                    'differential_privacy':
+                      'privacy_column': 'fnlwgt'
+                  child_nodes:
+                    column_0:
+                      attributes:
+                        'data':
+                          'data_type_name': 'int'
+                          'name': 'age'
+                        'machine_learning':
+                          'is_feature': true
+                        'private_sql_and_synthesis':
+                          'lower': 20
+                          'upper': 60
+                        'private_synthesis':
+                          'synthesizable': true
+                    column_1:
+                      attributes:
+                        'data':
+                          'data_type_name': 'int'
+                          'name': 'capital-gain'
+                        'machine_learning':
+                          'is_feature': true
+                        'private_sql_and_synthesis':
+                          'lower': 0
+                          'upper': 2463
+                        'private_synthesis':
+                          'synthesizable': true
+                    column_2:
+                      attributes:
+                        'data':
+                          'data_type_name': 'int'
+                          'name': 'capital-loss'
+                        'machine_learning':
+                          'is_feature': true
+                        'private_sql_and_synthesis':
+                          'lower': 0
+                          'upper': 0
+                        'private_synthesis':
+                          'synthesizable': true
+                    column_3:
+                      attributes:
+                        'data':
+                          'data_type_name': 'string'
+                          'name': 'education'
+                        'machine_learning':
+                          'is_feature': true
+                        'private_sql_and_synthesis':
+                          'cardinality': 123
+                        'private_synthesis':
+                          'synthesizable': true
+                    column_4:
+                      attributes:
+                        'data':
+                          'data_type_name': 'int'
+                          'name': 'education-num'
+                        'machine_learning':
+                          'is_feature': true
+                        'private_sql_and_synthesis':
+                          'lower': 5
+                          'upper': 14
+                        'private_synthesis':
+                          'synthesizable': true
+                    column_5:
+                      attributes:
+                        'data':
+                          'data_type_name': 'string'
+                          'name': 'firstname'
+                        'machine_learning':
+                          'is_feature': true
+                        'private_sql_and_synthesis':
+                          'cardinality': 3298
+                        'private_synthesis':
+                          'synthesizable': true
+                    column_6:
+                      attributes:
+                        'data':
+                          'data_type_name': 'int'
+                          'name': 'fnlwgt'
+                        'machine_learning':
+                          'is_feature': true
+                        'private_sql_and_synthesis':
+                          'lower': 57233
+                          'upper': 354632
+                        'private_synthesis':
+                          'synthesizable': true
+                    column_7:
+                      attributes:
+                        'data':
+                          'data_type_name': 'int'
+                          'name': 'hours-per-week'
+                        'machine_learning':
+                          'is_feature': true
+                        'private_sql_and_synthesis':
+                          'lower': 20
+                          'upper': 55
+                        'private_synthesis':
+                          'synthesizable': true
+                    column_8:
+                      attributes:
+                        'data':
+                          'data_type_name': 'string'
+                          'name': 'income'
+                        'machine_learning':
+                          'is_target': true
+                        'private_sql_and_synthesis':
+                          'cardinality': 2
+                        'private_synthesis':
+                          'synthesizable': true
+                    column_9:
+                      attributes:
+                        'data':
+                          'data_type_name': 'string'
+                          'name': 'lastname'
+                        'machine_learning':
+                          'is_feature': true
+                        'private_sql_and_synthesis':
+                          'cardinality': 18144
+                        'private_synthesis':
+                          'synthesizable': true
+                    column_10:
+                      attributes:
+                        'data':
+                          'data_type_name': 'string'
+                          'name': 'marital-status'
+                        'machine_learning':
+                          'is_feature': true
+                        'private_sql_and_synthesis':
+                          'cardinality': 7
+                        'private_synthesis':
+                          'synthesizable': true
+                    column_11:
+                      attributes:
+                        'data':
+                          'data_type_name': 'string'
+                          'name': 'native-country'
+                        'machine_learning':
+                          'is_feature': true
+                        'private_sql_and_synthesis':
+                          'cardinality': 42
+                        'private_synthesis':
+                          'synthesizable': true
+                    column_12:
+                      attributes:
+                        'data':
+                          'data_type_name': 'string'
+                          'name': 'occupation'
+                        'machine_learning':
+                          'is_feature': true
+                        'private_sql_and_synthesis':
+                          'cardinality': 15
+                        'private_synthesis':
+                          'synthesizable': true
+                    column_13:
+                      attributes:
+                        'data':
+                          'data_type_name': 'string'
+                          'name': 'race'
+                        'machine_learning':
+                          'is_feature': true
+                        'private_sql_and_synthesis':
+                          'cardinality': 5
+                        'private_synthesis':
+                          'synthesizable': true
+                    column_14:
+                      attributes:
+                        'data':
+                          'data_type_name': 'string'
+                          'name': 'relationship'
+                        'machine_learning':
+                          'is_feature': true
+                        'private_sql_and_synthesis':
+                          'cardinality': 6
+                        'private_synthesis':
+                          'synthesizable': true
+                    column_15:
+                      attributes:
+                        'data':
+                          'data_type_name': 'string'
+                          'name': 'sex'
+                        'machine_learning':
+                          'is_feature': true
+                        'private_sql_and_synthesis':
+                          'cardinality': 2
+                        'private_synthesis':
+                          'synthesizable': true
+                    column_16:
+                      attributes:
+                        'data':
+                          'data_type_name': 'string'
+                          'name': 'workclass'
+                        'machine_learning':
+                          'is_feature': true
+                        'private_sql_and_synthesis':
+                          'cardinality': 9
+                        'private_synthesis':
+                          'synthesizable': true
+  specification: 'dataset_standard_2021120201'
+'''
 
     na_values = {
         'capital-gain': 99999,
@@ -154,17 +271,18 @@ type: CSV
         f.write(content)
 
     # load metadata
-    metadata = Metadata(filename='test.yaml')
+    metadata = Metadata.from_yaml_file(filename='test.yaml')
 
     # get ml_dict
-    meta_ml = metadata.to_metadata_ml()
+    uri = metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(key='connector').get_attribute(key='uri').value
+    meta_ml = metadata.filter(dataset_filter_func=FilterMachineLearning.filter)
 
     # get data_source instance and load data
-    data_source = CSV(path=metadata.schemas['schema'].connection, meta_ml=meta_ml)
+    data_source = CSV(path=uri, meta_ml=meta_ml)
     df = data_source.read()
 
     # test dataframe has correct header
-    header_columns = metadata.schemas['schema'].tables['table'].header_columns
+    header_columns = MetaUtils.get_header_columns_from_meta(metadata=metadata)
     header_columns_df = list(df.columns.values)
     header_columns_diff = [i for i in header_columns + header_columns_df if i not in header_columns or i not in header_columns_df]
     assert len(header_columns_diff) == 0

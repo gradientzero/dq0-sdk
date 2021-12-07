@@ -77,7 +77,7 @@ class Utils:
     def get_feature_target_cols_from_meta(metadata):
         feature_columns = []
         target_columns = []
-        for node_table in metadata.node.child_nodes[0].child_nodes[0].child_nodes:
+        for node_table in metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes:
             for node_column in node_table.child_nodes:
                 attribute_column_data = node_column.get_attribute(key='data')
                 attribute_column_name = attribute_column_data.get_attribute(key='name') if attribute_column_data is not None else None
@@ -94,7 +94,7 @@ class Utils:
     @staticmethod
     def get_header_columns_from_meta(metadata):
         header_columns = []
-        for node_table in metadata.node.child_nodes[0].child_nodes[0].child_nodes:
+        for node_table in metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes:
             attribute_table_connector = node_table.get_attribute(key='connector')
             if attribute_table_connector is not None:
                 attribute_connector_type_name = attribute_table_connector.get_attribute(key='type_name')
@@ -108,7 +108,7 @@ class Utils:
     @staticmethod
     def get_col_types(metadata):
         col_types = {}
-        for node_table in metadata.node.child_nodes[0].child_nodes[0].child_nodes:
+        for node_table in metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes:
             for node_column in node_table.child_nodes:
                 attribute_column_data = node_column.get_attribute(key='data')
                 attribute_column_name = attribute_column_data.get_attribute(key='name') if attribute_column_data is not None else None

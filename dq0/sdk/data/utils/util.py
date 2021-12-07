@@ -84,17 +84,17 @@ def load_dataset_info_from_yaml(metadata, columns_list):
     # from dq0.sdk.data.metadata import Metadata  # noqa: E402, I202, I100
     # metadata = Metadata(filename=path_to_yaml_data_file)
 
-    if 1 < len(metadata.node.child_nodes):
+    if 1 < len(metadata.dataset_node.child_nodes):
         logger.fatal('Only one database is handled!')
         return 1
-    if 1 < len(metadata.node.child_nodes[0].child_nodes):
+    if 1 < len(metadata.dataset_node.child_nodes[0].child_nodes):
         logger.fatal('Only one schema is handled!')
         return 1
-    if 1 < len(metadata.node.child_nodes[0].child_nodes[0].child_nodes):
+    if 1 < len(metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes):
         logger.fatal('Only one table is handled!')
         return 1
 
-    table = metadata.node.child_nodes[0].child_nodes[0].child_nodes[0]
+    table = metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0]
 
     categorical_features_list = []
     quantitative_features_list = []

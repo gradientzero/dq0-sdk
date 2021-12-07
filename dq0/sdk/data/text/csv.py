@@ -36,7 +36,7 @@ class CSV(Source):
         self.index_col = None
         self.skipinitialspace = False
         if meta_ml is not None:
-            table_connector = self.meta_ml.node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(key='connector')  # Since there is only one table as tested in data_connector
+            table_connector = self.meta_ml.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(key='connector')  # Since there is only one table as tested in data_connector
             self.use_original_header = table_connector.get_attribute(key='use_original_header', default=self.use_original_header) if table_connector is not None else self.use_original_header
             self.header_row = table_connector.get_attribute(key='header_row', default=self.header_row) if table_connector is not None else self.header_row
             self.header_columns = MetaUtils.get_header_columns_from_meta(metadata=meta_ml)
