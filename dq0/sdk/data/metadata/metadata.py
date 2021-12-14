@@ -1,9 +1,11 @@
 import os
-import yaml
-from dq0.sdk.data.metadata.node.node_factory import NodeFactory
+
 from dq0.sdk.data.metadata.node.node import Node
+from dq0.sdk.data.metadata.node.node_factory import NodeFactory
 from dq0.sdk.data.metadata.specification.specification import Specification
 from dq0.sdk.data.metadata.specification.specification_factory import SpecificationFactory
+
+import yaml
 
 
 # The other_node and other_specifications are not used yet and may be removed or replaced.
@@ -13,8 +15,8 @@ class Metadata:
     def from_yaml_file(filename, role_uuids=None):
         if not os.path.isfile(filename):
             raise FileNotFoundError(f"Could not find {filename}")
-        with open(filename) as file:
-            return Metadata.from_yaml(yaml_content=file, role_uuids=role_uuids)  
+        with open(filename, 'r') as file:
+            return Metadata.from_yaml(yaml_content=file, role_uuids=role_uuids)
 
     @staticmethod
     def from_yaml(yaml_content, role_uuids=None):
@@ -23,7 +25,9 @@ class Metadata:
         dataset_node, dataset_specification = Metadata.from_yaml_dict(yaml_dict=dataset_dict, role_uuids=role_uuids)
         other_dict = yaml_dict.pop('meta_other', None)
         other_node, other_specification = Metadata.from_yaml_dict(yaml_dict=other_dict, role_uuids=role_uuids)
-        return Metadata(dataset_node=dataset_node, other_node=other_node, dataset_specification=dataset_specification, other_specification=other_specification), dataset_specification, other_specification
+        return Metadata(dataset_node=dataset_node, other_node=other_node,
+                        dataset_specification=dataset_specification, other_specification=other_specification), \
+            dataset_specification, other_specification
 
     @staticmethod
     def from_yaml_dict(yaml_dict, role_uuids=None):
@@ -66,7 +70,8 @@ class Metadata:
         return return_string
 
     def __repr__(self):
-        return "Metadata(dataset_node=" + repr(self.dataset_node) + ", other_node=" + repr(self.other_node) + ", dataset_specification=None, other_specification=None)"
+        return "Metadata(dataset_node=" + repr(self.dataset_node) + ", other_node=" + repr(self.other_node) + \
+            ", dataset_specification=None, other_specification=None)"
 
     def dataset_str(self, request_uuids=set()):
         return_string = f"format: {NodeFactory.FORMAT_TYPE_SIMPLE}"
@@ -97,7 +102,8 @@ class Metadata:
             applied_dataset_node = self.dataset_node.copy()
         if self.other_node is not None:
             applied_other_node = self.other_node.copy()
-        return Metadata(dataset_node=applied_dataset_node, other_node=applied_other_node, dataset_specification=dataset_specification, other_specification=self.other_specification)
+        return Metadata(dataset_node=applied_dataset_node, other_node=applied_other_node,
+                        dataset_specification=dataset_specification, other_specification=self.other_specification)
 
     def filter(self, dataset_filter_func=None, other_filter_func=None, dataset_specification=None, other_specification=None):
         if dataset_specification is None:
@@ -115,35 +121,41 @@ class Metadata:
             if other_filter_func is not None:
                 filtered_other_node = other_filter_func(node=self.other_node.copy())
             else:
-                filtered_other_node = self.other_node.copy()        
-        return Metadata(dataset_node=filtered_dataset_node, other_node=filtered_other_node, dataset_specification=dataset_specification, other_specification=self.other_specification)
+                filtered_other_node = self.other_node.copy()
+        return Metadata(dataset_node=filtered_dataset_node, other_node=filtered_other_node,
+                        dataset_specification=dataset_specification, other_specification=self.other_specification)
 
     def to_dict(self, request_uuids=set()):
         return {tmp_key: tmp_value for tmp_key, tmp_value in [
-                ('meta_dataset', self.dataset_to_dict(request_uuids=request_uuids)),
-                ('meta_other', self.other_to_dict(request_uuids=request_uuids)),
-            ] if tmp_value is not None}
+            ('meta_dataset', self.dataset_to_dict(request_uuids=request_uuids)),
+            ('meta_other', self.other_to_dict(request_uuids=request_uuids)),
+        ] if tmp_value is not None}
 
     def dataset_to_dict(self, request_uuids=set()):
         if self.dataset_node is None:
             return None
         return {tmp_key: tmp_value for tmp_key, tmp_value in [
-                ('format', NodeFactory.FORMAT_TYPE_FULL),
-                ('node', self.dataset_node.to_dict(request_uuids=request_uuids) if self.dataset_node is not None else None),
-                ('specification', str(self.dataset_specification) if self.dataset_specification is not None else None),
-            ] if tmp_value is not None}
+            ('format', NodeFactory.FORMAT_TYPE_FULL),
+            ('node', self.dataset_node.to_dict(request_uuids=request_uuids) if self.dataset_node is not None else None),
+            ('specification', str(self.dataset_specification) if self.dataset_specification is not None else None),
+        ] if tmp_value is not None}
 
     def other_to_dict(self, request_uuids=set()):
         if self.other_node is None:
             return None
         return {tmp_key: tmp_value for tmp_key, tmp_value in [
-                ('format', NodeFactory.FORMAT_TYPE_FULL),
-                ('node', self.other_node.to_dict(request_uuids=request_uuids) if self.other_node is not None else None),
-                ('specification', str(self.other_specification) if self.other_specification is not None else None),
-            ] if tmp_value is not None}
+            ('format', NodeFactory.FORMAT_TYPE_FULL),
+            ('node', self.other_node.to_dict(request_uuids=request_uuids) if self.other_node is not None else None),
+            ('specification', str(self.other_specification) if self.other_specification is not None else None),
+        ] if tmp_value is not None}
 
     def to_yaml(self, request_uuids=set()):
         return yaml.dump(self.to_dict(request_uuids=request_uuids))
+
+    def to_yaml_file(self, filename, request_uuids=set()):
+        yaml_content = self.to_yaml(request_uuids=request_uuids)
+        with open(filename, 'w') as file:
+            file.write(yaml_content)
 
     def merge_with(self, other, overwrite_value=False, overwrite_permissions=False, request_uuids=set(), dataset_specification=None, other_specification=None):
         if other is None:
@@ -176,4 +188,5 @@ class Metadata:
                 merged_other_node = self.other_node.copy()
         else:
             merged_other_node = other.other_node.copy() if other.other_node is not None else None
-        return Metadata(dataset_node=merged_dataset_node, other_node=merged_other_node, dataset_specification=dataset_specification, other_specification=other_specification)
+        return Metadata(dataset_node=merged_dataset_node, other_node=merged_other_node,
+                        dataset_specification=dataset_specification, other_specification=other_specification)

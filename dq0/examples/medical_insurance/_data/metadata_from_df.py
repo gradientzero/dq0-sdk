@@ -207,7 +207,7 @@ for c in df.columns:
 meta_yaml = yaml.dump(meta_d)
 print(meta_yaml)
 
-meta_dq0 = Metadata.from_yaml(yaml_content=meta_yaml)
+meta_dq0, _, _ = Metadata.from_yaml(yaml_content=meta_yaml)
 
 with open(os.path.join(os.path.split(connection)[0], 'datasets_13720_18513_insurance.yaml'), 'w') as f:
     yaml.dump(meta_d, f)

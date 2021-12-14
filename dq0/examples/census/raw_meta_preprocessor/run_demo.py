@@ -29,7 +29,7 @@ if __name__ == '__main__':
         os.path.abspath(__file__)), path)
 
     # init input data source
-    metadata = Metadata.from_yaml_file(filename=filepath)
+    metadata, _, _ = Metadata.from_yaml_file(filename=filepath)
     uri = metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(key='connector').get_attribute(key='uri').value
     meta_ml = metadata.filter(dataset_filter_func=FilterMachineLearning.filter)
     data_source = dq0.sdk.data.text.CSV(uri, meta_ml)

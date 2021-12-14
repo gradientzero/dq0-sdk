@@ -13,7 +13,7 @@ class DefaultPermissions:
         return \
             role_name == DefaultPermissions.OWNER_NAME or \
             role_name == DefaultPermissions.USER_NAME
-    
+
     @staticmethod
     def check_role_names(role_names):
         if role_names is None:
@@ -76,5 +76,6 @@ class DefaultPermissions:
         return Permissions(permissions={
             Action.READ: DefaultPermissions.select_uuids(role_uuids=role_uuids, role_names={DefaultPermissions.OWNER_NAME, DefaultPermissions.USER_NAME}),
             Action.WRITE_PERMISSIONS: DefaultPermissions.select_uuids(role_uuids=role_uuids, role_names={DefaultPermissions.OWNER_NAME}),
-            Action.WRITE_VALUE: DefaultPermissions.select_uuids(role_uuids=role_uuids, role_names={DefaultPermissions.OWNER_NAME, DefaultPermissions.USER_NAME}),
+            Action.WRITE_VALUE: DefaultPermissions.select_uuids(role_uuids=role_uuids, role_names={DefaultPermissions.OWNER_NAME,
+                                                                                                   DefaultPermissions.USER_NAME}),
         })

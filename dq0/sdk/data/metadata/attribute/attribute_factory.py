@@ -22,7 +22,7 @@ class AttributeFactory:
             raise Exception(f"invalid type_name {type_name}")
         if 'key' not in yaml_dict and 'value' not in yaml_dict:
             raise Exception("missing both key and value, one is required")
- 
+
     @staticmethod
     def from_yaml_dict(yaml_dict):
         AttributeFactory.verify_yaml_dict(yaml_dict=yaml_dict)
@@ -40,7 +40,8 @@ class AttributeFactory:
         if type_name == AttributeType.TYPE_NAME_INT:
             return AttributeInt(key=key, value=value, permissions=permissions)
         if type_name == AttributeType.TYPE_NAME_LIST:
-            return AttributeList(key=key, value=[AttributeFactory.from_yaml_dict(yaml_dict=tmp_yaml_dict) for tmp_yaml_dict in value] if value is not None else None, permissions=permissions)
+            return AttributeList(key=key, value=[AttributeFactory.from_yaml_dict(yaml_dict=tmp_yaml_dict) for tmp_yaml_dict in value]
+                                 if value is not None else None, permissions=permissions)
         if type_name == AttributeType.TYPE_NAME_STRING:
             return AttributeString(key=key, value=value, permissions=permissions)
         raise Exception(f"no factory function configured for type_name {type_name}")
@@ -74,7 +75,7 @@ class AttributeFactory:
         if yaml_simple_key is None and yaml_simple_value is None:
             raise Exception("missing both key and value, one is required")
         return type_name
- 
+
     @staticmethod
     def from_yaml_simple(yaml_simple_key, yaml_simple_value):
         type_name = AttributeFactory.verify_yaml_simple_and_get_type(yaml_simple_key=yaml_simple_key, yaml_simple_value=yaml_simple_value)
@@ -88,14 +89,15 @@ class AttributeFactory:
             return AttributeInt(key=yaml_simple_key, value=yaml_simple_value, permissions=None)
         if type_name == AttributeType.TYPE_NAME_LIST:
             if isinstance(yaml_simple_value, dict):
-                attribute_list = [AttributeFactory.from_yaml_simple(yaml_simple_key=tmp_key, yaml_simple_value=tmp_value) for tmp_key, tmp_value in yaml_simple_value.items()]
+                attribute_list = [AttributeFactory.from_yaml_simple(yaml_simple_key=tmp_key, yaml_simple_value=tmp_value)
+                                  for tmp_key, tmp_value in yaml_simple_value.items()]
                 if yaml_simple_key is None:
                     return attribute_list
                 return AttributeList(key=yaml_simple_key, value=attribute_list, permissions=None)
             if isinstance(yaml_simple_value, list):
-                return AttributeList(yaml_simple_key, [AttributeFactory.from_yaml_simple(yaml_simple_key=None, yaml_simple_value=tmp_value) for tmp_value in yaml_simple_value])
+                return AttributeList(yaml_simple_key, [AttributeFactory.from_yaml_simple(yaml_simple_key=None, yaml_simple_value=tmp_value)
+                                                       for tmp_value in yaml_simple_value])
             raise Exception(f"yaml_simple_value is of unknown type {type(yaml_simple_value)}")
         if type_name == AttributeType.TYPE_NAME_STRING:
             return AttributeString(yaml_simple_key, yaml_simple_value, permissions=None)
         raise Exception(f"no factory function configured for type_name {type_name}")
-

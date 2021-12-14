@@ -8,8 +8,8 @@ All rights reserved
 import os
 import pathlib
 
-from dq0.sdk.data.metadata import Metadata
 from dq0.sdk.data.metadata.filter.filter_machine_learning import FilterMachineLearning
+from dq0.sdk.data.metadata.metadata import Metadata
 from dq0.sdk.data.text.csv import CSV
 from dq0.sdk.estimators.data_handler.csv import CSVDataHandler
 
@@ -21,7 +21,7 @@ PATH_TO_CM_CONFIG_CLASSIFICATION = os.path.join(DIR_PATH + '/mc_classification.y
 
 
 def test_CSVDataHandler_setup_data_001():
-    metadata = Metadata.from_yaml_file(filename=os.path.join(FILEPATH, 'test.yaml'))
+    metadata, _, _ = Metadata.from_yaml_file(filename=os.path.join(FILEPATH, 'test.yaml'))
     uri = metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(key='connector').get_attribute(key='uri').value
     meta_ml = metadata.filter(dataset_filter_func=FilterMachineLearning.filter)
     data_source = CSV(uri, meta_ml)
@@ -34,7 +34,7 @@ def test_CSVDataHandler_setup_data_001():
 def test_CSVDataHandler_setup_data_002():
     # test with pipeline
     config_path = os.path.join(DIR_PATH, '..', '..', 'test_pipeline', 'pipeline_config.yaml')
-    metadata = Metadata.from_yaml_file(filename=os.path.join(FILEPATH, 'test.yaml'))
+    metadata, _, _ = Metadata.from_yaml_file(filename=os.path.join(FILEPATH, 'test.yaml'))
     uri = metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(key='connector').get_attribute(key='uri').value
     meta_ml = metadata.filter(dataset_filter_func=FilterMachineLearning.filter)
     data_source = CSV(uri, meta_ml)
@@ -50,7 +50,7 @@ def test_CSVDataHandler_census():
     dir_path = os.path.dirname(os.path.realpath(__file__))
     config_path = os.path.join(dir_path, '..', '..', '..', 'dq0', 'examples', 'census', '_data', 'pipeline_config.yaml')
     meta_path = os.path.join(dir_path, '..', '..', '..', 'dq0', 'examples', 'census', '_data', 'adult_with_rand_names_w_header.yaml')
-    metadata = Metadata.from_yaml_file(filename=meta_path)
+    metadata, _, _ = Metadata.from_yaml_file(filename=meta_path)
     uri = metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(key='connector').get_attribute(key='uri').value
     meta_ml = metadata.filter(dataset_filter_func=FilterMachineLearning.filter)
     data_source = CSV(uri, meta_ml)

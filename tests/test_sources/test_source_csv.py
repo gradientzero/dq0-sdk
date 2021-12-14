@@ -6,10 +6,10 @@ All rights reserved
 """
 
 import os
-from dq0.sdk.data.metadata.filter.filter_machine_learning import FilterMachineLearning
 
+from dq0.sdk.data.metadata.filter.filter_machine_learning import FilterMachineLearning
 from dq0.sdk.data.metadata.metadata import Metadata
-from dq0.sdk.data.metadata.utils import Utils as MetaUtils
+from dq0.sdk.data.metadata.utils.utils import Utils as MetaUtils
 from dq0.sdk.data.text.csv import CSV
 
 import numpy as np
@@ -257,7 +257,7 @@ def test_csv_001():
                         'private_synthesis':
                           'synthesizable': true
   specification: 'dataset_standard_2021120201'
-'''
+'''  # noqa: E501
 
     na_values = {
         'capital-gain': 99999,
@@ -271,7 +271,7 @@ def test_csv_001():
         f.write(content)
 
     # load metadata
-    metadata = Metadata.from_yaml_file(filename='test.yaml')
+    metadata, _, _ = Metadata.from_yaml_file(filename='test.yaml')
 
     # get ml_dict
     uri = metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(key='connector').get_attribute(key='uri').value

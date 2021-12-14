@@ -4,7 +4,8 @@ from dq0.sdk.data.metadata.merge_exception import MergeException
 from dq0.sdk.data.metadata.node.node_type import NodeType
 from dq0.sdk.data.metadata.permissions.action import Action
 from dq0.sdk.data.metadata.permissions.permissions import Permissions
-from dq0.sdk.data.metadata.utils import Utils as MetaUtils
+from dq0.sdk.data.metadata.utils.list_utils import ListUtils
+from dq0.sdk.data.metadata.utils.str_utils import StrUtils
 
 
 class Node:
@@ -38,7 +39,8 @@ class Node:
                 try:
                     if elem_a.is_mergeable_with(other=elem_b, overwrite_value=False, overwrite_permissions=False, request_uuids=None):
                         raise Exception("mergeable nodes:\n" + str(elem_a) + "\nand:\n" + str(elem_b) + "\ndetected in:\n" + str(list))
-                except: MergeException
+                except MergeException:
+                    pass
 
     @staticmethod
     def are_merge_compatible(node_list_a, node_list_b, explanation=None):
@@ -49,14 +51,16 @@ class Node:
         for elem_a in node_list_a:
             for elem_b in node_list_b:
                 if not elem_a.is_merge_compatible_with(other=elem_b, explanation=explanation):
-                    Explanation.dynamic_add_message(explanation=explanation, message=f"Node.are_merge_compatible(...): nodes[{elem_a.type_name}] are not compatible")
+                    Explanation.dynamic_add_message(explanation=explanation,
+                                                    message="Node.are_merge_compatible(...): "
+                                                    f"nodes[{elem_a.type_name}] are not compatible")
                     return False
         return True
 
     @staticmethod
     def are_mergeable(list_a, list_b, overwrite_value=False, overwrite_permissions=False, request_uuids=set(), explanation=None):
         if not Node.are_merge_compatible(node_list_a=list_a, node_list_b=list_b):
-            Explanation.dynamic_add_message(explanation=explanation, message=f"Node.are_mergeable(...): nodes are not compatible")
+            Explanation.dynamic_add_message(explanation=explanation, message="Node.are_mergeable(...): nodes are not compatible")
             return False
         if list_a is None or len(list_a) == 0:
             return True
@@ -65,9 +69,11 @@ class Node:
         for elem_a in list_a:
             found_match = False
             for elem_b in list_b:
-                if elem_a.is_mergeable_with(other=elem_b, overwrite_value=overwrite_value, overwrite_permissions=overwrite_permissions, request_uuids=request_uuids, explanation=None):
+                if elem_a.is_mergeable_with(other=elem_b, overwrite_value=overwrite_value, overwrite_permissions=overwrite_permissions,
+                                            request_uuids=request_uuids, explanation=None):
                     if found_match:
-                        Explanation.dynamic_add_message(explanation=explanation, message=f"Node.are_mergeable(...): duplicate mergeable nodes[{elem_a.type_name}] are not allowed")
+                        Explanation.dynamic_add_message(explanation=explanation,
+                                                        message=f"Node.are_mergeable(...): duplicate mergeable nodes[{elem_a.type_name}] are not allowed")
                         return False
                     found_match = True
         return True
@@ -75,7 +81,8 @@ class Node:
     @staticmethod
     def merge_many(list_a, list_b, overwrite_value=False, overwrite_permissions=False, request_uuids=set()):
         explanation = Explanation()
-        if not Node.are_mergeable(list_a=list_a, list_b=list_b, overwrite_value=overwrite_value, overwrite_permissions=overwrite_permissions, request_uuids=request_uuids, explanation=explanation):
+        if not Node.are_mergeable(list_a=list_a, list_b=list_b, overwrite_value=overwrite_value, overwrite_permissions=overwrite_permissions,
+                                  request_uuids=request_uuids, explanation=explanation):
             raise MergeException(f"cannot merge nodes that are not mergeable; list_a: {list_a} list_b: {list_b} explanation: {explanation}")
         if list_a is None or len(list_a) == 0:
             return None if list_b is None or len(list_b) == 0 else list_b
@@ -86,14 +93,17 @@ class Node:
         for elem_a in list_a:
             elem_merged = elem_a.copy()
             for elem_b in tmp_list_b:
-                if elem_a.is_mergeable_with(other=elem_b, overwrite_value=overwrite_value, overwrite_permissions=overwrite_permissions, request_uuids=request_uuids):
+                if elem_a.is_mergeable_with(other=elem_b, overwrite_value=overwrite_value, overwrite_permissions=overwrite_permissions,
+                                            request_uuids=request_uuids):
                     tmp_list_b.remove(elem_b)
-                    elem_merged = elem_a.merge_with(other=elem_b, overwrite_value=overwrite_value, overwrite_permissions=overwrite_permissions, request_uuids=request_uuids)
+                    elem_merged = elem_a.merge_with(other=elem_b, overwrite_value=overwrite_value, overwrite_permissions=overwrite_permissions,
+                                                    request_uuids=request_uuids)
                     break
             merged.append(elem_merged)
         for elem_b in tmp_list_b:
             for elem_a in list_a:
-                if elem_a.is_mergeable_with(other=elem_b, overwrite_value=overwrite_value, overwrite_permissions=overwrite_permissions, request_uuids=request_uuids):
+                if elem_a.is_mergeable_with(other=elem_b, overwrite_value=overwrite_value, overwrite_permissions=overwrite_permissions,
+                                            request_uuids=request_uuids):
                     raise Exception("this can never happen")
             merged.append(elem_b.copy())
         return merged
@@ -114,7 +124,7 @@ class Node:
                     if not Node.attributes_list_matches_map(attributes_list=tmp_attribute.value, attributes_map=value):
                         return False
                 elif tmp_attribute.value != value:
-                    return False        
+                    return False
         return True
 
     def __init__(self, type_name, attributes=None, child_nodes=None, permissions=None):
@@ -136,11 +146,13 @@ class Node:
         if not Permissions.is_allowed_with(permissions=self.permissions, action=Action.READ, request_uuids=request_uuids):
             return None
         index_string = f"_{self.list_index}" if -1 < self.list_index else ''
-        return_string = MetaUtils.str_from(object=self.type_name, quoted=False) + index_string + ':'
+        return_string = StrUtils.str_from(object=self.type_name, quoted=False) + index_string + ':'
         if self.attributes is not None and len(self.attributes) > 0:
-            return_string += "\n  attributes:" + MetaUtils.restricted_str_from_list(list=self.attributes, sort=False, request_uuids=request_uuids).replace('\n', "\n  ")
+            return_string += "\n  attributes:" + StrUtils.restricted_str_from_list(list=self.attributes, sort=False,
+                                                                                   request_uuids=request_uuids).replace('\n', "\n  ")
         if self.child_nodes is not None and len(self.child_nodes) > 0:
-            return_string += "\n  child_nodes:" + MetaUtils.restricted_str_from_list(list=self.child_nodes, sort=False, request_uuids=request_uuids).replace('\n', "\n    ")
+            return_string += "\n  child_nodes:" + StrUtils.restricted_str_from_list(list=self.child_nodes, sort=False,
+                                                                                    request_uuids=request_uuids).replace('\n', "\n    ")
         return return_string
 
     def __repr__(self):
@@ -153,9 +165,9 @@ class Node:
     def __eq__(self, other):
         if not isinstance(other, Node):
             return False
-        if not MetaUtils.list_equals_unordered(list_a=self.attributes, list_b=other.attributes):
+        if not ListUtils.list_equals_unordered(list_a=self.attributes, list_b=other.attributes):
             return False
-        if not MetaUtils.list_equals_unordered(list_a=self.child_nodes, list_b=other.child_nodes):
+        if not ListUtils.list_equals_unordered(list_a=self.child_nodes, list_b=other.child_nodes):
             return False
         return \
             self.type_name == other.type_name and \
@@ -163,11 +175,11 @@ class Node:
 
     def copy(self):
         copied_node = Node(
-                type_name=self.type_name,
-                attributes=[tmp_attribute.copy() for tmp_attribute in self.attributes] if self.attributes is not None else None,
-                child_nodes=[tmp_child_node.copy() for tmp_child_node in self.child_nodes] if self.child_nodes is not None else None,
-                permissions=self.permissions.copy() if self.permissions is not None else None
-            )
+            type_name=self.type_name,
+            attributes=[tmp_attribute.copy() for tmp_attribute in self.attributes] if self.attributes is not None else None,
+            child_nodes=[tmp_child_node.copy() for tmp_child_node in self.child_nodes] if self.child_nodes is not None else None,
+            permissions=self.permissions.copy() if self.permissions is not None else None
+        )
         copied_node.list_index = self.list_index
         return copied_node
 
@@ -175,64 +187,96 @@ class Node:
         if not Permissions.is_allowed_with(permissions=self.permissions, action=Action.READ, request_uuids=request_uuids):
             return None
         return {tmp_key: tmp_value for tmp_key, tmp_value in [
-                ('type_name', self.type_name),
-                ('attributes', MetaUtils.list_map_to_dict(self.attributes, request_uuids=request_uuids)),
-                ('child_nodes', MetaUtils.list_map_to_dict(self.child_nodes, request_uuids=request_uuids)),
-                ('permissions', self.permissions.to_dict() if self.permissions is not None else None),
-            ] if tmp_value is not None}
+            ('type_name', self.type_name),
+            ('attributes', ListUtils.list_map_to_dict(self.attributes, request_uuids=request_uuids)),
+            ('child_nodes', ListUtils.list_map_to_dict(self.child_nodes, request_uuids=request_uuids)),
+            ('permissions', self.permissions.to_dict() if self.permissions is not None else None),
+        ] if tmp_value is not None}
 
     def is_merge_compatible_with(self, other, explanation=None):
         if not isinstance(other, Node):
-            Explanation.dynamic_add_message(explanation=explanation, message=f"Node[{self.type_name}].is_merge_compatible_with(...): other is not of type Node, is of type {type(other)} instead")
+            Explanation.dynamic_add_message(explanation=explanation,
+                                            message=f"Node[{self.type_name}].is_merge_compatible_with(...): "
+                                            f"other is not of type Node, is of type {type(other)} instead")
             return False
         if self.type_name != other.type_name:
-            Explanation.dynamic_add_message(explanation=explanation, message=f"Node[{self.type_name}].is_merge_compatible_with(...): type_name mismatch {self.type_name} != {other.type_name}")
+            Explanation.dynamic_add_message(explanation=explanation,
+                                            message=f"Node[{self.type_name}].is_merge_compatible_with(...): "
+                                            f"type_name mismatch {self.type_name} != {other.type_name}")
             return False
         if not Attribute.are_merge_compatible(attribute_list_a=self.attributes, attribute_list_b=other.attributes, explanation=explanation):
-            Explanation.dynamic_add_message(explanation=explanation, message=f"Node[{self.type_name}].is_merge_compatible_with(...): attributes are not compatible")
+            Explanation.dynamic_add_message(explanation=explanation,
+                                            message=f"Node[{self.type_name}].is_merge_compatible_with(...): "
+                                            f"attributes are not compatible")
             return False
         if not Node.are_merge_compatible(node_list_a=self.child_nodes, node_list_b=other.child_nodes, explanation=explanation):
-            Explanation.dynamic_add_message(explanation=explanation, message=f"Node[{self.type_name}].is_merge_compatible_with(...): child_nodes are not compatible")
+            Explanation.dynamic_add_message(explanation=explanation,
+                                            message=f"Node[{self.type_name}].is_merge_compatible_with(...): "
+                                            f"child_nodes are not compatible")
             return False
         if not Permissions.are_merge_compatible(permissions_a=self.permissions, permissions_b=other.permissions):
-            Explanation.dynamic_add_message(explanation=explanation, message=f"Node[{self.type_name}].is_merge_compatible_with(...): permissions are not compatible")
+            Explanation.dynamic_add_message(explanation=explanation,
+                                            message=f"Node[{self.type_name}].is_merge_compatible_with(...): "
+                                            f"permissions are not compatible")
             return False
         return True
 
     def is_mergeable_with(self, other, overwrite_value=False, overwrite_permissions=False, request_uuids=set(), explanation=None):
         if not self.is_merge_compatible_with(other=other, explanation=explanation):
-            Explanation.dynamic_add_message(explanation=explanation, message=f"Node[{self.type_name}].is_mergeable_with(...): other is not compatible")            
+            Explanation.dynamic_add_message(explanation=explanation, message=f"Node[{self.type_name}].is_mergeable_with(...): other is not compatible")
             return False
-        if not Attribute.are_mergeable(attribute_list_a=self.attributes, attribute_list_b=other.attributes, overwrite_value=overwrite_value, overwrite_permissions=overwrite_permissions, explanation=explanation):
-            Explanation.dynamic_add_message(explanation=explanation, message=f"Node[{self.type_name}].is_mergeable_with(...): attributes are not mergeable")            
+        if not Attribute.are_mergeable(attribute_list_a=self.attributes, attribute_list_b=other.attributes,
+                                       overwrite_value=overwrite_value, overwrite_permissions=overwrite_permissions, explanation=explanation):
+            Explanation.dynamic_add_message(explanation=explanation, message=f"Node[{self.type_name}].is_mergeable_with(...): attributes are not mergeable")
             return False
-        merged_attributes = Attribute.merge_many(attribute_list_a=self.attributes, attribute_list_b=other.attributes, overwrite_value=overwrite_value, overwrite_permissions=overwrite_permissions, request_uuids=request_uuids)
-        if self.attributes != merged_attributes and not Permissions.is_allowed_with(permissions=self.permissions, action=Action.WRITE_ATTRIBUTES, request_uuids=request_uuids):
-            Explanation.dynamic_add_message(explanation=explanation, message=f"Node[{self.type_name}].is_mergeable_with(...): writing attributes without write_attributes permission is not allowed")            
+        merged_attributes = Attribute.merge_many(attribute_list_a=self.attributes, attribute_list_b=other.attributes,
+                                                 overwrite_value=overwrite_value, overwrite_permissions=overwrite_permissions, request_uuids=request_uuids)
+        if self.attributes != merged_attributes and not Permissions.is_allowed_with(permissions=self.permissions, action=Action.WRITE_ATTRIBUTES,
+                                                                                    request_uuids=request_uuids):
+            Explanation.dynamic_add_message(explanation=explanation,
+                                            message=f"Node[{self.type_name}].is_mergeable_with(...): "
+                                            "writing attributes without write_attributes permission is not allowed")
             return False
-        if not Node.are_mergeable(list_a=self.child_nodes, list_b=other.child_nodes, overwrite_value=overwrite_value, overwrite_permissions=overwrite_permissions, request_uuids=request_uuids, explanation=explanation):
-            Explanation.dynamic_add_message(explanation=explanation, message=f"Node[{self.type_name}].is_mergeable_with(...): child_nodes are not mergeable")            
+        if not Node.are_mergeable(list_a=self.child_nodes, list_b=other.child_nodes,
+                                  overwrite_value=overwrite_value, overwrite_permissions=overwrite_permissions,
+                                  request_uuids=request_uuids, explanation=explanation):
+            Explanation.dynamic_add_message(explanation=explanation,
+                                            message=f"Node[{self.type_name}].is_mergeable_with(...): child_nodes are not mergeable")
             return False
-        merged_child_nodes = Node.merge_many(list_a=self.child_nodes, list_b=other.child_nodes, overwrite_value=overwrite_value, overwrite_permissions=overwrite_permissions, request_uuids=request_uuids)
-        if self.child_nodes != merged_child_nodes and not Permissions.is_allowed_with(permissions=self.permissions, action=Action.WRITE_CHILD_NODES, request_uuids=request_uuids):
-            Explanation.dynamic_add_message(explanation=explanation, message=f"Node[{self.type_name}].is_mergeable_with(...): writing child_nodes without write_child_nodes permission is not allowed")            
+        merged_child_nodes = Node.merge_many(list_a=self.child_nodes, list_b=other.child_nodes,
+                                             overwrite_value=overwrite_value, overwrite_permissions=overwrite_permissions, request_uuids=request_uuids)
+        if self.child_nodes != merged_child_nodes and not Permissions.is_allowed_with(permissions=self.permissions, action=Action.WRITE_CHILD_NODES,
+                                                                                      request_uuids=request_uuids):
+            Explanation.dynamic_add_message(explanation=explanation,
+                                            message=f"Node[{self.type_name}].is_mergeable_with(...): "
+                                            "writing child_nodes without write_child_nodes permission is not allowed")
             return False
-        if not Permissions.are_mergeable(permissions_a=self.permissions, permissions_b=other.permissions, overwrite=overwrite_permissions, explanation=explanation):
-            Explanation.dynamic_add_message(explanation=explanation, message=f"Node[{self.type_name}].is_mergeable_with(...): permissions are not mergeable")            
+        if not Permissions.are_mergeable(permissions_a=self.permissions, permissions_b=other.permissions, overwrite=overwrite_permissions,
+                                         explanation=explanation):
+            Explanation.dynamic_add_message(explanation=explanation,
+                                            message=f"Node[{self.type_name}].is_mergeable_with(...): permissions are not mergeable")
             return False
         merged_permissions = Permissions.merge(permissions_a=self.permissions, permissions_b=other.permissions, overwrite=overwrite_permissions)
-        if self.permissions != merged_permissions and not Permissions.is_allowed_with(permissions=self.permissions, action=Action.WRITE_PERMISSIONS, request_uuids=request_uuids):
-            Explanation.dynamic_add_message(explanation=explanation, message=f"Node[{self.type_name}].is_mergeable_with(...): writing permissions without write_permissions permission is not allowed")            
+        if self.permissions != merged_permissions and not Permissions.is_allowed_with(permissions=self.permissions, action=Action.WRITE_PERMISSIONS,
+                                                                                      request_uuids=request_uuids):
+            Explanation.dynamic_add_message(explanation=explanation,
+                                            message=f"Node[{self.type_name}].is_mergeable_with(...): "
+                                            "writing permissions without write_permissions permission is not allowed")
             return False
         return True
 
     def merge_with(self, other, overwrite_value=False, overwrite_permissions=False, request_uuids=set()):
         explanation = Explanation()
-        if not self.is_mergeable_with(other=other, overwrite_value=overwrite_value, overwrite_permissions=overwrite_permissions, request_uuids=request_uuids, explanation=explanation):
+        if not self.is_mergeable_with(other=other, overwrite_value=overwrite_value, overwrite_permissions=overwrite_permissions,
+                                      request_uuids=request_uuids, explanation=explanation):
             raise MergeException(f"cannot merge nodes that are not mergeable; self: {self} other: {other} explanation: {explanation}")
         merged = self.copy()
-        merged.attributes = Attribute.merge_many(attribute_list_a=self.attributes, attribute_list_b=other.attributes, overwrite_value=overwrite_value, overwrite_permissions=overwrite_permissions, request_uuids=request_uuids)
-        merged.child_nodes = Node.merge_many(list_a=self.child_nodes, list_b=other.child_nodes, overwrite_value=overwrite_value, overwrite_permissions=overwrite_permissions, request_uuids=request_uuids)
+        merged.attributes = Attribute.merge_many(attribute_list_a=self.attributes, attribute_list_b=other.attributes,
+                                                 overwrite_value=overwrite_value, overwrite_permissions=overwrite_permissions,
+                                                 request_uuids=request_uuids)
+        merged.child_nodes = Node.merge_many(list_a=self.child_nodes, list_b=other.child_nodes,
+                                             overwrite_value=overwrite_value, overwrite_permissions=overwrite_permissions,
+                                             request_uuids=request_uuids)
         for index, tmp_child_node in enumerate(merged.child_nodes if merged.child_nodes is not None else []):
             tmp_child_node.list_index = index if 1 < len(merged.child_nodes) else -1
         merged.list_index = -1
@@ -251,7 +295,7 @@ class Node:
         if attribute is None:
             raise Exception("attribute is none")
         if self.get_attribute(index=index, key=attribute.key, value=attribute.value) is not None:
-            raise Exception("duplicate attributes not allowed")            
+            raise Exception("duplicate attributes not allowed")
         if self.attributes is None:
             self.attributes = []
         if Attribute.check_list(attribute_list=self.attributes, allowed_keys_type_names_permissions=None):
@@ -273,7 +317,8 @@ class Node:
         if index < 0 and attributes_map is None:
             return None
         for tmp_index, tmp_child_node in enumerate(self.child_nodes if self.child_nodes is not None else []):
-            if (index < 0 or index == tmp_index) and (attributes_map is None or Node.attributes_list_matches_map(attributes_list=tmp_child_node.attributes, attributes_map=attributes_map)):
+            if (index < 0 or index == tmp_index) and (attributes_map is None or Node.attributes_list_matches_map(attributes_list=tmp_child_node.attributes,
+                                                                                                                 attributes_map=attributes_map)):
                 return tmp_child_node
         return None
 
@@ -294,7 +339,8 @@ class Node:
         if index < 0 and attributes_map is None:
             raise Exception("child_node not found")
         for tmp_index, tmp_child_node in enumerate(self.child_nodes if self.child_nodes is not None else []):
-            if (index < 0 or index == tmp_index) and (attributes_map is None or Node.attributes_list_matches_map(attributes_list=tmp_child_node.attributes, attributes_map=attributes_map)):
+            if (index < 0 or index == tmp_index) and (attributes_map is None or Node.attributes_list_matches_map(attributes_list=tmp_child_node.attributes,
+                                                                                                                 attributes_map=attributes_map)):
                 del self.child_nodes[tmp_index]
                 for index, tmp_child_node in enumerate(self.child_nodes if self.child_nodes is not None else []):
                     tmp_child_node.list_index = index if 1 < len(self.child_nodes) else -1

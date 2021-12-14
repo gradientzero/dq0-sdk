@@ -30,12 +30,17 @@ class Filter:
             if Filter.attribute_matches(node_type_name=node_type_name, attribute=attribute, retain_attributes=retain_attributes):
                 if retain_attributes is not None and attribute.type_name == AttributeType.TYPE_NAME_LIST:
                     sub_retain_attributes = {key: value for key, value in [
-                        (None, retain_attributes[None][attribute.key] if None in retain_attributes and retain_attributes[None] is not None and isinstance(retain_attributes[None], dict) and attribute.key in retain_attributes[None] else None),
-                        (node_type_name, retain_attributes[node_type_name][attribute.key] if node_type_name is not None and node_type_name in retain_attributes and retain_attributes[node_type_name] is not None and isinstance(retain_attributes[node_type_name], dict) and attribute.key in retain_attributes[node_type_name] else None),
+                        (None, retain_attributes[None][attribute.key]
+                         if None in retain_attributes and retain_attributes[None] is not None and isinstance(
+                             retain_attributes[None], dict) and attribute.key in retain_attributes[None] else None),
+                        (node_type_name, retain_attributes[node_type_name][attribute.key] if node_type_name is not None and node_type_name in
+                         retain_attributes and retain_attributes[node_type_name] is not
+                         None and isinstance(retain_attributes[node_type_name], dict) and attribute.key in retain_attributes[node_type_name] else None),
                     ] if key is not None or value is not None}
                     if len(sub_retain_attributes) == 0:
-                        sub_retain_attributes = None                    
-                    sub_filtered_attributes = Filter.filter_attributes(node_type_name=node_type_name, attributes=attribute.value, retain_attributes=sub_retain_attributes)
+                        sub_retain_attributes = None
+                    sub_filtered_attributes = Filter.filter_attributes(node_type_name=node_type_name, attributes=attribute.value,
+                                                                       retain_attributes=sub_retain_attributes)
                     if sub_filtered_attributes is not None:
                         filtered_attributes.append(AttributeList(key=attribute.key, value=sub_filtered_attributes, permissions=attribute.permissions))
                 else:
@@ -55,7 +60,8 @@ class Filter:
                     return True
                 if attribute.key in tmp_attributes_map:
                     tmp_attributes_value = tmp_attributes_map[attribute.key]
-                    if tmp_attributes_value is None or (attribute.type_name == AttributeType.TYPE_NAME_LIST and isinstance(tmp_attributes_value, dict)) or tmp_attributes_value == attribute.value:
+                    if tmp_attributes_value is None or (attribute.type_name == AttributeType.TYPE_NAME_LIST and isinstance(
+                            tmp_attributes_value, dict)) or tmp_attributes_value == attribute.value:
                         return True
         return False
 

@@ -14,7 +14,7 @@ class Schema:
         applied_child_nodes = Schema.apply_defaults_to_child_nodes(child_nodes=node.child_nodes, role_uuids=role_uuids)
         applied_permissions = DefaultPermissions.shared_node(role_uuids=role_uuids) if node.permissions is None else node.permissions.copy()
         return Node(type_name=node.type_name, attributes=applied_attributes, child_nodes=applied_child_nodes, permissions=applied_permissions)
-        
+
     @staticmethod
     def apply_defaults_to_attributes(attributes, role_uuids=None):
         Attribute.check_list(attribute_list=attributes, allowed_keys_type_names_permissions=None)
@@ -59,7 +59,8 @@ class Schema:
                 'metadata_is_public': ([AttributeType.TYPE_NAME_BOOLEAN], shared_attribute),
                 'name': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
             })
-        differential_privacy_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'differential_privacy'] if attributes is not None else []
+        differential_privacy_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'differential_privacy'] \
+            if attributes is not None else []
         if 0 < len(differential_privacy_attributes):
             Attribute.check_list(attribute_list=differential_privacy_attributes[0].value, allowed_keys_type_names_permissions={
                 'privacy_level': ([AttributeType.TYPE_NAME_INT], owner_attribute),
@@ -68,6 +69,6 @@ class Schema:
     @staticmethod
     def verify_child_nodes(child_nodes, role_uuids=None):
         if 1 < len(child_nodes):
-            raise Exception(f"schema may only have a single table as child node")
+            raise Exception("schema may only have a single table as child node")
         for child_node in child_nodes if child_nodes is not None else []:
             Table.verify(node=child_node, role_uuids=role_uuids)

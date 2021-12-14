@@ -15,7 +15,7 @@ class Database:
         applied_child_nodes = Database.apply_defaults_to_child_nodes(child_nodes=node.child_nodes, role_uuids=role_uuids)
         applied_permissions = DefaultPermissions.shared_node(role_uuids=role_uuids) if node.permissions is None else node.permissions.copy()
         return Node(type_name=node.type_name, attributes=applied_attributes, child_nodes=applied_child_nodes, permissions=applied_permissions)
-        
+
     @staticmethod
     def apply_defaults_to_attributes(attributes, role_uuids=None):
         Attribute.check_list(attribute_list=attributes, allowed_keys_type_names_permissions=None)
@@ -23,7 +23,8 @@ class Database:
         shared_attribute = DefaultPermissions.shared_attribute(role_uuids=role_uuids)
         applied_attributes = [] if attributes is not None else None
         for attribute in attributes if attributes is not None else []:
-            applied_attribute = attribute.copy() if attribute.key != 'connector' else ConnectorPostgres.apply_defaults(attribute=attribute, role_uuids=role_uuids)
+            applied_attribute = attribute.copy() if attribute.key != 'connector' else ConnectorPostgres.apply_defaults(
+                attribute=attribute, role_uuids=role_uuids)
             if applied_attribute.key in ['differential_privacy']:
                 applied_attribute.set_default_permissions(default_permissions=owner_attribute)
             else:
@@ -64,7 +65,8 @@ class Database:
                 'metadata_is_public': ([AttributeType.TYPE_NAME_BOOLEAN], shared_attribute),
                 'name': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
             })
-        differential_privacy_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'differential_privacy'] if attributes is not None else []
+        differential_privacy_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'differential_privacy'] \
+            if attributes is not None else []
         if 0 < len(differential_privacy_attributes):
             Attribute.check_list(attribute_list=differential_privacy_attributes[0].value, allowed_keys_type_names_permissions={
                 'privacy_level': ([AttributeType.TYPE_NAME_INT], owner_attribute),
@@ -73,6 +75,6 @@ class Database:
     @staticmethod
     def verify_child_nodes(child_nodes, role_uuids=None):
         if 1 < len(child_nodes):
-            raise Exception(f"database may only have a single schema as child node")
+            raise Exception("database may only have a single schema as child node")
         for child_node in child_nodes if child_nodes is not None else []:
             Schema.verify(node=child_node, role_uuids=role_uuids)

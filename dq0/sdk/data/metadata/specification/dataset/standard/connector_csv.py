@@ -1,5 +1,5 @@
-from dq0.sdk.data.metadata.attribute.attribute_list import AttributeList
 from dq0.sdk.data.metadata.attribute.attribute import Attribute
+from dq0.sdk.data.metadata.attribute.attribute_list import AttributeList
 from dq0.sdk.data.metadata.attribute.attribute_type import AttributeType
 from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
 
@@ -11,7 +11,7 @@ class ConnectorCSV:
         applied_attributes = ConnectorCSV.apply_defaults_to_attributes(attributes=attribute.value, role_uuids=role_uuids)
         applied_permissions = DefaultPermissions.shared_attribute(role_uuids=role_uuids) if attribute.permissions is None else attribute.permissions.copy()
         return AttributeList(key=attribute.key, value=applied_attributes, permissions=applied_permissions)
-    
+
     @staticmethod
     def apply_defaults_to_attributes(attributes, role_uuids=None):
         Attribute.check_list(attribute_list=attributes, allowed_keys_type_names_permissions=None)
@@ -28,7 +28,7 @@ class ConnectorCSV:
             'connector': ([AttributeType.TYPE_NAME_LIST], DefaultPermissions.shared_attribute(role_uuids=role_uuids)),
         })
         ConnectorCSV.verify_attributes(attributes=attribute.value, role_uuids=role_uuids)
-    
+
     @staticmethod
     def verify_attributes(attributes, role_uuids=None):
         shared_attribute = DefaultPermissions.shared_attribute(role_uuids=role_uuids)

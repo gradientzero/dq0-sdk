@@ -4,7 +4,6 @@ from dq0.sdk.data.metadata.explanation import Explanation
 from dq0.sdk.data.metadata.merge_exception import MergeException
 from dq0.sdk.data.metadata.permissions.action import Action
 from dq0.sdk.data.metadata.permissions.permissions import Permissions
-from dq0.sdk.data.metadata.utils import Utils as MetaUtils
 
 
 class AttributeBoolean(Attribute):
@@ -29,15 +28,15 @@ class AttributeBoolean(Attribute):
 
     def __eq__(self, other):
         if not isinstance(other, AttributeBoolean) or not super().__eq__(other=other):
-            return False            
+            return False
         return self.value == other.value
 
     def copy(self):
         copied_attribute = AttributeBoolean(
-                key=self.key,
-                value=self.value,
-                permissions=self.permissions.copy() if self.permissions is not None else None
-            )
+            key=self.key,
+            value=self.value,
+            permissions=self.permissions.copy() if self.permissions is not None else None
+        )
         copied_attribute.set_explicit_list_element(is_explicit_list_element=self.is_explicit_list_element)
         return copied_attribute
 
@@ -46,26 +45,32 @@ class AttributeBoolean(Attribute):
         if super_dict is None:
             return None
         self_dict = {tmp_key: tmp_value for tmp_key, tmp_value in [
-                ('value', self.value),
-            ] if tmp_value is not None}
+            ('value', self.value),
+        ] if tmp_value is not None}
         return {**super_dict, **self_dict}
 
     def is_mergeable_with(self, other, overwrite_value=False, overwrite_permissions=False, request_uuids=set(), explanation=None):
-        if not super().is_mergeable_with(other=other, overwrite_value=overwrite_value, overwrite_permissions=overwrite_permissions, request_uuids=request_uuids, explanation=explanation):
-            Explanation.dynamic_add_message(explanation=explanation, message=f"AttributeBoolean.is_mergeable_with(...): super() is not mergeable")            
+        if not super().is_mergeable_with(other=other, overwrite_value=overwrite_value, overwrite_permissions=overwrite_permissions,
+                                         request_uuids=request_uuids, explanation=explanation):
+            Explanation.dynamic_add_message(explanation=explanation,
+                                            message="AttributeBoolean.is_mergeable_with(...): super() is not mergeable")
             return False
         if not overwrite_value and self.value != other.value:
-            Explanation.dynamic_add_message(explanation=explanation, message=f"AttributeBoolean.is_mergeable_with(...): value differs without overwrite_value")            
+            Explanation.dynamic_add_message(explanation=explanation,
+                                            message="AttributeBoolean.is_mergeable_with(...): value differs without overwrite_value")
             return False
-        if self.value != other.value and not Permissions.is_allowed_with(permissions=self.permissions, action=Action.WRITE_VALUE, request_uuids=request_uuids, explanation=explanation):
-            Explanation.dynamic_add_message(explanation=explanation, message=f"AttributeBoolean.is_mergeable_with(...): value differs without write_value permissions")            
+        if self.value != other.value and not Permissions.is_allowed_with(permissions=self.permissions, action=Action.WRITE_VALUE,
+                                                                         request_uuids=request_uuids, explanation=explanation):
+            Explanation.dynamic_add_message(explanation=explanation,
+                                            message="AttributeBoolean.is_mergeable_with(...): value differs without write_value permissions")
             return False
         return True
 
     def merge_with(self, other, overwrite_value=False, overwrite_permissions=False, request_uuids=set()):
         explanation = Explanation()
-        if not self.is_mergeable_with(other=other, overwrite_value=overwrite_value, overwrite_permissions=overwrite_permissions, request_uuids=request_uuids, explanation=explanation):
+        if not self.is_mergeable_with(other=other, overwrite_value=overwrite_value, overwrite_permissions=overwrite_permissions,
+                                      request_uuids=request_uuids, explanation=explanation):
             raise MergeException(f"cannot merge attributes that are not mergeable; self: {self} other: {other} explanation: {explanation}")
         merged = other.copy()
-        merged.permissions = Permissions.merge(permissions_a=self.permissions, permissions_b=other.permissions, overwrite=overwrite_permissions)           
+        merged.permissions = Permissions.merge(permissions_a=self.permissions, permissions_b=other.permissions, overwrite=overwrite_permissions)
         return merged

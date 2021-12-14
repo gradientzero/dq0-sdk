@@ -2,8 +2,8 @@ from dq0.sdk.data.metadata.attribute.attribute import Attribute
 from dq0.sdk.data.metadata.attribute.attribute_type import AttributeType
 from dq0.sdk.data.metadata.node.node import Node
 from dq0.sdk.data.metadata.node.node_type import NodeType
-from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
 from dq0.sdk.data.metadata.specification.dataset.standard.database import Database
+from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
 
 
 class Dataset:
@@ -14,7 +14,7 @@ class Dataset:
         applied_child_nodes = Dataset.apply_defaults_to_child_nodes(child_nodes=node.child_nodes, role_uuids=role_uuids)
         applied_permissions = DefaultPermissions.shared_node(role_uuids=role_uuids) if node.permissions is None else node.permissions.copy()
         return Node(type_name=node.type_name, attributes=applied_attributes, child_nodes=applied_child_nodes, permissions=applied_permissions)
-        
+
     @staticmethod
     def apply_defaults_to_attributes(attributes, role_uuids=None):
         Attribute.check_list(attribute_list=attributes, allowed_keys_type_names_permissions=None)
@@ -60,12 +60,14 @@ class Dataset:
                 'name': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
                 'tags': ([AttributeType.TYPE_NAME_LIST], shared_attribute),
             })
-            tags_attributes = [tmp_attribute for tmp_attribute in data_attributes[0].value if tmp_attribute.key == 'tags'] if data_attributes[0].value is not None else []
+            tags_attributes = [tmp_attribute for tmp_attribute in data_attributes[0].value if tmp_attribute.key == 'tags'] \
+                if data_attributes[0].value is not None else []
             if 0 < len(tags_attributes):
                 Attribute.check_list(attribute_list=tags_attributes[0].value, allowed_keys_type_names_permissions={
                     None: ([AttributeType.TYPE_NAME_STRING], shared_attribute),
                 })
-        differential_privacy_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'differential_privacy'] if attributes is not None else []
+        differential_privacy_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'differential_privacy'] \
+            if attributes is not None else []
         if 0 < len(differential_privacy_attributes):
             Attribute.check_list(attribute_list=differential_privacy_attributes[0].value, allowed_keys_type_names_permissions={
                 'privacy_level': ([AttributeType.TYPE_NAME_INT], owner_attribute),
@@ -74,6 +76,6 @@ class Dataset:
     @staticmethod
     def verify_child_nodes(child_nodes, role_uuids=None):
         if 1 < len(child_nodes):
-            raise Exception(f"dataset may only have a single database as child node")
+            raise Exception("dataset may only have a single database as child node")
         for child_node in child_nodes if child_nodes is not None else []:
             Database.verify(node=child_node, role_uuids=role_uuids)

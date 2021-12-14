@@ -61,7 +61,8 @@ class Column:
                 'name': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
                 'selectable': ([AttributeType.TYPE_NAME_BOOLEAN], shared_attribute),
             })
-            data_type_name_attributes = [tmp_attribute for tmp_attribute in data_attributes[0].value if tmp_attribute.key == 'data_type_name'] if data_attributes[0].value is not None else []
+            data_type_name_attributes = [tmp_attribute for tmp_attribute in data_attributes[0].value if tmp_attribute.key == 'data_type_name'] \
+                if data_attributes[0].value is not None else []
             if 0 < len(data_type_name_attributes):
                 data_type_name = data_type_name_attributes[0].value
         private_sql_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'private_sql'] if attributes is not None else []
@@ -75,12 +76,15 @@ class Column:
                 'private_id': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
                 'use_auto_bounds': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
             })
-            allowed_values_attributes = [tmp_attribute for tmp_attribute in private_sql_attributes[0].value if tmp_attribute.key == 'allowed_values'] if private_sql_attributes[0].value is not None else []
+            allowed_values_attributes = [tmp_attribute for tmp_attribute in private_sql_attributes[0].value if tmp_attribute.key == 'allowed_values'] \
+                if private_sql_attributes[0].value is not None else []
             if 0 < len(allowed_values_attributes):
                 Attribute.check_list(attribute_list=allowed_values_attributes[0].value, allowed_keys_type_names_permissions={
-                    None: ([AttributeType.TYPE_NAME_DATETIME, AttributeType.TYPE_NAME_FLOAT, AttributeType.TYPE_NAME_INT, AttributeType.TYPE_NAME_STRING], owner_attribute),
+                    None: ([AttributeType.TYPE_NAME_DATETIME, AttributeType.TYPE_NAME_FLOAT, AttributeType.TYPE_NAME_INT, AttributeType.TYPE_NAME_STRING],
+                           owner_attribute),
                 })
-        private_sql_and_synthesis_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'private_sql_and_synthesis'] if attributes is not None else []
+        private_sql_and_synthesis_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'private_sql_and_synthesis'] \
+            if attributes is not None else []
         if 0 < len(private_sql_and_synthesis_attributes):
             Attribute.check_list(attribute_list=private_sql_and_synthesis_attributes[0].value, allowed_keys_type_names_permissions={
                 'bounded': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
@@ -88,14 +92,16 @@ class Column:
                 'lower': ([AttributeType.TYPE_NAME_DATETIME, AttributeType.TYPE_NAME_FLOAT, AttributeType.TYPE_NAME_INT], owner_attribute),
                 'upper': ([AttributeType.TYPE_NAME_DATETIME, AttributeType.TYPE_NAME_FLOAT, AttributeType.TYPE_NAME_INT], owner_attribute),
             })
-        private_synthesis_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'private_synthesis'] if attributes is not None else []
+        private_synthesis_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'private_synthesis'] \
+            if attributes is not None else []
         if 0 < len(private_synthesis_attributes):
             Attribute.check_list(attribute_list=private_synthesis_attributes[0].value, allowed_keys_type_names_permissions={
                 'discrete': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
                 'min_step': ([AttributeType.TYPE_NAME_FLOAT, AttributeType.TYPE_NAME_INT], owner_attribute),
                 'synthesizable': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
             })
-        machine_learning_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'machine_learning'] if attributes is not None else []
+        machine_learning_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'machine_learning'] \
+            if attributes is not None else []
         if 0 < len(machine_learning_attributes):
             Attribute.check_list(attribute_list=machine_learning_attributes[0].value, allowed_keys_type_names_permissions={
                 'is_feature': ([AttributeType.TYPE_NAME_BOOLEAN], analyst_attribute),
@@ -141,12 +147,14 @@ class Column:
             Attribute.check_list(attribute_list=private_sql_attributes[0].value, allowed_keys_type_names_permissions={
                 'private_id': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
             })
-        private_synthesis_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'private_synthesis'] if attributes is not None else []
+        private_synthesis_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'private_synthesis'] \
+            if attributes is not None else []
         if 0 < len(private_synthesis_attributes):
             Attribute.check_list(attribute_list=private_synthesis_attributes[0].value, allowed_keys_type_names_permissions={
                 'synthesizable': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
             })
-        machine_learning_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'machine_learning'] if attributes is not None else []
+        machine_learning_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'machine_learning'] \
+            if attributes is not None else []
         if 0 < len(machine_learning_attributes):
             Attribute.check_list(attribute_list=machine_learning_attributes[0].value, allowed_keys_type_names_permissions={
                 'is_feature': ([AttributeType.TYPE_NAME_BOOLEAN], analyst_attribute),
@@ -184,12 +192,14 @@ class Column:
                 'private_id': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
                 'use_auto_bounds': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
             })
-            allowed_values_attributes = [tmp_attribute for tmp_attribute in private_sql_attributes[0].value if tmp_attribute.key == 'allowed_values'] if private_sql_attributes[0].value is not None else []
+            allowed_values_attributes = [tmp_attribute for tmp_attribute in private_sql_attributes[0].value if tmp_attribute.key == 'allowed_values'] \
+                if private_sql_attributes[0].value is not None else []
             if 0 < len(allowed_values_attributes):
                 Attribute.check_list(attribute_list=allowed_values_attributes[0].value, allowed_keys_type_names_permissions={
                     None: ([AttributeType.TYPE_NAME_DATETIME], owner_attribute),
                 })
-        private_sql_and_synthesis_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'private_sql_and_synthesis'] if attributes is not None else []
+        private_sql_and_synthesis_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'private_sql_and_synthesis'] \
+            if attributes is not None else []
         if 0 < len(private_sql_and_synthesis_attributes):
             Attribute.check_list(attribute_list=private_sql_and_synthesis_attributes[0].value, allowed_keys_type_names_permissions={
                 'bounded': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
@@ -197,12 +207,14 @@ class Column:
                 'lower': ([AttributeType.TYPE_NAME_DATETIME], owner_attribute),
                 'upper': ([AttributeType.TYPE_NAME_DATETIME], owner_attribute),
             })
-        private_synthesis_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'private_synthesis'] if attributes is not None else []
+        private_synthesis_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'private_synthesis'] \
+            if attributes is not None else []
         if 0 < len(private_synthesis_attributes):
             Attribute.check_list(attribute_list=private_synthesis_attributes[0].value, allowed_keys_type_names_permissions={
                 'synthesizable': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
             })
-        machine_learning_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'machine_learning'] if attributes is not None else []
+        machine_learning_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'machine_learning'] \
+            if attributes is not None else []
         if 0 < len(machine_learning_attributes):
             Attribute.check_list(attribute_list=machine_learning_attributes[0].value, allowed_keys_type_names_permissions={
                 'is_feature': ([AttributeType.TYPE_NAME_BOOLEAN], analyst_attribute),
@@ -241,12 +253,14 @@ class Column:
                 'private_id': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
                 'use_auto_bounds': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
             })
-            allowed_values_attributes = [tmp_attribute for tmp_attribute in private_sql_attributes[0].value if tmp_attribute.key == 'allowed_values'] if private_sql_attributes[0].value is not None else []
+            allowed_values_attributes = [tmp_attribute for tmp_attribute in private_sql_attributes[0].value if tmp_attribute.key == 'allowed_values'] \
+                if private_sql_attributes[0].value is not None else []
             if 0 < len(allowed_values_attributes):
                 Attribute.check_list(attribute_list=allowed_values_attributes[0].value, allowed_keys_type_names_permissions={
                     None: ([AttributeType.TYPE_NAME_FLOAT], owner_attribute),
                 })
-        private_sql_and_synthesis_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'private_sql_and_synthesis'] if attributes is not None else []
+        private_sql_and_synthesis_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'private_sql_and_synthesis'] \
+            if attributes is not None else []
         if 0 < len(private_sql_and_synthesis_attributes):
             Attribute.check_list(attribute_list=private_sql_and_synthesis_attributes[0].value, allowed_keys_type_names_permissions={
                 'bounded': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
@@ -254,14 +268,16 @@ class Column:
                 'lower': ([AttributeType.TYPE_NAME_FLOAT], owner_attribute),
                 'upper': ([AttributeType.TYPE_NAME_FLOAT], owner_attribute),
             })
-        private_synthesis_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'private_synthesis'] if attributes is not None else []
+        private_synthesis_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'private_synthesis'] \
+            if attributes is not None else []
         if 0 < len(private_synthesis_attributes):
             Attribute.check_list(attribute_list=private_synthesis_attributes[0].value, allowed_keys_type_names_permissions={
                 'discrete': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
                 'min_step': ([AttributeType.TYPE_NAME_FLOAT], owner_attribute),
                 'synthesizable': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
             })
-        machine_learning_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'machine_learning'] if attributes is not None else []
+        machine_learning_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'machine_learning'] \
+            if attributes is not None else []
         if 0 < len(machine_learning_attributes):
             Attribute.check_list(attribute_list=machine_learning_attributes[0].value, allowed_keys_type_names_permissions={
                 'is_feature': ([AttributeType.TYPE_NAME_BOOLEAN], analyst_attribute),
@@ -289,7 +305,8 @@ class Column:
                 'name': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
                 'selectable': ([AttributeType.TYPE_NAME_BOOLEAN], shared_attribute),
             })
-        private_sql_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'differential_privacy_sql'] if attributes is not None else []
+        private_sql_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'differential_privacy_sql'] \
+            if attributes is not None else []
         if 0 < len(private_sql_attributes):
             Attribute.check_list(attribute_list=private_sql_attributes[0].value, allowed_keys_type_names_permissions={
                 'allowed_values': ([AttributeType.TYPE_NAME_LIST], owner_attribute),
@@ -299,12 +316,14 @@ class Column:
                 'private_id': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
                 'use_auto_bounds': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
             })
-            allowed_values_attributes = [tmp_attribute for tmp_attribute in private_sql_attributes[0].value if tmp_attribute.key == 'allowed_values'] if private_sql_attributes[0].value is not None else []
+            allowed_values_attributes = [tmp_attribute for tmp_attribute in private_sql_attributes[0].value if tmp_attribute.key == 'allowed_values'] \
+                if private_sql_attributes[0].value is not None else []
             if 0 < len(allowed_values_attributes):
                 Attribute.check_list(attribute_list=allowed_values_attributes[0].value, allowed_keys_type_names_permissions={
                     None: ([AttributeType.TYPE_NAME_INT], owner_attribute),
                 })
-        private_sql_and_synthesis_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'private_sql_and_synthesis'] if attributes is not None else []
+        private_sql_and_synthesis_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'private_sql_and_synthesis'] \
+            if attributes is not None else []
         if 0 < len(private_sql_and_synthesis_attributes):
             Attribute.check_list(attribute_list=private_sql_and_synthesis_attributes[0].value, allowed_keys_type_names_permissions={
                 'bounded': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
@@ -312,13 +331,15 @@ class Column:
                 'lower': ([AttributeType.TYPE_NAME_INT], owner_attribute),
                 'upper': ([AttributeType.TYPE_NAME_INT], owner_attribute),
             })
-        private_synthesis_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'private_synthesis'] if attributes is not None else []
+        private_synthesis_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'private_synthesis'] \
+            if attributes is not None else []
         if 0 < len(private_synthesis_attributes):
             Attribute.check_list(attribute_list=private_synthesis_attributes[0].value, allowed_keys_type_names_permissions={
                 'min_step': ([AttributeType.TYPE_NAME_INT], owner_attribute),
                 'synthesizable': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
             })
-        machine_learning_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'machine_learning'] if attributes is not None else []
+        machine_learning_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'machine_learning'] \
+            if attributes is not None else []
         if 0 < len(machine_learning_attributes):
             Attribute.check_list(attribute_list=machine_learning_attributes[0].value, allowed_keys_type_names_permissions={
                 'is_feature': ([AttributeType.TYPE_NAME_BOOLEAN], analyst_attribute),
@@ -353,22 +374,26 @@ class Column:
                 'mask': ([AttributeType.TYPE_NAME_STRING], owner_attribute),
                 'private_id': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
             })
-            allowed_values_attributes = [tmp_attribute for tmp_attribute in private_sql_attributes[0].value if tmp_attribute.key == 'allowed_values'] if private_sql_attributes[0].value is not None else []
+            allowed_values_attributes = [tmp_attribute for tmp_attribute in private_sql_attributes[0].value if tmp_attribute.key == 'allowed_values'] \
+                if private_sql_attributes[0].value is not None else []
             if 0 < len(allowed_values_attributes):
                 Attribute.check_list(attribute_list=allowed_values_attributes[0].value, allowed_keys_type_names_permissions={
                     None: ([AttributeType.TYPE_NAME_STRING], owner_attribute),
                 })
-        private_sql_and_synthesis_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'private_sql_and_synthesis'] if attributes is not None else []
+        private_sql_and_synthesis_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'private_sql_and_synthesis'] \
+            if attributes is not None else []
         if 0 < len(private_sql_and_synthesis_attributes):
             Attribute.check_list(attribute_list=private_sql_and_synthesis_attributes[0].value, allowed_keys_type_names_permissions={
                 'cardinality': ([AttributeType.TYPE_NAME_INT], owner_attribute),
             })
-        private_synthesis_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'private_synthesis'] if attributes is not None else []
+        private_synthesis_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'private_synthesis'] \
+            if attributes is not None else []
         if 0 < len(private_synthesis_attributes):
             Attribute.check_list(attribute_list=private_synthesis_attributes[0].value, allowed_keys_type_names_permissions={
                 'synthesizable': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
             })
-        machine_learning_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'machine_learning'] if attributes is not None else []
+        machine_learning_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'machine_learning'] \
+            if attributes is not None else []
         if 0 < len(machine_learning_attributes):
             Attribute.check_list(attribute_list=machine_learning_attributes[0].value, allowed_keys_type_names_permissions={
                 'is_feature': ([AttributeType.TYPE_NAME_BOOLEAN], analyst_attribute),

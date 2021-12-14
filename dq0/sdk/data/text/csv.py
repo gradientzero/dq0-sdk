@@ -7,8 +7,8 @@ Copyright 2020, Gradient Zero
 All rights reserved
 """
 
+from dq0.sdk.data.metadata.utils.utils import Utils as MetaUtils
 from dq0.sdk.data.source import Source
-from dq0.sdk.data.metadata.utils import Utils as MetaUtils
 
 import pandas as pd
 
@@ -36,8 +36,10 @@ class CSV(Source):
         self.index_col = None
         self.skipinitialspace = False
         if meta_ml is not None:
-            table_connector = self.meta_ml.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(key='connector')  # Since there is only one table as tested in data_connector
-            self.use_original_header = table_connector.get_attribute(key='use_original_header', default=self.use_original_header) if table_connector is not None else self.use_original_header
+            table_connector = self.meta_ml.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(key='connector')
+            # Since there is only one table as tested in data_connector
+            self.use_original_header = table_connector.get_attribute(key='use_original_header', default=self.use_original_header) \
+                if table_connector is not None else self.use_original_header
             self.header_row = table_connector.get_attribute(key='header_row', default=self.header_row) if table_connector is not None else self.header_row
             self.header_columns = MetaUtils.get_header_columns_from_meta(metadata=meta_ml)
             self.sep = table_connector.get_attribute(key='sep', default=self.sep) if table_connector is not None else self.sep
@@ -45,7 +47,8 @@ class CSV(Source):
             tmp_na_values = table_connector.get_attribute(key='na_values') if table_connector is not None else None
             self.na_values = tmp_na_values.to_dict() if tmp_na_values is not None else self.na_values
             self.index_col = table_connector.get_attribute(key='index_col', default=self.index_col) if table_connector is not None else self.index_col
-            self.skipinitialspace = table_connector.get_attribute(key='skipinitialspace', default=self.skipinitialspace) if table_connector is not None else self.skipinitialspace
+            self.skipinitialspace = table_connector.get_attribute(key='skipinitialspace', default=self.skipinitialspace) \
+                if table_connector is not None else self.skipinitialspace
             self.feature_cols, self.target_cols = MetaUtils.get_feature_target_cols_from_meta(metadata=meta_ml)
             self.col_types = MetaUtils.get_col_types(metadata=meta_ml)
 

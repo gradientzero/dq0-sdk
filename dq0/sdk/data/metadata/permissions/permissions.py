@@ -1,8 +1,9 @@
 from uuid import UUID
+
 from dq0.sdk.data.metadata.explanation import Explanation
 from dq0.sdk.data.metadata.merge_exception import MergeException
 from dq0.sdk.data.metadata.permissions.action import Action
-from dq0.sdk.data.metadata.utils import Utils as MetaUtils
+from dq0.sdk.data.metadata.utils.str_utils import StrUtils
 
 
 class Permissions:
@@ -108,7 +109,7 @@ class Permissions:
         if permissions is None or action is None or request_uuids is None:
             return True
         return permissions.is_allowed(action=action, request_uuids=request_uuids, explanation=explanation)
-    
+
     @staticmethod
     def is_subset_of(permissions_a, permissions_b):
         Permissions.check(permissions=permissions_a)
@@ -130,9 +131,10 @@ class Permissions:
             return " {}"
         return_string = ''
         for action, allowed_uuids in self.permissions.items():
-            return_string += "\n  " + MetaUtils.str_from(action, quoted=True) + ':' + Permissions.str_from_internal_uuids(internal_uuids=allowed_uuids, sort=True).replace('\n', "\n  ")
+            return_string += "\n  " + StrUtils.str_from(action, quoted=True) + ':' + \
+                Permissions.str_from_internal_uuids(internal_uuids=allowed_uuids, sort=True).replace('\n', "\n  ")
         return return_string
- 
+
     def __repr__(self):
         repr_permissions = 'None'
         if self.permissions is not None:
@@ -191,7 +193,8 @@ class Permissions:
         merged_permissions = {}
         for action, allowed_uuids in self.permissions.items():
             if action in other.permissions:
-                merged_permissions[action] = Permissions.merge_internal_uuids(internal_uuids_a=allowed_uuids, internal_uuids_b=other.permissions[action], overwrite=overwrite, sum=sum)
+                merged_permissions[action] = Permissions.merge_internal_uuids(internal_uuids_a=allowed_uuids, internal_uuids_b=other.permissions[action],
+                                                                              overwrite=overwrite, sum=sum)
             else:
                 merged_permissions[action] = allowed_uuids.copy() if allowed_uuids is not None else None
         for action, allowed_uuids in other.permissions.items():
@@ -211,7 +214,9 @@ class Permissions:
         if self.permissions[action] is None:
             return True
         if len(self.permissions[action] & request_uuids) == 0:
-            Explanation.dynamic_add_message(explanation=explanation, message=f"Permissions.is_allowed(...): none of requested uuids {request_uuids} in allowed uuids {self.permissions[action]}")
+            Explanation.dynamic_add_message(explanation=explanation,
+                                            message="Permissions.is_allowed(...): "
+                                            f"none of requested uuids {request_uuids} in allowed uuids {self.permissions[action]}")
             return False
         return True
 
