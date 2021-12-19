@@ -5,11 +5,25 @@ class FilterSmartNoise(Filter):
     @staticmethod
     def filter(node):
         retain_attributes = {
-            'dataset': {},
-            'database': {},
-            'schema': {},
+            'dataset': {
+                'data': {
+                    'name': None,
+                },
+            },
+            'database': {
+                'connector': None,
+                'data': {
+                    'name': None,
+                },
+            },
+            'schema': {
+                'data': {
+                    'name': None,
+                },
+            },
             'table': {
                 'data': {
+                    'name': None,
                     'rows': None,
                 },
                 'private_sql': {

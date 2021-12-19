@@ -3,7 +3,7 @@ from dq0.sdk.data.metadata.attribute.attribute_type import AttributeType
 from dq0.sdk.data.metadata.node.node import Node
 from dq0.sdk.data.metadata.node.node_type import NodeType
 from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
-from dq0.sdk.data.metadata.specification.dataset.standard.connector_postgres import ConnectorPostgres
+from dq0.sdk.data.metadata.specification.dataset.standard.connector_postgresql import ConnectorPostgreSQL
 from dq0.sdk.data.metadata.specification.dataset.standard.schema import Schema
 
 
@@ -23,7 +23,7 @@ class Database:
         shared_attribute = DefaultPermissions.shared_attribute(role_uuids=role_uuids)
         applied_attributes = [] if attributes is not None else None
         for attribute in attributes if attributes is not None else []:
-            applied_attribute = attribute.copy() if attribute.key != 'connector' else ConnectorPostgres.apply_defaults(
+            applied_attribute = attribute.copy() if attribute.key != 'connector' else ConnectorPostgreSQL.apply_defaults(
                 attribute=attribute, role_uuids=role_uuids)
             if applied_attribute.key in ['differential_privacy']:
                 applied_attribute.set_default_permissions(default_permissions=owner_attribute)
@@ -57,7 +57,7 @@ class Database:
         })
         connector_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'connector'] if attributes is not None else []
         if 0 < len(connector_attributes):
-            ConnectorPostgres.verify(attribute=connector_attributes[0], role_uuids=role_uuids)
+            ConnectorPostgreSQL.verify(attribute=connector_attributes[0], role_uuids=role_uuids)
         data_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'data'] if attributes is not None else []
         if 0 < len(data_attributes):
             Attribute.check_list(attribute_list=data_attributes[0].value, allowed_keys_type_names_permissions={

@@ -45,7 +45,6 @@ class Column:
         analyst_attribute = DefaultPermissions.analyst_attribute(role_uuids=role_uuids)
         Attribute.check_list(attribute_list=attributes, allowed_keys_type_names_permissions={
             'data': ([AttributeType.TYPE_NAME_LIST], shared_attribute),
-            'differential_privacy': ([AttributeType.TYPE_NAME_LIST], owner_attribute),
             'private_sql': ([AttributeType.TYPE_NAME_LIST], owner_attribute),
             'private_sql_and_synthesis': ([AttributeType.TYPE_NAME_LIST], owner_attribute),
             'private_synthesis': ([AttributeType.TYPE_NAME_LIST], owner_attribute),
