@@ -13,9 +13,7 @@ class FilterMachineLearning(Filter):
                 },
             },
             'database': {
-                'connector': {
-                    'type_name': None,
-                },
+                'connector': None,
                 'data': {
                     'description': None,
                     'name': None,
@@ -28,17 +26,6 @@ class FilterMachineLearning(Filter):
                 },
             },
             'table': {
-                'connector': {
-                    'decimal': None,
-                    'header_columns': None,
-                    'header_row': None,
-                    'na_values': None,
-                    'sep': None,
-                    'skipinitialspace': None,
-                    'type_name': None,
-                    'uri': None,
-                    'use_original_header': None,
-                },
                 'data': {
                     'description': None,
                     'name': None,

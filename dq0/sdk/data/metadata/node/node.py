@@ -130,7 +130,7 @@ class Node:
     def __init__(self, type_name, attributes=None, child_nodes=None, permissions=None):
         if not NodeType.is_valid_type_name(type_name=type_name):
             raise Exception(f"invalid type_name {type_name if type_name is not None else 'None'}")
-        if Attribute.check_list(attribute_list=attributes, allowed_keys_type_names_permissions=None):
+        if Attribute.check_list(attribute_list=attributes, check_data=None):
             raise Exception("node may not have list of attributes with multiple null keys")
         Node.check_list_merge_duplicates(node_list=child_nodes, allowed_type_names=None, allowed_permissions=None)
         Permissions.check(permissions=permissions)
@@ -298,7 +298,7 @@ class Node:
             raise Exception("duplicate attributes not allowed")
         if self.attributes is None:
             self.attributes = []
-        if Attribute.check_list(attribute_list=self.attributes, allowed_keys_type_names_permissions=None):
+        if Attribute.check_list(attribute_list=self.attributes, check_data=None):
             raise Exception("node may not have list of attributes with multiple null keys")
         if index < 0:
             index = len(self.attributes)

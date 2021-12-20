@@ -51,7 +51,7 @@ class Filter:
 
     @staticmethod
     def attribute_matches(node_type_name, attribute, retain_attributes):
-        Attribute.check(attribute=attribute, allowed_keys_type_names_permissions=None)
+        Attribute.check(attribute=attribute, check_data=None)
         if retain_attributes is None:
             return True
         for tmp_node_type_name, tmp_attributes_map in retain_attributes.items():
