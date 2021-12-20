@@ -1,11 +1,11 @@
-from dq0.sdk.data.metadata.attribute.attribute_type import AttributeType
 from dq0.sdk.data.metadata.attribute.attribute import Attribute
+from dq0.sdk.data.metadata.attribute.attribute_type import AttributeType
 from dq0.sdk.data.metadata.explanation import Explanation
 from dq0.sdk.data.metadata.merge_exception import MergeException
 from dq0.sdk.data.metadata.permissions.action import Action
 from dq0.sdk.data.metadata.permissions.permissions import Permissions
-from dq0.sdk.data.metadata.utils.str_utils import StrUtils
 from dq0.sdk.data.metadata.utils.list_utils import ListUtils
+from dq0.sdk.data.metadata.utils.str_utils import StrUtils
 
 
 class AttributeList(Attribute):
@@ -13,7 +13,7 @@ class AttributeList(Attribute):
         super().__init__(type_name=AttributeType.TYPE_NAME_LIST, key=key, permissions=permissions)
         if not isinstance(value, list):
             raise Exception(f"value {value} is not of type list, is of type {type(value)} instead")
-        self.is_explicit_list = Attribute.check_list(attribute_list=value, allowed_keys_type_names_permissions=None)
+        self.is_explicit_list = Attribute.check_list(attribute_list=value, check_data=None)
         for tmp_attribute in value:
             tmp_attribute.set_explicit_list_element(is_explicit_list_element=self.is_explicit_list)
         self.value = value
@@ -112,7 +112,7 @@ class AttributeList(Attribute):
         merged = self.copy()
         merged.value = Attribute.merge_many(attribute_list_a=self.value, attribute_list_b=other.value, overwrite_permissions=overwrite_permissions,
                                             request_uuids=request_uuids)
-        merged.is_explicit_list = Attribute.check_list(attribute_list=merged.value, allowed_keys_type_names_permissions=None)
+        merged.is_explicit_list = Attribute.check_list(attribute_list=merged.value, check_data=None)
         for tmp_attribute in merged.value:
             tmp_attribute.set_explicit_list_element(is_explicit_list_element=merged.is_explicit_list)
         merged.permissions = Permissions.merge(permissions_a=self.permissions, permissions_b=other.permissions, overwrite=overwrite_permissions)
@@ -140,7 +140,7 @@ class AttributeList(Attribute):
             raise Exception("duplicate attributes not allowed")
         if self.value is None:
             self.value = []
-        self.is_explicit_list = Attribute.check_list(attribute_list=self.value, allowed_keys_type_names_permissions=None)
+        self.is_explicit_list = Attribute.check_list(attribute_list=self.value, check_data=None)
         if index < 0:
             index = len(self.value)
         self.value.insert(index, attribute)
@@ -153,7 +153,7 @@ class AttributeList(Attribute):
         for tmp_index, tmp_attribute in enumerate(self.value if self.value is not None else []):
             if (index < 0 or index == tmp_index) and (key is None or key == tmp_attribute.key) and (value is None or value == tmp_attribute.value):
                 del self.value[tmp_index]
-                self.is_explicit_list = Attribute.check_list(attribute_list=self.value, allowed_keys_type_names_permissions=None)
+                self.is_explicit_list = Attribute.check_list(attribute_list=self.value, check_data=None)
                 for tmp_attribute in self.value:
                     tmp_attribute.set_explicit_list_element(is_explicit_list_element=self.is_explicit_list)
                 return

@@ -12,7 +12,7 @@ class SpecificationFactory:
         if len(string_list) != 2:
             raise Exception(f"specification_string {specification_string} does not consist of two parts separated by underscore")
         node_type_name = string_list[0]
-        version = int(string_list[1])
+        version = string_list[1]
         return SpecificationFactory.from_type_and_version(node_type_name=node_type_name, version=version, role_uuids=role_uuids)
 
     @staticmethod

@@ -9,7 +9,7 @@ from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermi
 class Connector:
     @staticmethod
     def apply_defaults(attribute, role_uuids=None):
-        Attribute.check(attribute=attribute, allowed_keys_type_names_permissions=None)
+        Attribute.check(attribute=attribute, check_data=None)
         if attribute.type_name != AttributeType.TYPE_NAME_LIST:
             raise Exception(f"attribute is not of type {AttributeType.TYPE_NAME_LIST}, is of type {attribute.type_name} instead")
         attribute_type_name = attribute.get_attribute(key='type_name')
@@ -24,7 +24,7 @@ class Connector:
 
     @staticmethod
     def verify(attribute, role_uuids=None):
-        Attribute.check(attribute=attribute, allowed_keys_type_names_permissions={
+        Attribute.check(attribute=attribute, check_data={
             'connector': ([AttributeType.TYPE_NAME_LIST], DefaultPermissions.shared_attribute(role_uuids=role_uuids)),
         })
         attribute_type_name = attribute.get_attribute(key='type_name')

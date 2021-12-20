@@ -16,7 +16,7 @@ class Specification:
         self.role_uuids = role_uuids
 
     def __str__(self):
-        return f"{self.node_type_name}_{self.type_name}_{self.version}"
+        return f"{self.node_type_name}_{self.version}"
 
     def __repr__(self):
         return "Specification(" + \

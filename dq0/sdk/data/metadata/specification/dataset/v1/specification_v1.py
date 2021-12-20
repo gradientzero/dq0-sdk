@@ -20,7 +20,7 @@ class SpecificationV1(Specification):
     def __init__(self, role_uuids=None):
         super().__init__(
             node_type_name=NodeType.TYPE_NAME_DATASET,
-            version=SpecificationV1.VERSION,
+            version=SpecificationVersion.VERSION_V1,
             apply_defaults_func=Dataset.apply_defaults,
             verify_func=Dataset.verify,
             role_uuids=role_uuids)

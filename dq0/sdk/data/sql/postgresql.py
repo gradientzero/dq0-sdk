@@ -33,7 +33,12 @@ class PostgreSQL(SQL):
         try:
             connection_string.index('postgresql+psycopg2://')
         except ValueError:
-            connection_string = 'postgresql+psycopg2://{}'.format(connection_string)
+            try:
+                connection_string.index('postgresql://')
+                connection_string_parts = connection_string.split('://')
+                connection_string = 'postgresql+psycopg2://' + connection_string_parts[1]
+            except ValueError:
+                connection_string = 'postgresql+psycopg2://' + connection_string
         self.engine = sqlalchemy.create_engine(connection_string)
 
     def execute(self, query, **kwargs):
