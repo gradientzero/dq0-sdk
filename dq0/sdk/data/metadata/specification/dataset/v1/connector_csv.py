@@ -43,10 +43,8 @@ class ConnectorCSV:
             'type_name': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
             'uri': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
             'use_original_header': ([AttributeType.TYPE_NAME_BOOLEAN], shared_attribute),
-        })
+        }, required_keys={'type_name'})
         type_name_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'type_name'] if attributes is not None else []
-        if len(type_name_attributes) != 1:
-            raise Exception("csv connector attributes do not contain attribute type_name")
         if type_name_attributes[0].value != 'csv':
             raise Exception(f"csv connector type_name value {type_name_attributes[0].value} does not match 'csv'")
         header_columns_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'header_columns'] if attributes is not None else []
