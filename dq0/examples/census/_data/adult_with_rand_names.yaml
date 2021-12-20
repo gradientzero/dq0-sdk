@@ -10,44 +10,59 @@ schema:
   table:
     age:
       is_feature: true
-      lower: 19
+      lower: 17  # 19
       synthesizable: true
       type: int
-      upper: 59
+      upper: 120  # 59
     capital-gain:
       is_feature: true
       lower: 0
       synthesizable: true
-      type: int
-      upper: 0
+      type: float
+      upper: 1.5e4
     capital-loss:
       is_feature: true
       lower: 0
       synthesizable: true
-      type: int
-      upper: 0
+      type: float
+      upper: 4.5e3
     education:
-      cardinality: 16
-      is_feature: true
-      synthesizable: true
       type: string
-    education-num:
+      cardinality: 16
+      synthesizable: false
       is_feature: true
-      lower: 6
+
+      #cardinality: 16
+      #is_feature: true
+      #synthesizable: true
+      #type: string
+    education-num:
+      type: string
+      cardinality: 16
       synthesizable: true
-      type: int
-      upper: 14
+      is_feature: true
+
+      #is_feature: true
+      #lower: 6
+      #synthesizable: true
+      #type: int
+      #upper: 14
     firstname:
       cardinality: 3298
       is_feature: true
-      synthesizable: true
+      synthesizable: false
       type: string
     fnlwgt:
+      type: string
+      cardinality: 28521
+      synthesizable: false
       is_feature: true
-      lower: 39824
-      synthesizable: true
-      type: int
-      upper: 334679
+
+      # is_feature: true
+      # lower: 39824
+      # synthesizable: true
+      # type: int
+      # upper: 334679
     header_columns:
     - lastname
     - firstname
@@ -68,10 +83,10 @@ schema:
     - income
     hours-per-week:
       is_feature: true
-      lower: 20
+      lower: 0
       synthesizable: true
       type: int
-      upper: 60
+      upper: 90
     income:
       cardinality: 2
       is_target: true
@@ -80,7 +95,7 @@ schema:
     lastname:
       cardinality: 18144
       is_feature: true
-      synthesizable: true
+      synthesizable: false
       type: string
     marital-status:
       cardinality: 7
@@ -114,7 +129,7 @@ schema:
       is_feature: true
       synthesizable: true
       type: string
-    rows: 50511
+    rows: 48841
     sex:
       cardinality: 2
       is_feature: true

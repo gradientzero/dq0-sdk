@@ -10,95 +10,117 @@ schema:
   connection: ../dq0-sdk/dq0/examples/census/_data/adult_with_rand_names_w_header.csv
   table:
     use_original_header: true
+    rows: 48842
     age:
-      lower: 20
+      is_feature: true
+      lower: 17  # 19
       synthesizable: true
       type: int
-      upper: 61
-      is_feature: True
+      upper: 120  # 59
     capital-gain:
+      is_feature: true
       lower: 0
       synthesizable: true
-      type: int
-      upper: 4064
-      is_feature: True
+      type: float
+      upper: 1.5e4
     capital-loss:
+      is_feature: true
       lower: 0
       synthesizable: true
-      type: int
-      upper: 0
-      is_feature: True
+      type: float
+      upper: 4.5e3
     education:
+      type: string
+      cardinality: 16
+      synthesizable: false
+      is_feature: true
+
+      #cardinality: 16
+      #is_feature: true
+      #synthesizable: true
+      #type: string
+    education-num:
+      type: string
       cardinality: 16
       synthesizable: true
-      type: string
-      is_feature: True
-    education-num:
-      lower: 6
-      synthesizable: true
-      type: int
-      upper: 14
-      is_feature: True
+      is_feature: true
+
+      #is_feature: true
+      #lower: 6
+      #synthesizable: true
+      #type: int
+      #upper: 14
     firstname:
       cardinality: 3298
-      synthesizable: true
+      is_feature: true
+      synthesizable: false
       type: string
-      is_feature: True
     fnlwgt:
-      lower: 45868
-      synthesizable: true
-      type: int
-      upper: 349148
-      is_feature: True
+      type: string
+      cardinality: 28521
+      synthesizable: false
+      is_feature: true
+
+      # is_feature: true
+      # lower: 39824
+      # synthesizable: true
+      # type: int
+      # upper: 334679
     hours-per-week:
-      lower: 21
+      is_feature: true
+      lower: 0
       synthesizable: true
       type: int
-      upper: 55
-      is_feature: True
+      upper: 90
     income:
       cardinality: 2
+      is_target: true
       synthesizable: true
       type: string
-      is_target: True
     lastname:
       cardinality: 18144
-      synthesizable: true
+      is_feature: true
+      synthesizable: false
       type: string
-      is_feature: True
     marital-status:
       cardinality: 7
+      is_feature: true
       synthesizable: true
       type: string
-      is_feature: True
+    na_values:
+      capital-gain: 99999
+      capital-loss: 99999
+      hours-per-week: 99
+      native-country: '?'
+      occupation: '?'
+      workclass: '?'
     native-country:
       cardinality: 42
+      is_feature: true
       synthesizable: true
       type: string
-      is_feature: True
     occupation:
       cardinality: 15
+      is_feature: true
       synthesizable: true
       type: string
-      is_feature: True
     race:
       cardinality: 5
+      is_feature: true
       synthesizable: true
       type: string
-      is_feature: True
     relationship:
       cardinality: 6
+      is_feature: true
       synthesizable: true
       type: string
-      is_feature: True
-    rows: 51925
     sex:
       cardinality: 2
+      is_feature: true
       synthesizable: true
       type: string
-      is_feature: True
     workclass:
       cardinality: 9
+      is_feature: true
       synthesizable: true
       type: string
-      is_feature: True
