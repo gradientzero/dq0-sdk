@@ -8,20 +8,20 @@ from dq0.sdk.data.metadata.utils.str_utils import StrUtils
 
 class Attribute:
     @staticmethod
-    def check(attribute, allowed_keys_type_names_permissions=None):
+    def check(attribute, check_data=None):
         if not isinstance(attribute, Attribute):
             raise Exception(f"attribute is not of type Attribute, is of type {type(attribute)} instead")
-        if allowed_keys_type_names_permissions is not None:
-            if attribute.key not in allowed_keys_type_names_permissions:
-                raise Exception(f"attribute.key {attribute.key} is not in allowed keys {allowed_keys_type_names_permissions.keys()}")
-            allowed_type_names, allowed_permissions = allowed_keys_type_names_permissions[attribute.key]
+        if check_data is not None:
+            if attribute.key not in check_data:
+                raise Exception(f"attribute.key {attribute.key} is not in allowed keys {check_data.keys()}")
+            allowed_type_names, allowed_permissions = check_data[attribute.key]
             if allowed_type_names is not None and attribute.type_name not in allowed_type_names:
                 raise Exception(f"attribute.type_name {attribute.type_name} is not in allowed_type_names {allowed_type_names}")
             if not Permissions.is_subset_of(permissions_a=attribute.permissions, permissions_b=allowed_permissions):
                 raise Exception("attribute.permissions" + f"{attribute.permissions}" + "\nare not in allowed_permissions" + f"{allowed_permissions}")
 
     @staticmethod
-    def check_list(attribute_list, allowed_keys_type_names_permissions=None):
+    def check_list(attribute_list, check_data=None, required_keys=None):
         if attribute_list is None:
             return
         if not isinstance(attribute_list, list):
@@ -30,7 +30,7 @@ class Attribute:
         none_key_count = 0
         regular_key_count = 0
         for attribute in attribute_list:
-            Attribute.check(attribute=attribute, allowed_keys_type_names_permissions=allowed_keys_type_names_permissions)
+            Attribute.check(attribute=attribute, check_data=check_data)
             if attribute.key is None:
                 none_key_count += 1
             else:
@@ -38,6 +38,9 @@ class Attribute:
                     raise Exception(f"duplicate attribute key {attribute.key} is not allowed")
                 keys.add(attribute.key)
                 regular_key_count += 1
+        for required_key in required_keys if required_keys is not None else set():
+            if required_key not in keys:
+                raise Exception(f"required_key {required_key} is not in the list")
         if 0 < regular_key_count and 1 < none_key_count:
             raise Exception(f"may only have single none (null) key in list with regular keys, "
                             f"there is {regular_key_count} regular key(s) and {none_key_count} none key(s)")
@@ -47,8 +50,8 @@ class Attribute:
     def are_merge_compatible(attribute_list_a, attribute_list_b, explanation=None):
         if attribute_list_a is None or len(attribute_list_a) == 0 or attribute_list_b is None or len(attribute_list_b) == 0:
             return True
-        _ = Attribute.check_list(attribute_list=attribute_list_a, allowed_keys_type_names_permissions=None)
-        _ = Attribute.check_list(attribute_list=attribute_list_b, allowed_keys_type_names_permissions=None)
+        _ = Attribute.check_list(attribute_list=attribute_list_a, check_data=None)
+        _ = Attribute.check_list(attribute_list=attribute_list_b, check_data=None)
         for attribute_a in attribute_list_a:
             for attribute_b in attribute_list_b:
                 if attribute_a.key == attribute_b.key and not attribute_a.is_merge_compatible_with(other=attribute_b, explanation=explanation):

@@ -2,7 +2,7 @@ from dq0.sdk.data.metadata.attribute.attribute import Attribute
 from dq0.sdk.data.metadata.attribute.attribute_type import AttributeType
 from dq0.sdk.data.metadata.node.node import Node
 from dq0.sdk.data.metadata.node.node_type import NodeType
-from dq0.sdk.data.metadata.specification.dataset.standard.database import Database
+from dq0.sdk.data.metadata.specification.dataset.v1.database import Database
 from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
 
 
@@ -17,7 +17,7 @@ class Dataset:
 
     @staticmethod
     def apply_defaults_to_attributes(attributes, role_uuids=None):
-        Attribute.check_list(attribute_list=attributes, allowed_keys_type_names_permissions=None)
+        Attribute.check_list(attribute_list=attributes, check_data=None)
         owner_attribute = DefaultPermissions.owner_attribute(role_uuids=role_uuids)
         shared_attribute = DefaultPermissions.shared_attribute(role_uuids=role_uuids)
         applied_attributes = [] if attributes is not None else None
@@ -48,34 +48,39 @@ class Dataset:
     def verify_attributes(attributes, role_uuids=None):
         owner_attribute = DefaultPermissions.owner_attribute(role_uuids=role_uuids)
         shared_attribute = DefaultPermissions.shared_attribute(role_uuids=role_uuids)
-        Attribute.check_list(attribute_list=attributes, allowed_keys_type_names_permissions={
+        Attribute.check_list(attribute_list=attributes, check_data={
             'data': ([AttributeType.TYPE_NAME_LIST], shared_attribute),
             'differential_privacy': ([AttributeType.TYPE_NAME_LIST], owner_attribute),
-        })
+        }, required_keys={'data'})
         data_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'data'] if attributes is not None else []
         if 0 < len(data_attributes):
-            Attribute.check_list(attribute_list=data_attributes[0].value, allowed_keys_type_names_permissions={
+            Attribute.check_list(attribute_list=data_attributes[0].value, check_data={
                 'description': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
                 'metadata_is_public': ([AttributeType.TYPE_NAME_BOOLEAN], shared_attribute),
                 'name': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
                 'tags': ([AttributeType.TYPE_NAME_LIST], shared_attribute),
-            })
+            }, required_keys={'name'})
             tags_attributes = [tmp_attribute for tmp_attribute in data_attributes[0].value if tmp_attribute.key == 'tags'] \
                 if data_attributes[0].value is not None else []
             if 0 < len(tags_attributes):
-                Attribute.check_list(attribute_list=tags_attributes[0].value, allowed_keys_type_names_permissions={
+                Attribute.check_list(attribute_list=tags_attributes[0].value, check_data={
                     None: ([AttributeType.TYPE_NAME_STRING], shared_attribute),
                 })
         differential_privacy_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'differential_privacy'] \
             if attributes is not None else []
         if 0 < len(differential_privacy_attributes):
-            Attribute.check_list(attribute_list=differential_privacy_attributes[0].value, allowed_keys_type_names_permissions={
+            Attribute.check_list(attribute_list=differential_privacy_attributes[0].value, check_data={
                 'privacy_level': ([AttributeType.TYPE_NAME_INT], owner_attribute),
             })
 
     @staticmethod
     def verify_child_nodes(child_nodes, role_uuids=None):
-        if 1 < len(child_nodes):
-            raise Exception("dataset may only have a single database as child node")
+        names = set()
         for child_node in child_nodes if child_nodes is not None else []:
             Database.verify(node=child_node, role_uuids=role_uuids)
+            data_attribute = child_node.get_attribute(key='data')
+            name_attribute = data_attribute.get_attribute(key='name') if data_attribute is not None else None
+            if name_attribute is not None and isinstance(name_attribute.value, str):
+                names.add(name_attribute.value)
+        if len(names) != len(child_nodes):
+            raise Exception(f"names {names} are not enough for each of the {len(child_nodes)} child nodes to have a unique name")

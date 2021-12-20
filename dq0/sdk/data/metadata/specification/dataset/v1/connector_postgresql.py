@@ -4,11 +4,11 @@ from dq0.sdk.data.metadata.attribute.attribute_type import AttributeType
 from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
 
 
-class ConnectorPostgres:
+class ConnectorPostgreSQL:
     @staticmethod
     def apply_defaults(attribute, role_uuids=None):
         Attribute.check(attribute=attribute, allowed_keys_type_names_permissions=None)
-        applied_attributes = ConnectorPostgres.apply_defaults_to_attributes(attributes=attribute.value, role_uuids=role_uuids)
+        applied_attributes = ConnectorPostgreSQL.apply_defaults_to_attributes(attributes=attribute.value, role_uuids=role_uuids)
         applied_permissions = DefaultPermissions.shared_attribute(role_uuids=role_uuids) if attribute.permissions is None else attribute.permissions.copy()
         return AttributeList(key=attribute.key, value=applied_attributes, permissions=applied_permissions)
 
@@ -27,7 +27,7 @@ class ConnectorPostgres:
         Attribute.check(attribute=attribute, allowed_keys_type_names_permissions={
             'connector': ([AttributeType.TYPE_NAME_LIST], DefaultPermissions.owner_attribute(role_uuids=role_uuids)),
         })
-        ConnectorPostgres.verify_attributes(attributes=attribute.value, role_uuids=role_uuids)
+        ConnectorPostgreSQL.verify_attributes(attributes=attribute.value, role_uuids=role_uuids)
 
     @staticmethod
     def verify_attributes(attributes, role_uuids=None):

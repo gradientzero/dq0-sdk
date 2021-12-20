@@ -7,10 +7,9 @@ class Specification:
         if not isinstance(specification, Specification):
             raise Exception(f"specification is not of type Specification, is of type {type(specification)} instead")
 
-    def __init__(self, node_type_name, type_name, version, apply_defaults_func, verify_func, role_uuids=None):
+    def __init__(self, node_type_name, version, apply_defaults_func, verify_func, role_uuids=None):
         DefaultPermissions.check_role_uuids(role_uuids=role_uuids)
         self.node_type_name = node_type_name
-        self.type_name = type_name
         self.version = version
         self.apply_defaults_func = apply_defaults_func
         self.verify_func = verify_func
@@ -22,7 +21,6 @@ class Specification:
     def __repr__(self):
         return "Specification(" + \
             f"node_type_name={repr(self.node_type_name)}, " + \
-            f"type_name={repr(self.type_name)}, " + \
             f"version={repr(self.version)}, " + \
             f"apply_defaults_func={repr(self.apply_defaults_func)}, " + \
             f"verify_func={repr(self.verify_func)}, " + \
