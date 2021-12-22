@@ -25,7 +25,7 @@ class ConnectorPostgreSQL:
     @staticmethod
     def verify(attribute, role_uuids=None):
         Attribute.check(attribute=attribute, check_data={
-            'connector': ([AttributeType.TYPE_NAME_LIST], DefaultPermissions.owner_attribute(role_uuids=role_uuids)),
+            'connector': ([AttributeType.TYPE_NAME_LIST], DefaultPermissions.shared_attribute(role_uuids=role_uuids)),
         })
         ConnectorPostgreSQL.verify_attributes(attributes=attribute.value, role_uuids=role_uuids)
 
@@ -36,7 +36,7 @@ class ConnectorPostgreSQL:
             'host': ([AttributeType.TYPE_NAME_STRING], owner_attribute),
             'password': ([AttributeType.TYPE_NAME_STRING], owner_attribute),
             'port': ([AttributeType.TYPE_NAME_INT], owner_attribute),
-            'type_name': ([AttributeType.TYPE_NAME_STRING], owner_attribute),
+            'type_name': ([AttributeType.TYPE_NAME_STRING], DefaultPermissions.shared_attribute(role_uuids=role_uuids)),
             'username': ([AttributeType.TYPE_NAME_STRING], owner_attribute),
         }, required_keys={'type_name'})
         type_name_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'type_name'] if attributes is not None else []

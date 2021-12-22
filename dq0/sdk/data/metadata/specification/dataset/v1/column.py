@@ -237,7 +237,6 @@ class Column:
             Attribute.check_list(attribute_list=data_attributes[0].value, check_data={
                 'data_type_name': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
                 'description': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
-                'discrete': ([AttributeType.TYPE_NAME_BOOLEAN], shared_attribute),
                 'metadata_is_public': ([AttributeType.TYPE_NAME_BOOLEAN], shared_attribute),
                 'name': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
                 'selectable': ([AttributeType.TYPE_NAME_BOOLEAN], shared_attribute),
