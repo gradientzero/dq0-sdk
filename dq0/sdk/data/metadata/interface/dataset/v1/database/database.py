@@ -30,3 +30,6 @@ class Database(Entity):
                       data_permissions=DefaultPermissions.shared_attribute(role_uuids=self.role_uuids),
                       name_permissions=DefaultPermissions.shared_attribute(role_uuids=self.role_uuids),
                       role_uuids=self.role_uuids, node=child_node)
+
+    def schema(self, name):
+        return super().get_child_entity(name=name)

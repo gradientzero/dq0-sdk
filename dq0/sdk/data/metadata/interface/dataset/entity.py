@@ -102,6 +102,13 @@ class Entity:
         return self.attribute_groups[key]
 
     def set_name(self, old_name, new_name):
+        if not isinstance(old_name, str):
+            raise Exception(f"old_name {old_name} is not of type str, is of type {type(old_name)} instead")
+        if not isinstance(new_name, str):
+            raise Exception(f"new_name {new_name} is not of type str, is of type {type(new_name)} instead")
+        if self.name != old_name:
+            raise Exception(f"name mismatch: {self.name} != {old_name}")
+        self.name = new_name
         self.parent.set_child_name(old_name=old_name, new_name=new_name)
 
     def set_child_name(self, old_name, new_name):

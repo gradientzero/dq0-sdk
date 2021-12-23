@@ -1,9 +1,9 @@
 from dq0.sdk.data.metadata.interface.dataset.entity import Entity
+from dq0.sdk.data.metadata.interface.dataset.v1.column.column import Column
 from dq0.sdk.data.metadata.interface.dataset.v1.table.attributes_table_data import AttributesTableData
 from dq0.sdk.data.metadata.interface.dataset.v1.table.attributes_table_differential_privacy import AttributesTableDifferentialPrivacy
 from dq0.sdk.data.metadata.interface.dataset.v1.table.attributes_table_private_sql import AttributesTablePrivateSql
 from dq0.sdk.data.metadata.interface.dataset.v1.table.attributes_table_private_synthesis import AttributesTablePrivateSynthesis
-from dq0.sdk.data.metadata.interface.dataset.v1.column.column import Column
 from dq0.sdk.data.metadata.node.node_type import NodeType
 from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
 
@@ -33,3 +33,6 @@ class Table(Entity):
                       data_permissions=DefaultPermissions.shared_attribute(role_uuids=self.role_uuids),
                       name_permissions=DefaultPermissions.shared_attribute(role_uuids=self.role_uuids),
                       role_uuids=self.role_uuids, node=child_node)
+
+    def column(self, name):
+        return super().get_child_entity(name=name)
