@@ -25,9 +25,13 @@ class Metadata:
         dataset_node, dataset_specification = Metadata.from_yaml_dict(yaml_dict=dataset_dict, role_uuids=role_uuids)
         other_dict = yaml_dict.pop('meta_other', None)
         other_node, other_specification = Metadata.from_yaml_dict(yaml_dict=other_dict, role_uuids=role_uuids)
-        return Metadata(dataset_node=dataset_node, other_node=other_node,
-                        dataset_specification=dataset_specification, other_specification=other_specification), \
-            dataset_specification, other_specification
+        metadata = Metadata(dataset_node=dataset_node, other_node=other_node,
+                            dataset_specification=dataset_specification, other_specification=other_specification)
+        specifications = {
+            'dataset': dataset_specification,
+            'other': other_specification,
+        }
+        return metadata, specifications
 
     @staticmethod
     def from_yaml_dict(yaml_dict, role_uuids=None):

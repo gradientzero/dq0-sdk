@@ -34,5 +34,20 @@ class Table(Entity):
                       name_permissions=DefaultPermissions.shared_attribute(role_uuids=self.role_uuids),
                       role_uuids=self.role_uuids, node=child_node)
 
-    def column(self, name):
-        return super().get_child_entity(name=name)
+    def data(self):
+        return super().get_attribute_group(key='data')
+
+    def differential_privacy(self):
+        return super().get_attribute_group(key='differential_privacy')
+
+    def private_sql(self):
+        return super().get_attribute_group(key='private_sql')
+
+    def private_synthesis(self):
+        return super().get_attribute_group(key='private_synthesis')
+
+    def columns(self):
+        return super().get_child_names()
+
+    def column(self, name=None, index=-1):
+        return super().get_child_entity(name=name, index=index)

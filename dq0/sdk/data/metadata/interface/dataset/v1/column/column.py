@@ -59,6 +59,8 @@ class Column(Entity):
     def create_attributes_group(self, key, attribute_list=None):
         if key == 'data':
             return AttributesColumnData(column=self, attribute_list=attribute_list)
+        elif key == 'machine_learning':
+            return AttributesColumnMachineLearning(column=self, attribute_list=attribute_list)
         elif key == 'private_sql':
             if self.data_type_name is None:
                 raise Exception("cannot access private_sql without data_type_name being set")
@@ -73,7 +75,20 @@ class Column(Entity):
             if self.data_type_name is None:
                 raise Exception("cannot access private_synthesis without data_type_name being set")
             return AttributesColumnPrivateSql(column=self, attribute_list=attribute_list)
-        elif key == 'machine_learning':
-            return AttributesColumnMachineLearning(column=self, attribute_list=attribute_list)
         else:
             raise Exception(f"key {key} is invalid")
+
+    def data(self):
+        return super().get_attribute_group(key='data')
+
+    def machine_learning(self):
+        return super().get_attribute_group(key='machine_learning')
+
+    def private_sql(self):
+        return super().get_attribute_group(key='private_sql')
+
+    def private_sql_and_synthesis(self):
+        return super().get_attribute_group(key='private_sql_and_synthesis')
+
+    def private_synthesis(self):
+        return super().get_attribute_group(key='private_synthesis')

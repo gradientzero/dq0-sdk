@@ -22,35 +22,39 @@ class CSV(Source):
         path (:obj:`str`): Absolute path to the CSV file.
     """
 
-    def __init__(self, path, meta_ml=None):
-        super().__init__(path)
-        self.type = 'csv'
-        self.meta_ml = meta_ml
+    def __init__(self, meta_database):
+        meta_connector = meta_database.connector()
+        if meta_connector.type_name != 'csv':
+            raise Exception(f"type_name {meta_connector.type_name} does not match csv")
+        uri = meta_connector.uri if isinstance(meta_connector.uri, str) else ''
+        super().__init__(uri)
 
-        self.use_original_header = True
-        self.header_row = 0  # default assumes single header row
-        self.header_columns = None
-        self.sep = ','
-        self.decimal = '.'
-        self.na_values = None
-        self.index_col = None
-        self.skipinitialspace = False
-        if meta_ml is not None:
-            table_connector = self.meta_ml.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(key='connector')
-            # Since there is only one table as tested in data_connector
-            self.use_original_header = table_connector.get_attribute(key='use_original_header', default=self.use_original_header) \
-                if table_connector is not None else self.use_original_header
-            self.header_row = table_connector.get_attribute(key='header_row', default=self.header_row) if table_connector is not None else self.header_row
-            self.header_columns = MetaUtils.get_header_columns_from_meta(metadata=meta_ml)
-            self.sep = table_connector.get_attribute(key='sep', default=self.sep) if table_connector is not None else self.sep
-            self.decimal = table_connector.get_attribute(key='decimal', default=self.decimal) if table_connector is not None else self.decimal
-            tmp_na_values = table_connector.get_attribute(key='na_values') if table_connector is not None else None
-            self.na_values = tmp_na_values.to_dict() if tmp_na_values is not None else self.na_values
-            self.index_col = table_connector.get_attribute(key='index_col', default=self.index_col) if table_connector is not None else self.index_col
-            self.skipinitialspace = table_connector.get_attribute(key='skipinitialspace', default=self.skipinitialspace) \
-                if table_connector is not None else self.skipinitialspace
-            self.feature_cols, self.target_cols = MetaUtils.get_feature_target_cols_from_meta(metadata=meta_ml)
-            self.col_types = MetaUtils.get_col_types(metadata=meta_ml)
+        self.type = 'csv'
+
+        use_original_header = meta_connector.use_original_header
+        self.use_original_header = True if use_original_header is None else use_original_header
+
+        header_row = meta_connector.header_row
+        self.header_row = 0 if header_row is None else header_row  # default assumes single header row
+
+        self.header_columns = meta_connector.header_columns
+
+        sep = meta_connector.sep
+        self.sep = ',' if sep is None else sep
+
+        decimal = meta_connector.decimal
+        self.decimal = '.' if decimal is None else decimal
+
+        self.na_values = meta_connector.na_values
+
+        self.index_col = meta_connector.index_col
+
+        skipinitialspace = meta_connector.skipinitialspace
+        self.skipinitialspace = False if skipinitialspace is None else skipinitialspace
+
+        meta_table = meta_database.table(index=0)
+        self.feature_cols, self.target_cols = MetaUtils.get_feature_target_cols(meta_table=meta_table)
+        self.col_types = MetaUtils.get_col_types(meta_table=meta_table)
 
     def read(self, **kwargs):
         """Read CSV data sources

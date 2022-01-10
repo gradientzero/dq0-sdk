@@ -35,7 +35,7 @@ data_source_classes = {
 }
 
 
-def create_from_type(type, *args):
+def create_from_meta(meta_database):
     """Returns a matching data source instance based on the given type
     or None if no data source class for this type was found.
 
@@ -46,17 +46,19 @@ def create_from_type(type, *args):
     Returns:
         initialized data source class.
     """
-    if not isinstance(type, str) or type == '':
+    type_name = meta_database.connector().type_name
+
+    if not isinstance(type_name, str) or type_name == '':
         raise ValueError('type must be string!')
 
-    type = type.lower()
-    type = type.replace(' ', '')
-    type = type.replace('-', '')
-    type = type.replace('_', '')
+    type_name = type_name.lower()
+    type_name = type_name.replace(' ', '')
+    type_name = type_name.replace('-', '')
+    type_name = type_name.replace('_', '')
 
-    if type not in data_source_classes.keys():
-        raise ValueError('type {} not found in available types {}'.format(type, ', '.join(data_source_classes.keys())))
+    if type_name not in data_source_classes.keys():
+        raise ValueError(f"type_name {type_name} not found in available types {data_source_classes.keys()}")
 
-    data_class = data_source_classes[type]
+    data_class = data_source_classes[type_name]
 
-    return data_class(*args)
+    return data_class(meta_database)

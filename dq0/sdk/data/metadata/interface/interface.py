@@ -25,7 +25,11 @@ class Interface(Entity):
         self.metadata = metadata
         self.dataset_entity = None
 
-    def dataset(self, name):
+    def dataset(self, name=None):
+        if name is None:
+            if self.metadata.dataset_node is None:
+                raise Exception("get without name may only work for existing dataset node")
+            name = Entity.name_of(node=self.metadata.dataset_node)
         if self.dataset_entity is None:
             if isinstance(self.dataset_specification, SpecificationV1):
                 self.dataset_entity = Dataset(name=name, parent=self,

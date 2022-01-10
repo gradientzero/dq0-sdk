@@ -1,9 +1,9 @@
 import os
-from dq0.sdk.data.metadata.specification.dataset.multi.dataset_multi_specification import DatasetMultiSpecification
-from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
+
 from dq0.sdk.data.metadata.filter.filter_machine_learning import FilterMachineLearning
 from dq0.sdk.data.metadata.filter.filter_smart_noise import FilterSmartNoise
 from dq0.sdk.data.metadata.metadata import Metadata
+from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
 
 
 def test_metadata():
@@ -261,85 +261,235 @@ def test_metadata():
 
     # test
     assert metadata.dataset_node.type_name == 'dataset'
-    assert metadata.dataset_node.get_attribute(index=-1, key='data', value=None).get_attribute(index=-1, key='name', value='test_ds') is not None
-    assert metadata.dataset_node.get_attribute(index=-1, key='data', value=None).get_attribute(index=-1, key='description', value="some description") is not None
-    assert metadata.dataset_node.get_attribute(index=-1, key='data', value=None).get_attribute(index=-1, key='tags', value=None).get_attribute(index=0, key=None, value='tag1') is not None
-    assert metadata.dataset_node.get_attribute(index=-1, key='data', value=None).get_attribute(index=-1, key='tags', value=None).get_attribute(index=1, key=None, value='tag2') is not None
-    assert metadata.dataset_node.get_attribute(index=-1, key='data', value=None).get_attribute(index=-1, key='metadata_is_public', value=True) is not None
+    assert metadata.dataset_node.get_attribute(
+        index=-1, key='data', value=None).get_attribute(
+        index=-1, key='name', value='test_ds') is not None
+    assert metadata.dataset_node.get_attribute(
+        index=-1, key='data', value=None).get_attribute(
+        index=-1, key='description', value="some description") is not None
+    assert metadata.dataset_node.get_attribute(
+        index=-1, key='data', value=None).get_attribute(
+        index=-1, key='tags', value=None).get_attribute(
+        index=0, key=None, value='tag1') is not None
+    assert metadata.dataset_node.get_attribute(
+        index=-1, key='data', value=None).get_attribute(
+        index=-1, key='tags', value=None).get_attribute(
+        index=1, key=None, value='tag2') is not None
+    assert metadata.dataset_node.get_attribute(
+        index=-1, key='data', value=None).get_attribute(
+        index=-1, key='metadata_is_public', value=True) is not None
     assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].type_name == 'table'
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='connector', value=None) is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='connector', value=None).get_attribute(index=-1, key='decimal', value=None) is None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='connector', value=None).get_attribute(index=-1, key='header_columns', value=None).get_attribute(index=0, key=None, value='weight') is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='connector', value=None).get_attribute(index=-1, key='header_columns', value=None).get_attribute(index=1, key=None, value='height') is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='connector', value=None).get_attribute(index=-1, key='header_row', value=False) is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='connector', value=None).get_attribute(index=-1, key='index_col', value=None) is None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='connector', value=None).get_attribute(index=-1, key='na_values', value=None).get_attribute(index=-1, key='weight', value='?') is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='connector', value=None).get_attribute(index=-1, key='na_values', value=None).get_attribute(index=-1, key='height', value='??') is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='connector', value=None).get_attribute(index=-1, key='sep', value=None) is None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='connector', value=None).get_attribute(index=-1, key='skipinitialspace', value=None) is None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='connector', value=None).get_attribute(index=-1, key='type_name', value='csv') is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='data', value=None).get_attribute(index=-1, key='rows', value=2000) is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='differential_privacy', value=None).get_attribute(index=-1, key='budget_delta', value=500.0) is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='differential_privacy', value=None).get_attribute(index=-1, key='budget_epsilon', value=1000.0) is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='differential_privacy', value=None).get_attribute(index=-1, key='privacy_column', value='user_id') is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='differential_privacy', value=None).get_attribute(index=-1, key='privacy_level', value=1) is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='private_sql', value=None).get_attribute(index=-1, key='censor_dims', value=True) is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='private_sql', value=None).get_attribute(index=-1, key='clamp_columns', value=True) is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='private_sql', value=None).get_attribute(index=-1, key='clamp_counts', value=True) is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='private_sql', value=None).get_attribute(index=-1, key='max_ids', value=1) is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='private_sql', value=None).get_attribute(index=-1, key='row_privacy', value=True) is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='private_sql', value=None).get_attribute(index=-1, key='sample_max_ids', value=True) is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='private_sql', value=None).get_attribute(index=-1, key='tau', value=99.0) is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='private_sql', value=None).get_attribute(index=-1, key='use_dpsu', value=True) is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='private_synthesis', value=None).get_attribute(index=-1, key='synth_allowed', value=True) is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(
+        index=-1, key='connector', value=None) is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(
+        index=-1, key='connector', value=None).get_attribute(
+        index=-1, key='decimal', value=None) is None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(
+        index=-1, key='connector', value=None).get_attribute(
+        index=-1, key='header_columns', value=None).get_attribute(
+        index=0, key=None, value='weight') is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(
+        index=-1, key='connector', value=None).get_attribute(
+        index=-1, key='header_columns', value=None).get_attribute(
+        index=1, key=None, value='height') is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(
+        index=-1, key='connector', value=None).get_attribute(
+        index=-1, key='header_row', value=False) is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(
+        index=-1, key='connector', value=None).get_attribute(
+        index=-1, key='index_col', value=None) is None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(
+        index=-1, key='connector', value=None).get_attribute(
+        index=-1, key='na_values', value=None).get_attribute(
+        index=-1, key='weight', value='?') is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(
+        index=-1, key='connector', value=None).get_attribute(
+        index=-1, key='na_values', value=None).get_attribute(
+        index=-1, key='height', value='??') is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(
+        index=-1, key='connector', value=None).get_attribute(
+        index=-1, key='sep', value=None) is None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(
+        index=-1, key='connector', value=None).get_attribute(
+        index=-1, key='skipinitialspace', value=None) is None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(
+        index=-1, key='connector', value=None).get_attribute(
+        index=-1, key='type_name', value='csv') is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(
+        index=-1, key='data', value=None).get_attribute(
+        index=-1, key='rows', value=2000) is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(
+        index=-1, key='differential_privacy', value=None).get_attribute(
+        index=-1, key='budget_delta', value=500.0) is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(
+        index=-1, key='differential_privacy', value=None).get_attribute(
+        index=-1, key='budget_epsilon', value=1000.0) is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(
+        index=-1, key='differential_privacy', value=None).get_attribute(
+        index=-1, key='privacy_column', value='user_id') is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(
+        index=-1, key='differential_privacy', value=None).get_attribute(
+        index=-1, key='privacy_level', value=1) is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(
+        index=-1, key='private_sql', value=None).get_attribute(
+        index=-1, key='censor_dims', value=True) is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(
+        index=-1, key='private_sql', value=None).get_attribute(
+        index=-1, key='clamp_columns', value=True) is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(
+        index=-1, key='private_sql', value=None).get_attribute(
+        index=-1, key='clamp_counts', value=True) is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(
+        index=-1, key='private_sql', value=None).get_attribute(
+        index=-1, key='max_ids', value=1) is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(
+        index=-1, key='private_sql', value=None).get_attribute(
+        index=-1, key='row_privacy', value=True) is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(
+        index=-1, key='private_sql', value=None).get_attribute(
+        index=-1, key='sample_max_ids', value=True) is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(
+        index=-1, key='private_sql', value=None).get_attribute(
+        index=-1, key='tau', value=99.0) is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(
+        index=-1, key='private_sql', value=None).get_attribute(
+        index=-1, key='use_dpsu', value=True) is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(
+        index=-1, key='private_synthesis', value=None).get_attribute(
+        index=-1, key='synth_allowed', value=True) is not None
     assert len(metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].child_nodes) == 5
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'data': {'name': 'user_id'}}).get_attribute(index=-1, key='data', value=None).get_attribute(index=-1, key='data_type_name', value='int') is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'data': {'name': 'user_id'}}).get_attribute(index=-1, key='data', value=None).get_attribute(index=-1, key='name', value='user_id') is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'data': {'name': 'user_id'}}).get_attribute(index=-1, key='private_sql', value=None).get_attribute(index=-1, key='private_id', value=True) is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'data': {'name': 'weight'}}).get_attribute(index=-1, key='data', value=None).get_attribute(index=-1, key='name', value='weight') is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'data': {'name': 'weight'}}).get_attribute(index=-1, key='data', value=None).get_attribute(index=-1, key='selectable', value=True) is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'data': {'name': 'weight'}}).get_attribute(index=-1, key='differential_privacy', value=None) is None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'data': {'name': 'weight'}}).get_attribute(index=-1, key='private_sql', value=None) is None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'data': {'name': 'weight'}}).get_attribute(index=-1, key='private_sql_and_synthesis', value=None).get_attribute(index=-1, key='bounded', value=True) is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'data': {'name': 'weight'}}).get_attribute(index=-1, key='private_sql_and_synthesis', value=None).get_attribute(index=-1, key='lower', value=0.0) is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'data': {'name': 'weight'}}).get_attribute(index=-1, key='private_sql_and_synthesis', value=None).get_attribute(index=-1, key='upper', value=100.5) is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'data': {'name': 'weight'}}).get_attribute(index=-1, key='private_synthesis', value=None) is None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'data': {'name': 'height'}}).get_attribute(index=-1, key='data', value=None).get_attribute(index=-1, key='name', value='height') is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'data': {'name': 'height'}}).get_attribute(index=-1, key='differential_privacy', value=None) is None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'data': {'name': 'height'}}).get_attribute(index=-1, key='private_sql', value=None).get_attribute(index=-1, key='auto_bounds_prob', value=0.8) is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'data': {'name': 'height'}}).get_attribute(index=-1, key='private_sql', value=None).get_attribute(index=-1, key='use_auto_bounds', value=True) is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'data': {'name': 'height'}}).get_attribute(index=-1, key='private_synthesis', value=None).get_attribute(index=-1, key='discrete', value=True) is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'data': {'name': 'height'}}).get_attribute(index=-1, key='private_synthesis', value=None).get_attribute(index=-1, key='min_step', value=0.5) is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'data': {'name': 'height'}}).get_attribute(index=-1, key='private_synthesis', value=None).get_attribute(index=-1, key='synthesizable', value=False) is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'data': {'name': 'name'}}).get_attribute(index=-1, key='data', value=None).get_attribute(index=-1, key='name', value='name') is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'data': {'name': 'name'}}).get_attribute(index=-1, key='private_synthesis', value=None).get_attribute(index=-1, key='synthesizable', value=True) is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'data': {'name': 'email'}}).get_attribute(index=-1, key='data', value=None).get_attribute(index=-1, key='data_type_name', value='string') is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'data': {'name': 'email'}}).get_attribute(index=-1, key='data', value=None).get_attribute(index=-1, key='name', value='email') is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'data': {'name': 'email'}}).get_attribute(index=-1, key='data', value=None).get_attribute(index=-1, key='selectable', value=None) is None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'data': {'name': 'email'}}).get_attribute(index=-1, key='private_sql', value=None).get_attribute(index=-1, key='mask', value='(.*)@(.*).{3}$') is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'data': {'name': 'email'}}).get_attribute(index=-1, key='private_sql_and_synthesis', value=None).get_attribute(index=-1, key='cardinality', value=123) is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(index=-1, attributes_map={'data': {'name': 'email'}}).get_attribute(index=-1, key='private_synthesis', value=None) is None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(
+        index=-1, attributes_map={'data': {'name': 'user_id'}}).get_attribute(
+        index=-1, key='data', value=None).get_attribute(
+        index=-1, key='data_type_name', value='int') is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(
+        index=-1, attributes_map={'data': {'name': 'user_id'}}).get_attribute(
+        index=-1, key='data', value=None).get_attribute(
+        index=-1, key='name', value='user_id') is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(
+        index=-1, attributes_map={'data': {'name': 'user_id'}}).get_attribute(
+        index=-1, key='private_sql', value=None).get_attribute(
+        index=-1, key='private_id', value=True) is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(
+        index=-1, attributes_map={'data': {'name': 'weight'}}).get_attribute(
+        index=-1, key='data', value=None).get_attribute(
+        index=-1, key='name', value='weight') is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(
+        index=-1, attributes_map={'data': {'name': 'weight'}}).get_attribute(
+        index=-1, key='data', value=None).get_attribute(
+        index=-1, key='selectable', value=True) is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(
+        index=-1, attributes_map={'data': {'name': 'weight'}}).get_attribute(
+        index=-1, key='differential_privacy', value=None) is None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(
+        index=-1, attributes_map={'data': {'name': 'weight'}}).get_attribute(
+        index=-1, key='private_sql', value=None) is None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(
+        index=-1, attributes_map={'data': {'name': 'weight'}}).get_attribute(
+        index=-1, key='private_sql_and_synthesis', value=None).get_attribute(
+        index=-1, key='bounded', value=True) is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(
+        index=-1, attributes_map={'data': {'name': 'weight'}}).get_attribute(
+        index=-1, key='private_sql_and_synthesis', value=None).get_attribute(
+        index=-1, key='lower', value=0.0) is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(
+        index=-1, attributes_map={'data': {'name': 'weight'}}).get_attribute(
+        index=-1, key='private_sql_and_synthesis', value=None).get_attribute(
+        index=-1, key='upper', value=100.5) is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(
+        index=-1, attributes_map={'data': {'name': 'weight'}}).get_attribute(
+        index=-1, key='private_synthesis', value=None) is None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(
+        index=-1, attributes_map={'data': {'name': 'height'}}).get_attribute(
+        index=-1, key='data', value=None).get_attribute(
+        index=-1, key='name', value='height') is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(
+        index=-1, attributes_map={'data': {'name': 'height'}}).get_attribute(
+        index=-1, key='differential_privacy', value=None) is None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(
+        index=-1, attributes_map={'data': {'name': 'height'}}).get_attribute(
+        index=-1, key='private_sql', value=None).get_attribute(
+        index=-1, key='auto_bounds_prob', value=0.8) is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(
+        index=-1, attributes_map={'data': {'name': 'height'}}).get_attribute(
+        index=-1, key='private_sql', value=None).get_attribute(
+        index=-1, key='use_auto_bounds', value=True) is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(
+        index=-1, attributes_map={'data': {'name': 'height'}}).get_attribute(
+        index=-1, key='private_synthesis', value=None).get_attribute(
+        index=-1, key='discrete', value=True) is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(
+        index=-1, attributes_map={'data': {'name': 'height'}}).get_attribute(
+        index=-1, key='private_synthesis', value=None).get_attribute(
+        index=-1, key='min_step', value=0.5) is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(
+        index=-1, attributes_map={'data': {'name': 'height'}}).get_attribute(
+        index=-1, key='private_synthesis', value=None).get_attribute(
+        index=-1, key='synthesizable', value=False) is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(
+        index=-1, attributes_map={'data': {'name': 'name'}}).get_attribute(
+        index=-1, key='data', value=None).get_attribute(
+        index=-1, key='name', value='name') is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(
+        index=-1, attributes_map={'data': {'name': 'name'}}).get_attribute(
+        index=-1, key='private_synthesis', value=None).get_attribute(
+        index=-1, key='synthesizable', value=True) is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(
+        index=-1, attributes_map={'data': {'name': 'email'}}).get_attribute(
+        index=-1, key='data', value=None).get_attribute(
+        index=-1, key='data_type_name', value='string') is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(
+        index=-1, attributes_map={'data': {'name': 'email'}}).get_attribute(
+        index=-1, key='data', value=None).get_attribute(
+        index=-1, key='name', value='email') is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(
+        index=-1, attributes_map={'data': {'name': 'email'}}).get_attribute(
+        index=-1, key='data', value=None).get_attribute(
+        index=-1, key='selectable', value=None) is None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(
+        index=-1, attributes_map={'data': {'name': 'email'}}).get_attribute(
+        index=-1, key='private_sql', value=None).get_attribute(
+        index=-1, key='mask', value='(.*)@(.*).{3}$') is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(
+        index=-1, attributes_map={'data': {'name': 'email'}}).get_attribute(
+        index=-1, key='private_sql_and_synthesis', value=None).get_attribute(
+        index=-1, key='cardinality', value=123) is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_child_node(
+        index=-1, attributes_map={'data': {'name': 'email'}}).get_attribute(
+        index=-1, key='private_synthesis', value=None) is None
 
     # change metadata
-    metadata.dataset_node.get_attribute(index=-1, key='data', value=None).get_attribute(index=-1, key='description', value=None).value = "new description"
-    metadata.dataset_node.get_attribute(index=-1, key='data', value=None).get_attribute(index=-1, key='metadata_is_public', value=None).value = False
-    metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='differential_privacy', value=None).get_attribute(index=-1, key='budget_epsilon', value=None).value = 1234.0
+    metadata.dataset_node.get_attribute(index=-1, key='data', value=None).get_attribute(
+        index=-1, key='description', value=None).value = "new description"
+    metadata.dataset_node.get_attribute(index=-1, key='data', value=None).get_attribute(
+        index=-1, key='metadata_is_public', value=None).value = False
+    metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(
+        index=-1, key='differential_privacy', value=None).get_attribute(
+        index=-1, key='budget_epsilon', value=None).value = 1234.0
 
     # save metadata
     yaml_content = metadata.to_yaml(request_uuids=owner_uuids)
 
     # reload metadata
-    metadata, _, _ = Metadata.from_yaml(yaml_content=yaml_content, role_uuids=role_uuids)
+    metadata, _ = Metadata.from_yaml(yaml_content=yaml_content, role_uuids=role_uuids)
 
     # test again
-    assert metadata.dataset_node.get_attribute(index=-1, key='data', value=None).get_attribute(index=-1, key='description', value="new description") is not None
-    assert metadata.dataset_node.get_attribute(index=-1, key='data', value=None).get_attribute(index=-1, key='metadata_is_public', value=False) is not None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='differential_privacy', value=None).get_attribute(index=-1, key='budget_epsilon', value=1234.0) is not None
+    assert metadata.dataset_node.get_attribute(index=-1, key='data', value=None).get_attribute(
+        index=-1, key='description', value="new description") is not None
+    assert metadata.dataset_node.get_attribute(index=-1, key='data', value=None).get_attribute(
+        index=-1, key='metadata_is_public', value=False) is not None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(
+        index=-1, key='differential_privacy', value=None).get_attribute(
+        index=-1, key='budget_epsilon', value=1234.0) is not None
 
     # change metadata
-    metadata.dataset_node.get_attribute(index=-1, key='data', value=None).get_attribute(index=-1, key='description', value=None).value = "new description 2"
-    metadata.dataset_node.get_attribute(index=-1, key='data', value=None).remove_attribute(index=-1, key='metadata_is_public', value=None)
-    metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='differential_privacy', value=None).get_attribute(index=-1, key='budget_epsilon', value=None).value = 5678.0
+    metadata.dataset_node.get_attribute(index=-1, key='data', value=None).get_attribute(
+        index=-1, key='description', value=None).value = "new description 2"
+    metadata.dataset_node.get_attribute(index=-1, key='data', value=None).remove_attribute(
+        index=-1, key='metadata_is_public', value=None)
+    metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(
+        index=-1, key='differential_privacy', value=None).get_attribute(
+        index=-1, key='budget_epsilon', value=None).value = 5678.0
 
     # dump metadata
     yaml_content = metadata.to_yaml(request_uuids=owner_uuids)
@@ -348,12 +498,17 @@ def test_metadata():
     metadata, _, _ = Metadata.from_yaml(yaml_content=yaml_content, role_uuids=role_uuids)
 
     # test again
-    assert metadata.dataset_node.get_attribute(index=-1, key='data', value=None).get_attribute(index=-1, key='description', value="new description 2") is not None
-    assert metadata.dataset_node.get_attribute(index=-1, key='data', value=None).get_attribute(index=-1, key='metadata_is_public', value=None) is None
-    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(index=-1, key='differential_privacy', value=None).get_attribute(index=-1, key='budget_epsilon', value=5678.0) is not None
+    assert metadata.dataset_node.get_attribute(index=-1, key='data', value=None).get_attribute(
+        index=-1, key='description', value="new description 2") is not None
+    assert metadata.dataset_node.get_attribute(index=-1, key='data', value=None).get_attribute(
+        index=-1, key='metadata_is_public', value=None) is None
+    assert metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(
+        index=-1, key='differential_privacy', value=None).get_attribute(
+        index=-1, key='budget_epsilon', value=5678.0) is not None
 
     # test drop columns (drops column 'height')
-    metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].remove_child_node(index=-1, attributes_map={'private_synthesis': {'synthesizable': False}})
+    metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].remove_child_node(
+        index=-1, attributes_map={'private_synthesis': {'synthesizable': False}})
     assert len(metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].child_nodes) == 4
 
     # test to_dict
@@ -510,6 +665,7 @@ def test_metadata():
 
     # clean up
     os.remove('test.yaml')
+
 
 def test_combine_metadata():
     # prepare yaml file
@@ -780,17 +936,44 @@ def test_combine_metadata():
     }
 
     # load metadata
-    metadata1, dataset_specification, _ = Metadata.from_yaml(yaml_content=content1, role_uuids=role_uuids)
-    metadata2, _, _ = Metadata.from_yaml(yaml_content=content2, role_uuids=role_uuids)
-    metadata3, _, _ = Metadata.from_yaml(yaml_content=content3, role_uuids=role_uuids)
+    metadata1, specifications = Metadata.from_yaml(yaml_content=content1, role_uuids=role_uuids)
+    metadata2, _ = Metadata.from_yaml(yaml_content=content2, role_uuids=role_uuids)
+    metadata3, _ = Metadata.from_yaml(yaml_content=content3, role_uuids=role_uuids)
 
-    metadata_merged_a = metadata1.merge_with(other=metadata2, overwrite_value=False, overwrite_permissions=False, request_uuids=owner_uuids, dataset_specification=DatasetMultiSpecification(role_uuids=role_uuids))
-    metadata_merged_b = metadata_merged_a.merge_with(other=metadata3, overwrite_value=False, overwrite_permissions=False, request_uuids=owner_uuids, dataset_specification=DatasetMultiSpecification(role_uuids=role_uuids))
+    dataset_specification = specifications['datatset'] if 'dataset' in specifications else None
+    metadata_merged_a = metadata1.merge_with(other=metadata2, overwrite_value=False, overwrite_permissions=False, request_uuids=owner_uuids,
+                                             dataset_specification=dataset_specification)
+    metadata_merged_b = metadata_merged_a.merge_with(other=metadata3, overwrite_value=False, overwrite_permissions=False, request_uuids=owner_uuids,
+                                                     dataset_specification=dataset_specification)
 
-    assert metadata_merged_b.dataset_node.get_child_node(index=-1, attributes_map={'data': {'name': 'test_db_1'}}).child_nodes[0].get_child_node(index=-1, attributes_map={'data': {'name': 'test_tab_1'}}).get_attribute(index=-1, key='connector', value=None).get_attribute(index=-1, key='uri', value='user1@db') is not None
-    assert metadata_merged_b.dataset_node.get_child_node(index=-1, attributes_map={'data': {'name': 'test_db_2'}}).child_nodes[0].get_child_node(index=-1, attributes_map={'data': {'name': 'test_tab_2'}}).get_attribute(index=-1, key='data', value=None).get_attribute(index=-1, key='rows', value=2000) is not None
-    assert metadata_merged_b.dataset_node.get_child_node(index=-1, attributes_map={'data': {'name': 'test_db_2'}}).child_nodes[0].get_child_node(index=-1, attributes_map={'data': {'name': 'test_tab_2'}}).get_attribute(index=-1, key='differential_privacy', value=None).get_attribute(index=-1, key='budget_epsilon', value=1001.0) is not None
-    assert metadata_merged_b.dataset_node.get_child_node(index=-1, attributes_map={'data': {'name': 'test_db_1'}}).child_nodes[0].get_child_node(index=-1, attributes_map={'data': {'name': 'test_tab_1'}}).get_attribute(index=-1, key='private_sql', value=None).get_attribute(index=-1, key='row_privacy', value=True) is not None
-    assert metadata_merged_b.dataset_node.get_child_node(index=-1, attributes_map={'data': {'name': 'test_db_1'}}).child_nodes[0].get_child_node(index=-1, attributes_map={'data': {'name': 'test_tab_3'}}).get_attribute(index=-1, key='private_sql', value=None).get_attribute(index=-1, key='row_privacy', value=False) is not None
-    assert metadata_merged_b.dataset_node.get_child_node(index=-1, attributes_map={'data': {'name': 'test_db_2'}}).child_nodes[0].get_child_node(index=-1, attributes_map={'data': {'name': 'test_tab_2'}}).get_child_node(index=-1, attributes_map={'data': {'name': 'email'}}).get_attribute(index=-1, key='data', value=None).get_attribute(index=-1, key='data_type_name', value='string') is not None
- 
+    assert metadata_merged_b.dataset_node.get_child_node(
+        index=-1, attributes_map={'data': {'name': 'test_db_1'}}).child_nodes[0].get_child_node(
+        index=-1, attributes_map={'data': {'name': 'test_tab_1'}}).get_attribute(
+        index=-1, key='connector', value=None).get_attribute(
+        index=-1, key='uri', value='user1@db') is not None
+    assert metadata_merged_b.dataset_node.get_child_node(
+        index=-1, attributes_map={'data': {'name': 'test_db_2'}}).child_nodes[0].get_child_node(
+        index=-1, attributes_map={'data': {'name': 'test_tab_2'}}).get_attribute(
+        index=-1, key='data', value=None).get_attribute(
+        index=-1, key='rows', value=2000) is not None
+    assert metadata_merged_b.dataset_node.get_child_node(
+        index=-1, attributes_map={'data': {'name': 'test_db_2'}}).child_nodes[0].get_child_node(
+        index=-1, attributes_map={'data': {'name': 'test_tab_2'}}).get_attribute(
+        index=-1, key='differential_privacy', value=None).get_attribute(
+        index=-1, key='budget_epsilon', value=1001.0) is not None
+    assert metadata_merged_b.dataset_node.get_child_node(
+        index=-1, attributes_map={'data': {'name': 'test_db_1'}}).child_nodes[0].get_child_node(
+        index=-1, attributes_map={'data': {'name': 'test_tab_1'}}).get_attribute(
+        index=-1, key='private_sql', value=None).get_attribute(
+        index=-1, key='row_privacy', value=True) is not None
+    assert metadata_merged_b.dataset_node.get_child_node(
+        index=-1, attributes_map={'data': {'name': 'test_db_1'}}).child_nodes[0].get_child_node(
+        index=-1, attributes_map={'data': {'name': 'test_tab_3'}}).get_attribute(
+        index=-1, key='private_sql', value=None).get_attribute(
+        index=-1, key='row_privacy', value=False) is not None
+    assert metadata_merged_b.dataset_node.get_child_node(
+        index=-1, attributes_map={'data': {'name': 'test_db_2'}}).child_nodes[0].get_child_node(
+        index=-1, attributes_map={'data': {'name': 'test_tab_2'}}).get_child_node(
+        index=-1, attributes_map={'data': {'name': 'email'}}).get_attribute(
+        index=-1, key='data', value=None).get_attribute(
+        index=-1, key='data_type_name', value='string') is not None

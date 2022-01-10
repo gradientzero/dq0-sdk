@@ -28,5 +28,14 @@ class Schema(Entity):
                      name_permissions=DefaultPermissions.shared_attribute(role_uuids=self.role_uuids),
                      role_uuids=self.role_uuids, node=child_node)
 
-    def table(self, name):
-        return super().get_child_entity(name=name)
+    def data(self):
+        return super().get_attribute_group(key='data')
+
+    def differential_privacy(self):
+        return super().get_attribute_group(key='differential_privacy')
+
+    def tables(self):
+        return super().get_child_names()
+
+    def table(self, name=None, index=-1):
+        return super().get_child_entity(name=name, index=index)

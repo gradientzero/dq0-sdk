@@ -30,6 +30,21 @@ class Entity:
         Permissions.check(permissions=name_permissions)
         return permissions, data_permissions, name_permissions
 
+    @staticmethod
+    def name_of(node):
+        if not isinstance(node, Node):
+            raise Exception(f"node is not of type Node, is of type {type(node)} instead")
+        data_attribute = node.get_attribute(key='data')
+        if not isinstance(data_attribute, AttributeList):
+            raise Exception(f"data_attribute is not of type AttributeList, is of type {type(data_attribute)} instead")
+        name_attribute = data_attribute.get_attribute(key='name')
+        if not isinstance(name_attribute, AttributeString):
+            raise Exception(f"name_attribute is not of type AttributeString, is of type {type(name_attribute)} instead")
+        name = name_attribute.value
+        if not isinstance(name, str):
+            raise Exception(f"name is not of type str, is of type {type(name)} instead")
+        return name
+
     def __init__(self, name, type_name, parent, permissions=None, data_permissions=None, name_permissions=None,
                  create_child_entity_func=None, create_attributes_group_func=None, role_uuids=None, node=None):
         if not isinstance(name, str):
@@ -74,9 +89,17 @@ class Entity:
         for child_entity in self.child_entities.values():
             child_entity.wipe()
 
-    def get_child_entity(self, name):
-        if name not in self.child_entities:
+    def get_child_entity(self, name=None, index=-1):
+        if name is None and index < 0:
+            raise Exception("one of name or index must be provided")
+        if name is None:
+            child_node = self.node.get_child_node(index=index) if self.node is not None else None
+            if child_node is None:
+                raise Exception("index based get may only work for existing child nodes")
+            name = Entity.name_of(node=child_node)
+        else:
             child_node = self.node.get_child_node(attributes_map={'data': {'name': name}}) if self.node is not None else None
+        if name not in self.child_entities:
             if self.create_child_entity_func is None:
                 raise Exception("create_child_entity_func is None")
             self.child_entities[name] = self.create_child_entity_func(name=name, child_node=child_node)
@@ -124,6 +147,14 @@ class Entity:
             raise Exception(f"new_name {new_name} of child entity already exists")
         self.child_entities[new_name] = self.child_entities[old_name]
         del self.child_entities[old_name]
+
+    def get_child_names(self):
+        child_names = set()
+        for child_node in self.node.child_nodes if isinstance(self.node, Node) else []:
+            child_names.add(Entity.name_of(node=child_node))
+        if len(child_names) != len(self.node.child_nodes):
+            raise Exception(f"length mismatch; child_names are not unique: {len(child_names)} != {len(self.node.child_nodes)}")
+        return child_names
 
     def add_attribute(self, attribute):
         self.create()

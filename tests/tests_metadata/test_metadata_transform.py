@@ -1,14 +1,14 @@
-from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
+# the unused imports are needed for the eval in the repr test
+from dq0.sdk.data.metadata.attribute.attribute_boolean import AttributeBoolean  # noqa: F401
+from dq0.sdk.data.metadata.attribute.attribute_datetime import AttributeDatetime  # noqa: F401
+from dq0.sdk.data.metadata.attribute.attribute_float import AttributeFloat  # noqa: F401
+from dq0.sdk.data.metadata.attribute.attribute_int import AttributeInt  # noqa: F401
+from dq0.sdk.data.metadata.attribute.attribute_list import AttributeList  # noqa: F401
+from dq0.sdk.data.metadata.attribute.attribute_string import AttributeString  # noqa: F401
 from dq0.sdk.data.metadata.metadata import Metadata
-# the following, unused, imports are needed for the eval in the repr test
-from dq0.sdk.data.metadata.attribute.attribute_boolean import AttributeBoolean
-from dq0.sdk.data.metadata.attribute.attribute_datetime import AttributeDatetime
-from dq0.sdk.data.metadata.attribute.attribute_float import AttributeFloat
-from dq0.sdk.data.metadata.attribute.attribute_int import AttributeInt
-from dq0.sdk.data.metadata.attribute.attribute_list import AttributeList
-from dq0.sdk.data.metadata.attribute.attribute_string import AttributeString
-from dq0.sdk.data.metadata.node.node import Node
-from dq0.sdk.data.metadata.permissions.permissions import Permissions
+from dq0.sdk.data.metadata.node.node import Node  # noqa: F401
+from dq0.sdk.data.metadata.permissions.permissions import Permissions  # noqa: F401
+from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
 
 
 def test_metadata_transform():
@@ -257,16 +257,16 @@ def test_metadata_transform():
         DefaultPermissions.OWNER_NAME: owner_uuids,
         DefaultPermissions.USER_NAME: user_uuids,
     }
-    
+
     # load metadata
-    metadata, _, _ = Metadata.from_yaml(yaml_content=content, role_uuids=role_uuids)
+    metadata, _ = Metadata.from_yaml(yaml_content=content, role_uuids=role_uuids)
 
     # test to_yaml
-    metadata2, _, _ = Metadata.from_yaml(yaml_content=metadata.to_yaml(request_uuids=owner_uuids), role_uuids=role_uuids)
+    metadata2, _ = Metadata.from_yaml(yaml_content=metadata.to_yaml(request_uuids=owner_uuids), role_uuids=role_uuids)
     assert repr(metadata) == repr(metadata2)
 
     # test str
-    metadata3, _, _ = Metadata.from_yaml(yaml_content=metadata.__str__(request_uuids=owner_uuids), role_uuids=role_uuids)
+    metadata3, _ = Metadata.from_yaml(yaml_content=metadata.__str__(request_uuids=owner_uuids), role_uuids=role_uuids)
     assert repr(metadata) == repr(metadata3)
 
     # test repr
