@@ -8,16 +8,16 @@ from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermi
 
 class Dataset(Entity):
     def __init__(self, name, parent, permissions=None, data_permissions=None, name_permissions=None, role_uuids=None, node=None):
-        super().__init__(name=name, type_name=NodeType.TYPE_NAME_SCHEMA, parent=parent,
+        super().__init__(name=name, type_name=NodeType.TYPE_NAME_DATASET, parent=parent,
                          permissions=permissions, data_permissions=data_permissions, name_permissions=name_permissions,
                          create_child_entity_func=self.create_child_entity, create_attributes_group_func=self.create_attributes_group,
                          role_uuids=role_uuids, node=node)
 
     def create_attributes_group(self, key, attribute_list=None):
         if key == 'data':
-            return AttributesDatasetData(schema=self, attribute_list=attribute_list)
+            return AttributesDatasetData(dataset=self, attribute_list=attribute_list)
         elif key == 'differential_privacy':
-            return AttributesDatasetDifferentialPrivacy(schema=self, attribute_list=attribute_list)
+            return AttributesDatasetDifferentialPrivacy(dataset=self, attribute_list=attribute_list)
         else:
             raise Exception(f"key {key} is invalid")
 
@@ -34,8 +34,14 @@ class Dataset(Entity):
     def differential_privacy(self):
         return super().get_attribute_group(key='differential_privacy')
 
-    def databases(self):
+    def database_names(self):
         return super().get_child_names()
 
     def database(self, name=None, index=-1):
         return super().get_child_entity(name=name, index=index)
+
+    def drop_database(self, name=None, index=-1):
+        return super().remove_child_node(name=name, index=index)
+
+    def drop_databases(self, attributes_map=None):
+        return super().remove_child_nodes(attributes_map=attributes_map)

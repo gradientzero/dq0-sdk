@@ -22,8 +22,8 @@ class Entity:
                 data_permissions = data_attribute.permissions
                 name_attribute = data_attribute.get_attribute(key='name')
                 if name_attribute is not None:
-                    if not name_attribute(data_attribute, AttributeString):
-                        raise Exception(f"data_attribute is not of type AttributeList, is of type {type(data_attribute)} instead")
+                    if not isinstance(name_attribute, AttributeString):
+                        raise Exception(f"name_attribute is not of type AttributeString, is of type {type(name_attribute)} instead")
                     name_permissions = name_attribute.permissions
         Permissions.check(permissions=permissions)
         Permissions.check(permissions=data_permissions)
@@ -49,7 +49,7 @@ class Entity:
                  create_child_entity_func=None, create_attributes_group_func=None, role_uuids=None, node=None):
         if not isinstance(name, str):
             raise Exception(f"name is not of type str, is of type {type(name)} instead")
-        if not NodeType.is_valid_type_name(type_name=type_name):
+        if node is not None and not NodeType.is_valid_type_name(type_name=type_name):
             raise Exception(f"type_name {type_name} is invalid")
         if not isinstance(parent, Entity):
             raise Exception(f"parent is not of type Entity, is of type {type(parent)} instead")
@@ -91,7 +91,7 @@ class Entity:
 
     def get_child_entity(self, name=None, index=-1):
         if name is None and index < 0:
-            raise Exception("one of name or index must be provided")
+            index = 0
         if name is None:
             child_node = self.node.get_child_node(index=index) if self.node is not None else None
             if child_node is None:
@@ -109,12 +109,26 @@ class Entity:
         self.create()
         self.node.add_child_node(child_node=child_node)
 
-    def remove_child_node(self, name):
+    def remove_child_node(self, name=None, index=-1):
         if self.node is None:
             return
-        self.node.remove_child_node(attributes_map={'data': {'name': name}})
+        if name is None:
+            if index < 0:
+                index = 0
+            child_node = self.node.get_child_node(index=index)
+            if child_node is None:
+                return
+            name = Entity.name_of(node=child_node)
+        self.node.remove_child_node(index=index, attributes_map={'data': {'name': name}})
         if name in self.child_entities:
             self.child_entities[name].wipe()
+
+    def remove_child_nodes(self, attributes_map=None):
+        if self.node is None:
+            return
+        child_nodes = self.node.get_child_nodes(attributes_map=attributes_map)
+        for child_node in child_nodes:
+            self.remove_child_node(name=Entity.name_of(child_node))
 
     def get_attribute_group(self, key):
         if key not in self.attribute_groups:

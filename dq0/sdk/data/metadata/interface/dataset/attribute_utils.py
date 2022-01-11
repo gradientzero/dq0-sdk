@@ -101,8 +101,8 @@ class AttributeUtils:
     def value_to_dict(input_value):
         if input_value is None:
             return None
-        if not isinstance(input_value, dict):
-            raise Exception(f"input_value {input_value} is not of type dict, is of type {type(input_value)} instead")
+        if not isinstance(input_value, list):
+            raise Exception(f"input_value {input_value} is not of type list, is of type {type(input_value)} instead")
         type_name = None
         new_dict = {}
         for attribute in input_value:

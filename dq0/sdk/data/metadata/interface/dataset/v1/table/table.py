@@ -46,8 +46,14 @@ class Table(Entity):
     def private_synthesis(self):
         return super().get_attribute_group(key='private_synthesis')
 
-    def columns(self):
+    def column_names(self):
         return super().get_child_names()
 
     def column(self, name=None, index=-1):
         return super().get_child_entity(name=name, index=index)
+
+    def drop_column(self, name=None, index=-1):
+        return super().remove_child_node(name=name, index=index)
+
+    def drop_columns(self, attributes_map=None):
+        return super().remove_child_nodes(attributes_map=attributes_map)

@@ -22,6 +22,17 @@ class AttributesGroup:
             if key != attribute_list.key:
                 raise Exception(f"keys do not match: {key} != {attribute_list.key}")
 
+    def is_empty(self):
+        return self.attribute_list is None
+
+    def delete(self):
+        if len(self.attribute_list.value) != 0:
+            keys = set()
+            for attribute in self.attribute_list.value:
+                keys.add(attribute.key)
+            for key in keys:
+                self.delete_attribute(key=key)
+
     def wipe(self):
         self.attribute_list = None
 

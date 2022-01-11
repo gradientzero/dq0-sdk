@@ -125,6 +125,8 @@ class Node:
                         return False
                 elif tmp_attribute.value != value:
                     return False
+            else:
+                return False
         return True
 
     def __init__(self, type_name, attributes=None, child_nodes=None, permissions=None):
@@ -313,14 +315,21 @@ class Node:
                 return
         raise Exception("attribute not found")
 
-    def get_child_node(self, index=-1, attributes_map=None):
+    def get_child_nodes(self, index=-1, attributes_map=None):
         if index < 0 and attributes_map is None:
-            return None
+            return [child_node for child_node in self.child_nodes] if self.child_nodes is not None else []
+        child_nodes = []
         for tmp_index, tmp_child_node in enumerate(self.child_nodes if self.child_nodes is not None else []):
             if (index < 0 or index == tmp_index) and (attributes_map is None or Node.attributes_list_matches_map(attributes_list=tmp_child_node.attributes,
                                                                                                                  attributes_map=attributes_map)):
-                return tmp_child_node
-        return None
+                child_nodes.append(tmp_child_node)
+        return child_nodes
+
+    def get_child_node(self, index=-1, attributes_map=None):
+        if index < 0 and attributes_map is None:
+            return None
+        child_nodes = self.get_child_nodes(index=index, attributes_map=attributes_map)
+        return child_nodes[0] if len(child_nodes) != 0 else None
 
     def add_child_node(self, child_node, index=-1):
         if child_node is None:
@@ -335,6 +344,16 @@ class Node:
         for index, tmp_child_node in enumerate(self.child_nodes if self.child_nodes is not None else []):
             tmp_child_node.list_index = index if 1 < len(self.child_nodes) else -1
 
+    def remove_child_nodes(self, index=-1, attributes_map=None):
+        child_nodes = self.child_nodes if self.child_nodes is not None else []
+        for tmp_index in range(len(child_nodes) - 1, -1, -1):
+            tmp_child_node = child_nodes[tmp_index]
+            if (index < 0 or index == tmp_index) and (attributes_map is None or Node.attributes_list_matches_map(attributes_list=tmp_child_node.attributes,
+                                                                                                                 attributes_map=attributes_map)):
+                del child_nodes[tmp_index]
+        for tmp_index, tmp_child_node in enumerate(self.child_nodes if self.child_nodes is not None else []):
+            tmp_child_node.list_index = tmp_index if 1 < len(self.child_nodes) else -1
+
     def remove_child_node(self, index=-1, attributes_map=None):
         if index < 0 and attributes_map is None:
             raise Exception("child_node not found")
@@ -342,7 +361,7 @@ class Node:
             if (index < 0 or index == tmp_index) and (attributes_map is None or Node.attributes_list_matches_map(attributes_list=tmp_child_node.attributes,
                                                                                                                  attributes_map=attributes_map)):
                 del self.child_nodes[tmp_index]
-                for index, tmp_child_node in enumerate(self.child_nodes if self.child_nodes is not None else []):
-                    tmp_child_node.list_index = index if 1 < len(self.child_nodes) else -1
+                for tmp_index_2, tmp_child_node_2 in enumerate(self.child_nodes if self.child_nodes is not None else []):
+                    tmp_child_node_2.list_index = tmp_index_2 if 1 < len(self.child_nodes) else -1
                 return
         raise Exception("child_node not found")

@@ -5,6 +5,7 @@ from dq0.sdk.data.metadata.interface.dataset.v1.column.attributes_column_data im
 from dq0.sdk.data.metadata.interface.dataset.v1.column.attributes_column_machine_learning import AttributesColumnMachineLearning
 from dq0.sdk.data.metadata.interface.dataset.v1.column.attributes_column_private_sql import AttributesColumnPrivateSql
 from dq0.sdk.data.metadata.interface.dataset.v1.column.attributes_column_private_sql_and_synthesis import AttributesColumnPrivateSqlAndSynthesis
+from dq0.sdk.data.metadata.interface.dataset.v1.column.attributes_column_private_synthesis import AttributesColumnPrivateSynthesis
 from dq0.sdk.data.metadata.node.node import Node
 from dq0.sdk.data.metadata.node.node_type import NodeType
 from dq0.sdk.data.metadata.permissions.permissions import Permissions
@@ -74,7 +75,7 @@ class Column(Entity):
         elif key == 'private_synthesis':
             if self.data_type_name is None:
                 raise Exception("cannot access private_synthesis without data_type_name being set")
-            return AttributesColumnPrivateSql(column=self, attribute_list=attribute_list)
+            return AttributesColumnPrivateSynthesis(column=self, attribute_list=attribute_list)
         else:
             raise Exception(f"key {key} is invalid")
 

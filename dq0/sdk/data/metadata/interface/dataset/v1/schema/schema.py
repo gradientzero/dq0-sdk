@@ -34,8 +34,14 @@ class Schema(Entity):
     def differential_privacy(self):
         return super().get_attribute_group(key='differential_privacy')
 
-    def tables(self):
+    def table_names(self):
         return super().get_child_names()
 
     def table(self, name=None, index=-1):
         return super().get_child_entity(name=name, index=index)
+
+    def drop_table(self, name=None, index=-1):
+        return super().remove_child_node(name=name, index=index)
+
+    def drop_tables(self, attributes_map=None):
+        return super().remove_child_nodes(attributes_map=attributes_map)
