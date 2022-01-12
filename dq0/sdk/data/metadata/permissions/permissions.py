@@ -20,7 +20,7 @@ class Permissions:
             return
         if not isinstance(permissions, Permissions):
             raise Exception(f"permissions is not of type Permissions, is of type {type(permissions)} instead")
-        Permissions.check_internal_permissions(internal_permissions=permissions.permissions)
+        Permissions.check_internal_permissions(internal_permissions=permissions._permissions)
 
     @staticmethod
     def check_internal_permissions(internal_permissions):
@@ -122,27 +122,27 @@ class Permissions:
 
     def __init__(self, permissions):
         Permissions.check_internal_permissions(internal_permissions=permissions)
-        self.permissions = permissions
+        self._permissions = permissions
 
     def __str__(self):
-        if self.permissions is None:
+        if self.get_permissions() is None:
             return " null"
-        if len(self.permissions) == 0:
+        if len(self.get_permissions()) == 0:
             return " {}"
         return_string = ''
-        for action, allowed_uuids in self.permissions.items():
+        for action, allowed_uuids in self.get_permissions().items():
             return_string += "\n  " + StrUtils.str_from(action, quoted=True) + ':' + \
                 Permissions.str_from_internal_uuids(internal_uuids=allowed_uuids, sort=True).replace('\n', "\n  ")
         return return_string
 
     def __repr__(self):
         repr_permissions = 'None'
-        if self.permissions is not None:
+        if self.get_permissions() is not None:
             repr_permissions = '{'
-            sorted_actions = sorted(self.permissions.keys())
+            sorted_actions = sorted(self.get_permissions().keys())
             for action_index, action in enumerate(sorted_actions):
                 repr_permissions += repr(action) + ": {"
-                sorted_uuids = sorted(list(self.permissions[action]))
+                sorted_uuids = sorted(list(self.get_permissions()[action]))
                 for uuid_index, uuid in enumerate(sorted_uuids):
                     repr_permissions += repr(uuid)
                     if uuid_index < len(sorted_uuids) - 1:
@@ -156,21 +156,24 @@ class Permissions:
     def __eq__(self, other):
         if other is None or not isinstance(other, Permissions):
             return False
-        return self.permissions == other.permissions
+        return self.get_permissions() == other.get_permissions()
+
+    def get_permissions(self):
+        return self._permissions
 
     def copy(self):
-        if self.permissions is None:
+        if self.get_permissions() is None:
             return Permissions(permissions=None)
         copied_permissions = {}
-        for action, allowed_uuids in self.permissions.items():
+        for action, allowed_uuids in self.get_permissions().items():
             copied_permissions[action] = allowed_uuids.copy() if allowed_uuids is not None else None
         return Permissions(permissions=copied_permissions)
 
     def to_dict(self):
-        if self.permissions is None:
+        if self.get_permissions() is None:
             return None
         permissions_dict = {}
-        for action, allowed_uuids in self.permissions.items():
+        for action, allowed_uuids in self.get_permissions().items():
             permissions_dict[action] = allowed_uuids
         return permissions_dict
 
@@ -186,19 +189,19 @@ class Permissions:
             raise MergeException(f"cannot merge permissions that are not mergeable; self: {self} other: {other}")
         if other is None:
             return self.copy()
-        if other.permissions is None:
+        if other.get_permissions() is None:
             return self.copy()
-        if self.permissions is None:
+        if self.get_permissions() is None:
             return other.copy()
         merged_permissions = {}
-        for action, allowed_uuids in self.permissions.items():
-            if action in other.permissions:
-                merged_permissions[action] = Permissions.merge_internal_uuids(internal_uuids_a=allowed_uuids, internal_uuids_b=other.permissions[action],
+        for action, allowed_uuids in self.get_permissions().items():
+            if action in other.get_permissions():
+                merged_permissions[action] = Permissions.merge_internal_uuids(internal_uuids_a=allowed_uuids, internal_uuids_b=other.get_permissions()[action],
                                                                               overwrite=overwrite, sum=sum)
             else:
                 merged_permissions[action] = allowed_uuids.copy() if allowed_uuids is not None else None
-        for action, allowed_uuids in other.permissions.items():
-            if action not in self.permissions:
+        for action, allowed_uuids in other.get_permissions().items():
+            if action not in self.get_permissions():
                 merged_permissions[action] = allowed_uuids.copy() if allowed_uuids is not None else None
         return Permissions(permissions=merged_permissions)
 
@@ -206,32 +209,32 @@ class Permissions:
         Permissions.check_internal_uuids(internal_uuids=request_uuids)
         if action is not None and not Action.is_valid_action(action=action):
             raise Exception(f"action {action} is invalid")
-        if self.permissions is None or action is None or request_uuids is None:
+        if self.get_permissions() is None or action is None or request_uuids is None:
             return True
-        if action not in self.permissions:
+        if action not in self.get_permissions():
             Explanation.dynamic_add_message(explanation=explanation, message=f"Permissions.is_allowed(...): action {action} not contained")
             return False
-        if self.permissions[action] is None:
+        if self.get_permissions()[action] is None:
             return True
-        if len(self.permissions[action] & request_uuids) == 0:
+        if len(self.get_permissions()[action] & request_uuids) == 0:
             Explanation.dynamic_add_message(explanation=explanation,
                                             message="Permissions.is_allowed(...): "
-                                            f"none of requested uuids {request_uuids} in allowed uuids {self.permissions[action]}")
+                                            f"none of requested uuids {request_uuids} in allowed uuids {self.get_permissions()[action]}")
             return False
         return True
 
     def is_subset(self, other):
         Permissions.check(permissions=other)
-        if other is None or other.permissions is None:
+        if other is None or other.get_permissions() is None:
             return True
-        if self.permissions is None:
+        if self.get_permissions() is None:
             return False
-        for action, allowed_uuids in self.permissions.items():
-            if action not in other.permissions:
+        for action, allowed_uuids in self.get_permissions().items():
+            if action not in other.get_permissions():
                 return False
-            if other.permissions[action] is not None:
+            if other.get_permissions()[action] is not None:
                 if allowed_uuids is None:
                     return False
-                if not allowed_uuids.issubset(other.permissions[action]):
+                if not allowed_uuids.issubset(other.get_permissions()[action]):
                     return False
         return True

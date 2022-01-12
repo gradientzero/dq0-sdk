@@ -23,30 +23,25 @@ class Interface(Entity):
         if other_specification is not None:
             other_specification.verify(node=metadata.other_node)
         self.metadata = metadata
-        self.dataset_entity = None
+        self._dataset_entity = None
 
     def dataset(self, name=None):
-        """
-        many more lines
-        of informative
-        comments
-        """
         if name is None:
             if self.metadata.dataset_node is None:
                 raise Exception("get without name may only work for existing dataset node")
             name = Entity.name_of(node=self.metadata.dataset_node)
-        if self.dataset_entity is None:
+        if self._dataset_entity is None:
             if isinstance(self.dataset_specification, SpecificationV1):
-                self.dataset_entity = Dataset(name=name, parent=self,
-                                              permissions=DefaultPermissions.shared_node(role_uuids=self.get_role_uuids()),
-                                              data_permissions=DefaultPermissions.shared_attribute(role_uuids=self.get_role_uuids()),
-                                              name_permissions=DefaultPermissions.shared_attribute(role_uuids=self.get_role_uuids()),
-                                              role_uuids=self.get_role_uuids(), node=self.metadata.dataset_node)
+                self._dataset_entity = Dataset(name=name, parent=self,
+                                               permissions=DefaultPermissions.shared_node(role_uuids=self.get_role_uuids()),
+                                               data_permissions=DefaultPermissions.shared_attribute(role_uuids=self.get_role_uuids()),
+                                               name_permissions=DefaultPermissions.shared_attribute(role_uuids=self.get_role_uuids()),
+                                               role_uuids=self.get_role_uuids(), node=self.metadata.dataset_node)
             else:
                 raise Exception("no interface for specified version available")
-        if name != self.dataset_entity.get_name():
-            raise Exception(f"name mismatch: {name} != {self.dataset_entity.get_name()}")
-        return self.dataset_entity
+        if name != self._dataset_entity.get_name():
+            raise Exception(f"name mismatch: {name} != {self._dataset_entity.get_name()}")
+        return self._dataset_entity
 
     def create(self):
         pass
@@ -65,10 +60,10 @@ class Interface(Entity):
         if self.metadata.dataset_node is None:
             return
         self.metadata.dataset_node = None
-        if self.dataset_entity is not None:
-            if name != self.dataset_entity.get_name():
-                raise Exception(f"name mismatch: {name} != {self.dataset_entity.get_name()}")
-            self.dataset_entity.wipe()
+        if self._dataset_entity is not None:
+            if name != self._dataset_entity.get_name():
+                raise Exception(f"name mismatch: {name} != {self._dataset_entity.get_name()}")
+            self._dataset_entity.wipe()
 
     def set_name(self, old_name, new_name):
         pass

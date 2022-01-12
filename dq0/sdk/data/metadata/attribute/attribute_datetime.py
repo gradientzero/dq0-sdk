@@ -20,18 +20,18 @@ class AttributeDatetime(Attribute):
         super_str = super().__str__(request_uuids=request_uuids)
         if super_str is None:
             return None
-        return super_str + ' ' + StrUtils.str_from(object=self._value, quoted=True).replace('\n', "\n  ")
+        return super_str + ' ' + StrUtils.str_from(object=self.get_value(), quoted=True).replace('\n', "\n  ")
 
     def __repr__(self):
         return "AttributeDatetime(" + \
             "key=" + repr(self.get_key()) + ", " + \
-            "value=" + repr(self._value) + ", " + \
-            "permissions=" + repr(self._permissions) + ')'
+            "value=" + repr(self.get_value()) + ", " + \
+            "permissions=" + repr(self.get_permissions()) + ')'
 
     def __eq__(self, other):
         if not isinstance(other, AttributeDatetime) or not super().__eq__(other=other):
             return False
-        return self._value == other._value
+        return self.get_value() == other.get_value()
 
     def get_value(self):
         return self._value
@@ -39,8 +39,8 @@ class AttributeDatetime(Attribute):
     def copy(self):
         copied_attribute = AttributeDatetime(
             key=self.get_key(),
-            value=self._value,
-            permissions=self._permissions.copy() if self._permissions is not None else None
+            value=self.get_value(),
+            permissions=self.get_permissions().copy() if self.get_permissions() is not None else None
         )
         copied_attribute.set_explicit_list_element(is_explicit_list_element=self._is_explicit_list_element)
         return copied_attribute
@@ -50,7 +50,7 @@ class AttributeDatetime(Attribute):
         if super_dict is None:
             return None
         self_dict = {tmp_key: tmp_value for tmp_key, tmp_value in [
-            ('value', self._value),
+            ('value', self.get_value()),
         ] if tmp_value is not None}
         return {**super_dict, **self_dict}
 
@@ -60,11 +60,11 @@ class AttributeDatetime(Attribute):
             Explanation.dynamic_add_message(explanation=explanation,
                                             message="AttributeDatetime.is_mergeable_with(...): super() is not mergeable")
             return False
-        if not overwrite_value and self._value != other.value:
+        if not overwrite_value and self.get_value() != other.value:
             Explanation.dynamic_add_message(explanation=explanation,
                                             message="AttributeDatetime.is_mergeable_with(...): value differs without overwrite_value")
             return False
-        if self.get_value() != other.get_value() and not Permissions.is_allowed_with(permissions=self._permissions, action=Action.WRITE_VALUE,
+        if self.get_value() != other.get_value() and not Permissions.is_allowed_with(permissions=self.get_permissions(), action=Action.WRITE_VALUE,
                                                                                      request_uuids=request_uuids, explanation=explanation):
             Explanation.dynamic_add_message(explanation=explanation,
                                             message="AttributeDatetime.is_mergeable_with(...): value differs without write_value permissions")
@@ -77,5 +77,5 @@ class AttributeDatetime(Attribute):
                                       request_uuids=request_uuids, explanation=explanation):
             raise MergeException(f"cannot merge attributes that are not mergeable; self: {self} other: {other} explanation: {explanation}")
         merged = other.copy()
-        merged._permissions = Permissions.merge(permissions_a=self._permissions, permissions_b=other.permissions, overwrite=overwrite_permissions)
+        merged._permissions = Permissions.merge(permissions_a=self.get_permissions(), permissions_b=other.get_permissions(), overwrite=overwrite_permissions)
         return merged

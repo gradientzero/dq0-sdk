@@ -43,7 +43,8 @@ class Filter:
                     sub_filtered_attributes = Filter.filter_attributes(node_type_name=node_type_name, attributes=attribute.get_value(),
                                                                        retain_attributes=sub_retain_attributes)
                     if sub_filtered_attributes is not None:
-                        filtered_attributes.append(AttributeList(key=attribute.get_key(), value=sub_filtered_attributes, permissions=attribute.get_permissions()))
+                        filtered_attributes.append(AttributeList(key=attribute.get_key(), value=sub_filtered_attributes,
+                                                                 permissions=attribute.get_permissions()))
                 else:
                     filtered_attributes.append(attribute)
         if len(filtered_attributes) == 0:
