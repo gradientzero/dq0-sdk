@@ -281,18 +281,19 @@ def test_metadata():
     # test
     m_dataset = m_interface.dataset()
     assert m_dataset.name == 'test_ds'
-    m_ds_data = m_dataset.data()
+    m_ds_data = m_dataset.data
     assert m_ds_data.description == "some description"
     assert 'tag1' in m_ds_data.tags
     assert 'tag2' in m_ds_data.tags
     assert m_ds_data.metadata_is_public
     m_database = m_dataset.database()
-    m_db_connector = m_database.connector()
+    m_db_connector = m_database.connector
     assert m_db_connector is not None
     assert m_db_connector.decimal is None
     assert 'weight' in m_db_connector.header_columns
     assert 'height' in m_db_connector.header_columns
-    assert m_db_connector.header_row is not None and not m_db_connector.header_row
+    assert m_db_connector.header_row is not None
+    assert not m_db_connector.header_row
     assert m_db_connector.index_col is None
     assert m_db_connector.na_values['weight'] == '?'
     assert m_db_connector.na_values['height'] == '??'
@@ -300,13 +301,13 @@ def test_metadata():
     assert m_db_connector.skipinitialspace is None
     assert m_db_connector.type_name == 'csv'
     m_table = m_database.schema().table()
-    assert m_table.data().rows == 2000
-    m_tb_differential_privacy = m_table.differential_privacy()
+    assert m_table.data.rows == 2000
+    m_tb_differential_privacy = m_table.differential_privacy
     assert m_tb_differential_privacy.budget_delta == 500.0
     assert m_tb_differential_privacy.budget_epsilon == 1000.0
     assert m_tb_differential_privacy.privacy_column == 'user_id'
     assert m_tb_differential_privacy.privacy_level == 1
-    m_tb_private_sql = m_table.private_sql()
+    m_tb_private_sql = m_table.private_sql
     assert m_tb_private_sql.censor_dims
     assert m_tb_private_sql.clamp_columns
     assert m_tb_private_sql.clamp_counts
@@ -315,37 +316,38 @@ def test_metadata():
     assert m_tb_private_sql.sample_max_ids
     assert m_tb_private_sql.tau == 99.0
     assert m_tb_private_sql.use_dpsu
-    assert m_table.private_synthesis().synth_allowed
+    assert m_table.private_synthesis.synth_allowed
     assert len(m_table.column_names()) == 5
     m_col_user_id = m_table.column(name='user_id')
-    assert m_col_user_id.data().data_type_name == 'int'
-    assert m_col_user_id.data().name == 'user_id'
-    assert m_col_user_id.private_sql().private_id
+    assert m_col_user_id.data.data_type_name == 'int'
+    assert m_col_user_id.data.name == 'user_id'
+    assert m_col_user_id.private_sql.private_id
     m_col_weight = m_table.column(name='weight')
-    assert m_col_weight.data().name == 'weight'
-    assert m_col_weight.data().selectable
-    assert m_col_weight.private_sql().is_empty()
-    assert m_col_weight.private_sql_and_synthesis().bounded
-    assert m_col_weight.private_sql_and_synthesis().lower == 0.0
-    assert m_col_weight.private_sql_and_synthesis().upper == 100.5
-    assert m_col_weight.private_synthesis().is_empty()
+    assert m_col_weight.data.name == 'weight'
+    assert m_col_weight.data.selectable
+    assert m_col_weight.private_sql.is_empty()
+    assert m_col_weight.private_sql_and_synthesis.bounded
+    assert m_col_weight.private_sql_and_synthesis.lower == 0.0
+    assert m_col_weight.private_sql_and_synthesis.upper == 100.5
+    assert m_col_weight.private_synthesis.is_empty()
     m_col_height = m_table.column(name='height')
-    assert m_col_height.data().name == 'height'
-    assert m_col_height.private_sql().auto_bounds_prob == 0.8
-    assert m_col_height.private_sql().use_auto_bounds
-    assert m_col_height.private_synthesis().discrete
-    assert m_col_height.private_synthesis().min_step == 0.5
-    assert m_col_height.private_synthesis().synthesizable is not None and not m_col_height.private_synthesis().synthesizable
+    assert m_col_height.data.name == 'height'
+    assert m_col_height.private_sql.auto_bounds_prob == 0.8
+    assert m_col_height.private_sql.use_auto_bounds
+    assert m_col_height.private_synthesis.discrete
+    assert m_col_height.private_synthesis.min_step == 0.5
+    assert m_col_height.private_synthesis.synthesizable is not None
+    assert not m_col_height.private_synthesis.synthesizable
     m_col_name = m_table.column(name='name')
-    assert m_col_name.data().name == 'name'
-    assert m_col_name.private_synthesis().synthesizable
+    assert m_col_name.data.name == 'name'
+    assert m_col_name.private_synthesis.synthesizable
     m_col_email = m_table.column(name='email')
-    assert m_col_email.data().data_type_name == 'string'
-    assert m_col_email.data().name == 'email'
-    assert m_col_email.data().selectable is None
-    assert m_col_email.private_sql().mask == '(.*)@(.*).{3}$'
-    assert m_col_email.private_sql_and_synthesis().cardinality == 123
-    assert m_col_email.private_synthesis().is_empty()
+    assert m_col_email.data.data_type_name == 'string'
+    assert m_col_email.data.name == 'email'
+    assert m_col_email.data.selectable is None
+    assert m_col_email.private_sql.mask == '(.*)@(.*).{3}$'
+    assert m_col_email.private_sql_and_synthesis.cardinality == 123
+    assert m_col_email.private_synthesis.is_empty()
 
     # change metadata
     m_ds_data.description = "new description"
@@ -359,14 +361,15 @@ def test_metadata():
 
     # test again
     m_dataset = m_interface.dataset()
-    assert m_dataset.data().description == "new description"
-    assert m_dataset.data().metadata_is_public is not None and not m_dataset.data().metadata_is_public
-    assert m_dataset.database().schema().table().differential_privacy().budget_epsilon == 1234.0
+    assert m_dataset.data.description == "new description"
+    assert m_dataset.data.metadata_is_public is not None
+    assert not m_dataset.data.metadata_is_public
+    assert m_dataset.database().schema().table().differential_privacy.budget_epsilon == 1234.0
 
     # change metadata
-    m_dataset.data().description = "new description 2"
-    del m_dataset.data().metadata_is_public
-    m_dataset.database().schema().table().differential_privacy().budget_epsilon = 5678.0
+    m_dataset.data.description = "new description 2"
+    del m_dataset.data.metadata_is_public
+    m_dataset.database().schema().table().differential_privacy.budget_epsilon = 5678.0
 
     # save and reload metadata
     yaml_content = metadata.to_yaml(request_uuids=owner_uuids)
@@ -375,9 +378,9 @@ def test_metadata():
 
     # test again
     m_dataset = m_interface.dataset()
-    assert m_dataset.data().description == "new description 2"
-    assert m_dataset.data().metadata_is_public is None
-    assert m_dataset.database().schema().table().differential_privacy().budget_epsilon == 5678.0
+    assert m_dataset.data.description == "new description 2"
+    assert m_dataset.data.metadata_is_public is None
+    assert m_dataset.database().schema().table().differential_privacy.budget_epsilon == 5678.0
 
     # test drop columns (drops column 'height')
     m_dataset.database().schema().table().drop_columns(attributes_map={'private_synthesis': {'synthesizable': False}})
@@ -834,12 +837,12 @@ def test_combine_metadata():
                                                      dataset_specification=dataset_specification)
     m_interface = Interface(metadata=metadata_merged_b, role_uuids=role_uuids, dataset_specification=dataset_specification)
     m_dataset = m_interface.dataset()
-    assert m_dataset.database(name='test_db_1').connector().uri == 'user1@db'
+    assert m_dataset.database(name='test_db_1').connector.uri == 'user1@db'
     m_db_1_sc = m_dataset.database(name='test_db_1').schema()
-    assert m_db_1_sc.table(name='test_tab_1').private_sql().row_privacy
-    assert m_db_1_sc.table(name='test_tab_3').private_sql().row_privacy is not None
-    assert not m_db_1_sc.table(name='test_tab_3').private_sql().row_privacy
+    assert m_db_1_sc.table(name='test_tab_1').private_sql.row_privacy
+    assert m_db_1_sc.table(name='test_tab_3').private_sql.row_privacy is not None
+    assert not m_db_1_sc.table(name='test_tab_3').private_sql.row_privacy
     m_db_2_tb_2 = m_dataset.database(name='test_db_2').schema().table(name='test_tab_2')
-    assert m_db_2_tb_2.data().rows == 2000
-    assert m_db_2_tb_2.differential_privacy().budget_epsilon == 1001.0
-    assert m_db_2_tb_2.column(name='email').data().data_type_name == 'string'
+    assert m_db_2_tb_2.data.rows == 2000
+    assert m_db_2_tb_2.differential_privacy.budget_epsilon == 1001.0
+    assert m_db_2_tb_2.column(name='email').data.data_type_name == 'string'

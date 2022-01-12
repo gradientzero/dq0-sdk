@@ -31,15 +31,46 @@ class Database(Entity):
                       name_permissions=DefaultPermissions.shared_attribute(role_uuids=self.role_uuids),
                       role_uuids=self.role_uuids, node=child_node)
 
+    # connector
+    @property
     def connector(self):
         return super().get_attribute_group(key='connector')
 
+    @connector.setter
+    def connector(self, _):
+        raise Exception("connector attribute group may not be set")
+
+    @connector.deleter
+    def connector(self):
+        super().get_attribute_group(key='connector').delete()
+
+    # data
+    @property
     def data(self):
         return super().get_attribute_group(key='data')
 
+    @data.setter
+    def data(self, _):
+        raise Exception("data attribute group may not be set")
+
+    @data.deleter
+    def data(self):
+        super().get_attribute_group(key='data').delete()
+
+    # differential_privacy
+    @property
     def differential_privacy(self):
         return super().get_attribute_group(key='differential_privacy')
 
+    @differential_privacy.setter
+    def differential_privacy(self, _):
+        raise Exception("differential_privacy attribute group may not be set")
+
+    @differential_privacy.deleter
+    def differential_privacy(self):
+        super().get_attribute_group(key='differential_privacy').delete()
+
+    # schema
     def schema_names(self):
         return super().get_child_names()
 

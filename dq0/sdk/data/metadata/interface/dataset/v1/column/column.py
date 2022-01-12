@@ -79,17 +79,67 @@ class Column(Entity):
         else:
             raise Exception(f"key {key} is invalid")
 
+    # data
+    @property
     def data(self):
         return super().get_attribute_group(key='data')
 
+    @data.setter
+    def data(self, _):
+        raise Exception("data attribute group may not be set")
+
+    @data.deleter
+    def data(self):
+        super().get_attribute_group(key='data').delete()
+
+    # machine_learning
+    @property
     def machine_learning(self):
         return super().get_attribute_group(key='machine_learning')
 
+    @machine_learning.setter
+    def machine_learning(self, _):
+        raise Exception("machine_learning attribute group may not be set")
+
+    @machine_learning.deleter
+    def machine_learning(self):
+        super().get_attribute_group(key='machine_learning').delete()
+
+    # private_sql
+    @property
     def private_sql(self):
         return super().get_attribute_group(key='private_sql')
 
+    @private_sql.setter
+    def private_sql(self, _):
+        raise Exception("private_sql attribute group may not be set")
+
+    @private_sql.deleter
+    def private_sql(self):
+        super().get_attribute_group(key='private_sql').delete()
+
+    # private_sql_and_synthesis
+    @property
     def private_sql_and_synthesis(self):
         return super().get_attribute_group(key='private_sql_and_synthesis')
 
+    @private_sql_and_synthesis.setter
+    def private_sql_and_synthesis(self, _):
+        raise Exception("private_sql_and_synthesis attribute group may not be set")
+
+    @private_sql_and_synthesis.deleter
+    def private_sql_and_synthesis(self):
+        super().get_attribute_group(key='private_sql_and_synthesis').delete()
+
+    # private_synthesis
+    @property
     def private_synthesis(self):
         return super().get_attribute_group(key='private_synthesis')
+
+    @private_synthesis.setter
+    def private_synthesis(self, _):
+        raise Exception("private_synthesis attribute group may not be set")
+
+    @private_synthesis.deleter
+    def private_synthesis(self):
+        super().get_attribute_group(key='private_synthesis').delete()
