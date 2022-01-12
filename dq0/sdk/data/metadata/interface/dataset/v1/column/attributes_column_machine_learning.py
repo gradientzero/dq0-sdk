@@ -6,7 +6,7 @@ from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermi
 class AttributesColumnMachineLearning(AttributesGroup):
     def __init__(self, column, attribute_list=None):
         super().__init__(key='machine_learning',
-                         permissions=DefaultPermissions.shared_attribute(role_uuids=column.role_uuids),
+                         permissions=DefaultPermissions.shared_attribute(role_uuids=column.get_role_uuids()),
                          entity=column,
                          attribute_list=attribute_list)
 
@@ -20,7 +20,7 @@ class AttributesColumnMachineLearning(AttributesGroup):
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_BOOLEAN,
                                  key='is_feature',
                                  value=new_is_feature,
-                                 permissions=DefaultPermissions.analyst_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.analyst_attribute(role_uuids=self.get_role_uuids()))
 
     @is_feature.deleter
     def is_feature(self):
@@ -36,7 +36,7 @@ class AttributesColumnMachineLearning(AttributesGroup):
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_BOOLEAN,
                                  key='is_target',
                                  value=new_is_target,
-                                 permissions=DefaultPermissions.analyst_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.analyst_attribute(role_uuids=self.get_role_uuids()))
 
     @is_target.deleter
     def is_target(self):

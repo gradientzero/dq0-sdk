@@ -11,10 +11,10 @@ class AttributesGroup:
         Permissions.check(permissions=permissions)
         if not isinstance(entity, Entity):
             raise Exception(f"entity is not of type Entity, is of type {type(entity)} instead")
-        self.key = key
-        self.permissions = permissions
         self.entity = entity
-        self.attribute_list = attribute_list
+        self._key = key
+        self._permissions = permissions
+        self._attribute_list = attribute_list
         if attribute_list is not None:
             if not isinstance(attribute_list, AttributeList):
                 raise Exception("attribute_list is not of type AttributeList, "
@@ -22,35 +22,38 @@ class AttributesGroup:
             if key != attribute_list.key:
                 raise Exception(f"keys do not match: {key} != {attribute_list.key}")
 
+    def get_role_uuids(self):
+        return self.entity.get_role_uuids()
+
     def is_empty(self):
-        return self.attribute_list is None
+        return self._attribute_list is None
 
     def delete(self):
-        if len(self.attribute_list.value) != 0:
+        if len(self._attribute_list.value) != 0:
             keys = set()
-            for attribute in self.attribute_list.value:
+            for attribute in self._attribute_list.value:
                 keys.add(attribute.key)
             for key in keys:
                 self.delete_attribute(key=key)
 
     def wipe(self):
-        self.attribute_list = None
+        self._attribute_list = None
 
     def get_attribute(self, key):
-        return self.attribute_list.get_attribute(key=key) if self.attribute_list is not None else None
+        return self._attribute_list.get_attribute(key=key) if self._attribute_list is not None else None
 
     def get_attribute_value(self, key):
-        attribute = self.attribute_list.get_attribute(key=key) if self.attribute_list is not None else None
+        attribute = self._attribute_list.get_attribute(key=key) if self._attribute_list is not None else None
         return attribute.value if attribute is not None else None
 
     def set_attribute_value(self, type_name, key, value, permissions):
         attribute = self.get_attribute(key=key)
         if attribute is None:
-            if self.attribute_list is None:
-                attribute_list = AttributeList(key=self.key, value=[], permissions=self.permissions)
+            if self._attribute_list is None:
+                attribute_list = AttributeList(key=self._key, value=[], permissions=self._permissions)
                 self.entity.add_attribute(attribute=attribute_list)
-                self.attribute_list = attribute_list
-            self.attribute_list.add_attribute(attribute=AttributeUtils.attribute_from(
+                self._attribute_list = attribute_list
+            self._attribute_list.add_attribute(attribute=AttributeUtils.attribute_from(
                 type_name=type_name, key=key, value=value, permissions=permissions))
         else:
             if attribute.type_name != type_name:
@@ -60,7 +63,7 @@ class AttributesGroup:
 
     def delete_attribute(self, key):
         if self.get_attribute(key=key) is not None:
-            self.attribute_list.remove_attribute(key=key)
-            if len(self.attribute_list.value) == 0:
-                self.entity.remove_attribute(key=self.key)
-                self.attribute_list = None
+            self._attribute_list.remove_attribute(key=key)
+            if len(self._attribute_list.value) == 0:
+                self.entity.remove_attribute(key=self._key)
+                self._attribute_list = None

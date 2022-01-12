@@ -280,8 +280,8 @@ def test_metadata():
 
     # test
     m_dataset = m_interface.dataset()
-    assert m_dataset.name == 'test_ds'
     m_ds_data = m_dataset.data
+    assert m_ds_data.name == "test_ds"
     assert m_ds_data.description == "some description"
     assert 'tag1' in m_ds_data.tags
     assert 'tag2' in m_ds_data.tags

@@ -26,10 +26,10 @@ class Database(Entity):
 
     def create_child_entity(self, name, child_node):
         return Schema(name=name, parent=self,
-                      permissions=DefaultPermissions.shared_node(role_uuids=self.role_uuids),
-                      data_permissions=DefaultPermissions.shared_attribute(role_uuids=self.role_uuids),
-                      name_permissions=DefaultPermissions.shared_attribute(role_uuids=self.role_uuids),
-                      role_uuids=self.role_uuids, node=child_node)
+                      permissions=DefaultPermissions.shared_node(role_uuids=self.get_role_uuids()),
+                      data_permissions=DefaultPermissions.shared_attribute(role_uuids=self.get_role_uuids()),
+                      name_permissions=DefaultPermissions.shared_attribute(role_uuids=self.get_role_uuids()),
+                      role_uuids=self.get_role_uuids(), node=child_node)
 
     # connector
     @property

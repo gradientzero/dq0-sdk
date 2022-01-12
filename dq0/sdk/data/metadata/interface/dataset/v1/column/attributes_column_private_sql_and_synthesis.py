@@ -6,7 +6,7 @@ from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermi
 class AttributesColumnPrivateSqlAndSynthesis(AttributesGroup):
     def __init__(self, column, attribute_list=None):
         super().__init__(key='private_sql_and_synthesis',
-                         permissions=DefaultPermissions.owner_attribute(role_uuids=column.role_uuids),
+                         permissions=DefaultPermissions.owner_attribute(role_uuids=column.get_role_uuids()),
                          entity=column,
                          attribute_list=attribute_list)
 
@@ -22,7 +22,7 @@ class AttributesColumnPrivateSqlAndSynthesis(AttributesGroup):
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_BOOLEAN,
                                  key='bounded',
                                  value=new_bounded,
-                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids()))
 
     @bounded.deleter
     def bounded(self):
@@ -40,7 +40,7 @@ class AttributesColumnPrivateSqlAndSynthesis(AttributesGroup):
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_INT,
                                  key='cardinality',
                                  value=new_cardinality,
-                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids()))
 
     @cardinality.deleter
     def cardinality(self):
@@ -60,7 +60,7 @@ class AttributesColumnPrivateSqlAndSynthesis(AttributesGroup):
         self.set_attribute_value(type_name=self.entity.data_type_name,
                                  key='lower',
                                  value=new_lower,
-                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids()))
 
     @lower.deleter
     def lower(self):
@@ -80,7 +80,7 @@ class AttributesColumnPrivateSqlAndSynthesis(AttributesGroup):
         self.set_attribute_value(type_name=self.entity.data_type_name,
                                  key='upper',
                                  value=new_upper,
-                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids()))
 
     @upper.deleter
     def upper(self):

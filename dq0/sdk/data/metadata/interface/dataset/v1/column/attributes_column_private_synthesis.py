@@ -6,7 +6,7 @@ from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermi
 class AttributesColumnPrivateSynthesis(AttributesGroup):
     def __init__(self, column, attribute_list=None):
         super().__init__(key='private_synthesis',
-                         permissions=DefaultPermissions.owner_attribute(role_uuids=column.role_uuids),
+                         permissions=DefaultPermissions.owner_attribute(role_uuids=column.get_role_uuids()),
                          entity=column,
                          attribute_list=attribute_list)
 
@@ -22,7 +22,7 @@ class AttributesColumnPrivateSynthesis(AttributesGroup):
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_BOOLEAN,
                                  key='discrete',
                                  value=new_discrete,
-                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids()))
 
     @discrete.deleter
     def discrete(self):
@@ -42,7 +42,7 @@ class AttributesColumnPrivateSynthesis(AttributesGroup):
         self.set_attribute_value(type_name=self.entity.data_type_name,
                                  key='min_step',
                                  value=new_min_step,
-                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids()))
 
     @min_step.deleter
     def min_step(self):
@@ -58,7 +58,7 @@ class AttributesColumnPrivateSynthesis(AttributesGroup):
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_BOOLEAN,
                                  key='synthesizable',
                                  value=new_synthesizable,
-                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids()))
 
     @synthesizable.deleter
     def synthesizable(self):

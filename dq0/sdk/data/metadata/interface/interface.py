@@ -33,14 +33,14 @@ class Interface(Entity):
         if self.dataset_entity is None:
             if isinstance(self.dataset_specification, SpecificationV1):
                 self.dataset_entity = Dataset(name=name, parent=self,
-                                              permissions=DefaultPermissions.shared_node(role_uuids=self.role_uuids),
-                                              data_permissions=DefaultPermissions.shared_attribute(role_uuids=self.role_uuids),
-                                              name_permissions=DefaultPermissions.shared_attribute(role_uuids=self.role_uuids),
-                                              role_uuids=self.role_uuids, node=self.metadata.dataset_node)
+                                              permissions=DefaultPermissions.shared_node(role_uuids=self.get_role_uuids()),
+                                              data_permissions=DefaultPermissions.shared_attribute(role_uuids=self.get_role_uuids()),
+                                              name_permissions=DefaultPermissions.shared_attribute(role_uuids=self.get_role_uuids()),
+                                              role_uuids=self.get_role_uuids(), node=self.metadata.dataset_node)
             else:
                 raise Exception("no interface for specified version available")
-        if name != self.dataset_entity.name:
-            raise Exception(f"name mismatch: {name} != {self.dataset_entity.name}")
+        if name != self.dataset_entity.get_name():
+            raise Exception(f"name mismatch: {name} != {self.dataset_entity.get_name()}")
         return self.dataset_entity
 
     def create(self):
@@ -61,8 +61,8 @@ class Interface(Entity):
             return
         self.metadata.dataset_node = None
         if self.dataset_entity is not None:
-            if self.dataset_entity.name != name:
-                raise Exception(f"name mismatch: {self.dataset_entity.name} != {name}")
+            if name != self.dataset_entity.get_name():
+                raise Exception(f"name mismatch: {name} != {self.dataset_entity.get_name()}")
             self.dataset_entity.wipe()
 
     def set_name(self, old_name, new_name):

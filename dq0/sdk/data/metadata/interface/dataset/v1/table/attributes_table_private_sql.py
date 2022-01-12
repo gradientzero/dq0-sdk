@@ -6,7 +6,7 @@ from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermi
 class AttributesTablePrivateSql(AttributesGroup):
     def __init__(self, table, attribute_list=None):
         super().__init__(key='private_sql',
-                         permissions=DefaultPermissions.owner_attribute(role_uuids=table.role_uuids),
+                         permissions=DefaultPermissions.owner_attribute(role_uuids=table.get_role_uuids()),
                          entity=table,
                          attribute_list=attribute_list)
 
@@ -20,7 +20,7 @@ class AttributesTablePrivateSql(AttributesGroup):
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_BOOLEAN,
                                  key='censor_dims',
                                  value=new_censor_dims,
-                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids()))
 
     @censor_dims.deleter
     def censor_dims(self):
@@ -36,7 +36,7 @@ class AttributesTablePrivateSql(AttributesGroup):
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_BOOLEAN,
                                  key='clamp_columns',
                                  value=new_clamp_columns,
-                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids()))
 
     @clamp_columns.deleter
     def clamp_columns(self):
@@ -52,7 +52,7 @@ class AttributesTablePrivateSql(AttributesGroup):
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_BOOLEAN,
                                  key='clamp_counts',
                                  value=new_clamp_counts,
-                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids()))
 
     @clamp_counts.deleter
     def clamp_counts(self):
@@ -68,7 +68,7 @@ class AttributesTablePrivateSql(AttributesGroup):
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_INT,
                                  key='max_ids',
                                  value=new_max_ids,
-                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids()))
 
     @max_ids.deleter
     def max_ids(self):
@@ -84,7 +84,7 @@ class AttributesTablePrivateSql(AttributesGroup):
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_BOOLEAN,
                                  key='row_privacy',
                                  value=new_row_privacy,
-                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids()))
 
     @row_privacy.deleter
     def row_privacy(self):
@@ -100,7 +100,7 @@ class AttributesTablePrivateSql(AttributesGroup):
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_BOOLEAN,
                                  key='sample_max_ids',
                                  value=new_sample_max_ids,
-                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids()))
 
     @sample_max_ids.deleter
     def sample_max_ids(self):
@@ -116,7 +116,7 @@ class AttributesTablePrivateSql(AttributesGroup):
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_FLOAT,
                                  key='tau',
                                  value=new_tau,
-                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids()))
 
     @tau.deleter
     def tau(self):
@@ -132,7 +132,7 @@ class AttributesTablePrivateSql(AttributesGroup):
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_BOOLEAN,
                                  key='use_dpsu',
                                  value=new_use_dpsu,
-                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids()))
 
     @use_dpsu.deleter
     def use_dpsu(self):

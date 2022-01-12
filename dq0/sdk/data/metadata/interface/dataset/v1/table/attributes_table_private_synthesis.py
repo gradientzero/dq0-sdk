@@ -6,7 +6,7 @@ from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermi
 class AttributesTablePrivateSynthesis(AttributesGroup):
     def __init__(self, table, attribute_list=None):
         super().__init__(key='private_synthesis',
-                         permissions=DefaultPermissions.owner_attribute(role_uuids=table.role_uuids),
+                         permissions=DefaultPermissions.owner_attribute(role_uuids=table.get_role_uuids()),
                          entity=table,
                          attribute_list=attribute_list)
 
@@ -20,7 +20,7 @@ class AttributesTablePrivateSynthesis(AttributesGroup):
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_BOOLEAN,
                                  key='synth_allowed',
                                  value=new_synth_allowed,
-                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids()))
 
     @synth_allowed.deleter
     def synth_allowed(self):

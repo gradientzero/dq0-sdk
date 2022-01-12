@@ -6,7 +6,7 @@ from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermi
 class AttributesTableDifferentialPrivacy(AttributesGroup):
     def __init__(self, table, attribute_list=None):
         super().__init__(key='differential_privacy',
-                         permissions=DefaultPermissions.owner_attribute(role_uuids=table.role_uuids),
+                         permissions=DefaultPermissions.owner_attribute(role_uuids=table.get_role_uuids()),
                          entity=table,
                          attribute_list=attribute_list)
 
@@ -20,7 +20,7 @@ class AttributesTableDifferentialPrivacy(AttributesGroup):
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_FLOAT,
                                  key='budget_delta',
                                  value=new_budget_delta,
-                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids()))
 
     @budget_delta.deleter
     def budget_delta(self):
@@ -36,7 +36,7 @@ class AttributesTableDifferentialPrivacy(AttributesGroup):
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_FLOAT,
                                  key='budget_epsilon',
                                  value=new_budget_epsilon,
-                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids()))
 
     @budget_epsilon.deleter
     def budget_epsilon(self):
@@ -52,7 +52,7 @@ class AttributesTableDifferentialPrivacy(AttributesGroup):
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_STRING,
                                  key='privacy_column',
                                  value=new_privacy_column,
-                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids()))
 
     @privacy_column.deleter
     def privacy_column(self):
@@ -68,7 +68,7 @@ class AttributesTableDifferentialPrivacy(AttributesGroup):
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_INT,
                                  key='privacy_level',
                                  value=new_privacy_level,
-                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids()))
 
     @privacy_level.deleter
     def privacy_level(self):

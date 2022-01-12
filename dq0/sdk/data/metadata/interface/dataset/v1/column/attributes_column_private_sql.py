@@ -7,7 +7,7 @@ from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermi
 class AttributesColumnPrivateSql(AttributesGroup):
     def __init__(self, column, attribute_list=None):
         super().__init__(key='private_sql',
-                         permissions=DefaultPermissions.owner_attribute(role_uuids=column.role_uuids),
+                         permissions=DefaultPermissions.owner_attribute(role_uuids=column.get_role_uuids()),
                          entity=column,
                          attribute_list=attribute_list)
 
@@ -23,7 +23,7 @@ class AttributesColumnPrivateSql(AttributesGroup):
         if self.entity.data_type_name not in [AttributeType.TYPE_NAME_DATETIME, AttributeType.TYPE_NAME_FLOAT,
                                               AttributeType.TYPE_NAME_INT, AttributeType.TYPE_NAME_STRING]:
             raise Exception(f"data_type_name {self.entity.data_type_name} does not match any allowed attribute type_name")
-        owner_permissions = DefaultPermissions.owner_attribute(role_uuids=self.entity.role_uuids)
+        owner_permissions = DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids())
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_LIST,
                                  key='allowed_values',
                                  value=AttributeUtils.list_to_value(input_list=new_allowed_values,
@@ -49,7 +49,7 @@ class AttributesColumnPrivateSql(AttributesGroup):
         self.set_attribute_value(type_name=self.entity.data_type_name,
                                  key='auto_bounds_prob',
                                  value=new_auto_bounds_prob,
-                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids()))
 
     @auto_bounds_prob.deleter
     def auto_bounds_prob(self):
@@ -69,7 +69,7 @@ class AttributesColumnPrivateSql(AttributesGroup):
         self.set_attribute_value(type_name=self.entity.data_type_name,
                                  key='auto_lower',
                                  value=new_auto_lower,
-                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids()))
 
     @auto_lower.deleter
     def auto_lower(self):
@@ -89,7 +89,7 @@ class AttributesColumnPrivateSql(AttributesGroup):
         self.set_attribute_value(type_name=self.entity.data_type_name,
                                  key='auto_upper',
                                  value=new_auto_upper,
-                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids()))
 
     @auto_upper.deleter
     def auto_upper(self):
@@ -107,7 +107,7 @@ class AttributesColumnPrivateSql(AttributesGroup):
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_STRING,
                                  key='mask',
                                  value=new_mask,
-                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids()))
 
     @mask.deleter
     def mask(self):
@@ -123,7 +123,7 @@ class AttributesColumnPrivateSql(AttributesGroup):
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_BOOLEAN,
                                  key='private_id',
                                  value=new_private_id,
-                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids()))
 
     @private_id.deleter
     def private_id(self):
@@ -141,7 +141,7 @@ class AttributesColumnPrivateSql(AttributesGroup):
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_BOOLEAN,
                                  key='use_auto_bounds',
                                  value=new_use_auto_bounds,
-                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids()))
 
     @use_auto_bounds.deleter
     def use_auto_bounds(self):

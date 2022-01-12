@@ -40,15 +40,15 @@ class Column(Entity):
         self.data_type_name_permissions = data_type_name_permissions
 
     def create(self):
-        if self.node is not None:
+        if self._node is not None:
             return
         Column.check_data_type_name(data_type_name=self.data_type_name)
         if self.data_type_name_permissions is None:
-            self.data_type_name_permissions = DefaultPermissions.shared_attribute(role_uuids=self.role_uuids)
+            self.data_type_name_permissions = DefaultPermissions.shared_attribute(role_uuids=self.get_role_uuids())
         super().create()
-        if not isinstance(self.node, Node):
-            raise Exception(f"self.node is not of type Node, is of type {type(self.node)} instead")
-        data_attribute = self.node.get_attribute(key='data')
+        if not isinstance(self._node, Node):
+            raise Exception(f"self.node is not of type Node, is of type {type(self._node)} instead")
+        data_attribute = self._node.get_attribute(key='data')
         if not isinstance(data_attribute, AttributeList):
             raise Exception(f"data_attribute is not of type AttributeList, is of type {type(data_attribute)} instead")
         data_type_name_attribute = data_attribute.get_attribute(key='data_type_name')

@@ -6,7 +6,7 @@ from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermi
 class AttributesSchemaDifferentialPrivacy(AttributesGroup):
     def __init__(self, schema, attribute_list=None):
         super().__init__(key='differential_privacy',
-                         permissions=DefaultPermissions.owner_attribute(role_uuids=schema.role_uuids),
+                         permissions=DefaultPermissions.owner_attribute(role_uuids=schema.get_role_uuids()),
                          entity=schema,
                          attribute_list=attribute_list)
 
@@ -20,7 +20,7 @@ class AttributesSchemaDifferentialPrivacy(AttributesGroup):
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_INT,
                                  key='privacy_level',
                                  value=new_privacy_level,
-                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids()))
 
     @privacy_level.deleter
     def privacy_level(self):

@@ -6,7 +6,7 @@ from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermi
 class AttributesTableData(AttributesGroup):
     def __init__(self, table, attribute_list=None):
         super().__init__(key='data',
-                         permissions=DefaultPermissions.shared_attribute(role_uuids=table.role_uuids),
+                         permissions=DefaultPermissions.shared_attribute(role_uuids=table.get_role_uuids()),
                          entity=table,
                          attribute_list=attribute_list)
 
@@ -20,7 +20,7 @@ class AttributesTableData(AttributesGroup):
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_STRING,
                                  key='description',
                                  value=new_description,
-                                 permissions=DefaultPermissions.shared_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.shared_attribute(role_uuids=self.get_role_uuids()))
 
     @description.deleter
     def description(self):
@@ -36,7 +36,7 @@ class AttributesTableData(AttributesGroup):
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_BOOLEAN,
                                  key='metadata_is_public',
                                  value=new_metadata_is_public,
-                                 permissions=DefaultPermissions.shared_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.shared_attribute(role_uuids=self.get_role_uuids()))
 
     @metadata_is_public.deleter
     def metadata_is_public(self):
@@ -53,7 +53,7 @@ class AttributesTableData(AttributesGroup):
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_STRING,
                                  key='name',
                                  value=new_name,
-                                 permissions=DefaultPermissions.shared_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.shared_attribute(role_uuids=self.get_role_uuids()))
         self.entity.set_name(old_name=old_name, new_name=new_name)
 
     @name.deleter
@@ -70,7 +70,7 @@ class AttributesTableData(AttributesGroup):
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_INT,
                                  key='rows',
                                  value=new_rows,
-                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids()))
 
     @rows.deleter
     def rows(self):

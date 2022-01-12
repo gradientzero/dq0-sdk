@@ -7,7 +7,7 @@ from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermi
 class AttributesDatabaseConnector(AttributesGroup):
     def __init__(self, database, attribute_list=None):
         super().__init__(key='connector',
-                         permissions=DefaultPermissions.shared_attribute(role_uuids=database.role_uuids),
+                         permissions=DefaultPermissions.shared_attribute(role_uuids=database.get_role_uuids()),
                          entity=database,
                          attribute_list=attribute_list)
 
@@ -27,7 +27,7 @@ class AttributesDatabaseConnector(AttributesGroup):
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_STRING,
                                  key='type_name',
                                  value=new_type_name,
-                                 permissions=DefaultPermissions.shared_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.shared_attribute(role_uuids=self.get_role_uuids()))
 
     @type_name.deleter
     def type_name(self):
@@ -49,7 +49,7 @@ class AttributesDatabaseConnector(AttributesGroup):
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_STRING,
                                  key='decimal',
                                  value=new_decimal,
-                                 permissions=DefaultPermissions.shared_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.shared_attribute(role_uuids=self.get_role_uuids()))
 
     @decimal.deleter
     def decimal(self):
@@ -65,7 +65,7 @@ class AttributesDatabaseConnector(AttributesGroup):
     @header_columns.setter
     def header_columns(self, new_header_columns):
         self.type_name_check(type_name='csv')
-        shared_permissions = DefaultPermissions.shared_attribute(role_uuids=self.entity.role_uuids)
+        shared_permissions = DefaultPermissions.shared_attribute(role_uuids=self.get_role_uuids())
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_LIST,
                                  key='header_columns',
                                  value=AttributeUtils.list_to_value(input_list=new_header_columns,
@@ -88,7 +88,7 @@ class AttributesDatabaseConnector(AttributesGroup):
     @header_row.setter
     def header_row(self, new_header_row):
         self.type_name_check(type_name='csv')
-        shared_permissions = DefaultPermissions.shared_attribute(role_uuids=self.entity.role_uuids)
+        shared_permissions = DefaultPermissions.shared_attribute(role_uuids=self.get_role_uuids())
         value = AttributeUtils.list_to_value(input_list=new_header_row,
                                              type_name=AttributeType.TYPE_NAME_INT,
                                              permissions=shared_permissions) \
@@ -113,7 +113,7 @@ class AttributesDatabaseConnector(AttributesGroup):
     @index_col.setter
     def index_col(self, new_index_col):
         self.type_name_check(type_name='csv')
-        shared_permissions = DefaultPermissions.shared_attribute(role_uuids=self.entity.role_uuids)
+        shared_permissions = DefaultPermissions.shared_attribute(role_uuids=self.get_role_uuids())
         type_name = None
         value = None
         if isinstance(new_index_col, str):
@@ -155,7 +155,7 @@ class AttributesDatabaseConnector(AttributesGroup):
     @na_values.setter
     def na_values(self, new_na_values):
         self.type_name_check(type_name='csv')
-        shared_permissions = DefaultPermissions.shared_attribute(role_uuids=self.entity.role_uuids)
+        shared_permissions = DefaultPermissions.shared_attribute(role_uuids=self.get_role_uuids())
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_LIST,
                                  key='na_values',
                                  value=AttributeUtils.dict_to_value(input_dict=new_na_values,
@@ -180,7 +180,7 @@ class AttributesDatabaseConnector(AttributesGroup):
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_STRING,
                                  key='sep',
                                  value=new_sep,
-                                 permissions=DefaultPermissions.shared_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.shared_attribute(role_uuids=self.get_role_uuids()))
 
     @sep.deleter
     def sep(self):
@@ -199,7 +199,7 @@ class AttributesDatabaseConnector(AttributesGroup):
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_BOOLEAN,
                                  key='skipinitialspace',
                                  value=new_skipinitialspace,
-                                 permissions=DefaultPermissions.shared_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.shared_attribute(role_uuids=self.get_role_uuids()))
 
     @skipinitialspace.deleter
     def skipinitialspace(self):
@@ -218,7 +218,7 @@ class AttributesDatabaseConnector(AttributesGroup):
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_STRING,
                                  key='uri',
                                  value=new_uri,
-                                 permissions=DefaultPermissions.shared_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.shared_attribute(role_uuids=self.get_role_uuids()))
 
     @uri.deleter
     def uri(self):
@@ -237,7 +237,7 @@ class AttributesDatabaseConnector(AttributesGroup):
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_BOOLEAN,
                                  key='use_original_header',
                                  value=new_use_original_header,
-                                 permissions=DefaultPermissions.shared_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.shared_attribute(role_uuids=self.get_role_uuids()))
 
     @use_original_header.deleter
     def use_original_header(self):
@@ -260,7 +260,7 @@ class AttributesDatabaseConnector(AttributesGroup):
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_STRING,
                                  key='host',
                                  value=new_host,
-                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids()))
 
     @host.deleter
     def host(self):
@@ -279,7 +279,7 @@ class AttributesDatabaseConnector(AttributesGroup):
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_STRING,
                                  key='password',
                                  value=new_password,
-                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids()))
 
     @password.deleter
     def password(self):
@@ -298,7 +298,7 @@ class AttributesDatabaseConnector(AttributesGroup):
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_INT,
                                  key='port',
                                  value=new_port,
-                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids()))
 
     @port.deleter
     def port(self):
@@ -317,7 +317,7 @@ class AttributesDatabaseConnector(AttributesGroup):
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_STRING,
                                  key='username',
                                  value=new_username,
-                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.entity.role_uuids))
+                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids()))
 
     @username.deleter
     def username(self):
