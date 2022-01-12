@@ -58,7 +58,7 @@ class Interface(Entity):
         if not isinstance(child_node, Node):
             raise Exception(f"child_node is not of type Node, is of type {type(child_node)} instead")
         if child_node.get_type_name() != NodeType.TYPE_NAME_DATASET:
-            raise Exception(f"child_node.type_name mismatch: {child_node.get_type_name()} != {NodeType.TYPE_NAME_DATASET}")
+            raise Exception(f"child_node.get_type_name() mismatch: {child_node.get_type_name()} != {NodeType.TYPE_NAME_DATASET}")
         self.metadata.dataset_node = child_node
 
     def remove_child_node(self, name):

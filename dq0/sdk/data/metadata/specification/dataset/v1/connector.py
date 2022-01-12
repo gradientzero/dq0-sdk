@@ -10,17 +10,17 @@ class Connector:
     @staticmethod
     def apply_defaults(attribute, role_uuids=None):
         Attribute.check(attribute=attribute, check_data=None)
-        if attribute.type_name != AttributeType.TYPE_NAME_LIST:
+        if attribute.get_type_name() != AttributeType.TYPE_NAME_LIST:
             raise Exception(f"attribute is not of type {AttributeType.TYPE_NAME_LIST}, is of type {attribute.type_name} instead")
         attribute_type_name = attribute.get_attribute(key='type_name')
         if not isinstance(attribute_type_name, AttributeString):
             raise Exception(f"attribute type_name is not of type AttributeString, is of type {type(attribute_type_name)} instead")
-        if attribute_type_name.value == 'csv':
+        if attribute_type_name.get_value() == 'csv':
             return ConnectorCSV.apply_defaults(attribute=attribute, role_uuids=role_uuids)
-        elif attribute_type_name.value == 'postgresql':
+        elif attribute_type_name.get_value() == 'postgresql':
             return ConnectorPostgreSQL.apply_defaults(attribute=attribute, role_uuids=role_uuids)
         else:
-            raise Exception(f"unknown connector type_name {attribute_type_name.value}")
+            raise Exception(f"unknown connector type_name {attribute_type_name.get_value()}")
 
     @staticmethod
     def verify(attribute, role_uuids=None):
@@ -30,9 +30,9 @@ class Connector:
         attribute_type_name = attribute.get_attribute(key='type_name')
         if not isinstance(attribute_type_name, AttributeString):
             raise Exception(f"attribute type_name is not of type AttributeString, is of type {type(attribute_type_name)} instead")
-        if attribute_type_name.value == 'csv':
+        if attribute_type_name.get_value() == 'csv':
             return ConnectorCSV.verify(attribute=attribute, role_uuids=role_uuids)
-        elif attribute_type_name.value == 'postgresql':
+        elif attribute_type_name.get_value() == 'postgresql':
             return ConnectorPostgreSQL.verify(attribute=attribute, role_uuids=role_uuids)
         else:
-            raise Exception(f"unknown connector type_name {attribute_type_name.value}")
+            raise Exception(f"unknown connector type_name {attribute_type_name.get_value()}")

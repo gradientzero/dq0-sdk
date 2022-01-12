@@ -23,7 +23,7 @@ class Dataset:
         applied_attributes = [] if attributes is not None else None
         for attribute in attributes if attributes is not None else []:
             applied_attribute = attribute.copy()
-            if applied_attribute.key in ['differential_privacy']:
+            if applied_attribute.get_key() in ['differential_privacy']:
                 applied_attribute.set_default_permissions(default_permissions=owner_attribute)
             else:
                 applied_attribute.set_default_permissions(default_permissions=shared_attribute)
@@ -52,24 +52,24 @@ class Dataset:
             'data': ([AttributeType.TYPE_NAME_LIST], shared_attribute),
             'differential_privacy': ([AttributeType.TYPE_NAME_LIST], owner_attribute),
         }, required_keys={'data'})
-        data_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'data'] if attributes is not None else []
+        data_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'data'] if attributes is not None else []
         if 0 < len(data_attributes):
-            Attribute.check_list(attribute_list=data_attributes[0].value, check_data={
+            Attribute.check_list(attribute_list=data_attributes[0].get_value(), check_data={
                 'description': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
                 'metadata_is_public': ([AttributeType.TYPE_NAME_BOOLEAN], shared_attribute),
                 'name': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
                 'tags': ([AttributeType.TYPE_NAME_LIST], shared_attribute),
             }, required_keys={'name'})
-            tags_attributes = [tmp_attribute for tmp_attribute in data_attributes[0].value if tmp_attribute.key == 'tags'] \
-                if data_attributes[0].value is not None else []
+            tags_attributes = [tmp_attribute for tmp_attribute in data_attributes[0].get_value() if tmp_attribute.get_key() == 'tags'] \
+                if data_attributes[0].get_value() is not None else []
             if 0 < len(tags_attributes):
-                Attribute.check_list(attribute_list=tags_attributes[0].value, check_data={
+                Attribute.check_list(attribute_list=tags_attributes[0].get_value(), check_data={
                     None: ([AttributeType.TYPE_NAME_STRING], shared_attribute),
                 })
-        differential_privacy_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'differential_privacy'] \
+        differential_privacy_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'differential_privacy'] \
             if attributes is not None else []
         if 0 < len(differential_privacy_attributes):
-            Attribute.check_list(attribute_list=differential_privacy_attributes[0].value, check_data={
+            Attribute.check_list(attribute_list=differential_privacy_attributes[0].get_value(), check_data={
                 'privacy_level': ([AttributeType.TYPE_NAME_INT], owner_attribute),
             })
 
@@ -80,7 +80,7 @@ class Dataset:
             Database.verify(node=child_node, role_uuids=role_uuids)
             data_attribute = child_node.get_attribute(key='data')
             name_attribute = data_attribute.get_attribute(key='name') if data_attribute is not None else None
-            if name_attribute is not None and isinstance(name_attribute.value, str):
-                names.add(name_attribute.value)
+            if name_attribute is not None and isinstance(name_attribute.get_value(), str):
+                names.add(name_attribute.get_value())
         if len(names) != len(child_nodes):
             raise Exception(f"names {names} are not enough for each of the {len(child_nodes)} child nodes to have a unique name")

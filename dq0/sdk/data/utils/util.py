@@ -108,7 +108,7 @@ def load_dataset_info_from_yaml(metadata, columns_list):
         if col_data_type_name is None:
             logger.fatal(f"data_type_name of column {col_name} missing from metadata")
             return 1
-        if col_data_type_name.value == 'string':
+        if col_data_type_name.get_value() == 'string':
             categorical_features_list.append(col_name)
         else:  # if col_obj.type == 'int' or col_obj.type == 'float':
             quantitative_features_list.append(col_name)

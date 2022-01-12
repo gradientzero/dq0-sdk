@@ -63,15 +63,15 @@ class AttributeUtils:
         for attribute in input_value:
             if not isinstance(attribute, Attribute):
                 raise Exception(f"attribute {attribute} is not of type Attribute, is of type {type(attribute)} instead")
-            if attribute.key is not None:
-                raise Exception(f"all keys must be none; key {attribute.key} is not None")
-            if type_name is not None and type_name != attribute.type_name:
-                raise Exception(f"type_name mismatch: {type_name} != {attribute.type_name}")
-            type_name = attribute.type_name
-            AttributeUtils.match_and_check(type_name=type_name, value=attribute.value)
+            if attribute.get_key() is not None:
+                raise Exception(f"all keys must be none; key {attribute.get_key()} is not None")
+            if type_name is not None and type_name != attribute.get_type_name():
+                raise Exception(f"type_name mismatch: {type_name} != {attribute.get_type_name()}")
+            type_name = attribute.get_type_name()
+            AttributeUtils.match_and_check(type_name=type_name, value=attribute.get_value())
             if type_name == AttributeType.TYPE_NAME_LIST:
                 raise Exception("list may not contain attribute values of list type")
-            new_list.append(attribute.value)
+            new_list.append(attribute.get_value())
         return new_list
 
     @staticmethod
@@ -108,15 +108,15 @@ class AttributeUtils:
         for attribute in input_value:
             if not isinstance(attribute, Attribute):
                 raise Exception(f"attribute {attribute} is not of type Attribute, is of type {type(attribute)} instead")
-            if attribute.key in new_dict:
-                raise Exception(f"all keys must be unique; key {attribute.key} is already present")
-            if type_name is not None and type_name != attribute.type_name:
-                raise Exception(f"type_name mismatch: {type_name} != {attribute.type_name}")
-            type_name = attribute.type_name
-            AttributeUtils.match_and_check(type_name=type_name, value=attribute.value)
+            if attribute.get_key() in new_dict:
+                raise Exception(f"all keys must be unique; key {attribute.get_key()} is already present")
+            if type_name is not None and type_name != attribute._type_name:
+                raise Exception(f"type_name mismatch: {type_name} != {attribute._type_name}")
+            type_name = attribute._type_name
+            AttributeUtils.match_and_check(type_name=type_name, value=attribute.get_value())
             if type_name == AttributeType.TYPE_NAME_LIST:
                 raise Exception("list may not contain attribute values of list type")
-            new_dict[attribute.key] = attribute.value
+            new_dict[attribute.get_key()] = attribute.get_value()
         return new_dict
 
     @staticmethod

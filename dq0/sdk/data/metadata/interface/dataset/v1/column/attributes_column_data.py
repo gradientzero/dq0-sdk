@@ -67,7 +67,7 @@ class AttributesColumnData(AttributesGroup):
                                  key='name',
                                  value=new_name,
                                  permissions=DefaultPermissions.shared_attribute(role_uuids=self.get_role_uuids()))
-        self.entity.set_name(old_name=old_name, new_name=new_name)
+        self.get_entity().set_name(old_name=old_name, new_name=new_name)
 
     @name.deleter
     def name(self):

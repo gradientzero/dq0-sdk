@@ -17,8 +17,8 @@ class AttributesColumnPrivateSqlAndSynthesis(AttributesGroup):
 
     @bounded.setter
     def bounded(self, new_bounded):
-        if self.entity.data_type_name in ['boolean', 'string']:
-            raise Exception(f"data_type_name {self.entity.data_type_name} does not allow bounded")
+        if self.get_entity().get_data_type_name() in ['boolean', 'string']:
+            raise Exception(f"data_type_name {self.get_entity().get_data_type_name()} does not allow bounded")
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_BOOLEAN,
                                  key='bounded',
                                  value=new_bounded,
@@ -35,8 +35,8 @@ class AttributesColumnPrivateSqlAndSynthesis(AttributesGroup):
 
     @cardinality.setter
     def cardinality(self, new_cardinality):
-        if self.entity.data_type_name in ['boolean']:
-            raise Exception(f"data_type_name {self.entity.data_type_name} does not allow cardinality")
+        if self.get_entity().get_data_type_name() in ['boolean']:
+            raise Exception(f"data_type_name {self.get_entity().get_data_type_name()} does not allow cardinality")
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_INT,
                                  key='cardinality',
                                  value=new_cardinality,
@@ -53,11 +53,11 @@ class AttributesColumnPrivateSqlAndSynthesis(AttributesGroup):
 
     @lower.setter
     def lower(self, new_lower):
-        if self.entity.data_type_name in ['boolean', 'string']:
-            raise Exception(f"data_type_name {self.entity.data_type_name} does not allow lower")
-        if self.entity.data_type_name not in [AttributeType.TYPE_NAME_DATETIME, AttributeType.TYPE_NAME_FLOAT, AttributeType.TYPE_NAME_INT]:
-            raise Exception(f"data_type_name {self.entity.data_type_name} does not match any allowed attribute type_name")
-        self.set_attribute_value(type_name=self.entity.data_type_name,
+        if self.get_entity().get_data_type_name() in ['boolean', 'string']:
+            raise Exception(f"data_type_name {self.get_entity().get_data_type_name()} does not allow lower")
+        if self.get_entity().get_data_type_name() not in [AttributeType.TYPE_NAME_DATETIME, AttributeType.TYPE_NAME_FLOAT, AttributeType.TYPE_NAME_INT]:
+            raise Exception(f"data_type_name {self.get_entity().get_data_type_name()} does not match any allowed attribute type_name")
+        self.set_attribute_value(type_name=self.get_entity().get_data_type_name(),
                                  key='lower',
                                  value=new_lower,
                                  permissions=DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids()))
@@ -73,11 +73,11 @@ class AttributesColumnPrivateSqlAndSynthesis(AttributesGroup):
 
     @upper.setter
     def upper(self, new_upper):
-        if self.entity.data_type_name in ['boolean', 'string']:
-            raise Exception(f"data_type_name {self.entity.data_type_name} does not allow upper")
-        if self.entity.data_type_name not in [AttributeType.TYPE_NAME_DATETIME, AttributeType.TYPE_NAME_FLOAT, AttributeType.TYPE_NAME_INT]:
-            raise Exception(f"data_type_name {self.entity.data_type_name} does not match any allowed attribute type_name")
-        self.set_attribute_value(type_name=self.entity.data_type_name,
+        if self.get_entity().get_data_type_name() in ['boolean', 'string']:
+            raise Exception(f"data_type_name {self.get_entity().get_data_type_name()} does not allow upper")
+        if self.get_entity().get_data_type_name() not in [AttributeType.TYPE_NAME_DATETIME, AttributeType.TYPE_NAME_FLOAT, AttributeType.TYPE_NAME_INT]:
+            raise Exception(f"data_type_name {self.get_entity().get_data_type_name()} does not match any allowed attribute type_name")
+        self.set_attribute_value(type_name=self.get_entity().get_data_type_name(),
                                  key='upper',
                                  value=new_upper,
                                  permissions=DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids()))

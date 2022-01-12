@@ -23,12 +23,12 @@ class Table:
         applied_attributes = [] if attributes is not None else None
         for attribute in attributes if attributes is not None else []:
             applied_attribute = attribute.copy()
-            if applied_attribute.key in ['differential_privacy', 'private_sql', 'private_synthesis']:
+            if applied_attribute.get_key() in ['differential_privacy', 'private_sql', 'private_synthesis']:
                 applied_attribute.set_default_permissions(default_permissions=owner_attribute)
             else:
-                if applied_attribute.key == 'data':
-                    for sub_attribute in applied_attribute.value if applied_attribute.value is not None else []:
-                        if sub_attribute.key in ['rows']:
+                if applied_attribute.get_key() == 'data':
+                    for sub_attribute in applied_attribute.get_value() if applied_attribute.get_value() is not None else []:
+                        if sub_attribute.get_key() in ['rows']:
                             sub_attribute.set_default_permissions(default_permissions=owner_attribute)
                 applied_attribute.set_default_permissions(default_permissions=shared_attribute)
             applied_attributes.append(applied_attribute)
@@ -58,26 +58,26 @@ class Table:
             'private_sql': ([AttributeType.TYPE_NAME_LIST], owner_attribute),
             'private_synthesis': ([AttributeType.TYPE_NAME_LIST], owner_attribute),
         }, required_keys={'data'})
-        data_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'data'] if attributes is not None else []
+        data_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'data'] if attributes is not None else []
         if 0 < len(data_attributes):
-            Attribute.check_list(attribute_list=data_attributes[0].value, check_data={
+            Attribute.check_list(attribute_list=data_attributes[0].get_value(), check_data={
                 'description': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
                 'metadata_is_public': ([AttributeType.TYPE_NAME_BOOLEAN], shared_attribute),
                 'name': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
                 'rows': ([AttributeType.TYPE_NAME_INT], owner_attribute),
             }, required_keys={'name'})
-        differential_privacy_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'differential_privacy'] \
+        differential_privacy_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'differential_privacy'] \
             if attributes is not None else []
         if 0 < len(differential_privacy_attributes):
-            Attribute.check_list(attribute_list=differential_privacy_attributes[0].value, check_data={
+            Attribute.check_list(attribute_list=differential_privacy_attributes[0].get_value(), check_data={
                 'budget_delta': ([AttributeType.TYPE_NAME_FLOAT], owner_attribute),
                 'budget_epsilon': ([AttributeType.TYPE_NAME_FLOAT], owner_attribute),
                 'privacy_column': ([AttributeType.TYPE_NAME_STRING], owner_attribute),
                 'privacy_level': ([AttributeType.TYPE_NAME_INT], owner_attribute),
             })
-        private_sql_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'private_sql'] if attributes is not None else []
+        private_sql_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'private_sql'] if attributes is not None else []
         if 0 < len(private_sql_attributes):
-            Attribute.check_list(attribute_list=private_sql_attributes[0].value, check_data={
+            Attribute.check_list(attribute_list=private_sql_attributes[0].get_value(), check_data={
                 'censor_dims': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
                 'clamp_columns': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
                 'clamp_counts': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
@@ -87,10 +87,10 @@ class Table:
                 'tau': ([AttributeType.TYPE_NAME_FLOAT], owner_attribute),
                 'use_dpsu': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
             })
-        private_synthesis_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'private_synthesis'] \
+        private_synthesis_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'private_synthesis'] \
             if attributes is not None else []
         if 0 < len(private_synthesis_attributes):
-            Attribute.check_list(attribute_list=private_synthesis_attributes[0].value, check_data={
+            Attribute.check_list(attribute_list=private_synthesis_attributes[0].get_value(), check_data={
                 'synth_allowed': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
             })
 
@@ -101,7 +101,7 @@ class Table:
             Column.verify(node=child_node, role_uuids=role_uuids)
             data_attribute = child_node.get_attribute(key='data')
             name_attribute = data_attribute.get_attribute(key='name') if data_attribute is not None else None
-            if name_attribute is not None and isinstance(name_attribute.value, str):
-                names.add(name_attribute.value)
+            if name_attribute is not None and isinstance(name_attribute.get_value(), str):
+                names.add(name_attribute.get_value())
         if len(names) != len(child_nodes):
             raise Exception(f"names {names} are not enough for each of the {len(child_nodes)} child nodes to have a unique name")

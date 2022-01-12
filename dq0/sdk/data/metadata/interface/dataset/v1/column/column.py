@@ -24,37 +24,40 @@ class Column(Entity):
                          create_child_entity_func=None, create_attributes_group_func=self.create_attributes_group, role_uuids=role_uuids, node=node)
         data_attribute = node.get_attribute(key='data') if isinstance(node, Node) else None
         data_type_name_attribute = data_attribute.get_attribute(key='data_type_name') if isinstance(data_attribute, AttributeList) else None
-        data_type_name = data_type_name_attribute.value if data_type_name_attribute is not None else None
-        data_type_name_permissions = data_type_name_attribute.permissions if data_type_name_attribute is not None else None
+        data_type_name = data_type_name_attribute.get_value() if data_type_name_attribute is not None else None
+        data_type_name_permissions = data_type_name_attribute.get_permissions() if data_type_name_attribute is not None else None
         if data_type_name is not None:
             Column.check_data_type_name(data_type_name=data_type_name)
         elif node is not None:
             raise Exception("if node is not none, data_type_name cannot be none")
-        self.data_type_name = data_type_name
-        self.data_type_name_permissions = data_type_name_permissions
+        self._data_type_name = data_type_name
+        self._data_type_name_permissions = data_type_name_permissions
+
+    def get_data_type_name(self):
+        return self._data_type_name
 
     def set_data_type_name(self, data_type_name, data_type_name_permissions=None):
         Column.check_data_type_name(data_type_name=data_type_name)
         Permissions.check(permissions=data_type_name_permissions)
-        self.data_type_name = data_type_name
-        self.data_type_name_permissions = data_type_name_permissions
+        self._data_type_name = data_type_name
+        self._data_type_name_permissions = data_type_name_permissions
 
     def create(self):
-        if self._node is not None:
+        if self.get_node() is not None:
             return
-        Column.check_data_type_name(data_type_name=self.data_type_name)
-        if self.data_type_name_permissions is None:
-            self.data_type_name_permissions = DefaultPermissions.shared_attribute(role_uuids=self.get_role_uuids())
+        Column.check_data_type_name(data_type_name=self.get_data_type_name())
+        if self._data_type_name_permissions is None:
+            self._data_type_name_permissions = DefaultPermissions.shared_attribute(role_uuids=self.get_role_uuids())
         super().create()
-        if not isinstance(self._node, Node):
-            raise Exception(f"self.node is not of type Node, is of type {type(self._node)} instead")
-        data_attribute = self._node.get_attribute(key='data')
+        if not isinstance(self.get_node(), Node):
+            raise Exception(f"self.node is not of type Node, is of type {type(self.get_node())} instead")
+        data_attribute = self.get_node().get_attribute(key='data')
         if not isinstance(data_attribute, AttributeList):
             raise Exception(f"data_attribute is not of type AttributeList, is of type {type(data_attribute)} instead")
         data_type_name_attribute = data_attribute.get_attribute(key='data_type_name')
         if data_type_name_attribute is not None:
             raise Exception("data_type_name_attribute must be none at this point")
-        data_type_name_attribute = AttributeString(key='data_type_name', value=self.data_type_name, permissions=self.data_type_name_permissions)
+        data_type_name_attribute = AttributeString(key='data_type_name', value=self.get_data_type_name(), permissions=self._data_type_name_permissions)
         data_attribute.add_attribute(attribute=data_type_name_attribute)
 
     def create_attributes_group(self, key, attribute_list=None):
@@ -63,17 +66,17 @@ class Column(Entity):
         elif key == 'machine_learning':
             return AttributesColumnMachineLearning(column=self, attribute_list=attribute_list)
         elif key == 'private_sql':
-            if self.data_type_name is None:
+            if self.get_data_type_name() is None:
                 raise Exception("cannot access private_sql without data_type_name being set")
             return AttributesColumnPrivateSql(column=self, attribute_list=attribute_list)
         elif key == 'private_sql_and_synthesis':
-            if self.data_type_name is None:
+            if self.get_data_type_name() is None:
                 raise Exception("cannot access private_sql_and_synthesis without data_type_name being set")
-            if self.data_type_name == 'boolean':
+            if self.get_data_type_name() == 'boolean':
                 raise Exception("attribute group private_sql_and_synthesis not allowed for boolean column")
             return AttributesColumnPrivateSqlAndSynthesis(column=self, attribute_list=attribute_list)
         elif key == 'private_synthesis':
-            if self.data_type_name is None:
+            if self.get_data_type_name() is None:
                 raise Exception("cannot access private_synthesis without data_type_name being set")
             return AttributesColumnPrivateSynthesis(column=self, attribute_list=attribute_list)
         else:

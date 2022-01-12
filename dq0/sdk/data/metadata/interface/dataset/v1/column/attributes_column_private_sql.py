@@ -18,16 +18,16 @@ class AttributesColumnPrivateSql(AttributesGroup):
 
     @allowed_values.setter
     def allowed_values(self, new_allowed_values):
-        if self.entity.data_type_name in ['boolean']:
-            raise Exception(f"data_type_name {self.entity.data_type_name} does not allow allowed_values")
-        if self.entity.data_type_name not in [AttributeType.TYPE_NAME_DATETIME, AttributeType.TYPE_NAME_FLOAT,
-                                              AttributeType.TYPE_NAME_INT, AttributeType.TYPE_NAME_STRING]:
-            raise Exception(f"data_type_name {self.entity.data_type_name} does not match any allowed attribute type_name")
+        if self.get_entity().get_data_type_name() in ['boolean']:
+            raise Exception(f"data_type_name {self.get_entity().get_data_type_name()} does not allow allowed_values")
+        if self.get_entity().get_data_type_name() not in [AttributeType.TYPE_NAME_DATETIME, AttributeType.TYPE_NAME_FLOAT,
+                                                          AttributeType.TYPE_NAME_INT, AttributeType.TYPE_NAME_STRING]:
+            raise Exception(f"data_type_name {self.get_entity().get_data_type_name()} does not match any allowed attribute type_name")
         owner_permissions = DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids())
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_LIST,
                                  key='allowed_values',
                                  value=AttributeUtils.list_to_value(input_list=new_allowed_values,
-                                                                    type_name=self.entity.data_type_name,
+                                                                    type_name=self.get_entity().get_data_type_name(),
                                                                     permissions=owner_permissions),
                                  permissions=owner_permissions)
 
@@ -42,11 +42,11 @@ class AttributesColumnPrivateSql(AttributesGroup):
 
     @auto_bounds_prob.setter
     def auto_bounds_prob(self, new_auto_bounds_prob):
-        if self.entity.data_type_name in ['boolean', 'string']:
-            raise Exception(f"data_type_name {self.entity.data_type_name} does not allow auto_bounds_prob")
-        if self.entity.data_type_name not in [AttributeType.TYPE_NAME_DATETIME, AttributeType.TYPE_NAME_FLOAT, AttributeType.TYPE_NAME_INT]:
-            raise Exception(f"data_type_name {self.entity.data_type_name} does not match any allowed attribute type_name")
-        self.set_attribute_value(type_name=self.entity.data_type_name,
+        if self.get_entity().get_data_type_name() in ['boolean', 'string']:
+            raise Exception(f"data_type_name {self.get_entity().get_data_type_name()} does not allow auto_bounds_prob")
+        if self.get_entity().get_data_type_name() not in [AttributeType.TYPE_NAME_DATETIME, AttributeType.TYPE_NAME_FLOAT, AttributeType.TYPE_NAME_INT]:
+            raise Exception(f"data_type_name {self.get_entity().get_data_type_name()} does not match any allowed attribute type_name")
+        self.set_attribute_value(type_name=self.get_entity().get_data_type_name(),
                                  key='auto_bounds_prob',
                                  value=new_auto_bounds_prob,
                                  permissions=DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids()))
@@ -62,11 +62,11 @@ class AttributesColumnPrivateSql(AttributesGroup):
 
     @auto_lower.setter
     def auto_lower(self, new_auto_lower):
-        if self.entity.data_type_name in ['boolean', 'string']:
-            raise Exception(f"data_type_name {self.entity.data_type_name} does not allow auto_lower")
-        if self.entity.data_type_name not in [AttributeType.TYPE_NAME_DATETIME, AttributeType.TYPE_NAME_FLOAT, AttributeType.TYPE_NAME_INT]:
-            raise Exception(f"data_type_name {self.entity.data_type_name} does not match any allowed attribute type_name")
-        self.set_attribute_value(type_name=self.entity.data_type_name,
+        if self.get_entity().get_data_type_name() in ['boolean', 'string']:
+            raise Exception(f"data_type_name {self.get_entity().get_data_type_name()} does not allow auto_lower")
+        if self.get_entity().get_data_type_name() not in [AttributeType.TYPE_NAME_DATETIME, AttributeType.TYPE_NAME_FLOAT, AttributeType.TYPE_NAME_INT]:
+            raise Exception(f"data_type_name {self.get_entity().get_data_type_name()} does not match any allowed attribute type_name")
+        self.set_attribute_value(type_name=self.get_entity().get_data_type_name(),
                                  key='auto_lower',
                                  value=new_auto_lower,
                                  permissions=DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids()))
@@ -82,11 +82,11 @@ class AttributesColumnPrivateSql(AttributesGroup):
 
     @auto_upper.setter
     def auto_upper(self, new_auto_upper):
-        if self.entity.data_type_name in ['boolean', 'string']:
-            raise Exception(f"data_type_name {self.entity.data_type_name} does not allow auto_upper")
-        if self.entity.data_type_name not in [AttributeType.TYPE_NAME_DATETIME, AttributeType.TYPE_NAME_FLOAT, AttributeType.TYPE_NAME_INT]:
-            raise Exception(f"data_type_name {self.entity.data_type_name} does not match any allowed attribute type_name")
-        self.set_attribute_value(type_name=self.entity.data_type_name,
+        if self.get_entity().get_data_type_name() in ['boolean', 'string']:
+            raise Exception(f"data_type_name {self.get_entity().get_data_type_name()} does not allow auto_upper")
+        if self.get_entity().get_data_type_name() not in [AttributeType.TYPE_NAME_DATETIME, AttributeType.TYPE_NAME_FLOAT, AttributeType.TYPE_NAME_INT]:
+            raise Exception(f"data_type_name {self.get_entity().get_data_type_name()} does not match any allowed attribute type_name")
+        self.set_attribute_value(type_name=self.get_entity().get_data_type_name(),
                                  key='auto_upper',
                                  value=new_auto_upper,
                                  permissions=DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids()))
@@ -102,8 +102,8 @@ class AttributesColumnPrivateSql(AttributesGroup):
 
     @mask.setter
     def mask(self, new_mask):
-        if self.entity.data_type_name in ['boolean', 'datetime', 'float', 'int']:
-            raise Exception(f"data_type_name {self.entity.data_type_name} does not allow mask")
+        if self.get_entity().get_data_type_name() in ['boolean', 'datetime', 'float', 'int']:
+            raise Exception(f"data_type_name {self.get_entity().get_data_type_name()} does not allow mask")
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_STRING,
                                  key='mask',
                                  value=new_mask,
@@ -136,8 +136,8 @@ class AttributesColumnPrivateSql(AttributesGroup):
 
     @use_auto_bounds.setter
     def use_auto_bounds(self, new_use_auto_bounds):
-        if self.entity.data_type_name in ['boolean', 'string']:
-            raise Exception(f"data_type_name {self.entity.data_type_name} does not allow use_auto_bounds")
+        if self.get_entity().get_data_type_name() in ['boolean', 'string']:
+            raise Exception(f"data_type_name {self.get_entity().get_data_type_name()} does not allow use_auto_bounds")
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_BOOLEAN,
                                  key='use_auto_bounds',
                                  value=new_use_auto_bounds,

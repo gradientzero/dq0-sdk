@@ -8,9 +8,10 @@ class ConnectorPostgreSQL:
     @staticmethod
     def apply_defaults(attribute, role_uuids=None):
         Attribute.check(attribute=attribute, check_data=None)
-        applied_attributes = ConnectorPostgreSQL.apply_defaults_to_attributes(attributes=attribute.value, role_uuids=role_uuids)
-        applied_permissions = DefaultPermissions.shared_attribute(role_uuids=role_uuids) if attribute.permissions is None else attribute.permissions.copy()
-        return AttributeList(key=attribute.key, value=applied_attributes, permissions=applied_permissions)
+        applied_attributes = ConnectorPostgreSQL.apply_defaults_to_attributes(attributes=attribute.get_value(), role_uuids=role_uuids)
+        applied_permissions = DefaultPermissions.shared_attribute(role_uuids=role_uuids) \
+            if attribute.get_permissions() is None else attribute.get_permissions().copy()
+        return AttributeList(key=attribute.get_key(), value=applied_attributes, permissions=applied_permissions)
 
     @staticmethod
     def apply_defaults_to_attributes(attributes, role_uuids=None):
@@ -27,7 +28,7 @@ class ConnectorPostgreSQL:
         Attribute.check(attribute=attribute, check_data={
             'connector': ([AttributeType.TYPE_NAME_LIST], DefaultPermissions.shared_attribute(role_uuids=role_uuids)),
         })
-        ConnectorPostgreSQL.verify_attributes(attributes=attribute.value, role_uuids=role_uuids)
+        ConnectorPostgreSQL.verify_attributes(attributes=attribute.get_value(), role_uuids=role_uuids)
 
     @staticmethod
     def verify_attributes(attributes, role_uuids=None):
@@ -39,6 +40,6 @@ class ConnectorPostgreSQL:
             'type_name': ([AttributeType.TYPE_NAME_STRING], DefaultPermissions.shared_attribute(role_uuids=role_uuids)),
             'username': ([AttributeType.TYPE_NAME_STRING], owner_attribute),
         }, required_keys={'type_name'})
-        type_name_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'type_name'] if attributes is not None else []
-        if type_name_attributes[0].value != 'postgresql':
-            raise Exception(f"postgresql connector type_name value {type_name_attributes[0].value} does not match 'postgresql'")
+        type_name_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'type_name'] if attributes is not None else []
+        if type_name_attributes[0].get_value() != 'postgresql':
+            raise Exception(f"postgresql connector type_name value {type_name_attributes[0].get_value()} does not match 'postgresql'")

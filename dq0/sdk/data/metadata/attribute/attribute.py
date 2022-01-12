@@ -12,13 +12,14 @@ class Attribute:
         if not isinstance(attribute, Attribute):
             raise Exception(f"attribute is not of type Attribute, is of type {type(attribute)} instead")
         if check_data is not None:
-            if attribute.key not in check_data:
-                raise Exception(f"attribute.key {attribute.key} is not in allowed keys {check_data.keys()}")
-            allowed_type_names, allowed_permissions = check_data[attribute.key]
-            if allowed_type_names is not None and attribute.type_name not in allowed_type_names:
-                raise Exception(f"attribute.type_name {attribute.type_name} is not in allowed_type_names {allowed_type_names}")
-            if not Permissions.is_subset_of(permissions_a=attribute.permissions, permissions_b=allowed_permissions):
-                raise Exception("attribute.permissions" + f"{attribute.permissions}" + "\nare not in allowed_permissions" + f"{allowed_permissions}")
+            if attribute.get_key() not in check_data:
+                raise Exception(f"attribute.get_key() {attribute.get_key()} is not in allowed keys {check_data.keys()}")
+            allowed_type_names, allowed_permissions = check_data[attribute.get_key()]
+            if allowed_type_names is not None and attribute.get_type_name() not in allowed_type_names:
+                raise Exception(f"attribute.get_type_name() {attribute.get_type_name()} is not in allowed_type_names {allowed_type_names}")
+            if not Permissions.is_subset_of(permissions_a=attribute.get_permissions(), permissions_b=allowed_permissions):
+                raise Exception("attribute.get_permissions()" + f"{attribute.get_permissions()}" + "\n"
+                                "are not in allowed_permissions" + f"{allowed_permissions}")
 
     @staticmethod
     def check_list(attribute_list, check_data=None, required_keys=None):
@@ -31,12 +32,12 @@ class Attribute:
         regular_key_count = 0
         for attribute in attribute_list:
             Attribute.check(attribute=attribute, check_data=check_data)
-            if attribute.key is None:
+            if attribute.get_key() is None:
                 none_key_count += 1
             else:
-                if attribute.key in keys:
-                    raise Exception(f"duplicate attribute key {attribute.key} is not allowed")
-                keys.add(attribute.key)
+                if attribute.get_key() in keys:
+                    raise Exception(f"duplicate attribute key {attribute.get_key()} is not allowed")
+                keys.add(attribute.get_key())
                 regular_key_count += 1
         for required_key in required_keys if required_keys is not None else set():
             if required_key not in keys:
@@ -54,10 +55,10 @@ class Attribute:
         _ = Attribute.check_list(attribute_list=attribute_list_b, check_data=None)
         for attribute_a in attribute_list_a:
             for attribute_b in attribute_list_b:
-                if attribute_a.key == attribute_b.key and not attribute_a.is_merge_compatible_with(other=attribute_b, explanation=explanation):
+                if attribute_a.get_key() == attribute_b.get_key() and not attribute_a.is_merge_compatible_with(other=attribute_b, explanation=explanation):
                     Explanation.dynamic_add_message(explanation=explanation,
-                                                    message=f"Attribute.are_merge_compatible(...): attributes[{attribute_a.type_name}] "
-                                                    f"with matching key {attribute_a.key} are not compatible")
+                                                    message=f"Attribute.are_merge_compatible(...): attributes[{attribute_a.get_type_name()}] "
+                                                    f"with matching key {attribute_a.get_key()} are not compatible")
                     return False
         return True
 
@@ -75,14 +76,14 @@ class Attribute:
                     if not elem_a.is_mergeable_with(other=elem_b, overwrite_value=overwrite_value, overwrite_permissions=overwrite_permissions,
                                                     request_uuids=request_uuids, explanation=explanation):
                         Explanation.dynamic_add_message(explanation=explanation,
-                                                        message=f"Attribute.are_mergeable(...): compatible attributes[{elem_a.type_name}] "
-                                                        f"with key {elem_a.key} are not mergeable")
+                                                        message=f"Attribute.are_mergeable(...): compatible attributes[{elem_a.get_type_name()}] "
+                                                        f"with key {elem_a.get_key()} are not mergeable")
                         return False
                     else:
                         if found_match:
                             Explanation.dynamic_add_message(explanation=explanation,
-                                                            message=f"Attribute.are_mergeable(...): duplicate mergeable attributes[{elem_a.type_name}] "
-                                                            f"with key {elem_a.key} are not allowed")
+                                                            message=f"Attribute.are_mergeable(...): duplicate mergeable attributes[{elem_a.get_type_name()}] "
+                                                            f"with key {elem_a.get_key()} are not allowed")
                             return False
                         found_match = True
         return True
@@ -125,70 +126,82 @@ class Attribute:
         if key is not None and not isinstance(key, str):
             raise Exception(f"key {key} is not of type str, is of type {type(key)} instead")
         Permissions.check(permissions=permissions)
-        self.type_name = type_name
-        self.key = key
-        self.permissions = permissions
-        self.is_explicit_list_element = False
+        self._type_name = type_name
+        self._key = key
+        self._permissions = permissions
+        self._is_explicit_list_element = False
 
     def __str__(self, request_uuids=set()):
-        if not Permissions.is_allowed_with(permissions=self.permissions, action=Action.READ, request_uuids=request_uuids):
+        if not Permissions.is_allowed_with(permissions=self.get_permissions(), action=Action.READ, request_uuids=request_uuids):
             return None
-        if self.is_explicit_list_element:
+        if self._is_explicit_list_element:
             return "-"
         else:
-            return f"  {StrUtils.str_from(self.key, quoted=True)}:"
+            return f"  {StrUtils.str_from(self.get_key(), quoted=True)}:"
 
     def __repr__(self):
         return "Attribute(" + \
-            "type_name=" + repr(self.type_name) + ", " + \
-            "key=" + repr(self.key) + ", " + \
-            "permissions=" + repr(self.permissions) + ')'
+            "type_name=" + repr(self.get_type_name()) + ", " + \
+            "key=" + repr(self.get_key()) + ", " + \
+            "permissions=" + repr(self.get_permissions()) + ')'
 
     def __eq__(self, other):
         if not isinstance(other, Attribute):
             return False
         return \
-            self.type_name == other.type_name and \
-            self.key == other.key and \
-            self.permissions == other.permissions
+            self.get_type_name() == other.get_type_name() and \
+            self.get_key() == other.get_key() and \
+            self.get_permissions() == other.get_permissions()
+
+    def get_type_name(self):
+        return self._type_name
+
+    def get_key(self):
+        return self._key
+
+    def get_permissions(self):
+        return self._permissions
+
+    def is_explicit_list_element(self):
+        return self._is_explicit_list_element
 
     def copy(self):
         copied_attribute = Attribute(
-            type_name=self.type_name,
-            key=self.key,
-            permissions=self.permissions.copy() if self.permissions is not None else None
+            type_name=self.get_type_name(),
+            key=self.get_key(),
+            permissions=self.get_permissions().copy() if self.get_permissions() is not None else None
         )
-        copied_attribute.set_explicit_list_element(is_explicit_list_element=self.is_explicit_list_element)
+        copied_attribute.set_explicit_list_element(is_explicit_list_element=self._is_explicit_list_element)
         return copied_attribute
 
     def to_dict(self, request_uuids=set()):
-        if not Permissions.is_allowed_with(permissions=self.permissions, action=Action.READ, request_uuids=request_uuids):
+        if not Permissions.is_allowed_with(permissions=self.get_permissions(), action=Action.READ, request_uuids=request_uuids):
             return None
         return {tmp_key: tmp_value for tmp_key, tmp_value in [
-            ('type_name', self.type_name),
-            ('key', self.key),
-            ('permissions', self.permissions.to_dict() if self.permissions is not None else None),
+            ('type_name', self.get_type_name()),
+            ('key', self.get_key()),
+            ('permissions', self.get_permissions().to_dict() if self.get_permissions() is not None else None),
         ] if tmp_value is not None}
 
     def is_merge_compatible_with(self, other, explanation=None):
         if not isinstance(other, Attribute):
             Explanation.dynamic_add_message(explanation=explanation,
-                                            message=f"Attribute[{self.type_name}].is_merge_compatible_with(...): other is not of type Attribute, "
+                                            message=f"Attribute[{self.get_type_name()}].is_merge_compatible_with(...): other is not of type Attribute, "
                                             f"is of type {type(other)} instead")
             return False
-        if self.type_name != other.type_name:
+        if self.get_type_name() != other.get_type_name():
             Explanation.dynamic_add_message(explanation=explanation,
-                                            message=f"Attribute[{self.type_name}].is_merge_compatible_with(...): "
-                                            f"type_name mismatch {self.type_name} != {other.type_name}")
+                                            message=f"Attribute[{self.get_type_name()}].is_merge_compatible_with(...): "
+                                            f"type_name mismatch {self.get_type_name()} != {other.get_type_name()}")
             return False
-        if self.key != other.key:
+        if self.get_key() != other.get_key():
             Explanation.dynamic_add_message(explanation=explanation,
-                                            message=f"Attribute[{self.type_name}].is_merge_compatible_with(...): "
-                                            f"key mismatch {self.key} != {other.key}")
+                                            message=f"Attribute[{self.get_type_name()}].is_merge_compatible_with(...): "
+                                            f"key mismatch {self.get_key()} != {other.get_key()}")
             return False
-        if not Permissions.are_merge_compatible(permissions_a=self.permissions, permissions_b=other.permissions, explanation=explanation):
+        if not Permissions.are_merge_compatible(permissions_a=self.get_permissions(), permissions_b=other.get_permissions(), explanation=explanation):
             Explanation.dynamic_add_message(explanation=explanation,
-                                            message=f"Attribute[{self.type_name}].is_merge_compatible_with(...): "
+                                            message=f"Attribute[{self.get_type_name()}].is_merge_compatible_with(...): "
                                             f"permissions are not compatible")
             return False
         return True
@@ -196,18 +209,18 @@ class Attribute:
     def is_mergeable_with(self, other, overwrite_value=False, overwrite_permissions=False, request_uuids=set(), explanation=None):
         if not self.is_merge_compatible_with(other=other, explanation=explanation):
             Explanation.dynamic_add_message(explanation=explanation,
-                                            message=f"Attribute[{self.type_name}].is_mergeable_with(...): other is not compatible")
+                                            message=f"Attribute[{self.get_type_name()}].is_mergeable_with(...): other is not compatible")
             return False
-        if not Permissions.are_mergeable(permissions_a=self.permissions, permissions_b=other.permissions,
+        if not Permissions.are_mergeable(permissions_a=self.get_permissions(), permissions_b=other.get_permissions(),
                                          overwrite=overwrite_permissions, explanation=explanation):
             Explanation.dynamic_add_message(explanation=explanation,
-                                            message=f"Attribute[{self.type_name}].is_mergeable_with(...): permissions are not mergeable")
+                                            message=f"Attribute[{self.get_type_name()}].is_mergeable_with(...): permissions are not mergeable")
             return False
-        merged_permissions = Permissions.merge(permissions_a=self.permissions, permissions_b=other.permissions, overwrite=overwrite_permissions)
-        if self.permissions != merged_permissions and not Permissions.is_allowed_with(permissions=self.permissions, action=Action.WRITE_PERMISSIONS,
-                                                                                      request_uuids=request_uuids, explanation=explanation):
+        merged_permissions = Permissions.merge(permissions_a=self.get_permissions(), permissions_b=other.get_permissions(), overwrite=overwrite_permissions)
+        if self.get_permissions() != merged_permissions and not Permissions.is_allowed_with(permissions=self.get_permissions(), action=Action.WRITE_PERMISSIONS,
+                                                                                            request_uuids=request_uuids, explanation=explanation):
             Explanation.dynamic_add_message(explanation=explanation,
-                                            message=f"Attribute[{self.type_name}].is_mergeable_with(...): "
+                                            message=f"Attribute[{self.get_type_name()}].is_mergeable_with(...): "
                                             f"writing permissions without write_permissions permission is not allowed")
             return False
         return True
@@ -218,15 +231,15 @@ class Attribute:
                                       request_uuids=request_uuids, explanation=explanation):
             raise MergeException(f"cannot merge attributes that are not mergeable; self: {self} other: {other} explanation: {explanation}")
         merged = self.copy()
-        merged.permissions = Permissions.merge(permissions_a=self.permissions, permissions_b=other.permissions, overwrite=overwrite_permissions)
+        merged._permissions = Permissions.merge(permissions_a=self.get_permissions(), permissions_b=other.get_permissions(), overwrite=overwrite_permissions)
         return merged
 
     def set_default_permissions(self, default_permissions=None):
         Permissions.check(permissions=default_permissions)
-        if self.permissions is None:
-            self.permissions = default_permissions
+        if self.get_permissions() is None:
+            self._permissions = default_permissions
 
     def set_explicit_list_element(self, is_explicit_list_element=True):
-        if is_explicit_list_element and self.key is not None:
-            raise Exception(f"key of explicit list element must be none, is {self.key}")
-        self.is_explicit_list_element = is_explicit_list_element
+        if is_explicit_list_element and self.get_key() is not None:
+            raise Exception(f"key of explicit list element must be none, is {self.get_key()}")
+        self._is_explicit_list_element = is_explicit_list_element

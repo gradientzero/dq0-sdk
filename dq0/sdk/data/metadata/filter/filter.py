@@ -29,21 +29,21 @@ class Filter:
         filtered_attributes = []
         for attribute in attributes if attributes is not None else []:
             if Filter.attribute_matches(node_type_name=node_type_name, attribute=attribute, retain_attributes=retain_attributes):
-                if retain_attributes is not None and attribute.type_name == AttributeType.TYPE_NAME_LIST:
+                if retain_attributes is not None and attribute.get_type_name() == AttributeType.TYPE_NAME_LIST:
                     sub_retain_attributes = {key: value for key, value in [
-                        (None, retain_attributes[None][attribute.key]
+                        (None, retain_attributes[None][attribute.get_key()]
                          if None in retain_attributes and retain_attributes[None] is not None and isinstance(
-                             retain_attributes[None], dict) and attribute.key in retain_attributes[None] else None),
-                        (node_type_name, retain_attributes[node_type_name][attribute.key] if node_type_name is not None and node_type_name in
+                             retain_attributes[None], dict) and attribute.get_key() in retain_attributes[None] else None),
+                        (node_type_name, retain_attributes[node_type_name][attribute.get_key()] if node_type_name is not None and node_type_name in
                          retain_attributes and retain_attributes[node_type_name] is not
-                         None and isinstance(retain_attributes[node_type_name], dict) and attribute.key in retain_attributes[node_type_name] else None),
+                         None and isinstance(retain_attributes[node_type_name], dict) and attribute.get_key() in retain_attributes[node_type_name] else None),
                     ] if key is not None or value is not None}
                     if len(sub_retain_attributes) == 0:
                         sub_retain_attributes = None
-                    sub_filtered_attributes = Filter.filter_attributes(node_type_name=node_type_name, attributes=attribute.value,
+                    sub_filtered_attributes = Filter.filter_attributes(node_type_name=node_type_name, attributes=attribute.get_value(),
                                                                        retain_attributes=sub_retain_attributes)
                     if sub_filtered_attributes is not None:
-                        filtered_attributes.append(AttributeList(key=attribute.key, value=sub_filtered_attributes, permissions=attribute.permissions))
+                        filtered_attributes.append(AttributeList(key=attribute.get_key(), value=sub_filtered_attributes, permissions=attribute.get_permissions()))
                 else:
                     filtered_attributes.append(attribute)
         if len(filtered_attributes) == 0:
@@ -59,9 +59,9 @@ class Filter:
             if tmp_node_type_name is None or tmp_node_type_name == node_type_name:
                 if tmp_attributes_map is None:
                     return True
-                if attribute.key in tmp_attributes_map:
-                    tmp_attributes_value = tmp_attributes_map[attribute.key]
-                    if tmp_attributes_value is None or (attribute.type_name == AttributeType.TYPE_NAME_LIST and isinstance(
+                if attribute.get_key() in tmp_attributes_map:
+                    tmp_attributes_value = tmp_attributes_map[attribute.get_key()]
+                    if tmp_attributes_value is None or (attribute.get_type_name() == AttributeType.TYPE_NAME_LIST and isinstance(
                             tmp_attributes_value, dict)) or tmp_attributes_value == attribute.value:
                         return True
         return False
@@ -96,7 +96,7 @@ class Filter:
         for match_attribute_key, match_attribute_value in match_attributes.items() if match_attributes is not None else {}:
             found = False
             for tmp_attribute in attributes:
-                if match_attribute_key is None or match_attribute_key == tmp_attribute.key:
+                if match_attribute_key is None or match_attribute_key == tmp_attribute.get_key():
                     found = True
                     if match_attribute_value is not None and match_attribute_value != tmp_attribute.value:
                         return False

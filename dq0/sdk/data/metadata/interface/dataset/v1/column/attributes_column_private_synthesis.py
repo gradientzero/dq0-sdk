@@ -17,8 +17,8 @@ class AttributesColumnPrivateSynthesis(AttributesGroup):
 
     @discrete.setter
     def discrete(self, new_discrete):
-        if self.entity.data_type_name in ['boolean', 'datetime', 'int', 'string']:
-            raise Exception(f"data_type_name {self.entity.data_type_name} does not allow discrete")
+        if self.get_entity().get_data_type_name() in ['boolean', 'datetime', 'int', 'string']:
+            raise Exception(f"data_type_name {self.get_entity().get_data_type_name()} does not allow discrete")
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_BOOLEAN,
                                  key='discrete',
                                  value=new_discrete,
@@ -35,11 +35,11 @@ class AttributesColumnPrivateSynthesis(AttributesGroup):
 
     @min_step.setter
     def min_step(self, new_min_step):
-        if self.entity.data_type_name in ['boolean', 'datetime', 'string']:
-            raise Exception(f"data_type_name {self.entity.data_type_name} does not allow min_step")
-        if self.entity.data_type_name not in [AttributeType.TYPE_NAME_FLOAT, AttributeType.TYPE_NAME_INT]:
-            raise Exception(f"data_type_name {self.entity.data_type_name} does not match any allowed attribute type_name")
-        self.set_attribute_value(type_name=self.entity.data_type_name,
+        if self.get_entity().get_data_type_name() in ['boolean', 'datetime', 'string']:
+            raise Exception(f"data_type_name {self.get_entity().get_data_type_name()} does not allow min_step")
+        if self.get_entity().get_data_type_name() not in [AttributeType.TYPE_NAME_FLOAT, AttributeType.TYPE_NAME_INT]:
+            raise Exception(f"data_type_name {self.get_entity().get_data_type_name()} does not match any allowed attribute type_name")
+        self.set_attribute_value(type_name=self.get_entity().get_data_type_name(),
                                  key='min_step',
                                  value=new_min_step,
                                  permissions=DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids()))

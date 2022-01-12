@@ -115,15 +115,15 @@ class Node:
         for key, value in attributes_map.items() if attributes_map is not None else {}:
             tmp_attributes_list = None
             if key is None:
-                tmp_attributes_list = [tmp_attribute for tmp_attribute in attributes_list if tmp_attribute is not None and tmp_attribute.value == value]
+                tmp_attributes_list = [tmp_attribute for tmp_attribute in attributes_list if tmp_attribute is not None and tmp_attribute.get_value() == value]
             else:
-                tmp_attributes_list = [tmp_attribute for tmp_attribute in attributes_list if tmp_attribute is not None and tmp_attribute.key == key]
+                tmp_attributes_list = [tmp_attribute for tmp_attribute in attributes_list if tmp_attribute is not None and tmp_attribute.get_key() == key]
             if 0 < len(tmp_attributes_list):
                 tmp_attribute = tmp_attributes_list[0]
                 if isinstance(value, dict):
-                    if not Node.attributes_list_matches_map(attributes_list=tmp_attribute.value, attributes_map=value):
+                    if not Node.attributes_list_matches_map(attributes_list=tmp_attribute.get_value(), attributes_map=value):
                         return False
-                elif tmp_attribute.value != value:
+                elif tmp_attribute.get_value() != value:
                     return False
             else:
                 return False
@@ -298,14 +298,14 @@ class Node:
         if index < 0 and key is None and value is None:
             return default
         for tmp_index, tmp_attribute in enumerate(self._attributes if self._attributes is not None else []):
-            if (index < 0 or index == tmp_index) and (key is None or key == tmp_attribute.key) and (value is None or value == tmp_attribute.value):
+            if (index < 0 or index == tmp_index) and (key is None or key == tmp_attribute.get_key()) and (value is None or value == tmp_attribute.get_value()):
                 return tmp_attribute
         return default
 
     def add_attribute(self, attribute, index=-1):
         if attribute is None:
             raise Exception("attribute is none")
-        if self.get_attribute(index=index, key=attribute.key, value=attribute.value) is not None:
+        if self.get_attribute(index=index, key=attribute.get_key(), value=attribute.get_value()) is not None:
             raise Exception("duplicate attributes not allowed")
         if self._attributes is None:
             self._attributes = []
@@ -319,7 +319,7 @@ class Node:
         if index < 0 and key is None and value is None:
             raise Exception("attribute not found")
         for tmp_index, tmp_attribute in enumerate(self._attributes if self._attributes is not None else []):
-            if (index < 0 or index == tmp_index) and (key is None or key == tmp_attribute.key) and (value is None or value == tmp_attribute.value):
+            if (index < 0 or index == tmp_index) and (key is None or key == tmp_attribute.get_key()) and (value is None or value == tmp_attribute.get_value()):
                 del self._attributes[tmp_index]
                 return
         raise Exception("attribute not found")
