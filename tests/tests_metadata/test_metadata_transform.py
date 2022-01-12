@@ -39,45 +39,62 @@ def test_metadata_transform():
           value: 'tag2'
     child_nodes:
     - type_name: 'database'
+      attributes:
+      - type_name: 'list'
+        key: 'connector'
+        value:
+        - type_name: 'list'
+          key: 'header_columns'
+          value:
+          - type_name: 'string'
+            value: 'weight'
+          - type_name: 'string'
+            value: 'height'
+        - type_name: 'int'
+          key: 'header_row'
+          value: 0
+        - type_name: 'list'
+          key: 'na_values'
+          value:
+          - type_name: 'string'
+            key: 'weight'
+            value: '?'
+          - type_name: 'string'
+            key: 'height'
+            value: '??'
+        - type_name: 'string'
+          key: 'type_name'
+          value: 'csv'
+        - type_name: 'string'
+          key: 'uri'
+          value: 'user@db'
+        - type_name: 'boolean'
+          key: 'use_original_header'
+          value: false
+      - type_name: 'list'
+        key: 'data'
+        value:
+        - type_name: 'string'
+          key: 'name'
+          value: 'test_db'
       child_nodes:
       - type_name: 'schema'
+        attributes:
+        - type_name: 'list'
+          key: 'data'
+          value:
+          - type_name: 'string'
+            key: 'name'
+            value: 'test_sc'
         child_nodes:
         - type_name: 'table'
           attributes:
           - type_name: 'list'
-            key: 'connector'
-            value:
-            - type_name: 'list'
-              key: 'header_columns'
-              value:
-              - type_name: 'string'
-                value: 'weight'
-              - type_name: 'string'
-                value: 'height'
-            - type_name: 'int'
-              key: 'header_row'
-              value: 0
-            - type_name: 'list'
-              key: 'na_values'
-              value:
-              - type_name: 'string'
-                key: 'weight'
-                value: '?'
-              - type_name: 'string'
-                key: 'height'
-                value: '??'
-            - type_name: 'string'
-              key: 'type_name'
-              value: 'csv'
-            - type_name: 'string'
-              key: 'uri'
-              value: 'user@db'
-            - type_name: 'boolean'
-              key: 'use_original_header'
-              value: false
-          - type_name: 'list'
             key: 'data'
             value:
+            - type_name: 'string'
+              key: 'name'
+              value: 'test_tb'
             - type_name: 'int'
               key: 'rows'
               value: 2000
@@ -245,7 +262,7 @@ def test_metadata_transform():
               - type_name: 'int'
                 key: 'cardinality'
                 value: 123
-  specification: 'dataset_standard_2021120201'
+  specification: 'dataset_v1'
 '''
     user_user_uuid = '2dfe2aa3-7563-4cd5-9bbe-1b82add081fe'
     user_role_uuid = '2fd590a0-3e97-4230-bb40-3a5d6847f769'

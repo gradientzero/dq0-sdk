@@ -748,7 +748,7 @@ def test_combine_metadata():
           value: 'csv'
         - type_name: 'string'
           key: 'uri'
-          value: 'user3@db'
+          value: 'user1@db'
       - type_name: 'list'
         key: 'data'
         value:
@@ -832,35 +832,14 @@ def test_combine_metadata():
                                              dataset_specification=dataset_specification)
     metadata_merged_b = metadata_merged_a.merge_with(other=metadata3, overwrite_value=False, overwrite_permissions=False, request_uuids=owner_uuids,
                                                      dataset_specification=dataset_specification)
-
-    assert metadata_merged_b.dataset_node.get_child_node(
-        index=-1, attributes_map={'data': {'name': 'test_db_1'}}).child_nodes[0].get_child_node(
-        index=-1, attributes_map={'data': {'name': 'test_tab_1'}}).get_attribute(
-        index=-1, key='connector', value=None).get_attribute(
-        index=-1, key='uri', value='user1@db') is not None
-    assert metadata_merged_b.dataset_node.get_child_node(
-        index=-1, attributes_map={'data': {'name': 'test_db_2'}}).child_nodes[0].get_child_node(
-        index=-1, attributes_map={'data': {'name': 'test_tab_2'}}).get_attribute(
-        index=-1, key='data', value=None).get_attribute(
-        index=-1, key='rows', value=2000) is not None
-    assert metadata_merged_b.dataset_node.get_child_node(
-        index=-1, attributes_map={'data': {'name': 'test_db_2'}}).child_nodes[0].get_child_node(
-        index=-1, attributes_map={'data': {'name': 'test_tab_2'}}).get_attribute(
-        index=-1, key='differential_privacy', value=None).get_attribute(
-        index=-1, key='budget_epsilon', value=1001.0) is not None
-    assert metadata_merged_b.dataset_node.get_child_node(
-        index=-1, attributes_map={'data': {'name': 'test_db_1'}}).child_nodes[0].get_child_node(
-        index=-1, attributes_map={'data': {'name': 'test_tab_1'}}).get_attribute(
-        index=-1, key='private_sql', value=None).get_attribute(
-        index=-1, key='row_privacy', value=True) is not None
-    assert metadata_merged_b.dataset_node.get_child_node(
-        index=-1, attributes_map={'data': {'name': 'test_db_1'}}).child_nodes[0].get_child_node(
-        index=-1, attributes_map={'data': {'name': 'test_tab_3'}}).get_attribute(
-        index=-1, key='private_sql', value=None).get_attribute(
-        index=-1, key='row_privacy', value=False) is not None
-    assert metadata_merged_b.dataset_node.get_child_node(
-        index=-1, attributes_map={'data': {'name': 'test_db_2'}}).child_nodes[0].get_child_node(
-        index=-1, attributes_map={'data': {'name': 'test_tab_2'}}).get_child_node(
-        index=-1, attributes_map={'data': {'name': 'email'}}).get_attribute(
-        index=-1, key='data', value=None).get_attribute(
-        index=-1, key='data_type_name', value='string') is not None
+    m_interface = Interface(metadata=metadata_merged_b, role_uuids=role_uuids, dataset_specification=dataset_specification)
+    m_dataset = m_interface.dataset()
+    assert m_dataset.database(name='test_db_1').connector().uri == 'user1@db'
+    m_db_1_sc = m_dataset.database(name='test_db_1').schema()
+    assert m_db_1_sc.table(name='test_tab_1').private_sql().row_privacy
+    assert m_db_1_sc.table(name='test_tab_3').private_sql().row_privacy is not None
+    assert not m_db_1_sc.table(name='test_tab_3').private_sql().row_privacy
+    m_db_2_tb_2 = m_dataset.database(name='test_db_2').schema().table(name='test_tab_2')
+    assert m_db_2_tb_2.data().rows == 2000
+    assert m_db_2_tb_2.differential_privacy().budget_epsilon == 1001.0
+    assert m_db_2_tb_2.column(name='email').data().data_type_name == 'string'
