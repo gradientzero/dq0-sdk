@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from dq0.sdk.data.metadata.attribute.attribute_boolean import AttributeBoolean
 from dq0.sdk.data.metadata.attribute.attribute_datetime import AttributeDatetime
 from dq0.sdk.data.metadata.attribute.attribute_float import AttributeFloat
@@ -47,11 +48,7 @@ class AttributeFactory:
         raise Exception(f"no factory function configured for type_name {type_name}")
 
     @staticmethod
-    def verify_yaml_simple_and_get_type(yaml_simple_key, yaml_simple_value):
-        if yaml_simple_key is not None and not isinstance(yaml_simple_key, str):
-            raise Exception(f"yaml_simple_key is not of string type, is of type {type(yaml_simple_key)} instead")
-        if yaml_simple_value is None:
-            raise Exception("yaml_simple_value is None")
+    def get_type(yaml_simple_value):
         if yaml_simple_value is None:
             type_name = None
         elif isinstance(yaml_simple_value, bool):
@@ -70,6 +67,15 @@ class AttributeFactory:
             type_name = AttributeType.TYPE_NAME_STRING
         else:
             raise Exception(f"yaml_simple_value is of unknown type {type(yaml_simple_value)}")
+        return type_name
+
+    @staticmethod
+    def verify_yaml_simple_and_get_type(yaml_simple_key, yaml_simple_value):
+        if yaml_simple_key is not None and not isinstance(yaml_simple_key, str):
+            raise Exception(f"yaml_simple_key is not of string type, is of type {type(yaml_simple_key)} instead")
+        if yaml_simple_value is None:
+            raise Exception("yaml_simple_value is None")
+        type_name = AttributeFactory.get_type(yaml_simple_value=yaml_simple_value)
         if not AttributeType.is_valid_type_name(type_name=type_name):
             raise Exception(f"invalid type_name {type_name}")
         if yaml_simple_key is None and yaml_simple_value is None:

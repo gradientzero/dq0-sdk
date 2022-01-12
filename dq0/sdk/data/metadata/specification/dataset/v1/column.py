@@ -9,9 +9,9 @@ class Column:
     @staticmethod
     def apply_defaults(node, role_uuids=None):
         Node.check(node=node, allowed_type_names=None, allowed_permissions=None)
-        applied_attributes = Column.apply_defaults_to_attributes(attributes=node.attributes, role_uuids=role_uuids)
-        applied_permissions = DefaultPermissions.shared_node(role_uuids=role_uuids) if node.permissions is None else node.permissions.copy()
-        return Node(type_name=node.type_name, attributes=applied_attributes, child_nodes=None, permissions=applied_permissions)
+        applied_attributes = Column.apply_defaults_to_attributes(attributes=node.get_attributes(), role_uuids=role_uuids)
+        applied_permissions = DefaultPermissions.shared_node(role_uuids=role_uuids) if node.get_permissions() is None else node.get_permissions().copy()
+        return Node(type_name=node.get_type_name(), attributes=applied_attributes, child_nodes=None, permissions=applied_permissions)
 
     @staticmethod
     def apply_defaults_to_attributes(attributes, role_uuids=None):
@@ -35,22 +35,13 @@ class Column:
     @staticmethod
     def verify(node, role_uuids=None):
         Node.check(node=node, allowed_type_names=[NodeType.TYPE_NAME_COLUMN], allowed_permissions=DefaultPermissions.shared_node(role_uuids=role_uuids))
-        Column.verify_attributes(attributes=node.attributes, role_uuids=role_uuids)
-        Column.verify_child_nodes(child_nodes=node.child_nodes, role_uuids=role_uuids)
+        Column.verify_attributes(attributes=node.get_attributes(), role_uuids=role_uuids)
+        Column.verify_child_nodes(child_nodes=node.get_child_nodes(), role_uuids=role_uuids)
 
     @staticmethod
-    def verify_attributes(attributes, role_uuids=None):
-        owner_attribute = DefaultPermissions.owner_attribute(role_uuids=role_uuids)
-        shared_attribute = DefaultPermissions.shared_attribute(role_uuids=role_uuids)
-        analyst_attribute = DefaultPermissions.analyst_attribute(role_uuids=role_uuids)
-        Attribute.check_list(attribute_list=attributes, check_data={
-            'data': ([AttributeType.TYPE_NAME_LIST], shared_attribute),
-            'private_sql': ([AttributeType.TYPE_NAME_LIST], owner_attribute),
-            'private_sql_and_synthesis': ([AttributeType.TYPE_NAME_LIST], owner_attribute),
-            'private_synthesis': ([AttributeType.TYPE_NAME_LIST], owner_attribute),
-            'machine_learning': ([AttributeType.TYPE_NAME_LIST], shared_attribute),
-        }, required_keys={'data'})
+    def verify_data_attributes_and_get_data_type_name(attributes, role_uuids=None):
         data_type_name = None
+        shared_attribute = DefaultPermissions.shared_attribute(role_uuids=role_uuids)
         data_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'data'] if attributes is not None else []
         if 0 < len(data_attributes):
             Attribute.check_list(attribute_list=data_attributes[0].value, check_data={
@@ -64,6 +55,11 @@ class Column:
                 if data_attributes[0].value is not None else []
             if 0 < len(data_type_name_attributes):
                 data_type_name = data_type_name_attributes[0].value
+        return data_type_name
+
+    @staticmethod
+    def verify_private_sql_attributes(attributes, role_uuids=None):
+        owner_attribute = DefaultPermissions.owner_attribute(role_uuids=role_uuids)
         private_sql_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'private_sql'] if attributes is not None else []
         if 0 < len(private_sql_attributes):
             Attribute.check_list(attribute_list=private_sql_attributes[0].value, check_data={
@@ -82,6 +78,10 @@ class Column:
                     None: ([AttributeType.TYPE_NAME_DATETIME, AttributeType.TYPE_NAME_FLOAT, AttributeType.TYPE_NAME_INT, AttributeType.TYPE_NAME_STRING],
                            owner_attribute),
                 })
+
+    @staticmethod
+    def verify_private_sql_and_synthesis_attributes(attributes, role_uuids=None):
+        owner_attribute = DefaultPermissions.owner_attribute(role_uuids=role_uuids)
         private_sql_and_synthesis_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'private_sql_and_synthesis'] \
             if attributes is not None else []
         if 0 < len(private_sql_and_synthesis_attributes):
@@ -91,6 +91,10 @@ class Column:
                 'lower': ([AttributeType.TYPE_NAME_DATETIME, AttributeType.TYPE_NAME_FLOAT, AttributeType.TYPE_NAME_INT], owner_attribute),
                 'upper': ([AttributeType.TYPE_NAME_DATETIME, AttributeType.TYPE_NAME_FLOAT, AttributeType.TYPE_NAME_INT], owner_attribute),
             })
+
+    @staticmethod
+    def verify_private_synthesis_attributes(attributes, role_uuids=None):
+        owner_attribute = DefaultPermissions.owner_attribute(role_uuids=role_uuids)
         private_synthesis_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'private_synthesis'] \
             if attributes is not None else []
         if 0 < len(private_synthesis_attributes):
@@ -99,6 +103,10 @@ class Column:
                 'min_step': ([AttributeType.TYPE_NAME_FLOAT, AttributeType.TYPE_NAME_INT], owner_attribute),
                 'synthesizable': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
             })
+
+    @staticmethod
+    def verify_machine_learning_attributes(attributes, role_uuids=None):
+        analyst_attribute = DefaultPermissions.analyst_attribute(role_uuids=role_uuids)
         machine_learning_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.key == 'machine_learning'] \
             if attributes is not None else []
         if 0 < len(machine_learning_attributes):
@@ -106,6 +114,23 @@ class Column:
                 'is_feature': ([AttributeType.TYPE_NAME_BOOLEAN], analyst_attribute),
                 'is_target': ([AttributeType.TYPE_NAME_BOOLEAN], analyst_attribute),
             })
+
+    @staticmethod
+    def verify_attributes(attributes, role_uuids=None):
+        owner_attribute = DefaultPermissions.owner_attribute(role_uuids=role_uuids)
+        shared_attribute = DefaultPermissions.shared_attribute(role_uuids=role_uuids)
+        Attribute.check_list(attribute_list=attributes, check_data={
+            'data': ([AttributeType.TYPE_NAME_LIST], shared_attribute),
+            'private_sql': ([AttributeType.TYPE_NAME_LIST], owner_attribute),
+            'private_sql_and_synthesis': ([AttributeType.TYPE_NAME_LIST], owner_attribute),
+            'private_synthesis': ([AttributeType.TYPE_NAME_LIST], owner_attribute),
+            'machine_learning': ([AttributeType.TYPE_NAME_LIST], shared_attribute),
+        }, required_keys={'data'})
+        data_type_name = Column.verify_data_attributes_and_get_data_type_name(attributes=attributes, role_uuids=role_uuids)
+        Column.verify_private_sql_attributes(attributes=attributes, role_uuids=role_uuids)
+        Column.verify_private_sql_and_synthesis_attributes(attributes=attributes, role_uuids=role_uuids)
+        Column.verify_private_synthesis_attributes(attributes=attributes, role_uuids=role_uuids)
+        Column.verify_machine_learning_attributes(attributes=attributes, role_uuids=role_uuids)
         if data_type_name is None:
             raise Exception("attribute data_type_name is missing in column")
         if data_type_name == 'boolean':
@@ -400,5 +425,5 @@ class Column:
 
     @staticmethod
     def verify_child_nodes(child_nodes, role_uuids=None):
-        if child_nodes is not None:
-            raise Exception("child_nodes is not none")
+        if len(child_nodes) != 0:
+            raise Exception("column cannot have child nodes")

@@ -12,9 +12,9 @@ class Entity:
         if node is not None:
             if not isinstance(node, Node):
                 raise Exception(f"node is not of type Node, is of type {type(node)} instead")
-            if node.type_name != type_name:
-                raise Exception(f"node must have type_name {type_name}, has {node.type_name} instead")
-            permissions = node.permissions
+            if node.get_type_name() != type_name:
+                raise Exception(f"node must have type_name {type_name}, has {node.get_type_name()} instead")
+            permissions = node.get_permissions()
             data_attribute = node.get_attribute(key='data')
             if data_attribute is not None:
                 if not isinstance(data_attribute, AttributeList):
@@ -65,6 +65,9 @@ class Entity:
         self._node = node
         self._attribute_groups = {}
         self._child_entities = {}
+
+    def __len__(self):
+        return self._node.num_child_nodes() if self._node is not None else 0
 
     def get_role_uuids(self):
         return self._role_uuids
@@ -170,10 +173,10 @@ class Entity:
 
     def get_child_names(self):
         child_names = set()
-        for child_node in self._node.child_nodes if isinstance(self._node, Node) else []:
+        for child_node in self._node.get_child_nodes() if self._node is not None else []:
             child_names.add(Entity.name_of(node=child_node))
-        if len(child_names) != len(self._node.child_nodes):
-            raise Exception(f"length mismatch; child_names are not unique: {len(child_names)} != {len(self._node.child_nodes)}")
+        if len(child_names) != self._node.num_child_nodes():
+            raise Exception(f"length mismatch; child_names are not unique: {len(child_names)} != {len(self._node.num_child_nodes())}")
         return child_names
 
     def add_attribute(self, attribute):

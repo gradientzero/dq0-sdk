@@ -10,10 +10,10 @@ class Schema:
     @staticmethod
     def apply_defaults(node, role_uuids=None):
         Node.check(node=node, allowed_type_names=None, allowed_permissions=None)
-        applied_attributes = Schema.apply_defaults_to_attributes(attributes=node.attributes, role_uuids=role_uuids)
-        applied_child_nodes = Schema.apply_defaults_to_child_nodes(child_nodes=node.child_nodes, role_uuids=role_uuids)
-        applied_permissions = DefaultPermissions.shared_node(role_uuids=role_uuids) if node.permissions is None else node.permissions.copy()
-        return Node(type_name=node.type_name, attributes=applied_attributes, child_nodes=applied_child_nodes, permissions=applied_permissions)
+        applied_attributes = Schema.apply_defaults_to_attributes(attributes=node.get_attributes(), role_uuids=role_uuids)
+        applied_child_nodes = Schema.apply_defaults_to_child_nodes(child_nodes=node.get_child_nodes(), role_uuids=role_uuids)
+        applied_permissions = DefaultPermissions.shared_node(role_uuids=role_uuids) if node.get_permissions() is None else node.get_permissions().copy()
+        return Node(type_name=node.get_type_name(), attributes=applied_attributes, child_nodes=applied_child_nodes, permissions=applied_permissions)
 
     @staticmethod
     def apply_defaults_to_attributes(attributes, role_uuids=None):
@@ -33,7 +33,7 @@ class Schema:
     @staticmethod
     def apply_defaults_to_child_nodes(child_nodes, role_uuids=None):
         Node.check_list(node_list=child_nodes, allowed_type_names=None, allowed_permissions=None)
-        applied_child_nodes = [] if child_nodes is not None else None
+        applied_child_nodes = [] if len(child_nodes) != 0 else None
         for child_node in child_nodes if child_nodes is not None else []:
             applied_child_nodes.append(Table.apply_defaults(node=child_node, role_uuids=role_uuids))
         return applied_child_nodes
@@ -41,8 +41,8 @@ class Schema:
     @staticmethod
     def verify(node, role_uuids=None):
         Node.check(node=node, allowed_type_names=[NodeType.TYPE_NAME_SCHEMA], allowed_permissions=DefaultPermissions.shared_node(role_uuids=role_uuids))
-        Schema.verify_attributes(attributes=node.attributes, role_uuids=role_uuids)
-        Schema.verify_child_nodes(child_nodes=node.child_nodes, role_uuids=role_uuids)
+        Schema.verify_attributes(attributes=node.get_attributes(), role_uuids=role_uuids)
+        Schema.verify_child_nodes(child_nodes=node.get_child_nodes(), role_uuids=role_uuids)
 
     @staticmethod
     def verify_attributes(attributes, role_uuids=None):

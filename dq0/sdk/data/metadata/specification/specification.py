@@ -29,13 +29,13 @@ class Specification:
     def apply_defaults(self, node):
         if node is None:
             raise Exception("node is none")
-        if self.node_type_name != node.type_name:
-            raise Exception(f"node type names do not match: {self.node_type_name} != {node.type_name}")
+        if self.node_type_name != node.get_type_name():
+            raise Exception(f"node type names do not match: {self.node_type_name} != {node.get_type_name()}")
         return self.apply_defaults_func(node=node, role_uuids=self.role_uuids)
 
     def verify(self, node):
         if node is None:
             raise Exception("node is none")
-        if self.node_type_name != node.type_name:
-            raise Exception(f"node type names do not match: {self.node_type_name} != {node.type_name}")
+        if self.node_type_name != node.get_type_name():
+            raise Exception(f"node type names do not match: {self.node_type_name} != {node.get_type_name()}")
         self.verify_func(node=node, role_uuids=self.role_uuids)

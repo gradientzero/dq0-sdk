@@ -1,5 +1,5 @@
-from dq0.sdk.data.metadata.attribute.attribute_type import AttributeType
 from dq0.sdk.data.metadata.attribute.attribute import Attribute
+from dq0.sdk.data.metadata.attribute.attribute_type import AttributeType
 from dq0.sdk.data.metadata.explanation import Explanation
 from dq0.sdk.data.metadata.merge_exception import MergeException
 from dq0.sdk.data.metadata.permissions.action import Action

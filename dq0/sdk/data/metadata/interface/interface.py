@@ -26,6 +26,11 @@ class Interface(Entity):
         self.dataset_entity = None
 
     def dataset(self, name=None):
+        """
+        many more lines
+        of informative
+        comments
+        """
         if name is None:
             if self.metadata.dataset_node is None:
                 raise Exception("get without name may only work for existing dataset node")
@@ -52,8 +57,8 @@ class Interface(Entity):
     def add_child_node(self, child_node):
         if not isinstance(child_node, Node):
             raise Exception(f"child_node is not of type Node, is of type {type(child_node)} instead")
-        if child_node.type_name != NodeType.TYPE_NAME_DATASET:
-            raise Exception(f"child_node.type_name mismatch: {child_node.type_name} != {NodeType.TYPE_NAME_DATASET}")
+        if child_node.get_type_name() != NodeType.TYPE_NAME_DATASET:
+            raise Exception(f"child_node.type_name mismatch: {child_node.get_type_name()} != {NodeType.TYPE_NAME_DATASET}")
         self.metadata.dataset_node = child_node
 
     def remove_child_node(self, name):

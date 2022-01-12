@@ -7,9 +7,8 @@ All rights reserved
 
 import os
 
-from dq0.sdk.data.metadata.filter.filter_machine_learning import FilterMachineLearning
+from dq0.sdk.data.metadata.interface.interface import Interface
 from dq0.sdk.data.metadata.metadata import Metadata
-from dq0.sdk.data.metadata.utils.utils import Utils as MetaUtils
 from dq0.sdk.data.text.csv import CSV
 
 import numpy as np
@@ -30,35 +29,42 @@ def test_csv_001():
           'name': 'Adult Census Income'
       child_nodes:
         database:
+          attributes:
+            'connector':
+              'header_columns':
+              - 'lastname'
+              - 'firstname'
+              - 'age'
+              - 'workclass'
+              - 'fnlwgt'
+              - 'education'
+              - 'education-num'
+              - 'marital-status'
+              - 'occupation'
+              - 'relationship'
+              - 'race'
+              - 'sex'
+              - 'capital-gain'
+              - 'capital-loss'
+              - 'hours-per-week'
+              - 'native-country'
+              - 'income'
+              'skipinitialspace': true
+              'type_name': 'csv'
+              'uri': '../dq0-sdk/tests/test_sources/adult_with_rand_names.csv'
+              'use_original_header': false
+            'data':
+              'name': 'Adult Census Income DB'
           child_nodes:
             schema:
+              attributes:
+                'data':
+                  'name': 'Adult Census Income DB Schema'
               child_nodes:
                 table:
                   attributes:
-                    'connector':
-                      'header_columns':
-                      - 'lastname'
-                      - 'firstname'
-                      - 'age'
-                      - 'workclass'
-                      - 'fnlwgt'
-                      - 'education'
-                      - 'education-num'
-                      - 'marital-status'
-                      - 'occupation'
-                      - 'relationship'
-                      - 'race'
-                      - 'sex'
-                      - 'capital-gain'
-                      - 'capital-loss'
-                      - 'hours-per-week'
-                      - 'native-country'
-                      - 'income'
-                      'skipinitialspace': true
-                      'type_name': 'csv'
-                      'uri': '../dq0-sdk/tests/test_sources/adult_with_rand_names.csv'
-                      'use_original_header': false
                     'data':
+                      'name': 'Adult Census Income DB Table'
                       'rows': 51607
                     'differential_privacy':
                       'privacy_column': 'fnlwgt'
@@ -256,7 +262,7 @@ def test_csv_001():
                           'cardinality': 9
                         'private_synthesis':
                           'synthesizable': true
-  specification: 'dataset_standard_2021120201'
+  specification: 'dataset_v1'
 '''  # noqa: E501
 
     na_values = {
@@ -271,18 +277,16 @@ def test_csv_001():
         f.write(content)
 
     # load metadata
-    metadata, _, _ = Metadata.from_yaml_file(filename='test.yaml')
-
-    # get ml_dict
-    uri = metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(key='connector').get_attribute(key='uri').value
-    meta_ml = metadata.filter(dataset_filter_func=FilterMachineLearning.filter)
+    metadata, specifications = Metadata.from_yaml_file(filename='test.yaml')
+    dataset_specification = specifications['dataset'] if 'dataset' in specifications else None
+    m_interface = Interface(metadata=metadata, dataset_specification=dataset_specification)
 
     # get data_source instance and load data
-    data_source = CSV(path=uri, meta_ml=meta_ml)
+    data_source = CSV(meta_database=m_interface.dataset().database())
     df = data_source.read()
 
     # test dataframe has correct header
-    header_columns = MetaUtils.get_header_columns_from_meta(metadata=metadata)
+    header_columns = m_interface.dataset().database().connector.header_columns
     header_columns_df = list(df.columns.values)
     header_columns_diff = [i for i in header_columns + header_columns_df if i not in header_columns or i not in header_columns_df]
     assert len(header_columns_diff) == 0

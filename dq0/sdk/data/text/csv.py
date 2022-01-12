@@ -23,7 +23,7 @@ class CSV(Source):
     """
 
     def __init__(self, meta_database):
-        meta_connector = meta_database.connector()
+        meta_connector = meta_database.connector
         if meta_connector.type_name != 'csv':
             raise Exception(f"type_name {meta_connector.type_name} does not match csv")
         uri = meta_connector.uri if isinstance(meta_connector.uri, str) else ''
@@ -52,7 +52,7 @@ class CSV(Source):
         skipinitialspace = meta_connector.skipinitialspace
         self.skipinitialspace = False if skipinitialspace is None else skipinitialspace
 
-        meta_table = meta_database.table(index=0)
+        meta_table = meta_database.schema().table(index=0)
         self.feature_cols, self.target_cols = MetaUtils.get_feature_target_cols(meta_table=meta_table)
         self.col_types = MetaUtils.get_col_types(meta_table=meta_table)
 

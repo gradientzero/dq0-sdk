@@ -53,11 +53,7 @@ class NodeFactory:
         return Node(type_name=type_name, attributes=attributes, child_nodes=child_nodes, permissions=permissions)
 
     @staticmethod
-    def verify_yaml_simple_and_get_type_name(yaml_simple):
-        if not isinstance(yaml_simple, dict):
-            raise Exception(f"yaml_simple is not of type dict, is of type {type(yaml_simple)} instead")
-        if len(yaml_simple) == 0:
-            raise Exception("yaml_simple is empty")
+    def get_type_name_and_indexes(yaml_simple):
         type_name = None
         indexes = set()
         for tmp_key in yaml_simple:
@@ -76,6 +72,15 @@ class NodeFactory:
             if index in indexes:
                 raise Exception(f"duplicate indexes in yaml_simple, found {index} multiple times")
             indexes.add(index)
+        return type_name, indexes
+
+    @staticmethod
+    def verify_yaml_simple_and_get_type_name(yaml_simple):
+        if not isinstance(yaml_simple, dict):
+            raise Exception(f"yaml_simple is not of type dict, is of type {type(yaml_simple)} instead")
+        if len(yaml_simple) == 0:
+            raise Exception("yaml_simple is empty")
+        type_name, indexes = NodeFactory.get_type_name_and_indexes(yaml_simple=yaml_simple)
         if not NodeType.is_valid_type_name(type_name):
             raise Exception(f"invalid type_name {type_name}")
         index = 0

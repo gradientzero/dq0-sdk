@@ -19,9 +19,10 @@ class Filter:
         Node.check(node=node, allowed_type_names=None, allowed_permissions=None)
         if not Filter.node_matches(node=node, retain_nodes=retain_nodes):
             return None
-        filtered_attributes = Filter.filter_attributes(node_type_name=node.type_name, attributes=node.attributes, retain_attributes=retain_attributes)
-        filtered_child_nodes = Filter.filter_nodes(nodes=node.child_nodes, retain_nodes=retain_nodes, retain_attributes=retain_attributes)
-        return Node(type_name=node.type_name, attributes=filtered_attributes, child_nodes=filtered_child_nodes, permissions=node.permissions)
+        filtered_attributes = Filter.filter_attributes(node_type_name=node.get_type_name(), attributes=node.get_attributes(),
+                                                       retain_attributes=retain_attributes)
+        filtered_child_nodes = Filter.filter_nodes(nodes=node.get_child_nodes(), retain_nodes=retain_nodes, retain_attributes=retain_attributes)
+        return Node(type_name=node.get_type_name(), attributes=filtered_attributes, child_nodes=filtered_child_nodes, permissions=node.get_permissions())
 
     @staticmethod
     def filter_attributes(node_type_name, attributes, retain_attributes):
@@ -81,10 +82,10 @@ class Filter:
         if retain_nodes is None:
             return True
         for node_type_name, attributes_map in retain_nodes.items() if retain_nodes is not None else {}:
-            if node_type_name is None or node_type_name == node.type_name:
+            if node_type_name is None or node_type_name == node.get_type_name():
                 if attributes_map is None:
                     return True
-                return Filter.attributes_match(attributes=node.attributes, match_attributes=attributes_map)
+                return Filter.attributes_match(attributes=node.get_attributes(), match_attributes=attributes_map)
         return False
 
     # match_attributes is a map[str, _] of attribute_keys to attribute_values
