@@ -279,14 +279,14 @@ def prepare_yaml_file():
 
 def interface_from_file():
     role_uuids = prepare_role_uuids()
-    metadata, specifications = Metadata.from_yaml_file(filename='test.yaml', role_uuids=role_uuids)
-    return Interface(metadata=metadata, role_uuids=role_uuids, dataset_specification=specifications['dataset'])
+    metadata = Metadata.from_yaml_file(filename='test.yaml', role_uuids=role_uuids)
+    return Interface(metadata=metadata, role_uuids=role_uuids)
 
 
 def interface_from(yaml_content):
     role_uuids = prepare_role_uuids()
-    metadata, specifications = Metadata.from_yaml(yaml_content=yaml_content, role_uuids=role_uuids)
-    return Interface(metadata=metadata, role_uuids=role_uuids, dataset_specification=specifications['dataset'])
+    metadata = Metadata.from_yaml(yaml_content=yaml_content, role_uuids=role_uuids)
+    return Interface(metadata=metadata, role_uuids=role_uuids)
 
 
 def teardown_yaml_file():
@@ -384,7 +384,7 @@ def test_metadata_change():
     m_interface.dataset().database().schema().table().differential_privacy.budget_epsilon = 1234.0
 
     # save and reload metadata
-    yaml_content = m_interface.metadata.to_yaml(request_uuids=owner_uuids)
+    yaml_content = m_interface.get_metadata().to_yaml(request_uuids=owner_uuids)
     m_interface = interface_from(yaml_content=yaml_content)
 
     # test again
@@ -400,7 +400,7 @@ def test_metadata_change():
     m_dataset.database().schema().table().differential_privacy.budget_epsilon = 5678.0
 
     # save and reload metadata
-    yaml_content = m_interface.metadata.to_yaml(request_uuids=owner_uuids)
+    yaml_content = m_interface.get_metadata().to_yaml(request_uuids=owner_uuids)
     m_interface = interface_from(yaml_content=yaml_content)
 
     # test again
@@ -464,7 +464,7 @@ def check_selectable(metadata_dct):
 def test_dict():
     owner_uuids = prepare_role_uuids()[DefaultPermissions.OWNER_NAME]
     m_interface = prepare_interface()
-    metadata_dct = m_interface.metadata.to_dict(request_uuids=owner_uuids)
+    metadata_dct = m_interface.get_metadata().to_dict(request_uuids=owner_uuids)
     check_ds_name(metadata_dct=metadata_dct)
     check_row_privacy(metadata_dct=metadata_dct)
     check_selectable(metadata_dct=metadata_dct)
@@ -517,7 +517,7 @@ def check_cardinality(column_email_dct):
 def test_dict_sm():
     owner_uuids = prepare_role_uuids()[DefaultPermissions.OWNER_NAME]
     m_interface = prepare_interface()
-    metadata_sm = m_interface.metadata.filter(dataset_filter_func=FilterSmartNoise.filter)
+    metadata_sm = m_interface.get_metadata().filter(filter_funcs={'dataset': FilterSmartNoise.filter})
     metadata_sm_dct = metadata_sm.to_dict(request_uuids=owner_uuids)
     check_row_privacy(metadata_dct=metadata_sm_dct)
     column_weight_dct, column_email_dct = get_columns_weight_and_email(metadata_sm_dct=metadata_sm_dct)
@@ -594,7 +594,7 @@ def check_connector(metadata_ml_dct):
 def test_dict_ml():
     owner_uuids = prepare_role_uuids()[DefaultPermissions.OWNER_NAME]
     m_interface = prepare_interface()
-    metadata_ml = m_interface.metadata.filter(dataset_filter_func=FilterMachineLearning.filter)
+    metadata_ml = m_interface.get_metadata().filter(filter_funcs={'dataset': FilterMachineLearning.filter})
     metadata_ml_dct = metadata_ml.to_dict(request_uuids=owner_uuids)
     check_sample_max_ids(metadata_ml_dct=metadata_ml_dct)
     column_weight_dct = get_column_weight(metadata_ml_dct=metadata_ml_dct)
@@ -888,11 +888,11 @@ def test_combine_metadata():
     m_interface_2 = interface_from(yaml_content=content2)
     m_interface_3 = interface_from(yaml_content=content3)
 
-    metadata_merged_a = m_interface_1.metadata.merge_with(other=m_interface_2.metadata, overwrite_value=False, overwrite_permissions=False,
-                                                          request_uuids=owner_uuids, dataset_specification=m_interface_2.dataset_specification)
-    metadata_merged_b = metadata_merged_a.merge_with(other=m_interface_3.metadata, overwrite_value=False, overwrite_permissions=False,
-                                                     request_uuids=owner_uuids, dataset_specification=m_interface_3.dataset_specification)
-    m_interface = Interface(metadata=metadata_merged_b, role_uuids=role_uuids, dataset_specification=m_interface_1.dataset_specification)
+    metadata_merged_a = m_interface_1.get_metadata().merge_with(other=m_interface_2.get_metadata(), overwrite_value=False, overwrite_permissions=False,
+                                                                request_uuids=owner_uuids)
+    metadata_merged_b = metadata_merged_a.merge_with(other=m_interface_3.get_metadata(), overwrite_value=False, overwrite_permissions=False,
+                                                     request_uuids=owner_uuids)
+    m_interface = Interface(metadata=metadata_merged_b, role_uuids=role_uuids)
     m_dataset = m_interface.dataset()
     assert m_dataset.database(name='test_db_1').connector.uri == 'user1@db'
     m_db_1_sc = m_dataset.database(name='test_db_1').schema()

@@ -276,14 +276,14 @@ def test_metadata_transform():
     }
 
     # load metadata
-    metadata, _ = Metadata.from_yaml(yaml_content=content, role_uuids=role_uuids)
+    metadata = Metadata.from_yaml(yaml_content=content, role_uuids=role_uuids)
 
     # test to_yaml
-    metadata2, _ = Metadata.from_yaml(yaml_content=metadata.to_yaml(request_uuids=owner_uuids), role_uuids=role_uuids)
+    metadata2 = Metadata.from_yaml(yaml_content=metadata.to_yaml(request_uuids=owner_uuids), role_uuids=role_uuids)
     assert repr(metadata) == repr(metadata2)
 
     # test str
-    metadata3, _ = Metadata.from_yaml(yaml_content=metadata.__str__(request_uuids=owner_uuids), role_uuids=role_uuids)
+    metadata3 = Metadata.from_yaml(yaml_content=metadata.__str__(request_uuids=owner_uuids), role_uuids=role_uuids)
     assert repr(metadata) == repr(metadata3)
 
     # test repr

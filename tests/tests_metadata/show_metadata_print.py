@@ -272,7 +272,7 @@ def show_metadata_print():
     print(content)
 
     # load metadata
-    metadata, _ = Metadata.from_yaml(yaml_content=content, role_uuids=role_uuids)
+    metadata = Metadata.from_yaml(yaml_content=content, role_uuids=role_uuids)
 
     print("\n\n+==========+==========+==========+==========+==========+==========+==========+==========+==========+\n\nTO_YAML():\n\n+----------+\n\n")
 

@@ -8,40 +8,46 @@ from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermi
 
 
 class Interface(Entity):
-    def __init__(self, metadata, role_uuids=None, dataset_specification=None, other_specification=None):
+    @staticmethod
+    def check_specifications(metadata):
+        for root_key in Metadata.ROOT_KEYS:
+            node = metadata.get_node(root_key=root_key)
+            if node is not None:
+                specification = metadata.get_specification(root_key=root_key)
+                if specification is None:
+                    raise Exception(f"specification for {root_key} is missing")
+                specification.verify(node=node)
+
+    def __init__(self, metadata, role_uuids=None):
         super().__init__(name='metadata', type_name='Metadata', parent=self, role_uuids=role_uuids)
         if not isinstance(metadata, Metadata):
             raise Exception(f"metadata is not of type Metadata, is of type {type(metadata)} instead")
-        if metadata.dataset_node is not None and dataset_specification is None:
-            raise Exception("dataset_specification missing")
-        self.dataset_specification = dataset_specification
-        if dataset_specification is not None:
-            dataset_specification.verify(node=metadata.dataset_node)
-        if metadata.other_node is not None and other_specification is None:
-            raise Exception("other_specification missing")
-        self.other_specification = other_specification
-        if other_specification is not None:
-            other_specification.verify(node=metadata.other_node)
-        self.metadata = metadata
-        self._dataset_entity = None
+        Interface.check_specifications(metadata=metadata)
+        self._metadata = metadata
+        self._entities = {}
+
+    def get_metadata(self):
+        return self._metadata
 
     def dataset(self, name=None):
+        node = self._metadata.get_node(root_key='dataset')
         if name is None:
-            if self.metadata.dataset_node is None:
+            if node is None:
                 raise Exception("get without name may only work for existing dataset node")
-            name = Entity.name_of(node=self.metadata.dataset_node)
-        if self._dataset_entity is None:
-            if isinstance(self.dataset_specification, SpecificationV1):
-                self._dataset_entity = Dataset(name=name, parent=self,
-                                               permissions=DefaultPermissions.shared_node(role_uuids=self.get_role_uuids()),
-                                               data_permissions=DefaultPermissions.shared_attribute(role_uuids=self.get_role_uuids()),
-                                               name_permissions=DefaultPermissions.shared_attribute(role_uuids=self.get_role_uuids()),
-                                               role_uuids=self.get_role_uuids(), node=self.metadata.dataset_node)
+            name = Entity.name_of(node=node)
+        if 'dataset' not in self._entities:
+            specification = self._metadata.get_specification(root_key='dataset')
+            if isinstance(specification, SpecificationV1):
+                self._entities['dataset'] = Dataset(name=name, parent=self,
+                                                    permissions=DefaultPermissions.shared_node(role_uuids=self.get_role_uuids()),
+                                                    data_permissions=DefaultPermissions.shared_attribute(role_uuids=self.get_role_uuids()),
+                                                    name_permissions=DefaultPermissions.shared_attribute(role_uuids=self.get_role_uuids()),
+                                                    role_uuids=self.get_role_uuids(), node=node)
             else:
                 raise Exception("no interface for specified version available")
-        if name != self._dataset_entity.get_name():
-            raise Exception(f"name mismatch: {name} != {self._dataset_entity.get_name()}")
-        return self._dataset_entity
+        if name != self._entities['dataset'].get_name():
+            raise Exception(f"name mismatch: {name} != {self._entities['dataset'].get_name()}")
+        return self._entities['dataset']
 
     def create(self):
         pass
@@ -54,22 +60,19 @@ class Interface(Entity):
             raise Exception(f"child_node is not of type Node, is of type {type(child_node)} instead")
         if child_node.get_type_name() != NodeType.TYPE_NAME_DATASET:
             raise Exception(f"child_node.get_type_name() mismatch: {child_node.get_type_name()} != {NodeType.TYPE_NAME_DATASET}")
-        self.metadata.dataset_node = child_node
+        self._metadata.set_node(root_key='dataset', node=child_node)
 
     def remove_child_node(self, name):
-        if self.metadata.dataset_node is None:
+        if self._metadata.get_node(root_key='dataset') is None:
             return
-        self.metadata.dataset_node = None
-        if self._dataset_entity is not None:
-            if name != self._dataset_entity.get_name():
-                raise Exception(f"name mismatch: {name} != {self._dataset_entity.get_name()}")
-            self._dataset_entity.wipe()
+        self._metadata.delete_node(root_key='dataset')
+        if self._entities['dataset'] is not None:
+            if name != self._entities['dataset'].get_name():
+                raise Exception(f"name mismatch: {name} != {self._entities['dataset'].get_name()}")
+            self._entities['dataset'].wipe()
 
     def set_name(self, old_name, new_name):
         pass
 
     def set_child_name(self, old_name, new_name):
-        if not isinstance(old_name, str):
-            raise Exception(f"old_name {old_name} is not of type str, is of type {type(old_name)} instead")
-        if not isinstance(new_name, str):
-            raise Exception(f"new_name {new_name} is not of type str, is of type {type(new_name)} instead")
+        pass

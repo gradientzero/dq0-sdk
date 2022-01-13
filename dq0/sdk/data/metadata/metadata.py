@@ -8,9 +8,9 @@ from dq0.sdk.data.metadata.specification.specification_factory import Specificat
 import yaml
 
 
-# The other_node and other_specifications are not used yet and may be removed or replaced.
-# They are here to demonstrate how to implement another root node next to the dataset root.
 class Metadata:
+    ROOT_KEYS = {'dataset'}
+
     @staticmethod
     def from_yaml_file(filename, role_uuids=None):
         if not os.path.isfile(filename):
@@ -21,17 +21,17 @@ class Metadata:
     @staticmethod
     def from_yaml(yaml_content, role_uuids=None):
         yaml_dict = yaml.load(stream=yaml_content, Loader=yaml.FullLoader)
-        dataset_dict = yaml_dict.pop('meta_dataset', None)
-        dataset_node, dataset_specification = Metadata.from_yaml_dict(yaml_dict=dataset_dict, role_uuids=role_uuids)
-        other_dict = yaml_dict.pop('meta_other', None)
-        other_node, other_specification = Metadata.from_yaml_dict(yaml_dict=other_dict, role_uuids=role_uuids)
-        metadata = Metadata(dataset_node=dataset_node, other_node=other_node,
-                            dataset_specification=dataset_specification, other_specification=other_specification)
-        specifications = {
-            'dataset': dataset_specification,
-            'other': other_specification,
-        }
-        return metadata, specifications
+        nodes = {}
+        specifications = {}
+        for root_key in Metadata.ROOT_KEYS:
+            yaml_key = f"meta_{root_key}"
+            if yaml_key not in yaml_dict:
+                continue
+            node_dict = yaml_dict.pop(yaml_key, None)
+            node, specification = Metadata.from_yaml_dict(yaml_dict=node_dict, role_uuids=role_uuids)
+            nodes[root_key] = node
+            specifications[root_key] = specification
+        return Metadata(nodes=nodes, specifications=specifications)
 
     @staticmethod
     def from_yaml_dict(yaml_dict, role_uuids=None):
@@ -43,114 +43,145 @@ class Metadata:
         specification = SpecificationFactory.from_specification_string(specification_string=specification_string, role_uuids=role_uuids)
         return NodeFactory.from_yaml_content(yaml_content=node_dict, format_type=format_type, force_list=False), specification
 
-    def __init__(self, dataset_node=None, other_node=None, dataset_specification=None, other_specification=None):
-        if dataset_node is not None and not isinstance(dataset_node, Node):
-            raise Exception(f"dataset_node is not of type Node, is of type {type(dataset_node)} instead")
-        if other_node is not None and not isinstance(other_node, Node):
-            raise Exception(f"other_node is not of type Node, is of type {type(other_node)} instead")
-        self.dataset_node = dataset_node
-        self.other_node = other_node
-        self.dataset_specification = None
-        self.other_specification = None
-        if dataset_specification is not None:
-            Specification.check(specification=dataset_specification)
-            self.dataset_node = dataset_specification.apply_defaults(node=self.dataset_node)
-            dataset_specification.verify(node=self.dataset_node)
-            self.dataset_specification = dataset_specification
-        if other_specification is not None:
-            Specification.check(specification=other_specification)
-            self.other_node = other_specification.apply_defaults(node=self.other_node)
-            other_specification.verify(node=self.other_node)
-            self.other_specification = other_specification
+    @staticmethod
+    def check_nodes(nodes):
+        if not isinstance(nodes, dict):
+            raise Exception(f"nodes is not of type dict, is of type {type(nodes)} instead")
+        for key, node in nodes.items():
+            if key not in Metadata.ROOT_KEYS:
+                raise Exception(f"key {key} is not in root keys {Metadata.ROOT_KEYS}")
+            if not isinstance(node, Node):
+                raise Exception(f"node is not of type Node, is of type {type(node)} instead")
+
+    @staticmethod
+    def check_specifications(specifications, none_ok=False):
+        if not isinstance(specifications, dict):
+            raise Exception(f"specifications is not of type dict, is of type {type(specifications)} instead")
+        for key, specification in specifications.items():
+            if key not in Metadata.ROOT_KEYS:
+                raise Exception(f"key {key} is not in root keys {Metadata.ROOT_KEYS}")
+            if none_ok and specification is None:
+                continue
+            if not isinstance(specification, Specification):
+                raise Exception(f"specification is not of type Specification, is of type {type(specification)} instead")
+            Specification.check(specification=specification)
+
+    @staticmethod
+    def check_apply_verify(nodes, specifications):
+        Metadata.check_nodes(nodes=nodes)
+        Metadata.check_specifications(specifications=specifications)
+        applied_nodes = {}
+        for key, node in nodes.items():
+            if key in specifications:
+                applied_nodes[key] = specifications[key].apply_defaults(node=node)
+                specifications[key].verify(node=applied_nodes[key])
+            else:
+                applied_nodes[key] = node
+        return applied_nodes
+
+    @staticmethod
+    def merge_specifications(specifications_a, specifications_b):
+        # b overwrites a; explicit none in b removes specification
+        Metadata.check_specifications(specifications=specifications_a, none_ok=False)
+        if specifications_b is None:
+            return specifications_a
+        Metadata.check_specifications(specifications=specifications_b, none_ok=True)
+        merged_specifications = {}
+        for root_key in Metadata.ROOT_KEYS:
+            if root_key not in specifications_b:
+                if root_key in specifications_a:
+                    merged_specifications[root_key] = specifications_a[root_key]
+            elif specifications_b[root_key] is not None:
+                merged_specifications[root_key] = specifications_b[root_key]
+        return merged_specifications
+
+    def __init__(self, nodes, specifications={}):
+        self._nodes = Metadata.check_apply_verify(nodes=nodes, specifications=specifications)
+        self._specifications = specifications
 
     def __str__(self, request_uuids=set()):
         return_string = ''
-        if self.dataset_node is not None:
-            return_string += "meta_dataset:\n  " + self.dataset_str(request_uuids=request_uuids).replace('\n', "\n  ")
-        if self.dataset_node is not None and self.other_node is not None:
-            return_string += '\n'
-        if self.other_node is not None:
-            return_string += "meta_other:\n  " + self.other_str(request_uuids=request_uuids).replace('\n', "\n  ")
+        count = 0
+        for root_key in sorted(Metadata.ROOT_KEYS):
+            if root_key in self._nodes:
+                count += 1
+                return_string += f"meta_{root_key}" + ":\n  " + self.root_node_str(root_key=root_key, request_uuids=request_uuids).replace('\n', "\n  ")
+                if count < len(self._nodes):
+                    return_string += '\n'
         return return_string
 
     def __repr__(self):
-        return "Metadata(dataset_node=" + repr(self.dataset_node) + ", other_node=" + repr(self.other_node) + \
-            ", dataset_specification=None, other_specification=None)"
+        nodes_repr = '{'
+        for root_key in sorted(Metadata.ROOT_KEYS):
+            if root_key in self._nodes:
+                nodes_repr += f"'{root_key}': {repr(self._nodes[root_key])}, "
+        nodes_repr += '}'
+        return f"Metadata(nodes={nodes_repr}, specifications={{}})"
 
-    def dataset_str(self, request_uuids=set()):
+    def get_node(self, root_key):
+        if root_key not in self._nodes:
+            return None
+        return self._nodes[root_key]
+
+    def get_specification(self, root_key):
+        if root_key not in self._specifications:
+            return None
+        return self._specifications[root_key]
+
+    def set_node(self, root_key, node, specification=None):
+        if root_key not in Metadata.ROOT_KEYS:
+            raise Exception(f"root_key {root_key} is not in root keys {Metadata.ROOT_KEYS}")
+        if not isinstance(node, Node):
+            raise Exception(f"node is not of type Node, is of type {type(node)} instead")
+        if isinstance(specification, Specification):
+            self._specifications[root_key] = specification
+        if root_key in self._specifications:
+            self._specifications[root_key].verify(node=node)
+        self._nodes[root_key] = node
+
+    def delete_node(self, root_key):
+        if root_key not in Metadata.ROOT_KEYS:
+            raise Exception(f"root_key {root_key} is not in root keys {Metadata.ROOT_KEYS}")
+        if root_key in self._nodes:
+            del self._nodes[root_key]
+
+    def root_node_str(self, root_key, request_uuids=set()):
         return_string = f"format: {NodeFactory.FORMAT_TYPE_SIMPLE}"
-        node_string = self.dataset_node.__str__(request_uuids=request_uuids)
+        node_string = self._nodes[root_key].__str__(request_uuids=request_uuids)
         if node_string is not None:
             return_string += "\nnode:\n  " + node_string.replace('\n', "\n  ")
-        if self.dataset_specification is not None:
-            return_string += '\n' + f"specification: '{self.dataset_specification}'"
+        if root_key in self._specifications:
+            return_string += '\n' + f"specification: '{self._specifications[root_key]}'"
         return return_string
 
-    def other_str(self, request_uuids=set()):
-        return_string = f"format: {NodeFactory.FORMAT_TYPE_SIMPLE}"
-        node_string = self.other_node.__str__(request_uuids=request_uuids)
-        if node_string is not None:
-            return_string += "\nnode:\n  " + node_string.replace('\n', "\n  ")
-        if self.other_specification is not None:
-            return_string += '\n' + f"specification: '{self.other_specification}'"
-        return return_string
+    def apply_defaults_and_verify(self, specifications=None):
+        specifications = Metadata.merge_specifications(specifications_a=self._specifications, specifications_b=specifications)
+        copied_nodes = {key: node.copy() for key, node in self._nodes.items()}
+        return Metadata(nodes=copied_nodes, specifications=specifications)
 
-    def apply_defaults_and_verify(self, dataset_specification=None, other_specification=None):
-        if dataset_specification is None:
-            dataset_specification = self.dataset_specification
-        if other_specification is None:
-            other_specification = self.other_specification
-        applied_dataset_node = None
-        applied_other_node = None
-        if self.dataset_node is not None:
-            applied_dataset_node = self.dataset_node.copy()
-        if self.other_node is not None:
-            applied_other_node = self.other_node.copy()
-        return Metadata(dataset_node=applied_dataset_node, other_node=applied_other_node,
-                        dataset_specification=dataset_specification, other_specification=self.other_specification)
-
-    def filter(self, dataset_filter_func=None, other_filter_func=None, dataset_specification=None, other_specification=None):
-        if dataset_specification is None:
-            dataset_specification = self.dataset_specification
-        if other_specification is None:
-            other_specification = self.other_specification
-        filtered_dataset_node = None
-        filtered_other_node = None
-        if self.dataset_node is not None:
-            if dataset_filter_func is not None:
-                filtered_dataset_node = dataset_filter_func(node=self.dataset_node.copy())
+    def filter(self, filter_funcs, specifications=None):
+        specifications = Metadata.merge_specifications(specifications_a=self._specifications, specifications_b=specifications)
+        filtered_nodes = {}
+        for root_key, node in self._nodes.items():
+            if root_key in filter_funcs:
+                filtered_nodes[root_key] = filter_funcs[root_key](node=node.copy())
             else:
-                filtered_dataset_node = self.dataset_node.copy()
-        if self.other_node is not None:
-            if other_filter_func is not None:
-                filtered_other_node = other_filter_func(node=self.other_node.copy())
-            else:
-                filtered_other_node = self.other_node.copy()
-        return Metadata(dataset_node=filtered_dataset_node, other_node=filtered_other_node,
-                        dataset_specification=dataset_specification, other_specification=self.other_specification)
+                filtered_nodes[root_key] = node.copy()
+        return Metadata(nodes=filtered_nodes, specifications=specifications)
 
     def to_dict(self, request_uuids=set()):
         return {tmp_key: tmp_value for tmp_key, tmp_value in [
-            ('meta_dataset', self.dataset_to_dict(request_uuids=request_uuids)),
-            ('meta_other', self.other_to_dict(request_uuids=request_uuids)),
+            (f"meta_{root_key}", self.root_node_to_dict(root_key=root_key, request_uuids=request_uuids))
+            for root_key in self._nodes
         ] if tmp_value is not None}
 
-    def dataset_to_dict(self, request_uuids=set()):
-        if self.dataset_node is None:
+    def root_node_to_dict(self, root_key, request_uuids=set()):
+        if root_key not in self._nodes:
             return None
         return {tmp_key: tmp_value for tmp_key, tmp_value in [
             ('format', NodeFactory.FORMAT_TYPE_FULL),
-            ('node', self.dataset_node.to_dict(request_uuids=request_uuids) if self.dataset_node is not None else None),
-            ('specification', str(self.dataset_specification) if self.dataset_specification is not None else None),
-        ] if tmp_value is not None}
-
-    def other_to_dict(self, request_uuids=set()):
-        if self.other_node is None:
-            return None
-        return {tmp_key: tmp_value for tmp_key, tmp_value in [
-            ('format', NodeFactory.FORMAT_TYPE_FULL),
-            ('node', self.other_node.to_dict(request_uuids=request_uuids) if self.other_node is not None else None),
-            ('specification', str(self.other_specification) if self.other_specification is not None else None),
+            ('node', self._nodes[root_key].to_dict(request_uuids=request_uuids)),
+            ('specification', str(self._specifications[root_key]) if root_key in self._specifications else None),
         ] if tmp_value is not None}
 
     def to_yaml(self, request_uuids=set()):
@@ -161,36 +192,24 @@ class Metadata:
         with open(filename, 'w') as file:
             file.write(yaml_content)
 
-    def merge_with(self, other, overwrite_value=False, overwrite_permissions=False, request_uuids=set(), dataset_specification=None, other_specification=None):
+    def merge_with(self, other, overwrite_value=False, overwrite_permissions=False, request_uuids=set(), specifications=None):
         if other is None:
             raise Exception("other is None")
-        if dataset_specification is None:
-            dataset_specification = self.dataset_specification
-        if other_specification is None:
-            other_specification = self.other_specification
-        merged_dataset_node = None
-        merged_other_node = None
-        if self.dataset_node is not None:
-            if other.dataset_node is not None:
-                merged_dataset_node = self.dataset_node.merge_with(
-                    other=other.dataset_node,
+        specifications = Metadata.merge_specifications(specifications_a=self._specifications, specifications_b=specifications)
+        merged_nodes = {}
+        for root_key in Metadata.ROOT_KEYS:
+            node_a = self._nodes[root_key] if root_key in self._nodes else None
+            node_b = other._nodes[root_key] if root_key in other._nodes else None
+            if not isinstance(node_a, Node):
+                if not isinstance(node_b, Node):
+                    continue
+                merged_nodes[root_key] = node_b.copy()
+            elif not isinstance(node_b, Node):
+                merged_nodes[root_key] = node_a.copy()
+            else:
+                merged_nodes[root_key] = node_a.merge_with(
+                    other=node_b,
                     overwrite_value=overwrite_value,
                     overwrite_permissions=overwrite_permissions,
                     request_uuids=request_uuids)
-            else:
-                merged_dataset_node = self.dataset_node.copy()
-        else:
-            merged_dataset_node = other.dataset_node.copy() if other.dataset_node is not None else None
-        if self.other_node is not None:
-            if other.other_node is not None:
-                merged_other_node = self.other_node.merge_with(
-                    other=other.other_node,
-                    overwrite_value=overwrite_value,
-                    overwrite_permissions=overwrite_permissions,
-                    request_uuids=request_uuids)
-            else:
-                merged_other_node = self.other_node.copy()
-        else:
-            merged_other_node = other.other_node.copy() if other.other_node is not None else None
-        return Metadata(dataset_node=merged_dataset_node, other_node=merged_other_node,
-                        dataset_specification=dataset_specification, other_specification=other_specification)
+        return Metadata(nodes=merged_nodes, specifications=specifications)
