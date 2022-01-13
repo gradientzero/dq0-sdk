@@ -325,6 +325,8 @@ class Node:
         raise Exception("attribute not found")
 
     def num_child_nodes(self):
+        if self._child_nodes is None:
+            return 0
         return len(self._child_nodes)
 
     def get_child_nodes(self, index=-1, attributes_map=None):

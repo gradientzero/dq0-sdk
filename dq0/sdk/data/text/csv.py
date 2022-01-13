@@ -52,9 +52,10 @@ class CSV(Source):
         skipinitialspace = meta_connector.skipinitialspace
         self.skipinitialspace = False if skipinitialspace is None else skipinitialspace
 
-        meta_table = meta_database.schema().table(index=0)
-        self.feature_cols, self.target_cols = MetaUtils.get_feature_target_cols(meta_table=meta_table)
-        self.col_types = MetaUtils.get_col_types(meta_table=meta_table)
+        if len(meta_database) != 0 and len(meta_database.schema()) != 0:
+            meta_table = meta_database.schema().table()
+            self.feature_cols, self.target_cols = MetaUtils.get_feature_target_cols(meta_table=meta_table)
+            self.col_types = MetaUtils.get_col_types(meta_table=meta_table)
 
     def read(self, **kwargs):
         """Read CSV data sources

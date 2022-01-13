@@ -277,9 +277,8 @@ def test_csv_001():
         f.write(content)
 
     # load metadata
-    metadata, specifications = Metadata.from_yaml_file(filename='test.yaml')
-    dataset_specification = specifications['dataset'] if 'dataset' in specifications else None
-    m_interface = Interface(metadata=metadata, dataset_specification=dataset_specification)
+    metadata = Metadata.from_yaml_file(filename='test.yaml')
+    m_interface = Interface(metadata=metadata)
 
     # get data_source instance and load data
     data_source = CSV(meta_database=m_interface.dataset().database())

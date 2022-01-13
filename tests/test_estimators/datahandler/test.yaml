@@ -1,15 +1,100 @@
-description: 'Test data'
-name: Test
-schema:
-  connection: ../dq0-sdk/tests/test_estimators/datahandler/test.csv
-  table:
-    a:
-      is_feature: true
-      type: int
-    b:
-      is_feature: true
-      type: int
-    c:
-      is_target: true
-      type: int
-type: CSV
+meta_dataset:
+  format: 'full'
+  node:
+    type_name: 'dataset'
+    attributes:
+    - type_name: 'list'
+      key: 'data'
+      value:
+      - type_name: 'string'
+        key: 'name'
+        value: 'test_ds'
+    child_nodes:
+    - type_name: 'database'
+      attributes:
+      - type_name: 'list'
+        key: 'connector'
+        value:
+        - type_name: 'string'
+          key: 'type_name'
+          value: 'csv'
+        - type_name: 'string'
+          key: 'uri'
+          value: '../dq0-sdk/tests/test_estimators/datahandler/test.csv'
+      - type_name: 'list'
+        key: 'data'
+        value:
+        - type_name: 'string'
+          key: 'name'
+          value: 'test_db'
+      child_nodes:
+      - type_name: 'schema'
+        attributes:
+        - type_name: 'list'
+          key: 'data'
+          value:
+          - type_name: 'string'
+            key: 'name'
+            value: 'test_sc'
+        child_nodes:
+        - type_name: 'table'
+          attributes:
+          - type_name: 'list'
+            key: 'data'
+            value:
+            - type_name: 'string'
+              key: 'name'
+              value: 'test_tb'
+          child_nodes:
+          - type_name: 'column'
+            attributes:
+            - type_name: 'list'
+              key: 'data'
+              value:
+              - type_name: 'string'
+                key: 'data_type_name'
+                value: 'int'
+              - type_name: 'string'
+                key: 'name'
+                value: 'a'
+            - type_name: 'list'
+              key: 'machine_learning'
+              value:
+              - type_name: 'boolean'
+                key: 'is_feature'
+                value: true
+          - type_name: 'column'
+            attributes:
+            - type_name: 'list'
+              key: 'data'
+              value:
+              - type_name: 'string'
+                key: 'data_type_name'
+                value: 'int'
+              - type_name: 'string'
+                key: 'name'
+                value: 'b'
+            - type_name: 'list'
+              key: 'machine_learning'
+              value:
+              - type_name: 'boolean'
+                key: 'is_feature'
+                value: true
+          - type_name: 'column'
+            attributes:
+            - type_name: 'list'
+              key: 'data'
+              value:
+              - type_name: 'string'
+                key: 'data_type_name'
+                value: 'int'
+              - type_name: 'string'
+                key: 'name'
+                value: 'c'
+            - type_name: 'list'
+              key: 'machine_learning'
+              value:
+              - type_name: 'boolean'
+                key: 'is_target'
+                value: true
+  specification: 'dataset_v1'
