@@ -45,7 +45,7 @@ def test_CSVDataHandler_census():
     # test with pipeline
     dir_path = os.path.dirname(os.path.realpath(__file__))
     config_path = os.path.join(dir_path, '..', '..', '..', 'dq0', 'examples', 'census', '_data', 'pipeline_config.yaml')
-    meta_path = os.path.join(dir_path, '..', '..', '..', 'dq0', 'examples', 'census', '_data', 'adult_with_rand_names_w_header.yaml')
+    meta_path = os.path.join(dir_path, '..', '..', '..', 'dq0', 'examples', 'census', '_data', 'adult_with_rand_names_w_header_simple.yaml')
     m_interface = Interface(metadata=Metadata.from_yaml_file(filename=meta_path))
     data_source = CSV(m_interface.dataset().database())
     data_handler = CSVDataHandler(pipeline_config_path=config_path, transformers_root_dir='./dq0/sdk/pipeline/transformer/transformer.py')

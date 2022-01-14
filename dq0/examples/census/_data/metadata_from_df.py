@@ -40,6 +40,7 @@ na_values_d = {
 target_col = 'income'
 
 name = 'Adult Census Income'
+short_name = 'ACI'
 description = 'This data was extracted from the 1994 Census bureau ' \
               'database by Ronny Kohavi and Barry Becker (Data Mining and ' \
               'Visualization, Silicon Graphics). A set of reasonably clean ' \
@@ -63,79 +64,107 @@ meta_d = {'meta_dataset': {
     'format': 'full',
     'node': {
         'type_name': 'dataset',
-        'attributes': [{
-            'type_name': 'list',
-            'key': 'data',
-            'value': [
-                {
-                    'type_name': 'string',
-                    'key': 'description',
-                    'value': description,
-                },
-                {
-                    'type_name': 'string',
-                    'key': 'name',
-                    'value': name,
-                },
-            ],
-        }],
+        'attributes': [
+            {
+                'type_name': 'list',
+                'key': 'data',
+                'value': [
+                    {
+                        'type_name': 'string',
+                        'key': 'description',
+                        'value': description,
+                    },
+                    {
+                        'type_name': 'string',
+                        'key': 'name',
+                        'value': name,
+                    },
+                ],
+            },
+        ],
         'child_nodes': [
             {
                 'type_name': 'database',
+                'attributes': [
+                    {
+                        'type_name': 'list',
+                        'key': 'connector',
+                        'value': [
+                            {
+                                'type_name': 'list',
+                                'key': 'header_columns',
+                                'value': [
+                                    {
+                                        'type_name': 'string',
+                                        'value': value,
+                                    } for value in column_names_list
+                                ],
+                            },
+                            {
+                                'type_name': 'list',
+                                'key': 'na_values',
+                                'value': [
+                                    {
+                                        'type_name': 'int' if isinstance(value, int) else 'string',
+                                        'key': key,
+                                        'value': value,
+                                    } for key, value in na_values_d.items()
+                                ],
+                            },
+                            {
+                                'type_name': 'boolean',
+                                'key': 'skipinitialspace',
+                                'value': True,
+                            },
+                            {
+                                'type_name': 'string',
+                                'key': 'type_name',
+                                'value': 'csv',
+                            },
+                            {
+                                'type_name': 'string',
+                                'key': 'uri',
+                                'value': connection,
+                            },
+                            {
+                                'type_name': 'boolean',
+                                'key': 'use_original_header',
+                                'value': False,
+                            },
+                        ],
+                    },
+                    {
+                        'type_name': 'list',
+                        'key': 'data',
+                        'value': [
+                            {
+                                'type_name': 'string',
+                                'key': 'name',
+                                'value': short_name + " database",
+                            },
+                        ],
+                    },
+                ],
                 'child_nodes': [
                     {
                         'type_name': 'schema',
+                        'attributes': [
+                            {
+                                'type_name': 'list',
+                                'key': 'data',
+                                'value': [
+                                    {
+                                        'type_name': 'string',
+                                        'key': 'name',
+                                        'value': short_name + " schema",
+                                    },
+                                ],
+                            },
+                        ],
                         'child_nodes': [
                             {
                                 'type_name': 'table',
                                 'attributes': [
-                                    {
-                                        'type_name': 'list',
-                                        'key': 'connector',
-                                        'value': [
-                                            {
-                                                'type_name': 'list',
-                                                'key': 'header_columns',
-                                                'value': [
-                                                    {
-                                                        'type_name': 'string',
-                                                        'value': value,
-                                                    } for value in column_names_list
-                                                ],
-                                            },
-                                            {
-                                                'type_name': 'list',
-                                                'key': 'na_values',
-                                                'value': [
-                                                    {
-                                                        'type_name': 'int' if isinstance(value, int) else 'string',
-                                                        'key': key,
-                                                        'value': value,
-                                                    } for key, value in na_values_d.items()
-                                                ],
-                                            },
-                                            {
-                                                'type_name': 'boolean',
-                                                'key': 'skipinitialspace',
-                                                'value': True,
-                                            },
-                                            {
-                                                'type_name': 'string',
-                                                'key': 'type_name',
-                                                'value': 'csv',
-                                            },
-                                            {
-                                                'type_name': 'string',
-                                                'key': 'uri',
-                                                'value': connection,
-                                            },
-                                            {
-                                                'type_name': 'boolean',
-                                                'key': 'use_original_header',
-                                                'value': False,
-                                            },
-                                        ],
-                                    },
                                     {
                                         'type_name': 'list',
                                         'key': 'data',
@@ -144,6 +173,11 @@ meta_d = {'meta_dataset': {
                                                 'type_name': 'int',
                                                 'key': 'rows',
                                                 'value': n_rows,
+                                            },
+                                            {
+                                                'type_name': 'string',
+                                                'key': 'name',
+                                                'value': short_name + " table",
                                             },
                                         ],
                                     },
@@ -167,7 +201,7 @@ meta_d = {'meta_dataset': {
             },
         ],
     },
-    'specification': 'dataset_standard_2021120201',
+    'specification': 'dataset_v1',
 }}
 
 # add columns

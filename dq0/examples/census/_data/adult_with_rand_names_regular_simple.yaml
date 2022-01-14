@@ -8,43 +8,50 @@ meta_dataset:
           'name': "Adult Census Income"
       child_nodes:
         database:
+          attributes:
+            'connector':
+              'header_columns':
+              - 'lastname'
+              - 'firstname'
+              - 'age'
+              - 'workclass'
+              - 'fnlwgt'
+              - 'education'
+              - 'education-num'
+              - 'marital-status'
+              - 'occupation'
+              - 'relationship'
+              - 'race'
+              - 'sex'
+              - 'capital-gain'
+              - 'capital-loss'
+              - 'hours-per-week'
+              - 'native-country'
+              - 'income'
+              'na_values':
+                'capital-gain': 99999
+                'capital-loss': 99999
+                'hours-per-week': 99
+                'native-country': '?'
+                'occupation': '?'
+                'workclass': '?'
+              'skipinitialspace': true
+              'type_name': 'csv'
+              'uri': "../dq0-sdk/dq0/examples/census/_data/adult_with_rand_names.csv"
+              'use_original_header': true
+            'data':
+              'name': "ACI database"
           child_nodes:
             schema:
+              attributes:
+                'data':
+                  'name': "ACI schema"
               child_nodes:
                 table:
                   attributes:
-                    'connector':
-                      'header_columns':
-                      - 'lastname'
-                      - 'firstname'
-                      - 'age'
-                      - 'workclass'
-                      - 'fnlwgt'
-                      - 'education'
-                      - 'education-num'
-                      - 'marital-status'
-                      - 'occupation'
-                      - 'relationship'
-                      - 'race'
-                      - 'sex'
-                      - 'capital-gain'
-                      - 'capital-loss'
-                      - 'hours-per-week'
-                      - 'native-country'
-                      - 'income'
-                      'na_values':
-                        'capital-gain': 99999
-                        'capital-loss': 99999
-                        'hours-per-week': 99
-                        'native-country': '?'
-                        'occupation': '?'
-                        'workclass': '?'
-                      'skipinitialspace': true
-                      'type_name': 'csv'
-                      'uri': "../dq0-sdk/dq0/examples/census/_data/adult_with_rand_names.csv"
-                      'use_original_header': true
                     'data':
                       'rows': 50511
+                      'name': "ACI table"
                     'differential_privacy':
                       'privacy_column': 'fnlwgt'
                   child_nodes:
@@ -241,4 +248,4 @@ meta_dataset:
                           'cardinality': 9
                         'private_synthesis':
                           'synthesizable': true
-  specification: 'dataset_standard_2021120201'
+  specification: 'dataset_v1'

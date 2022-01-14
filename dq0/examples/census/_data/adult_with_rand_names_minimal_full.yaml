@@ -14,18 +14,20 @@ meta_dataset:
         value: 'adult'
     child_nodes:
     - type_name: 'database'
-      child_nodes:
-      - type_name: 'schema'
-        child_nodes:
-        - type_name: 'table'
-          attributes:
-          - type_name: 'list'
-            key: 'connector'
-            value:
-            - type_name: 'string'
-              key: 'type_name'
-              value: 'csv'
-            - type_name: 'string'
-              key: 'uri'
-              value: "/Users/wolfganggross/code/dq0-sdk/dq0/examples/census/_data/adult_with_rand_names.csv"
-  specification: 'dataset_standard_2021120201'
+      attributes:
+      - type_name: 'list'
+        key: 'connector'
+        value:
+        - type_name: 'string'
+          key: 'type_name'
+          value: 'csv'
+        - type_name: 'string'
+          key: 'uri'
+          value: "/Users/wolfganggross/code/dq0-sdk/dq0/examples/census/_data/adult_with_rand_names.csv"
+      - type_name: 'list'
+        key: 'data'
+        value:
+        - type_name: 'string'
+          key: 'name'
+          value: 'adult database'
+  specification: 'dataset_v1'

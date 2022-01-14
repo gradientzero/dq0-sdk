@@ -8,33 +8,40 @@ meta_dataset:
           'name': "Adult Census Income"
       child_nodes:
         database:
+          attributes:
+            'connector':
+              'header_columns':
+              - 'lastname'
+              - 'firstname'
+              - 'age'
+              - 'workclass'
+              - 'fnlwgt'
+              - 'education'
+              - 'education-num'
+              - 'marital-status'
+              - 'occupation'
+              - 'relationship'
+              - 'race'
+              - 'sex'
+              - 'capital-gain'
+              - 'capital-loss'
+              - 'hours-per-week'
+              - 'native-country'
+              'type_name': 'csv'
+              'uri': "../dq0-sdk/dq0/examples/census/_data/datatopredict.csv"
+              'use_original_header': false
+            'data':
+              'name': "ACI database"
           child_nodes:
             schema:
+              attributes:
+                'data':
+                  'name': "ACI schema"
               child_nodes:
                 table:
                   attributes:
-                    'connector':
-                      'header_columns':
-                      - 'lastname'
-                      - 'firstname'
-                      - 'age'
-                      - 'workclass'
-                      - 'fnlwgt'
-                      - 'education'
-                      - 'education-num'
-                      - 'marital-status'
-                      - 'occupation'
-                      - 'relationship'
-                      - 'race'
-                      - 'sex'
-                      - 'capital-gain'
-                      - 'capital-loss'
-                      - 'hours-per-week'
-                      - 'native-country'
-                      'type_name': 'csv'
-                      'uri': "../dq0-sdk/dq0/examples/census/_data/datatopredict.csv"
-                      'use_original_header': false
                     'data':
+                      'name': "ACI table"
                       'rows': 51607
                     'differential_privacy':
                       'privacy_column': 'fnlwgt'
@@ -221,4 +228,4 @@ meta_dataset:
                           'cardinality': 9
                         'private_synthesis':
                           'synthesizable': true
-  specification: 'dataset_standard_2021120201'
+  specification: 'dataset_v1'

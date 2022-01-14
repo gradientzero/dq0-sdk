@@ -8,12 +8,10 @@ meta_dataset:
           'name': 'adult'
       child_nodes:
         database:
-          child_nodes:
-            schema:
-              child_nodes:
-                table:
-                  attributes:
-                    'connector':
-                      'type_name': 'csv'
-                      'uri': "/Users/wolfganggross/code/dq0-sdk/dq0/examples/census/_data/adult_with_rand_names.csv"
-  specification: 'dataset_standard_2021120201'
+          attributes:
+            'connector':
+              'type_name': 'csv'
+              'uri': "/Users/wolfganggross/code/dq0-sdk/dq0/examples/census/_data/adult_with_rand_names.csv"
+            'data':
+              'name': "adult database"
+  specification: 'dataset_v1'

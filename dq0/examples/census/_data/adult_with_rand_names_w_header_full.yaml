@@ -14,26 +14,43 @@ meta_dataset:
         value: "Adult Census Income"
     child_nodes:
     - type_name: 'database'
+      attributes:
+      - type_name: 'list'
+        key: 'connector'
+        value:
+        - type_name: 'string'
+          key: 'type_name'
+          value: 'csv'
+        - type_name: 'string'
+          key: 'uri'
+          value: "../dq0-sdk/dq0/examples/census/_data/adult_with_rand_names_w_header.csv"
+        - type_name: 'boolean'
+          key: 'use_original_header'
+          value: true
+      - type_name: 'list'
+        key: 'data'
+        value:
+        - type_name: 'string'
+          key: 'name'
+          value: "ACI database"
       child_nodes:
       - type_name: 'schema'
+        attributes:
+        - type_name: 'list'
+          key: 'data'
+          value:
+          - type_name: 'string'
+            key: 'name'
+            value: "ACI schema"
         child_nodes:
         - type_name: 'table'
           attributes:
           - type_name: 'list'
-            key: 'connector'
-            value:
-            - type_name: 'string'
-              key: 'type_name'
-              value: 'csv'
-            - type_name: 'string'
-              key: 'uri'
-              value: "../dq0-sdk/dq0/examples/census/_data/adult_with_rand_names_w_header.csv"
-            - type_name: 'boolean'
-              key: 'use_original_header'
-              value: true
-          - type_name: 'list'
             key: 'data'
             value:
+            - type_name: 'string'
+              key: 'name'
+              value: "ACI table"
             - type_name: 'int'
               key: 'rows'
               value: 51925
@@ -555,4 +572,4 @@ meta_dataset:
               - type_name: 'boolean'
                 key: 'synthesizable'
                 value: true
-  specification: 'dataset_standard_2021120201'
+  specification: 'dataset_v1'
