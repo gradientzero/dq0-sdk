@@ -291,7 +291,7 @@ for c in df.columns:
 meta_yaml = yaml.dump(meta_d)
 print(meta_yaml)
 
-meta_dq0, _ = Metadata.from_yaml(yaml_content=meta_yaml)
+meta_dq0 = Metadata.from_yaml(yaml_content=meta_yaml)
 
-with open(os.path.join(os.path.split(connection)[0], 'adult_with_rand_names.yaml'), 'w') as f:
+with open(os.path.join(os.path.split(connection)[0], 'adult_with_rand_names_generated_full.yaml'), 'w') as f:
     yaml.dump(meta_d, f)

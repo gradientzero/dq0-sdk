@@ -9,10 +9,10 @@ All rights reserved
 
 import os
 
-import dq0.sdk
 from dq0.examples.census.raw_meta_preprocessor.model.user_model import UserModel
-from dq0.sdk.data.metadata.filter.filter_machine_learning import FilterMachineLearning
+from dq0.sdk.data.metadata.interface.interface import Interface
 from dq0.sdk.data.metadata.metadata import Metadata
+from dq0.sdk.data.text.csv import CSV
 from dq0.sdk.data.utils import util
 
 
@@ -24,15 +24,13 @@ if __name__ == '__main__':
     util.initialize_rnd_numbers_generators_state()
 
     # path to metadata
-    path = '../_data/adult_with_rand_names.yaml'
+    path = '../_data/adult_with_rand_names_regular_simple.yaml'
     filepath = os.path.join(os.path.dirname(
         os.path.abspath(__file__)), path)
 
     # init input data source
-    metadata, _, _ = Metadata.from_yaml_file(filename=filepath)
-    uri = metadata.dataset_node._child_nodes[0].child_nodes[0].child_nodes[0].get_attribute(key='connector').get_attribute(key='uri').value
-    meta_ml = metadata.filter(dataset_filter_func=FilterMachineLearning.filter)
-    data_source = dq0.sdk.data.text.CSV(uri, meta_ml)
+    m_interface = Interface(metadata=Metadata.from_yaml_file(filename=filepath))
+    data_source = CSV(m_interface.dataset().database())
 
     # create model
     model = UserModel()

@@ -58,15 +58,12 @@ class AttributeUtils:
             return None
         if not isinstance(input_value, list):
             raise Exception(f"input_value {input_value} is not of type list, is of type {type(input_value)} instead")
-        type_name = None
         new_list = []
         for attribute in input_value:
             if not isinstance(attribute, Attribute):
                 raise Exception(f"attribute {attribute} is not of type Attribute, is of type {type(attribute)} instead")
             if attribute.get_key() is not None:
                 raise Exception(f"all keys must be none; key {attribute.get_key()} is not None")
-            if type_name is not None and type_name != attribute.get_type_name():
-                raise Exception(f"type_name mismatch: {type_name} != {attribute.get_type_name()}")
             type_name = attribute.get_type_name()
             AttributeUtils.match_and_check(type_name=type_name, value=attribute.get_value())
             if type_name == AttributeType.TYPE_NAME_LIST:
@@ -75,26 +72,27 @@ class AttributeUtils:
         return new_list
 
     @staticmethod
-    def list_to_value(input_list, type_name, permissions=None):
+    def list_to_value(input_list, type_name=None, permissions=None):
         if not isinstance(input_list, list):
             raise Exception(f"input_list {input_list} is not of type list, is of type {type(input_list)} instead")
         new_list = []
         for element in input_list:
-            AttributeUtils.match_and_check(type_name=type_name, value=element)
-            if type_name == AttributeType.TYPE_NAME_BOOLEAN:
+            if type_name is not None:
+                AttributeUtils.match_and_check(type_name=type_name, value=element)
+            if isinstance(element, bool):
                 new_list.append(AttributeBoolean(key=None, value=element, permissions=permissions))
-            elif type_name == AttributeType.TYPE_NAME_DATETIME:
+            elif isinstance(element, datetime):
                 new_list.append(AttributeDatetime(key=None, value=element, permissions=permissions))
-            elif type_name == AttributeType.TYPE_NAME_FLOAT:
+            elif isinstance(element, float):
                 new_list.append(AttributeFloat(key=None, value=element, permissions=permissions))
-            elif type_name == AttributeType.TYPE_NAME_INT:
+            elif isinstance(element, int):
                 new_list.append(AttributeInt(key=None, value=element, permissions=permissions))
-            elif type_name == AttributeType.TYPE_NAME_LIST:
-                raise Exception("list may not contain elements of list type")
-            elif type_name == AttributeType.TYPE_NAME_STRING:
+            elif isinstance(element, list):
+                raise Exception("list may not contain elements of type list")
+            elif isinstance(element, str):
                 new_list.append(AttributeString(key=None, value=element, permissions=permissions))
             else:
-                raise Exception(f"unknown type_name {type_name}")
+                raise Exception(f"element {element} is of unknown type {type(element)}")
         return new_list
 
     @staticmethod
@@ -103,19 +101,16 @@ class AttributeUtils:
             return None
         if not isinstance(input_value, list):
             raise Exception(f"input_value {input_value} is not of type list, is of type {type(input_value)} instead")
-        type_name = None
         new_dict = {}
         for attribute in input_value:
             if not isinstance(attribute, Attribute):
                 raise Exception(f"attribute {attribute} is not of type Attribute, is of type {type(attribute)} instead")
             if attribute.get_key() in new_dict:
                 raise Exception(f"all keys must be unique; key {attribute.get_key()} is already present")
-            if type_name is not None and type_name != attribute._type_name:
-                raise Exception(f"type_name mismatch: {type_name} != {attribute._type_name}")
             type_name = attribute._type_name
             AttributeUtils.match_and_check(type_name=type_name, value=attribute.get_value())
             if type_name == AttributeType.TYPE_NAME_LIST:
-                raise Exception("list may not contain attribute values of list type")
+                raise Exception("dict may not contain attribute values of type list")
             new_dict[attribute.get_key()] = attribute.get_value()
         return new_dict
 
@@ -136,7 +131,7 @@ class AttributeUtils:
             elif isinstance(element, int):
                 new_list.append(AttributeInt(key=key, value=element, permissions=permissions))
             elif isinstance(element, list):
-                raise Exception("list may not contain elements of list type")
+                raise Exception("dict may not contain elements of list type")
             elif isinstance(element, str):
                 new_list.append(AttributeString(key=key, value=element, permissions=permissions))
             else:
