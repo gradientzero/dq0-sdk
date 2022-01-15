@@ -46,7 +46,7 @@ def create_from_meta(meta_database):
     Returns:
         initialized data source class.
     """
-    type_name = meta_database.connector().type_name
+    type_name = meta_database.connector.type_name
 
     if not isinstance(type_name, str) or type_name == '':
         raise ValueError('type must be string!')
