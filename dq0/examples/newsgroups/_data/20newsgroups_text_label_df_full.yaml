@@ -1,0 +1,110 @@
+meta_dataset:
+  format: full
+  node:
+    attributes:
+    - key: data
+      type_name: list
+      value:
+      - key: description
+        type_name: string
+        value: description
+      - key: name
+        type_name: string
+        value: newsgroups
+    child_nodes:
+    - attributes:
+      - key: connector
+        type_name: list
+        value:
+        - key: type_name
+          type_name: string
+          value: csv
+        - key: uri
+          type_name: string
+          value: ../dq0-sdk/dq0/examples/newsgroups/_data/20newsgroups_text_label_df.csv
+      - key: data
+        type_name: list
+        value:
+        - key: name
+          type_name: string
+          value: ng database
+      child_nodes:
+      - attributes:
+        - key: data
+          type_name: list
+          value:
+          - key: name
+            type_name: string
+            value: ng schema
+        child_nodes:
+        - attributes:
+          - key: data
+            type_name: list
+            value:
+            - key: name
+              type_name: string
+              value: ng table
+            - key: rows
+              type_name: int
+              value: 18895
+          - key: differential_privacy
+            type_name: list
+            value:
+            - key: privacy_column
+              type_name: string
+              value: ''
+          child_nodes:
+          - attributes:
+            - key: data
+              type_name: list
+              value:
+              - key: data_type_name
+                type_name: string
+                value: string
+              - key: name
+                type_name: string
+                value: text
+            - key: private_sql_and_synthesis
+              type_name: list
+              value:
+              - key: cardinality
+                type_name: int
+                value: 18286
+            - key: private_synthesis
+              type_name: list
+              value:
+              - key: synthesizable
+                type_name: boolean
+                value: true
+            type_name: column
+          - attributes:
+            - key: data
+              type_name: list
+              value:
+              - key: data_type_name
+                type_name: string
+                value: int
+              - key: name
+                type_name: string
+                value: y
+            - key: private_sql_and_synthesis
+              type_name: list
+              value:
+              - key: lower
+                type_name: int
+                value: 2
+              - key: upper
+                type_name: int
+                value: 18
+            - key: private_synthesis
+              type_name: list
+              value:
+              - key: synthesizable
+                type_name: boolean
+                value: true
+            type_name: column
+          type_name: table
+        type_name: schema
+      type_name: database
+    type_name: dataset
+  specification: dataset_v1

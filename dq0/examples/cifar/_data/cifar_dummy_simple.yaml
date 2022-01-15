@@ -8,14 +8,22 @@ meta_dataset:
           'name': 'CIFAR10'
       child_nodes:
         database:
+          attributes:
+            'connector':
+              'type_name': 'csv'
+              'uri': "../dq0-sdk/dq0/examples/cifar/_data/cifar_dummy.csv"
+            'data':
+              'name': "C10 database"
           child_nodes:
             schema:
+              attributes:
+                'data':
+                  'name': "C10 schema"
               child_nodes:
                 table:
                   attributes:
-                    'connector':
-                      'type_name': 'csv'
-                      'uri': "../dq0-sdk/dq0/examples/cifar/_data/cifar_dummy.csv"
+                    'data':
+                      'name': "C10 table"
                     'differential_privacy':
                       'privacy_column': ''
-  specification: 'dataset_standard_2021120201'
+  specification: 'dataset_v1'

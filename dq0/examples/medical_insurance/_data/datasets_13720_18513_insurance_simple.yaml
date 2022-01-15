@@ -8,16 +8,23 @@ meta_dataset:
           'name': 'medical_insurance'
       child_nodes:
         database:
+          attributes:
+            'connector':
+              'header_row': 0
+              'type_name': 'csv'
+              'uri': "../dq0-sdk/dq0/examples/medical_insurance/_data/datasets_13720_18513_insurance.csv"
+            'data':
+              'name': 'm_i database'
           child_nodes:
             schema:
+              attributes:
+                'data':
+                  'name': 'm_i schema'
               child_nodes:
                 table:
                   attributes:
-                    'connector':
-                      'header_row': 0
-                      'type_name': 'csv'
-                      'uri': "../dq0-sdk/dq0/examples/medical_insurance/_data/datasets_13720_18513_insurance.csv"
                     'data':
+                      'name': 'm_i table'
                       'rows': 1335
                     'differential_privacy':
                       'privacy_column': ''
@@ -103,4 +110,4 @@ meta_dataset:
                           'cardinality': 2
                         'private_synthesis':
                           'synthesizable': true
-  specification: 'dataset_standard_2021120201'
+  specification: 'dataset_v1'

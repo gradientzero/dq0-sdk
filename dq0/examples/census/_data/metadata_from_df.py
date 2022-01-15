@@ -39,7 +39,7 @@ na_values_d = {
 
 target_col = 'income'
 
-name = 'Adult Census Income'
+name = "Adult Census Income"
 short_name = 'ACI'
 description = 'This data was extracted from the 1994 Census bureau ' \
               'database by Ronny Kohavi and Barry Becker (Data Mining and ' \
@@ -289,9 +289,9 @@ for c in df.columns:
     })
 
 meta_yaml = yaml.dump(meta_d)
-print(meta_yaml)
-
 meta_dq0 = Metadata.from_yaml(yaml_content=meta_yaml)
+print(f"Internal full: {meta_dq0.to_yaml(request_uuids=None)}")
+print(f"Outputted yaml file content: {meta_yaml}")
 
 with open(os.path.join(os.path.split(connection)[0], 'adult_with_rand_names_generated_full.yaml'), 'w') as f:
     yaml.dump(meta_d, f)

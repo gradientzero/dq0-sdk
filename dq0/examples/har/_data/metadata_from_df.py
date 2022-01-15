@@ -10,9 +10,9 @@ import pandas as pd
 import yaml
 
 
-name = 'Human Activity Recognition'
+name = "Human Activity Recognition"
+short_name = 'HAR'
 description = 'https://github.com/fbarth/humanActivityRecognition'
-type_ = 'CSV'
 connection = '../dq0-sdk/dq0/examples/har/_data/dataset-har-PUC-Rio-ugulino.csv'
 
 df = pd.read_csv(
@@ -47,34 +47,60 @@ meta_d = {'meta_dataset': {
         'child_nodes': [
             {
                 'type_name': 'database',
+                'attributes': [
+                    {
+                        'type_name': 'list',
+                        'key': 'connector',
+                        'value': [
+                            {
+                                'type_name': 'int',
+                                'key': 'header_row',
+                                'value': 0,
+                            },
+                            {
+                                'type_name': 'string',
+                                'key': 'type_name',
+                                'value': 'csv',
+                            },
+                            {
+                                'type_name': 'string',
+                                'key': 'uri',
+                                'value': connection,
+                            },
+                        ],
+                    },
+                    {
+                        'type_name': 'list',
+                        'key': 'data',
+                        'value': [
+                            {
+                                'type_name': 'string',
+                                'key': 'name',
+                                'value': short_name + " database",
+                            },
+                        ],
+                    },
+                ],
                 'child_nodes': [
                     {
                         'type_name': 'schema',
+                        'attributes': [
+                            {
+                                'type_name': 'list',
+                                'key': 'data',
+                                'value': [
+                                    {
+                                        'type_name': 'string',
+                                        'key': 'name',
+                                        'value': short_name + " schema",
+                                    },
+                                ],
+                            },
+                        ],
                         'child_nodes': [
                             {
                                 'type_name': 'table',
                                 'attributes': [
-                                    {
-                                        'type_name': 'list',
-                                        'key': 'connector',
-                                        'value': [
-                                            {
-                                                'type_name': 'int',
-                                                'key': 'header_row',
-                                                'value': 0,
-                                            },
-                                            {
-                                                'type_name': 'string',
-                                                'key': 'type_name',
-                                                'value': 'csv',
-                                            },
-                                            {
-                                                'type_name': 'string',
-                                                'key': 'uri',
-                                                'value': connection,
-                                            },
-                                        ],
-                                    },
                                     {
                                         'type_name': 'list',
                                         'key': 'data',
@@ -83,6 +109,11 @@ meta_d = {'meta_dataset': {
                                                 'type_name': 'int',
                                                 'key': 'rows',
                                                 'value': n_rows,
+                                            },
+                                            {
+                                                'type_name': 'string',
+                                                'key': 'name',
+                                                'value': short_name + " table",
                                             },
                                         ],
                                     },
@@ -106,7 +137,7 @@ meta_d = {'meta_dataset': {
             },
         ],
     },
-    'specification': 'dataset_standard_2021120201',
+    'specification': 'dataset_v1',
 }}
 
 # add columns
@@ -183,9 +214,9 @@ for c in df.columns:
     })
 
 meta_yaml = yaml.dump(meta_d)
-print(meta_yaml)
+meta_dq0 = Metadata.from_yaml(yaml_content=meta_yaml)
+print(f"Internal full: {meta_dq0.to_yaml(request_uuids=None)}")
+print(f"Outputted yaml file content: {meta_yaml}")
 
-meta_dq0, _ = Metadata.from_yaml(yaml_content=meta_yaml)
-
-with open(os.path.join(os.path.split(connection)[0], 'dataset-har-PUC-Rio-ugulino.yaml'), 'w') as f:
+with open(os.path.join(os.path.split(connection)[0], 'dataset-har-PUC-Rio-ugulino_generated_full.yaml'), 'w') as f:
     yaml.dump(meta_d, f)

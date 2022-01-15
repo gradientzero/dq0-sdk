@@ -8,17 +8,24 @@ meta_dataset:
           'name': "Human Activity Recognition"
       child_nodes:
         database:
+          attributes:
+            'connector':
+              'header_row': 0
+              'type_name': 'csv'
+              'uri': "../dq0-sdk/dq0/examples/har/_data/dataset-har-PUC-Rio-ugulino.csv"
+            'data':
+              'name': "HAR database"
           child_nodes:
             schema:
+              attributes:
+                'data':
+                  'name': "HAR schema"
               child_nodes:
                 table:
                   attributes:
-                    'connector':
-                      'header_row': 0
-                      'type_name': 'csv'
-                      'uri': "../dq0-sdk/dq0/examples/har/_data/dataset-har-PUC-Rio-ugulino.csv"
                     'data':
                       'rows': 156288
+                      'name': "HAR table"
                     'differential_privacy':
                       'privacy_column': ''
                   child_nodes:
@@ -209,4 +216,4 @@ meta_dataset:
                           'upper': -141
                         'private_synthesis':
                           'synthesizable': true
-  specification: 'dataset_standard_2021120201'
+  specification: 'dataset_v1'

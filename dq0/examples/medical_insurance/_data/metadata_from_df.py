@@ -14,8 +14,8 @@ feature_cols = ['age', 'sex', 'bmi', 'children', 'smoker', 'region']
 label_cols = ['charges']
 
 name = 'medical_insurance'
+short_name = 'm_i'
 description = 'description'
-type_ = 'CSV'
 connection = '../dq0-sdk/dq0/examples/medical_insurance/_data/datasets_13720_18513_insurance.csv'
 
 df = pd.read_csv(
@@ -29,57 +29,90 @@ meta_d = {'meta_dataset': {
     'format': 'full',
     'node': {
         'type_name': 'dataset',
-        'attributes': [{
-            'type_name': 'list',
-            'key': 'data',
-            'value': [
-                {
-                    'type_name': 'string',
-                    'key': 'description',
-                    'value': description,
-                },
-                {
-                    'type_name': 'string',
-                    'key': 'name',
-                    'value': name,
-                },
-            ],
-        }],
+        'attributes': [
+            {
+                'type_name': 'list',
+                'key': 'data',
+                'value': [
+                    {
+                        'type_name': 'string',
+                        'key': 'description',
+                        'value': description,
+                    },
+                    {
+                        'type_name': 'string',
+                        'key': 'name',
+                        'value': name,
+                    },
+                ],
+            }
+        ],
         'child_nodes': [
             {
                 'type_name': 'database',
+                'attributes': [
+                    {
+                        'type_name': 'list',
+                        'key': 'connector',
+                        'value': [
+                            {
+                                'type_name': 'int',
+                                'key': 'header_row',
+                                'value': 0
+                            },
+                            {
+                                'type_name': 'string',
+                                'key': 'type_name',
+                                'value': 'csv',
+                            },
+                            {
+                                'type_name': 'string',
+                                'key': 'uri',
+                                'value': connection,
+                            },
+                        ],
+                    },
+                    {
+                        'type_name': 'list',
+                        'key': 'data',
+                        'value': [
+                            {
+                                'type_name': 'string',
+                                'key': 'name',
+                                'value': short_name + " database",
+                            },
+                        ],
+                    }
+                ],
                 'child_nodes': [
                     {
                         'type_name': 'schema',
+                        'attributes': [
+                            {
+                                'type_name': 'list',
+                                'key': 'data',
+                                'value': [
+                                    {
+                                        'type_name': 'string',
+                                        'key': 'name',
+                                        'value': short_name + " schema",
+                                    },
+                                ],
+                            }
+                        ],
                         'child_nodes': [
                             {
                                 'type_name': 'table',
                                 'attributes': [
                                     {
                                         'type_name': 'list',
-                                        'key': 'connector',
-                                        'value': [
-                                            {
-                                                'type_name': 'int',
-                                                'key': 'header_row',
-                                                'value': 0
-                                            },
-                                            {
-                                                'type_name': 'string',
-                                                'key': 'type_name',
-                                                'value': 'csv',
-                                            },
-                                            {
-                                                'type_name': 'string',
-                                                'key': 'uri',
-                                                'value': connection,
-                                            },
-                                        ],
-                                    },
-                                    {
-                                        'type_name': 'list',
                                         'key': 'data',
                                         'value': [
+                                            {
+                                                'type_name': 'string',
+                                                'key': 'name',
+                                                'value': short_name + " table",
+                                            },
                                             {
                                                 'type_name': 'int',
                                                 'key': 'rows',
@@ -107,7 +140,7 @@ meta_d = {'meta_dataset': {
             },
         ],
     },
-    'specification': 'dataset_standard_2021120201',
+    'specification': 'dataset_v1',
 }}
 
 # add columns
@@ -205,9 +238,9 @@ for c in df.columns:
     })
 
 meta_yaml = yaml.dump(meta_d)
-print(meta_yaml)
+meta_dq0 = Metadata.from_yaml(yaml_content=meta_yaml)
+print(f"Internal full: {meta_dq0.to_yaml(request_uuids=None)}")
+print(f"Outputted yaml file content: {meta_yaml}")
 
-meta_dq0, _ = Metadata.from_yaml(yaml_content=meta_yaml)
-
-with open(os.path.join(os.path.split(connection)[0], 'datasets_13720_18513_insurance.yaml'), 'w') as f:
+with open(os.path.join(os.path.split(connection)[0], 'datasets_13720_18513_insurance_generated_full.yaml'), 'w') as f:
     yaml.dump(meta_d, f)

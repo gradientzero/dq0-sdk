@@ -14,26 +14,43 @@ meta_dataset:
         value: "Human Activity Recognition"
     child_nodes:
     - type_name: 'database'
+      attributes:
+      - type_name: 'list'
+        key: 'connector'
+        value:
+        - type_name: 'int'
+          key: 'header_row'
+          value: 0
+        - type_name: 'string'
+          key: 'type_name'
+          value: 'csv'
+        - type_name: 'string'
+          key: 'uri'
+          value: "../dq0-sdk/dq0/examples/har/_data/dataset-har-PUC-Rio-ugulino.csv"
+      - type_name: 'list'
+        key: 'data'
+        value:
+        - type_name: 'string'
+          key: 'name'
+          value: "HAR database"
       child_nodes:
       - type_name: 'schema'
+        attributes:
+        - type_name: 'list'
+          key: 'data'
+          value:
+          - type_name: 'string'
+            key: 'name'
+            value: "HAR schema"
         child_nodes:
         - type_name: 'table'
           attributes:
           - type_name: 'list'
-            key: 'connector'
-            value:
-            - type_name: 'int'
-              key: 'header_row'
-              value: 0
-            - type_name: 'string'
-              key: 'type_name'
-              value: 'csv'
-            - type_name: 'string'
-              key: 'uri'
-              value: "../dq0-sdk/dq0/examples/har/_data/dataset-har-PUC-Rio-ugulino.csv"
-          - type_name: 'list'
             key: 'data'
             value:
+            - type_name: 'string'
+              key: 'name'
+              value: "HAR schema"
             - type_name: 'int'
               key: 'rows'
               value: 156288
@@ -529,4 +546,4 @@ meta_dataset:
               - type_name: 'boolean'
                 key: 'synthesizable'
                 value: true
-  specification: 'dataset_standard_2021120201'
+  specification: 'dataset_v1'

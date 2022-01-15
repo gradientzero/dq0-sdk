@@ -14,29 +14,46 @@ meta_dataset:
         value: 'medical_insurance'
     child_nodes:
     - type_name: 'database'
+      attributes:
+      - type_name: 'list'
+        key: 'connector'
+        value:
+        - type_name: 'int'
+          key: 'header_row'
+          value: 0
+        - type_name: 'string'
+          key: 'type_name'
+          value: 'csv'
+        - type_name: 'string'
+          key: 'uri'
+          value: "../dq0-sdk/dq0/examples/medical_insurance/_data/datasets_13720_18513_insurance.csv"
+      - type_name: 'list'
+        key: 'data'
+        value:
+        - type_name: 'string'
+          key: 'name'
+          value: 'm_i database'
       child_nodes:
       - type_name: 'schema'
+        attributes:
+        - type_name: 'list'
+          key: 'data'
+          value:
+          - type_name: 'string'
+            key: 'name'
+            value: 'm_i schema'
         child_nodes:
         - type_name: 'table'
           attributes:
-          - type_name: 'list'
-            key: 'connector'
-            value:
-            - type_name: 'int'
-              key: 'header_row'
-              value: 0
-            - type_name: 'string'
-              key: 'type_name'
-              value: 'csv'
-            - type_name: 'string'
-              key: 'uri'
-              value: "../dq0-sdk/dq0/examples/medical_insurance/_data/datasets_13720_18513_insurance.csv"
           - type_name: 'list'
             key: 'data'
             value:
             - type_name: 'int'
               key: 'rows'
               value: 1335
+            - type_name: 'string'
+              key: 'name'
+              value: 'm_i table'
           - type_name: 'list'
             key: 'differential_privacy'
             value:
@@ -259,4 +276,4 @@ meta_dataset:
               - type_name: 'boolean'
                 key: 'synthesizable'
                 value: true
-  specification: 'dataset_standard_2021120201'
+  specification: 'dataset_v1'
