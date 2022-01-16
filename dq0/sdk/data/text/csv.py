@@ -89,10 +89,10 @@ class CSV(Source):
                                skiprows=skiprows, sep=sep, decimal=decimal,
                                na_values=na_values, index_col=index_col,
                                skipinitialspace=skipinitialspace, **kwargs)
-        except Exception:
+        except Exception as e:
             print(
                 'Failed to load CSV using use_original_header {}, '
                 'header {}, names {}, skiprows {}, sep {}, decimal {}, '
-                'na_values {} and kwargs {}'.format(
+                'na_values {} and kwargs {} due to {}'.format(
                     self.use_original_header, header, names, skiprows,
-                    sep, decimal, na_values, kwargs))
+                    sep, decimal, na_values, kwargs, e))

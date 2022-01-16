@@ -113,10 +113,10 @@ meta_dataset:
             - type_name: 'list'
               key: 'private_sql_and_synthesis'
               value:
-              - type_name: 'int'
+              - type_name: 'float'
                 key: 'lower'
                 value: 22.61
-              - type_name: 'int'
+              - type_name: 'float'
                 key: 'upper'
                 value: 39.5
             - type_name: 'list'
@@ -145,10 +145,10 @@ meta_dataset:
             - type_name: 'list'
               key: 'private_sql_and_synthesis'
               value:
-              - type_name: 'int'
+              - type_name: 'float'
                 key: 'lower'
                 value: 1878.2308457069084
-              - type_name: 'int'
+              - type_name: 'float'
                 key: 'upper'
                 value: 41033.64864482995
             - type_name: 'list'

@@ -81,36 +81,35 @@ def load_dataset_info_from_yaml(metadata, columns_list):
 
     """
 
-    # from dq0.sdk.data.metadata import Metadata  # noqa: E402, I202, I100
-    # metadata = Metadata(filename=path_to_yaml_data_file)
+    from dq0.sdk.data.metadata.interface.interface import Interface
+    m_interface = Interface(metadata=metadata)
 
-    if 1 < len(metadata.dataset_node.child_nodes):
+    if 1 < len(m_interface.dataset()):
         logger.fatal('Only one database is handled!')
         return 1
-    if 1 < len(metadata.dataset_node.child_nodes[0].child_nodes):
+    if 1 < len(m_interface.dataset().database()):
         logger.fatal('Only one schema is handled!')
         return 1
-    if 1 < len(metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes):
+    if 1 < len(m_interface.dataset().database().schema()):
         logger.fatal('Only one table is handled!')
         return 1
 
-    table = metadata.dataset_node.child_nodes[0].child_nodes[0].child_nodes[0]
+    m_table = m_interface.dataset().database().schema().table()
 
     categorical_features_list = []
     quantitative_features_list = []
     for col_name in columns_list:
-        col_obj = table.get_child_node(attributes_map={'data': {'name': col_name}})
-        if col_obj is None:
+        m_column = m_table.column(name=col_name)
+        if m_column is None:
             logger.fatal(f"column {col_name} missing from metadata")
             return 1
-        col_data = col_obj.get_attribute(key='data')
-        col_data_type_name = col_data.get_attribute(key='data_type_name') if col_data is not None else None
-        if col_data_type_name is None:
+        data_type_name = m_column.data.data_type_name
+        if data_type_name is None:
             logger.fatal(f"data_type_name of column {col_name} missing from metadata")
             return 1
-        if col_data_type_name.get_value() == 'string':
+        if data_type_name == 'string':
             categorical_features_list.append(col_name)
-        else:  # if col_obj.type == 'int' or col_obj.type == 'float':
+        else:
             quantitative_features_list.append(col_name)
 
     return categorical_features_list, quantitative_features_list
