@@ -340,7 +340,7 @@ def test_metadata_main():
     assert m_tb_private_sql.tau == 99.0
     assert m_tb_private_sql.use_dpsu
     assert m_table.private_synthesis.synth_allowed
-    assert len(m_table.column_names()) == 5
+    assert len(m_table) == 5
     m_col_user_id = m_table.column(name='user_id')
     assert m_col_user_id.data.data_type_name == 'int'
     assert m_col_user_id.data.name == 'user_id'
@@ -413,7 +413,7 @@ def test_metadata_change():
 def test_column_drop():
     m_interface = prepare_interface()
     m_interface.dataset().database().schema().table().drop_columns(attributes_map={'private_synthesis': {'synthesizable': False}})
-    assert len(m_interface.dataset().database().schema().table().column_names()) == 4
+    assert len(m_interface.dataset().database().schema().table()) == 4
 
 
 def check_ds_name(metadata_dct):

@@ -1,5 +1,6 @@
 from dq0.sdk.data.metadata.attribute.attribute_list import AttributeList
 from dq0.sdk.data.metadata.attribute.attribute_string import AttributeString
+from dq0.sdk.data.metadata.interface.dataset.entity_iterator import EntityIterator
 from dq0.sdk.data.metadata.node.node import Node
 from dq0.sdk.data.metadata.node.node_type import NodeType
 from dq0.sdk.data.metadata.permissions.permissions import Permissions
@@ -68,6 +69,9 @@ class Entity:
 
     def __len__(self):
         return self.get_node().num_child_nodes() if self.get_node() is not None else 0
+
+    def __iter__(self):
+        return EntityIterator(entity=self)
 
     def get_role_uuids(self):
         return self._role_uuids
