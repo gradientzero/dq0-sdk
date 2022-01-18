@@ -2,7 +2,7 @@ from dq0.sdk.data.metadata.metadata import Metadata
 from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
 
 
-def show_metadata_print():
+def test_metadata_print():
     # prepare yaml file
     content = '''meta_dataset:
   format: 'full'
@@ -291,6 +291,9 @@ def show_metadata_print():
 
     print("\n\n+==========+==========+==========+==========+==========+==========+==========+==========+==========+\n\n")
 
+    # finish test
+    print("\nTEST SUCCESSFUL!")
+
 
 if __name__ == "__main__":
-    show_metadata_print()
+    test_metadata_print()

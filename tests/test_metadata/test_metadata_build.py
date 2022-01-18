@@ -13,7 +13,7 @@ def output_metadata(m_interface, request_uuids, step):
     return step
 
 
-def show_metadata_build():
+def test_metadata_build():
     step = 0
 
     # define uuids for rights management.
@@ -83,6 +83,9 @@ def show_metadata_build():
     # again, setting the attribute forced creation.
     step = output_metadata(m_interface=m_interface, request_uuids=request_uuids, step=step)
 
+    # finish test
+    print("\nTEST SUCCESSFUL!")
+
 
 if __name__ == "__main__":
-    show_metadata_build()
+    test_metadata_build()
