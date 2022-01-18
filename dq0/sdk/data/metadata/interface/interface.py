@@ -27,6 +27,9 @@ class Interface(Entity):
         self._metadata = metadata
         self._entities = {}
 
+    def __str__(self, request_uuids=set()):
+        return self.get_metadata().to_dict(request_uuids=request_uuids) if self.get_metadata() is not None else "Empty interface"
+
     def __len__(self):
         return len(self._metadata)
 

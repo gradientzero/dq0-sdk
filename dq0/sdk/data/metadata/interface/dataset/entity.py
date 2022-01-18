@@ -67,6 +67,9 @@ class Entity:
         self._attribute_groups = {}
         self._child_entities = {}
 
+    def __str__(self, request_uuids=set()):
+        return self.get_node().__str__(request_uuids=request_uuids) if self.get_node() is not None else f"Empty interface entity {self._name}"
+
     def __len__(self):
         return self.get_node().num_child_nodes() if self.get_node() is not None else 0
 
