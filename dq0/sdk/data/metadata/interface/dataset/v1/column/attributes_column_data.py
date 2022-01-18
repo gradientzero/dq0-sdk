@@ -16,8 +16,12 @@ class AttributesColumnData(AttributesGroup):
         return self.get_attribute_value(key='data_type_name')
 
     @data_type_name.setter
-    def data_type_name(self, _):
-        raise Exception(f"data_type_name {self.data_type_name} may not be modified")
+    def data_type_name(self, new_data_type_name):
+        self.set_attribute_value(type_name=AttributeType.TYPE_NAME_STRING,
+                                 key='data_type_name',
+                                 value=new_data_type_name,
+                                 permissions=DefaultPermissions.shared_attribute(role_uuids=self.get_role_uuids()),
+                                 allow_modification=False)
 
     @data_type_name.deleter
     def data_type_name(self):

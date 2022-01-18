@@ -132,7 +132,7 @@ class Node:
     def __init__(self, type_name, attributes=None, child_nodes=None, permissions=None):
         if not NodeType.is_valid_type_name(type_name=type_name):
             raise Exception(f"invalid type_name {type_name if type_name is not None else 'None'}")
-        if Attribute.check_list(attribute_list=attributes, check_data=None):
+        if Attribute.check_list(attribute_list=attributes):
             raise Exception("node may not have list of attributes with multiple null keys")
         Node.check_list_merge_duplicates(node_list=child_nodes, allowed_type_names=None, allowed_permissions=None)
         Permissions.check(permissions=permissions)

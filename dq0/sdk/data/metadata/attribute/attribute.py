@@ -45,14 +45,14 @@ class Attribute:
         if 0 < regular_key_count and 1 < none_key_count:
             raise Exception(f"may only have single none (null) key in list with regular keys, "
                             f"there is {regular_key_count} regular key(s) and {none_key_count} none key(s)")
-        return regular_key_count == 0 and 0 < none_key_count
+        return regular_key_count == 0 and 1 < none_key_count
 
     @staticmethod
     def are_merge_compatible(attribute_list_a, attribute_list_b, explanation=None):
         if attribute_list_a is None or len(attribute_list_a) == 0 or attribute_list_b is None or len(attribute_list_b) == 0:
             return True
-        _ = Attribute.check_list(attribute_list=attribute_list_a, check_data=None)
-        _ = Attribute.check_list(attribute_list=attribute_list_b, check_data=None)
+        Attribute.check_list(attribute_list=attribute_list_a, check_data=None)
+        Attribute.check_list(attribute_list=attribute_list_b, check_data=None)
         for attribute_a in attribute_list_a:
             for attribute_b in attribute_list_b:
                 if attribute_a.get_key() == attribute_b.get_key() and not attribute_a.is_merge_compatible_with(other=attribute_b, explanation=explanation):

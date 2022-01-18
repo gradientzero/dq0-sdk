@@ -34,6 +34,11 @@ class AttributesGroup:
     def is_empty(self):
         return self._attribute_list is None
 
+    def set_attribute_list(self, new_attribute_list):
+        if self._attribute_list is not None:
+            raise Exception("cannot modify existing attribute list")
+        self._attribute_list = new_attribute_list
+
     def delete(self):
         if len(self._attribute_list.get_value()) != 0:
             keys = set()
@@ -52,7 +57,7 @@ class AttributesGroup:
         attribute = self._attribute_list.get_attribute(key=key) if self._attribute_list is not None else None
         return attribute.get_value() if attribute is not None else None
 
-    def set_attribute_value(self, type_name, key, value, permissions):
+    def set_attribute_value(self, type_name, key, value, permissions, allow_modification=True):
         attribute = self.get_attribute(key=key)
         if attribute is None:
             if self._attribute_list is None:
@@ -62,6 +67,8 @@ class AttributesGroup:
             self._attribute_list.add_attribute(attribute=AttributeUtils.attribute_from(
                 type_name=type_name, key=key, value=value, permissions=permissions))
         else:
+            if not allow_modification:
+                raise Exception(f"attribute {key} is already set and cannot be modified")
             if attribute.get_type_name() != type_name:
                 raise Exception(f"type_name mismatch: {attribute.get_type_name()} != {type_name}")
             AttributeUtils.match_and_check(type_name=type_name, value=value)

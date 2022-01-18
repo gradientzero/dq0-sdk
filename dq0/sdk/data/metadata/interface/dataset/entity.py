@@ -85,15 +85,31 @@ class Entity:
     def get_node(self):
         return self._node
 
-    def create(self):
+    def create(self, initiating_attribute=None):
         if self.get_node() is not None:
             return
-        self._node = Node(type_name=self._type_name, attributes=[
-            AttributeList(key='data', value=[
-                AttributeString(key='name', value=self._name, permissions=self._name_permissions)
-            ], permissions=self._data_permissions)
-        ], child_nodes=None, permissions=self._permissions)
+        data_attribute = None
+        return_attribute = None
+        if initiating_attribute is None or initiating_attribute.get_key() != 'data':
+            data_attribute = AttributeList(key='data', value=[AttributeString(key='name', value=self._name, permissions=self._name_permissions)],
+                                           permissions=self._data_permissions)
+            if 'data' in self._attribute_groups:
+                self._attribute_groups['data'].set_attribute_list(new_attribute_list=data_attribute)
+            return_attribute = initiating_attribute
+        else:
+            name_attribute = initiating_attribute.get_attribute(key='name')
+            if name_attribute is not None:
+                name_value = name_attribute.get_value()
+                if not isinstance(name_value, str):
+                    raise Exception(f"existing name value {name_value} is not of type str, is of type {type(name_value)} instead")
+                if name_value != self._name:
+                    raise Exception(f"existing name value mismatch: {name_value} != {self._name}")
+            else:
+                initiating_attribute.add_attribute(attribute=AttributeString(key='name', value=self._name, permissions=self._name_permissions))
+            data_attribute = initiating_attribute
+        self._node = Node(type_name=self._type_name, attributes=[data_attribute], child_nodes=None, permissions=self._permissions)
         self._parent.add_child_node(child_node=self._node)
+        return return_attribute
 
     def delete(self):
         if self.get_node() is None:
@@ -193,8 +209,9 @@ class Entity:
         return child_names
 
     def add_attribute(self, attribute):
-        self.create()
-        self.get_node().add_attribute(attribute=attribute)
+        attribute_to_add = self.create(initiating_attribute=attribute)
+        if attribute_to_add is not None:
+            self.get_node().add_attribute(attribute=attribute_to_add)
 
     def remove_attribute(self, key):
         if self.get_node() is None:
