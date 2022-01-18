@@ -118,6 +118,9 @@ class Metadata:
         nodes_repr += '}'
         return f"Metadata(nodes={nodes_repr}, specifications={{}})"
 
+    def __len__(self):
+        return len(self._nodes)
+
     def get_node(self, root_key):
         if root_key not in self._nodes:
             return None

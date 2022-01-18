@@ -1,5 +1,6 @@
 from dq0.sdk.data.metadata.interface.dataset.entity import Entity
 from dq0.sdk.data.metadata.interface.dataset.v1.dataset.dataset import Dataset
+from dq0.sdk.data.metadata.interface.interface_iterator import InterfaceIterator
 from dq0.sdk.data.metadata.metadata import Metadata
 from dq0.sdk.data.metadata.node.node import Node
 from dq0.sdk.data.metadata.node.node_type import NodeType
@@ -25,6 +26,15 @@ class Interface(Entity):
         Interface.check_specifications(metadata=metadata)
         self._metadata = metadata
         self._entities = {}
+
+    def __len__(self):
+        return len(self._metadata)
+
+    def __iter__(self):
+        return InterfaceIterator(interface=self)
+
+    def to_dict(self, request_uuids=set()):
+        return self.get_metadata().to_dict(request_uuids=request_uuids) if self.get_metadata() is not None else None
 
     def get_metadata(self):
         return self._metadata
