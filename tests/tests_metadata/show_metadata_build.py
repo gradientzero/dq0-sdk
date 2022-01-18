@@ -62,7 +62,7 @@ def show_metadata_build():
     # set the csv's uri=filepath and you have created a useful minimal metadata
     connector.uri = '../dq0-sdk/dq0/examples/census/_data/adult_with_rand_names.csv'
 
-    # setting the attribute field forced creation of all underlying meta elements.
+    # the final metadata
     step = output_metadata(m_interface=m_interface, request_uuids=request_uuids, step=step)
 
 
