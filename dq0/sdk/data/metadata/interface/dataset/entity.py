@@ -93,7 +93,7 @@ class Entity:
                 AttributeString(key='name', value=self._name, permissions=self._name_permissions)
             ], permissions=self._data_permissions)
         ], child_nodes=None, permissions=self._permissions)
-        self._parent.add_child_node(node=self._node)
+        self._parent.add_child_node(child_node=self._node)
 
     def delete(self):
         if self.get_node() is None:
