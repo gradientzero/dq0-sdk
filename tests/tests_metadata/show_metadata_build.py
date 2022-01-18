@@ -65,6 +65,24 @@ def show_metadata_build():
     # the final metadata
     step = output_metadata(m_interface=m_interface, request_uuids=request_uuids, step=step)
 
+    # STEP 5
+    # continue until the first column
+    m_column = m_dataset.database().schema(name='test_schema').table(name='test_table').column(name='test_column_a')
+
+    # observe that database can be called without arguments, which is equivalent to calling with index=0 and which
+    # works here, because database already exists. all other elements must be called by their new name.
+
+    # there are no changes yet, as you have not created the column yet.
+    step = output_metadata(m_interface=m_interface, request_uuids=request_uuids, step=step)
+
+    # STEP 6
+    # similar to connector depending on its type_name, many attribute groups of column depend on its data_type_name.
+    # thus, you should set it early on.
+    m_column.data.data_type_name = 'int'
+
+    # again, setting the attribute forced creation.
+    step = output_metadata(m_interface=m_interface, request_uuids=request_uuids, step=step)
+
 
 if __name__ == "__main__":
     show_metadata_build()
