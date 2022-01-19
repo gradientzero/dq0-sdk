@@ -51,14 +51,14 @@ class Schema:
         Attribute.check_list(attribute_list=attributes, check_data={
             'data': ([AttributeType.TYPE_NAME_LIST], shared_attribute),
             'differential_privacy': ([AttributeType.TYPE_NAME_LIST], owner_attribute),
-        })
+        }, required_keys={'data'})
         data_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'data'] if attributes is not None else []
         if 0 < len(data_attributes):
             Attribute.check_list(attribute_list=data_attributes[0].get_value(), check_data={
                 'description': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
                 'metadata_is_public': ([AttributeType.TYPE_NAME_BOOLEAN], shared_attribute),
                 'name': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
-            })
+            }, required_keys={'name'})
         differential_privacy_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'differential_privacy'] \
             if attributes is not None else []
         if 0 < len(differential_privacy_attributes):

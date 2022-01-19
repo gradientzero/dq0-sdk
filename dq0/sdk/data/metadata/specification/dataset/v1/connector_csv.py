@@ -2,6 +2,7 @@ from dq0.sdk.data.metadata.attribute.attribute import Attribute
 from dq0.sdk.data.metadata.attribute.attribute_list import AttributeList
 from dq0.sdk.data.metadata.attribute.attribute_type import AttributeType
 from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
+from dq0.sdk.data.metadata.specification.json.utils import Utils as JsonUtils
 
 
 class ConnectorCSV:
@@ -74,3 +75,64 @@ class ConnectorCSV:
             for tmp_attribute in na_value_attributes[0].get_value():
                 if tmp_attribute.get_key() is None:
                     raise Exception("na_values may not have none keys")
+
+    @staticmethod
+    def json_schema():
+        indent = "          "
+        decimal_json_schema = JsonUtils.attribute_json_schema(
+            type_name=AttributeType.TYPE_NAME_STRING, key='decimal', title='Decimal',
+            description="Character to recognize as decimal point when reading the CSV file.").replace('\n', "\n" + indent)
+        sep_json_schema = JsonUtils.attribute_json_schema(
+            type_name=AttributeType.TYPE_NAME_STRING, key='sep', title='Sep',
+            description="Delimiter to use when reading the CSV file.").replace('\n', "\n" + indent)
+        uri_json_schema = JsonUtils.attribute_json_schema(
+            type_name=AttributeType.TYPE_NAME_STRING, key='uri', title='URI',
+            description="The URI pointing to the CSV file (usually the filepath).").replace('\n', "\n" + indent)
+        # skipinitialspace_json_schema = JsonUtils.attribute_json_schema(
+        #    type_name=AttributeType.TYPE_NAME_BOOLEAN, key='skipinitialspace', title='Skip Initial Space',
+        #    description="Whether to skip spaces after the delimiter.").replace('\n', "\n" + indent)
+        use_original_header_json_schema = JsonUtils.attribute_json_schema(
+            type_name=AttributeType.TYPE_NAME_BOOLEAN, key='use_original_header', title='Use Original Header',
+            description="Whether to use the header from the CSV file.").replace('\n', "\n" + indent)
+        # type_name_json_schema = ConnectorCSV.type_name_json_schema()
+        # type_name_json_schema_inner = type_name_json_schema.replace('\n', "\n" + indent)
+        # type_name_json_schema_outer = type_name_json_schema.replace('\n', "\n      ")
+
+        attribute_permissions_json_schema = JsonUtils.attribute_permissions_json_schema().replace('\n', "\n    ")
+        return f"""{{
+  "title": "Connector CSV",
+  "description": "This connector defines the CSV file connection of its database.",
+  "type": "object",
+  "properties": {{
+    "type_name": {{
+      "title": "Type Name",
+      "description": "The type name of each attribute group is 'list'.",
+      "type": "string",
+      "const": "list"
+    }},
+    "key": {{
+      "title": "Key",
+      "description": "This attribute group's key is 'connector'.",
+      "type": "string",
+      "const": "connector"
+    }},
+    "value": {{
+      "title": "Value",
+      "description": "Each attribute group has a specific non-empty list of attributes as value.",
+      "type": "array",
+      "minItems": 1,
+      "items": {{
+        "oneOf": [
+          {decimal_json_schema},
+          {sep_json_schema},
+          {uri_json_schema},
+          {use_original_header_json_schema}
+        ]
+      }},
+      "uniqueItemProperties": [ "key" ]
+    }},
+    "permissions": {attribute_permissions_json_schema}
+  }},
+  "required": [ "type_name", "key", "value" ],
+  "additionalProperties": false
+}}"""

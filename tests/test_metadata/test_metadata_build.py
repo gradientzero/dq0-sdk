@@ -83,6 +83,40 @@ def test_metadata_build():
     # again, setting the attribute forced creation.
     step = output_metadata(m_interface=m_interface, request_uuids=request_uuids, step=step)
 
+    # STEP 7
+    # Try changing connector type (this action is not allowed, as other connector fields depend on the type)
+    try:
+        connector.type_name = 'postgresql'
+    except Exception as e:
+        print("Step 7: Trying to set 'connector.type_name' to 'postgresql'\n"
+              f"        correctly raised Exception '{e}'."
+              "\n        One may delete the whole connector, though.")
+
+    # however, one may delete the whole connector. [del only works if called with the accessor of the parent,
+    # i.e., 'del m_database.connector' works, just 'del connector' does not work.]
+    del m_dataset.database().connector
+
+    # the connector is gone.
+    step = output_metadata(m_interface=m_interface, request_uuids=request_uuids, step=step)
+
+    # STEP 8
+    # create a different connector. The same 'connector' object continues to work, however, it is empty after
+    # we deleted the previous connector.
+    connector.type_name = 'postgresql'
+
+    # the new connector appears.
+    step = output_metadata(m_interface=m_interface, request_uuids=request_uuids, step=step)
+
+    # STEP 9
+    # set the remaining attributes, to make it a useful connector.
+    connector.host = 'postgresql1.dq0.io'
+    connector.port = 5432
+    connector.username = 'db_user'
+    connector.password = 'super_secret_dp_password_that_noone_may_ever_even_imagine'
+
+    # again, a useful final metadata.
+    step = output_metadata(m_interface=m_interface, request_uuids=request_uuids, step=step)
+
     # finish test
     print("\nTEST SUCCESSFUL!")
 

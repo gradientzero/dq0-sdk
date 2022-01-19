@@ -36,3 +36,14 @@ class Connector:
             return ConnectorPostgreSQL.verify(attribute=attribute, role_uuids=role_uuids)
         else:
             raise Exception(f"unknown connector type_name {attribute_type_name.get_value()}")
+
+    @staticmethod
+    def json_schema():
+        indent = "    "
+        connector_csv_json_schema = ConnectorCSV.json_schema().replace('\n', "\n" + indent)
+        # connector_postgresql_json_schema = ConnectorPostgreSQL.json_schema().replace('\n', "\n" + indent)
+        return f"""{{
+  "oneOf": [
+    {connector_csv_json_schema}
+  ]
+}}"""
