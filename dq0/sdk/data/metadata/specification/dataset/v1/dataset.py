@@ -4,6 +4,7 @@ from dq0.sdk.data.metadata.node.node import Node
 from dq0.sdk.data.metadata.node.node_type import NodeType
 from dq0.sdk.data.metadata.specification.dataset.v1.database import Database
 from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
+from dq0.sdk.data.metadata.specification.json.utils import Utils as JsonUtils
 
 
 class Dataset:
@@ -84,3 +85,227 @@ class Dataset:
                 names.add(name_attribute.get_value())
         if len(names) != len(child_nodes):
             raise Exception(f"names {names} are not enough for each of the {len(child_nodes)} child nodes to have a unique name")
+
+    @staticmethod
+    def tags_json_schema():
+        attribute_permissions_json_schema = JsonUtils.attribute_permissions_json_schema()
+        return f"""{{
+  "title": "Tags",
+  "description": "Tags attribute object. Represents a list of string tags.",
+  "type": "object",
+  "properties": {{
+    "type_name": {{
+      "title": "Type Name",
+      "description": "The tags attribute is of type 'list'.",
+      "type": "string",
+      "const": "list"
+    }},
+    "key": {{
+      "title": "Key",
+      "description": "This attribute's key is 'tags'.",
+      "type": "string",
+      "const": "tags"
+    }},
+    "value": {{
+      "title": "Value",
+      "description": "The tags attribute's value is a list of tag attributes.",
+      "type": "array",
+      "minItems": 1,
+      "items": {{
+        "title": "Item",
+        "description": "Each item is a tag.",
+        "type": "object",
+        "properties": {{
+          "type_name": {{
+            "title": "Type Name",
+            "description": "A tag is of type 'string'.",
+            "type": "string",
+            "const": "string"
+          }},
+          "key": {{
+            "title": "Key",
+            "description": "A tag may not have a key set.",
+            "type": "null"
+          }},
+          "value": {{
+            "title": "Value",
+            "description": "A tag's string value.",
+            "type": "string"
+          }},
+          "permissions": {attribute_permissions_json_schema}
+        }},
+        "required": [ "type_name", "value" ],
+        "additionalProperties": false
+      }}
+    }},
+    "permissions": {attribute_permissions_json_schema}
+  }},
+  "required": [ "type_name", "key", "value" ],
+  "additionalProperties": false
+}}"""
+
+    @staticmethod
+    def data_json_schema():
+        indent = "          "
+        description_json_schema = JsonUtils.attribute_json_schema(
+            AttributeType.TYPE_NAME_STRING, 'description', 'Description',
+            "The description of the defined dataset.").replace('\n', "\n" + indent)
+        metadata_is_public_json_schema = JsonUtils.attribute_json_schema(
+            AttributeType.TYPE_NAME_BOOLEAN, 'metadata_is_public', "Metadata is Public",
+            "Whether the provided metadata in this file is visible to all users.").replace('\n', "\n" + indent)
+        name_json_schema = JsonUtils.attribute_json_schema(
+            AttributeType.TYPE_NAME_STRING, 'name', 'Name',
+            "The name of the defined dataset.").replace('\n', "\n" + indent)
+        tags_json_schema = Dataset.tags_json_schema().replace('\n', "\n" + indent)
+        attribute_permissions_json_schema = JsonUtils.attribute_permissions_json_schema()
+        return f"""{{
+  "title": "Data",
+  "description": "The data attributes group. Contains general attributes of the outer data object.",
+  "type": "object",
+  "properties": {{
+    "type_name": {{
+      "title": "Type Name",
+      "description": "The type name of each attribute group is 'list'.",
+      "type": "string",
+      "const": "list"
+    }},
+    "key": {{
+      "title": "Key",
+      "description": "This attribute group's key is 'data'.",
+      "type": "string",
+      "const": "data"
+    }},
+    "value": {{
+      "title": "Value",
+      "description": "Each attribute group has a specific non-empty list of attributes as value. Here, the 'name' attribute is mandatory.",
+      "type": "array",
+      "minItems": 1,
+      "contains": {name_json_schema},
+      "items": {{
+        "oneOf": [
+          {description_json_schema},
+          {metadata_is_public_json_schema},
+          {name_json_schema},
+          {tags_json_schema}
+        ]
+      }},
+      "uniqueItemProperties": [ "key" ]
+    }},
+    "permissions": {attribute_permissions_json_schema}
+  }},
+  "required": [ "type_name", "key", "value" ],
+  "additionalProperties": false
+}}"""
+
+    @staticmethod
+    def privacy_level_json_schema():
+        attribute_permissions_json_schema = JsonUtils.attribute_permissions_json_schema()
+        return f"""{{
+  "title": "Privacy Level",
+  "description": "The privacy level determines the amount of data privacy protection.",
+  "type": "object",
+  "properties": {{
+    "type_name": {{
+      "title": "Type Name",
+      "description": "The privacy level attribute is of type 'int'.",
+      "type": "string",
+      "const": "int"
+    }},
+    "key": {{
+      "title": "Key",
+      "description": "This attribute's key is 'privacy_level'.",
+      "type": "string",
+      "const": "privacy_level"
+    }},
+    "value": {{
+      "title": "Value",
+      "description": "The privacy level attribute's value may only have one of the values [0, 1, 2].",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2
+    }},
+    "permissions": {attribute_permissions_json_schema}
+  }},
+  "required": [ "type_name", "key", "value" ],
+  "additionalProperties": false
+}}"""
+
+    @staticmethod
+    def differential_privacy_json_schema():
+        indent = "          "
+        privacy_level_json_schema = Dataset.privacy_level_json_schema().replace('\n', "\n" + indent)
+        attribute_permissions_json_schema = JsonUtils.attribute_permissions_json_schema()
+        return f"""{{
+  "title": "Differential Privacy",
+  "description": "The differential privacy attributes group. Contains attributes pertaining differentially private data protection mechanisms.",
+  "type": "object",
+  "properties": {{
+    "type_name": {{
+      "title": "Type Name",
+      "description": "The type name of each attribute group is 'list'.",
+      "type": "string",
+      "const": "list"
+    }},
+    "key": {{
+      "title": "Key",
+      "description": "This attribute group's key is 'differential_privacy'.",
+      "type": "string",
+      "const": "differential_privacy"
+    }},
+    "value": {{
+      "title": "Value",
+      "description": "Each attribute group has a specific non-empty list of attributes as value.",
+      "type": "array",
+      "minItems": 1,
+      "items": {{
+        "oneOf": [
+          {privacy_level_json_schema}
+        ]
+      }},
+      "uniqueItemProperties": [ "key" ]
+    }},
+    "permissions": {attribute_permissions_json_schema}
+  }},
+  "required": [ "type_name", "key", "value" ],
+  "additionalProperties": false
+}}"""
+
+    @staticmethod
+    def json_schema():
+        indent = "          "
+        data_json_schema = Dataset.data_json_schema().replace('\n', "\n" + indent)
+        differential_privacy_json_schema = Dataset.differential_privacy_json_schema().replace('\n', "\n" + indent)
+        node_permissions_json_schema = JsonUtils.node_permissions_json_schema()
+        return f"""{{
+  "title": "Dataset",
+  "description": "The main dataset node in the metadata structure.",
+  "type": "object",
+  "properties": {{
+    "type_name": {{
+      "title": "Type Name",
+      "description": "The type name of a dataset is 'dataset'.",
+      "type": "string",
+      "const": "dataset"
+    }},
+    "attributes": {{
+      "title": "Attributes",
+      "description": "The attribute groups of a dataset. The 'data' group is mandatory.",
+      "type": "array",
+      "minItems": 1,
+      "contains": {data_json_schema},
+      "items": {{
+        "oneOf": [
+          {data_json_schema},
+          {differential_privacy_json_schema}
+        ]
+      }},
+      "uniqueItemProperties": [ "key" ]
+    }},
+    "child_nodes": {{
+      "type": "array"
+    }},
+    "permissions": {node_permissions_json_schema}
+  }},
+  "required": [ "type_name", "attributes" ],
+  "additionalProperties": false
+}}"""
