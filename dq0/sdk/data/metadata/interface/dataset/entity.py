@@ -71,7 +71,7 @@ class Entity:
         return self.get_node().__str__(request_uuids=request_uuids) if self.get_node() is not None else f"Empty interface entity {self._name}"
 
     def __len__(self):
-        return self.get_node().num_child_nodes() if self.get_node() is not None else 0
+        return len(self.get_node()) if self.get_node() is not None else 0
 
     def __iter__(self):
         return EntityIterator(entity=self)
@@ -204,8 +204,8 @@ class Entity:
         child_names = set()
         for child_node in self.get_node().get_child_nodes() if self.get_node() is not None else []:
             child_names.add(Entity.name_of(node=child_node))
-        if len(child_names) != self.get_node().num_child_nodes():
-            raise Exception(f"length mismatch; child_names are not unique: {len(child_names)} != {len(self.get_node().num_child_nodes())}")
+        if len(self) != len(child_names):
+            raise Exception(f"length mismatch; child_names are not unique: {len(self)} != {len(child_names)}")
         return child_names
 
     def add_attribute(self, attribute):

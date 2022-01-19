@@ -35,6 +35,7 @@ def test_metadata_build():
     m_interface = Interface(metadata=metadata, role_uuids=role_uuids)
 
     # the metadata is empty
+    assert len(metadata) == 0
     step = output_metadata(m_interface=m_interface, request_uuids=request_uuids, step=step)
 
     # STEP 2
@@ -49,6 +50,7 @@ def test_metadata_build():
     connector = m_dataset.database(name='test_database').connector
 
     # the metadata is still empty, as no element has been created yet.
+    assert len(metadata) == 0
     step = output_metadata(m_interface=m_interface, request_uuids=request_uuids, step=step)
 
     # STEP 3
@@ -56,6 +58,8 @@ def test_metadata_build():
     connector.type_name = 'csv'
 
     # setting the attribute field forced creation of all underlying meta elements.
+    assert len(metadata) == 1
+    assert len(metadata.get_node(root_key='dataset')) == 1
     step = output_metadata(m_interface=m_interface, request_uuids=request_uuids, step=step)
 
     # STEP 4
@@ -63,6 +67,8 @@ def test_metadata_build():
     connector.uri = '../dq0-sdk/dq0/examples/census/_data/adult_with_rand_names.csv'
 
     # the final metadata
+    assert metadata.get_node(root_key='dataset').get_child_node(index=0).get_attribute(key='connector').get_attribute(
+        key='uri').get_value() == '../dq0-sdk/dq0/examples/census/_data/adult_with_rand_names.csv'
     step = output_metadata(m_interface=m_interface, request_uuids=request_uuids, step=step)
 
     # STEP 5
@@ -73,6 +79,7 @@ def test_metadata_build():
     # works here, because database already exists. all other elements must be called by their new name.
 
     # there are no changes yet, as you have not created the column yet.
+    assert len(metadata.get_node(root_key='dataset').get_child_node(index=0)) == 0
     step = output_metadata(m_interface=m_interface, request_uuids=request_uuids, step=step)
 
     # STEP 6
@@ -81,6 +88,12 @@ def test_metadata_build():
     m_column.data.data_type_name = 'int'
 
     # again, setting the attribute forced creation.
+    assert len(metadata.get_node(root_key='dataset').get_child_node(index=0)) == 1
+    assert len(metadata.get_node(root_key='dataset').get_child_node(index=0).get_child_node(index=0)) == 1
+    assert len(metadata.get_node(root_key='dataset').get_child_node(index=0).get_child_node(index=0).get_child_node(index=0)) == 1
+    column = metadata.get_node(root_key='dataset').get_child_node(index=0).get_child_node(index=0).get_child_node(index=0).get_child_node(index=0)
+    assert column.get_attribute(key='data').get_attribute(key='name').get_value() == 'test_column_a'
+    assert column.get_attribute(key='data').get_attribute(key='data_type_name').get_value() == 'int'
     step = output_metadata(m_interface=m_interface, request_uuids=request_uuids, step=step)
 
     # STEP 7
@@ -97,6 +110,7 @@ def test_metadata_build():
     del m_dataset.database().connector
 
     # the connector is gone.
+    assert metadata.get_node(root_key='dataset').get_child_node(index=0).get_attribute(key='connector') is None
     step = output_metadata(m_interface=m_interface, request_uuids=request_uuids, step=step)
 
     # STEP 8
@@ -105,6 +119,8 @@ def test_metadata_build():
     connector.type_name = 'postgresql'
 
     # the new connector appears.
+    assert metadata.get_node(root_key='dataset').get_child_node(index=0).get_attribute(key='connector').get_attribute(
+        key='type_name').get_value() == 'postgresql'
     step = output_metadata(m_interface=m_interface, request_uuids=request_uuids, step=step)
 
     # STEP 9
@@ -115,6 +131,8 @@ def test_metadata_build():
     connector.password = 'super_secret_dp_password_that_noone_may_ever_even_imagine'
 
     # again, a useful final metadata.
+    assert metadata.get_node(root_key='dataset').get_child_node(index=0).get_attribute(key='connector').get_attribute(
+        key='password').get_value() == 'super_secret_dp_password_that_noone_may_ever_even_imagine'
     step = output_metadata(m_interface=m_interface, request_uuids=request_uuids, step=step)
 
     # finish test

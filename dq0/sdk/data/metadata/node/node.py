@@ -164,6 +164,9 @@ class Node:
             "child_nodes=" + repr(self._child_nodes) + ", " + \
             "permissions=" + repr(self._permissions) + ')'
 
+    def __len__(self):
+        return len(self._child_nodes) if self._child_nodes is not None else 0
+
     def __eq__(self, other):
         if not isinstance(other, Node):
             return False
@@ -323,11 +326,6 @@ class Node:
                 del self._attributes[tmp_index]
                 return
         raise Exception("attribute not found")
-
-    def num_child_nodes(self):
-        if self._child_nodes is None:
-            return 0
-        return len(self._child_nodes)
 
     def get_child_nodes(self, index=-1, attributes_map=None):
         if index < 0 and attributes_map is None:
