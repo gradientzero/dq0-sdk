@@ -83,9 +83,9 @@ class ConnectorCSV:
             key='connector',
             group_name='connector csv',
             description="The 'connector csv' attributes group.",
-            additional_description="Requires 'type name' attribute.",
+            additional_description="Requires 'type_name' attribute.",
             contains=JsonSchemaAttribute.json_schema(
-                key='type_name', attribute_name='type name', description="This item ensures that the 'type name' attribute is present.",
+                key='type_name', attribute_name="type name", description="This item ensures that the 'type_name' attribute is present.",
                 type_name=AttributeType.TYPE_NAME_STRING),
             attributes=[
                 JsonSchemaAttribute.json_schema(

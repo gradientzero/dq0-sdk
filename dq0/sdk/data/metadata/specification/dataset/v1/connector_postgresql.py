@@ -52,9 +52,9 @@ class ConnectorPostgreSQL:
             key='connector',
             group_name='connector postgresql',
             description="The 'connector postgresql' attributes group.",
-            additional_description="Requires 'type name' attribute.",
+            additional_description="Requires 'type_name' attribute.",
             contains=JsonSchemaAttribute.json_schema(
-                key='type_name', attribute_name='type name', description="This item ensures that the 'type name' attribute is present.",
+                key='type_name', attribute_name="type name", description="This item ensures that the 'type_name' attribute is present.",
                 type_name=AttributeType.TYPE_NAME_STRING),
             attributes=[
                 JsonSchemaAttribute.json_schema(
@@ -79,7 +79,7 @@ class ConnectorPostgreSQL:
                 ),
                 JsonSchemaAttribute.json_schema(
                     key='type_name',
-                    attribute_name='type name',
+                    attribute_name="type name",
                     description="The 'type name' attribute specifies the type of connector. In this case it is a 'postgresql' connector.",
                     type_name=AttributeType.TYPE_NAME_STRING,
                     additional_value="\"const\": \"postgresql\""

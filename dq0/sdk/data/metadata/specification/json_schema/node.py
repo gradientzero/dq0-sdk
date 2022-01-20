@@ -15,12 +15,11 @@ class Node:
             if index < len(attributes_groups) - 1:
                 attributes_groups_items += ','
         contains_json = AttributesGroup.json_schema(
-            key='data', group_name='data', description="This item ensures, that the 'data' attributes group is present.",
-            contains=Attribute.json_schema(
-                key='name', attribute_name='name', description="This item ensures that the 'name' attribute is present.",
-                type_name=AttributeType.TYPE_NAME_STRING)).replace("\n", "\n  ")
+            key='data',
+            group_name='data',
+            description="This item ensures, that the 'data' attributes group is present.").replace("\n", "\n  ")
         return f""""attributes": {{
-  "description": "List of attribute groups of a '{node_type_name}' node. Requires 'data' attributes group with 'name' attribute.",
+  "description": "List of attribute groups of a '{node_type_name}' node. Requires 'data' attributes group.",
   "type": "array",
   "minItems": 1,
   "contains": {contains_json},
@@ -84,14 +83,22 @@ class Node:
             key='name',
             attribute_name='name',
             description=f"The 'name' attribute. Mandatory and required to be unique among all elements of type '{node_type_name}'.",
-            type_name=AttributeType.TYPE_NAME_STRING)
+            type_name=AttributeType.TYPE_NAME_STRING
+        )
 
     @staticmethod
     def data_attributes_group(attributes):
         return AttributesGroup.json_schema(
             key='data',
             group_name='data',
-            description="The 'data' attributes group. This group is mandatory and must contain at least the 'name' attribute.",
+            description="The 'data' attributes group. This group is required.",
+            additional_description="Requires a 'name' attribute.",
+            contains=Attribute.json_schema(
+                key='name',
+                attribute_name='name',
+                description="This item ensures that the 'name' attribute is present.",
+                type_name=AttributeType.TYPE_NAME_STRING
+            ),
             attributes=attributes)
 
     @staticmethod
