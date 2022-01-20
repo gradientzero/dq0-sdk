@@ -1,9 +1,9 @@
 import os
 
-from dq0.sdk.data.metadata.node.node import Node
-from dq0.sdk.data.metadata.node.node_factory import NodeFactory
 from dq0.sdk.data.metadata.specification.specification import Specification
 from dq0.sdk.data.metadata.specification.specification_factory import SpecificationFactory
+from dq0.sdk.data.metadata.structure.node.node import Node
+from dq0.sdk.data.metadata.structure.node.node_factory import NodeFactory
 
 import yaml
 
@@ -172,18 +172,18 @@ class Metadata:
                 filtered_nodes[root_key] = node.copy()
         return Metadata(nodes=filtered_nodes, specifications=specifications)
 
-    def to_dict(self, request_uuids=set()):
+    def to_dict(self, request_uuids=set(), full=True):
         return {tmp_key: tmp_value for tmp_key, tmp_value in [
-            (f"meta_{root_key}", self.root_node_to_dict(root_key=root_key, request_uuids=request_uuids))
+            (f"meta_{root_key}", self.root_node_to_dict(root_key=root_key, request_uuids=request_uuids, full=full))
             for root_key in self._nodes
         ] if tmp_value is not None}
 
-    def root_node_to_dict(self, root_key, request_uuids=set()):
+    def root_node_to_dict(self, root_key, request_uuids=set(), full=True):
         if root_key not in self._nodes:
             return None
         return {tmp_key: tmp_value for tmp_key, tmp_value in [
-            ('format', NodeFactory.FORMAT_TYPE_FULL),
-            ('node', self._nodes[root_key].to_dict(request_uuids=request_uuids)),
+            ('format', NodeFactory.FORMAT_TYPE_FULL if full else NodeFactory.FORMAT_TYPE_SIMPLE),
+            ('node', self._nodes[root_key].to_dict(request_uuids=request_uuids, full=full)),
             ('specification', str(self._specifications[root_key]) if root_key in self._specifications else None),
         ] if tmp_value is not None}
 

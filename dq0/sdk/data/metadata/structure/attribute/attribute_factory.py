@@ -1,13 +1,13 @@
 from datetime import datetime
 
-from dq0.sdk.data.metadata.attribute.attribute_boolean import AttributeBoolean
-from dq0.sdk.data.metadata.attribute.attribute_datetime import AttributeDatetime
-from dq0.sdk.data.metadata.attribute.attribute_float import AttributeFloat
-from dq0.sdk.data.metadata.attribute.attribute_int import AttributeInt
-from dq0.sdk.data.metadata.attribute.attribute_list import AttributeList
-from dq0.sdk.data.metadata.attribute.attribute_string import AttributeString
-from dq0.sdk.data.metadata.attribute.attribute_type import AttributeType
-from dq0.sdk.data.metadata.permissions.permissions_factory import PermissionsFactory
+from dq0.sdk.data.metadata.structure.attribute.attribute_boolean import AttributeBoolean
+from dq0.sdk.data.metadata.structure.attribute.attribute_datetime import AttributeDatetime
+from dq0.sdk.data.metadata.structure.attribute.attribute_float import AttributeFloat
+from dq0.sdk.data.metadata.structure.attribute.attribute_int import AttributeInt
+from dq0.sdk.data.metadata.structure.attribute.attribute_list import AttributeList
+from dq0.sdk.data.metadata.structure.attribute.attribute_string import AttributeString
+from dq0.sdk.data.metadata.structure.attribute.attribute_type import AttributeType
+from dq0.sdk.data.metadata.structure.permissions.permissions_factory import PermissionsFactory
 
 
 class AttributeFactory:

@@ -1,7 +1,7 @@
-from dq0.sdk.data.metadata.attribute.attribute_factory import AttributeFactory
-from dq0.sdk.data.metadata.node.node import Node
-from dq0.sdk.data.metadata.node.node_type import NodeType
-from dq0.sdk.data.metadata.permissions.permissions_factory import PermissionsFactory
+from dq0.sdk.data.metadata.structure.attribute.attribute_factory import AttributeFactory
+from dq0.sdk.data.metadata.structure.node.node import Node
+from dq0.sdk.data.metadata.structure.node.node_type import NodeType
+from dq0.sdk.data.metadata.structure.permissions.permissions_factory import PermissionsFactory
 
 
 class NodeFactory:

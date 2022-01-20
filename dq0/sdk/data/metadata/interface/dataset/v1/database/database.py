@@ -3,8 +3,8 @@ from dq0.sdk.data.metadata.interface.dataset.v1.database.attributes_database_con
 from dq0.sdk.data.metadata.interface.dataset.v1.database.attributes_database_data import AttributesDatabaseData
 from dq0.sdk.data.metadata.interface.dataset.v1.database.attributes_database_differential_privacy import AttributesDatabaseDifferentialPrivacy
 from dq0.sdk.data.metadata.interface.dataset.v1.schema.schema import Schema
-from dq0.sdk.data.metadata.node.node_type import NodeType
 from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
+from dq0.sdk.data.metadata.structure.node.node_type import NodeType
 
 
 class Database(Entity):

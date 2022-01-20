@@ -12,7 +12,7 @@ import os
 from dq0.examples.census.raw.model.user_model import UserModel
 from dq0.makedp.trainer.tf.probability_calibration. \
     neural_network_probs_calibration import CalibratedNeuralNetworkClassifier
-from dq0.sdk.data.metadata.utils.dummy_utils import DummyUtils
+from dq0.sdk.data.metadata.structure.utils.dummy_utils import DummyUtils
 from dq0.sdk.data.text.csv import CSV
 from dq0.sdk.data.utils import util
 

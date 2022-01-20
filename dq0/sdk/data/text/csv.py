@@ -7,7 +7,7 @@ Copyright 2020, Gradient Zero
 All rights reserved
 """
 
-from dq0.sdk.data.metadata.utils.utils import Utils as MetaUtils
+from dq0.sdk.data.metadata.structure.utils.utils import Utils as MetaUtils
 from dq0.sdk.data.source import Source
 
 import pandas as pd

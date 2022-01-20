@@ -1,11 +1,11 @@
-from dq0.sdk.data.metadata.attribute.attribute import Attribute
-from dq0.sdk.data.metadata.attribute.attribute_type import AttributeType
-from dq0.sdk.data.metadata.explanation import Explanation
-from dq0.sdk.data.metadata.merge_exception import MergeException
-from dq0.sdk.data.metadata.permissions.action import Action
-from dq0.sdk.data.metadata.permissions.permissions import Permissions
-from dq0.sdk.data.metadata.utils.list_utils import ListUtils
-from dq0.sdk.data.metadata.utils.str_utils import StrUtils
+from dq0.sdk.data.metadata.structure.attribute.attribute import Attribute
+from dq0.sdk.data.metadata.structure.attribute.attribute_type import AttributeType
+from dq0.sdk.data.metadata.structure.explanation import Explanation
+from dq0.sdk.data.metadata.structure.merge_exception import MergeException
+from dq0.sdk.data.metadata.structure.permissions.action import Action
+from dq0.sdk.data.metadata.structure.permissions.permissions import Permissions
+from dq0.sdk.data.metadata.structure.utils.list_utils import ListUtils
+from dq0.sdk.data.metadata.structure.utils.str_utils import StrUtils
 
 
 class AttributeList(Attribute):
@@ -47,14 +47,12 @@ class AttributeList(Attribute):
         copied_attribute.set_explicit_list_element(is_explicit_list_element=self.is_explicit_list_element())
         return copied_attribute
 
-    def to_dict(self, request_uuids=set()):
-        super_dict = super().to_dict(request_uuids=request_uuids)
-        if super_dict is None:
-            return None
-        self_dict = {tmp_key: tmp_value for tmp_key, tmp_value in [
-            ('value', ListUtils.list_map_to_dict(self.get_value(), request_uuids=request_uuids)),
-        ] if tmp_value is not None}
-        return {**super_dict, **self_dict}
+    def to_dict(self, request_uuids=set(), full=True):
+        if full:
+            value = ListUtils.list_map_to_dict(self.get_value(), request_uuids=request_uuids)
+        else:
+            value = ListUtils.merge_list_of_dicts(list_of_dicts=ListUtils.list_map_to_dict(self.get_value(), request_uuids=request_uuids, full=False))
+        return super().to_dict(value=value, request_uuids=request_uuids, full=full)
 
     def to_list(self, request_uuids=set()):
         if not Permissions.is_allowed_with(permissions=self.permissions, action=Action.READ, request_uuids=request_uuids):

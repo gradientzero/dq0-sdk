@@ -1,6 +1,6 @@
 from dq0.sdk.data.metadata.interface.interface import Interface
-from dq0.sdk.data.metadata.metadata import Metadata
 from dq0.sdk.data.metadata.specification.dataset.v1.specification_v1 import SpecificationV1 as DatasetSpecificationV1
+from dq0.sdk.data.metadata.structure.metadata import Metadata
 
 
 def output_metadata(m_interface, request_uuids, step):

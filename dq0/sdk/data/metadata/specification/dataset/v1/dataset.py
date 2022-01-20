@@ -1,7 +1,7 @@
-from dq0.sdk.data.metadata.attribute.attribute import Attribute
-from dq0.sdk.data.metadata.attribute.attribute_type import AttributeType
-from dq0.sdk.data.metadata.node.node import Node
-from dq0.sdk.data.metadata.node.node_type import NodeType
+from dq0.sdk.data.metadata.structure.attribute.attribute import Attribute
+from dq0.sdk.data.metadata.structure.attribute.attribute_type import AttributeType
+from dq0.sdk.data.metadata.structure.node.node import Node
+from dq0.sdk.data.metadata.structure.node.node_type import NodeType
 from dq0.sdk.data.metadata.specification.dataset.v1.database import Database
 from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
 from dq0.sdk.data.metadata.specification.json_schema.utils import Utils as JsonSchemaUtils

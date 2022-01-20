@@ -1,5 +1,5 @@
 """Auto populate dq0 metadata from CSV"""
-from dq0.sdk.data.metadata.metadata import Metadata
+from dq0.sdk.data.metadata.structure.metadata import Metadata
 
 import yaml
 

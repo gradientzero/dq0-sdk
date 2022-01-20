@@ -1,6 +1,6 @@
-from dq0.sdk.data.metadata.attribute.attribute import Attribute
-from dq0.sdk.data.metadata.attribute.attribute_list import AttributeList
-from dq0.sdk.data.metadata.attribute.attribute_type import AttributeType
+from dq0.sdk.data.metadata.structure.attribute.attribute import Attribute
+from dq0.sdk.data.metadata.structure.attribute.attribute_list import AttributeList
+from dq0.sdk.data.metadata.structure.attribute.attribute_type import AttributeType
 from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
 from dq0.sdk.data.metadata.specification.json_schema.utils import Utils as JsonSchemaUtils
 

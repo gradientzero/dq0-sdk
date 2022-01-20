@@ -1,5 +1,5 @@
-from dq0.sdk.data.metadata.metadata import Metadata
 from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
+from dq0.sdk.data.metadata.structure.metadata import Metadata
 
 
 def test_metadata_print():

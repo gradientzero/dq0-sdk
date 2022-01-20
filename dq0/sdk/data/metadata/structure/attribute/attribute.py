@@ -1,9 +1,9 @@
-from dq0.sdk.data.metadata.attribute.attribute_type import AttributeType
-from dq0.sdk.data.metadata.explanation import Explanation
-from dq0.sdk.data.metadata.merge_exception import MergeException
-from dq0.sdk.data.metadata.permissions.action import Action
-from dq0.sdk.data.metadata.permissions.permissions import Permissions
-from dq0.sdk.data.metadata.utils.str_utils import StrUtils
+from dq0.sdk.data.metadata.structure.attribute.attribute_type import AttributeType
+from dq0.sdk.data.metadata.structure.explanation import Explanation
+from dq0.sdk.data.metadata.structure.merge_exception import MergeException
+from dq0.sdk.data.metadata.structure.permissions.action import Action
+from dq0.sdk.data.metadata.structure.permissions.permissions import Permissions
+from dq0.sdk.data.metadata.structure.utils.str_utils import StrUtils
 
 
 class Attribute:
@@ -174,14 +174,25 @@ class Attribute:
         copied_attribute.set_explicit_list_element(is_explicit_list_element=self._is_explicit_list_element)
         return copied_attribute
 
-    def to_dict(self, request_uuids=set()):
+    def to_dict_simple(self, value, request_uuids=set()):
+        if not Permissions.is_allowed_with(permissions=self.get_permissions(), action=Action.READ, request_uuids=request_uuids):
+            return None
+        return {self.get_key(): value}
+
+    def to_dict_full(self, value, request_uuids=set()):
         if not Permissions.is_allowed_with(permissions=self.get_permissions(), action=Action.READ, request_uuids=request_uuids):
             return None
         return {tmp_key: tmp_value for tmp_key, tmp_value in [
             ('type_name', self.get_type_name()),
             ('key', self.get_key()),
             ('permissions', self.get_permissions().to_dict() if self.get_permissions() is not None else None),
+            ('value', value),
         ] if tmp_value is not None}
+
+    def to_dict(self, value, request_uuids=set(), full=True):
+        if full:
+            return self.to_dict_full(value=value, request_uuids=request_uuids)
+        return self.to_dict_simple(value=value, request_uuids=request_uuids)
 
     def is_merge_compatible_with(self, other, explanation=None):
         if not isinstance(other, Attribute):

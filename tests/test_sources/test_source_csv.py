@@ -8,7 +8,7 @@ All rights reserved
 import os
 
 from dq0.sdk.data.metadata.interface.interface import Interface
-from dq0.sdk.data.metadata.metadata import Metadata
+from dq0.sdk.data.metadata.structure.metadata import Metadata
 from dq0.sdk.data.text.csv import CSV
 
 import numpy as np

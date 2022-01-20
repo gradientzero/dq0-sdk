@@ -16,7 +16,7 @@ import pickle
 
 from dq0.examples.cifar.model.user_model import UserModel
 from dq0.sdk.data.metadata.interface.interface import Interface
-from dq0.sdk.data.metadata.metadata import Metadata
+from dq0.sdk.data.metadata.structure.metadata import Metadata
 from dq0.sdk.data.text.csv import CSV
 from dq0.sdk.data.utils import util
 
