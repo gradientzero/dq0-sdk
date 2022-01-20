@@ -87,7 +87,7 @@ class Entity:
 
     def create(self, initiating_attribute=None):
         if self.get_node() is not None:
-            return
+            return initiating_attribute
         data_attribute = None
         return_attribute = None
         if initiating_attribute is None or initiating_attribute.get_key() != 'data':

@@ -46,7 +46,7 @@ class AttributesGroup:
         if len(self._attribute_list.get_value()) != 0:
             keys = set()
             for attribute in self._attribute_list.get_value():
-                keys.add(attribute.key)
+                keys.add(attribute.get_key())
             for key in keys:
                 self.delete_attribute(key=key)
 
