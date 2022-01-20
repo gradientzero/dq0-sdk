@@ -4,8 +4,8 @@ from dq0.sdk.data.metadata.interface.dataset.v1.table.attributes_table_data impo
 from dq0.sdk.data.metadata.interface.dataset.v1.table.attributes_table_differential_privacy import AttributesTableDifferentialPrivacy
 from dq0.sdk.data.metadata.interface.dataset.v1.table.attributes_table_private_sql import AttributesTablePrivateSql
 from dq0.sdk.data.metadata.interface.dataset.v1.table.attributes_table_private_synthesis import AttributesTablePrivateSynthesis
-from dq0.sdk.data.metadata.node.node_type import NodeType
 from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
+from dq0.sdk.data.metadata.structure.node.node_type import NodeType
 
 
 class Table(Entity):

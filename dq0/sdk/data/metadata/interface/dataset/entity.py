@@ -1,10 +1,10 @@
-from dq0.sdk.data.metadata.attribute.attribute_list import AttributeList
-from dq0.sdk.data.metadata.attribute.attribute_string import AttributeString
 from dq0.sdk.data.metadata.interface.dataset.entity_iterator import EntityIterator
-from dq0.sdk.data.metadata.node.node import Node
-from dq0.sdk.data.metadata.node.node_type import NodeType
-from dq0.sdk.data.metadata.permissions.permissions import Permissions
 from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
+from dq0.sdk.data.metadata.structure.attribute.attribute_list import AttributeList
+from dq0.sdk.data.metadata.structure.attribute.attribute_string import AttributeString
+from dq0.sdk.data.metadata.structure.node.node import Node
+from dq0.sdk.data.metadata.structure.node.node_type import NodeType
+from dq0.sdk.data.metadata.structure.permissions.permissions import Permissions
 
 
 class Entity:

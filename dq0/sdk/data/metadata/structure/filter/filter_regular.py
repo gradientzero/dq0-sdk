@@ -1,4 +1,4 @@
-from dq0.sdk.data.metadata.filter.filter import Filter
+from dq0.sdk.data.metadata.structure.filter.filter import Filter
 
 
 class FilterRegular(Filter):

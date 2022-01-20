@@ -1,5 +1,5 @@
-from dq0.sdk.data.metadata.permissions.action import Action
-from dq0.sdk.data.metadata.permissions.permissions import Permissions
+from dq0.sdk.data.metadata.structure.permissions.action import Action
+from dq0.sdk.data.metadata.structure.permissions.permissions import Permissions
 
 
 class DefaultPermissions:

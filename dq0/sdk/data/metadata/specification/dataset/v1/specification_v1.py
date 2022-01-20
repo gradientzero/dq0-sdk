@@ -1,4 +1,4 @@
-from dq0.sdk.data.metadata.node.node_type import NodeType
+from dq0.sdk.data.metadata.structure.node.node_type import NodeType
 from dq0.sdk.data.metadata.specification.dataset.specification_version import SpecificationVersion
 from dq0.sdk.data.metadata.specification.dataset.v1.dataset import Dataset
 from dq0.sdk.data.metadata.specification.specification import Specification

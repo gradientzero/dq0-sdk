@@ -1,7 +1,7 @@
 """Auto populate dq0 metadata from CSV"""
 import os
 
-from dq0.sdk.data.metadata.metadata import Metadata
+from dq0.sdk.data.metadata.structure.metadata import Metadata
 
 import numpy as np
 

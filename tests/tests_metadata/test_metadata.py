@@ -1,10 +1,10 @@
 import os
 
-from dq0.sdk.data.metadata.filter.filter_machine_learning import FilterMachineLearning
-from dq0.sdk.data.metadata.filter.filter_smart_noise import FilterSmartNoise
 from dq0.sdk.data.metadata.interface.interface import Interface
-from dq0.sdk.data.metadata.metadata import Metadata
 from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
+from dq0.sdk.data.metadata.structure.filter.filter_machine_learning import FilterMachineLearning
+from dq0.sdk.data.metadata.structure.filter.filter_smart_noise import FilterSmartNoise
+from dq0.sdk.data.metadata.structure.metadata import Metadata
 
 
 def prepare_role_uuids():

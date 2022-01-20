@@ -1,6 +1,6 @@
-from dq0.sdk.data.metadata.node.node_type import NodeType
 from dq0.sdk.data.metadata.specification.dataset.specification_version import SpecificationVersion
 from dq0.sdk.data.metadata.specification.dataset.v1.specification_v1 import SpecificationV1 as DatasetSpecificationV1
+from dq0.sdk.data.metadata.structure.node.node_type import NodeType
 
 
 class SpecificationFactory:

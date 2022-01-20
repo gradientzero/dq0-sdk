@@ -10,7 +10,7 @@ All rights reserved
 import os
 
 from dq0.examples.purchase_100_600.bayesian.model.user_model import UserModel
-from dq0.sdk.data.metadata.utils.dummy_utils import DummyUtils
+from dq0.sdk.data.metadata.structure.utils.dummy_utils import DummyUtils
 from dq0.sdk.data.text.csv import CSV
 from dq0.sdk.data.utils import util
 

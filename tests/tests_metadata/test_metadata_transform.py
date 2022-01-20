@@ -1,14 +1,14 @@
 # the unused imports are needed for the eval in the repr test
-from dq0.sdk.data.metadata.attribute.attribute_boolean import AttributeBoolean  # noqa: F401
-from dq0.sdk.data.metadata.attribute.attribute_datetime import AttributeDatetime  # noqa: F401
-from dq0.sdk.data.metadata.attribute.attribute_float import AttributeFloat  # noqa: F401
-from dq0.sdk.data.metadata.attribute.attribute_int import AttributeInt  # noqa: F401
-from dq0.sdk.data.metadata.attribute.attribute_list import AttributeList  # noqa: F401
-from dq0.sdk.data.metadata.attribute.attribute_string import AttributeString  # noqa: F401
-from dq0.sdk.data.metadata.metadata import Metadata
-from dq0.sdk.data.metadata.node.node import Node  # noqa: F401
-from dq0.sdk.data.metadata.permissions.permissions import Permissions  # noqa: F401
 from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
+from dq0.sdk.data.metadata.structure.attribute.attribute_boolean import AttributeBoolean  # noqa: F401
+from dq0.sdk.data.metadata.structure.attribute.attribute_datetime import AttributeDatetime  # noqa: F401
+from dq0.sdk.data.metadata.structure.attribute.attribute_float import AttributeFloat  # noqa: F401
+from dq0.sdk.data.metadata.structure.attribute.attribute_int import AttributeInt  # noqa: F401
+from dq0.sdk.data.metadata.structure.attribute.attribute_list import AttributeList  # noqa: F401
+from dq0.sdk.data.metadata.structure.attribute.attribute_string import AttributeString  # noqa: F401
+from dq0.sdk.data.metadata.structure.metadata import Metadata
+from dq0.sdk.data.metadata.structure.node.node import Node  # noqa: F401
+from dq0.sdk.data.metadata.structure.permissions.permissions import Permissions  # noqa: F401
 
 
 def test_metadata_transform():

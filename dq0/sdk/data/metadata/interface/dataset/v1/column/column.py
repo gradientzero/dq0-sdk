@@ -1,12 +1,12 @@
-from dq0.sdk.data.metadata.attribute.attribute_list import AttributeList
 from dq0.sdk.data.metadata.interface.dataset.entity import Entity
 from dq0.sdk.data.metadata.interface.dataset.v1.column.attributes_column_data import AttributesColumnData
 from dq0.sdk.data.metadata.interface.dataset.v1.column.attributes_column_machine_learning import AttributesColumnMachineLearning
 from dq0.sdk.data.metadata.interface.dataset.v1.column.attributes_column_private_sql import AttributesColumnPrivateSql
 from dq0.sdk.data.metadata.interface.dataset.v1.column.attributes_column_private_sql_and_synthesis import AttributesColumnPrivateSqlAndSynthesis
 from dq0.sdk.data.metadata.interface.dataset.v1.column.attributes_column_private_synthesis import AttributesColumnPrivateSynthesis
-from dq0.sdk.data.metadata.node.node import Node
-from dq0.sdk.data.metadata.node.node_type import NodeType
+from dq0.sdk.data.metadata.structure.attribute.attribute_list import AttributeList
+from dq0.sdk.data.metadata.structure.node.node import Node
+from dq0.sdk.data.metadata.structure.node.node_type import NodeType
 
 
 class Column(Entity):

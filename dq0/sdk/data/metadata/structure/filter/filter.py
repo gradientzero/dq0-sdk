@@ -1,7 +1,7 @@
-from dq0.sdk.data.metadata.attribute.attribute import Attribute
-from dq0.sdk.data.metadata.attribute.attribute_list import AttributeList
-from dq0.sdk.data.metadata.attribute.attribute_type import AttributeType
-from dq0.sdk.data.metadata.node.node import Node
+from dq0.sdk.data.metadata.structure.attribute.attribute import Attribute
+from dq0.sdk.data.metadata.structure.attribute.attribute_list import AttributeList
+from dq0.sdk.data.metadata.structure.attribute.attribute_type import AttributeType
+from dq0.sdk.data.metadata.structure.node.node import Node
 
 
 class Filter:

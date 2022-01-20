@@ -1,49 +1,54 @@
-from dq0.sdk.data.metadata.filter.filter import Filter
+from dq0.sdk.data.metadata.structure.filter.filter import Filter
 
 
-class FilterMachineLearning(Filter):
+class FilterSmartNoise(Filter):
     @staticmethod
     def filter(node):
         retain_attributes = {
             'dataset': {
                 'data': {
-                    'description': None,
                     'name': None,
-                    'tags': None,
                 },
             },
             'database': {
                 'connector': None,
                 'data': {
-                    'description': None,
                     'name': None,
                 },
             },
             'schema': {
                 'data': {
-                    'description': None,
                     'name': None,
                 },
             },
             'table': {
                 'data': {
-                    'description': None,
                     'name': None,
+                    'rows': None,
                 },
-                'differential_privacy': {
-                    'budget_delta': None,
-                    'budget_epsilon': None,
+                'private_sql': {
+                    'censor_dims': None,
+                    'clamp_columns': None,
+                    'clamp_counts': None,
+                    'max_ids': None,
+                    'row_privacy': None,
+                    'sample_max_ids': None,
+                    'use_dpsu': None,
                 },
             },
             'column': {
                 'data': {
                     'data_type_name': None,
-                    'description': None,
                     'name': None,
                 },
-                'machine_learning': {
-                    'is_feature': None,
-                    'is_target': None,
+                'private_sql': {
+                    'private_id': None,
+                },
+                'private_sql_and_synthesis': {
+                    'bounded': None,
+                    'cardinality': None,
+                    'lower': None,
+                    'upper': None,
                 },
             }
         }

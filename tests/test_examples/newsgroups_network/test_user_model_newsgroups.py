@@ -15,7 +15,7 @@ import os
 import pickle
 
 from dq0.examples.newsgroups.network.model.user_model import UserModel
-from dq0.sdk.data.metadata.utils.dummy_utils import DummyUtils
+from dq0.sdk.data.metadata.structure.utils.dummy_utils import DummyUtils
 from dq0.sdk.data.text.csv import CSV
 from dq0.sdk.data.utils import util
 

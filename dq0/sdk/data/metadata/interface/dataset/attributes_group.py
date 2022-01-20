@@ -1,7 +1,7 @@
-from dq0.sdk.data.metadata.attribute.attribute_list import AttributeList
 from dq0.sdk.data.metadata.interface.dataset.attribute_utils import AttributeUtils
 from dq0.sdk.data.metadata.interface.dataset.entity import Entity
-from dq0.sdk.data.metadata.permissions.permissions import Permissions
+from dq0.sdk.data.metadata.structure.attribute.attribute_list import AttributeList
+from dq0.sdk.data.metadata.structure.permissions.permissions import Permissions
 
 
 class AttributesGroup:

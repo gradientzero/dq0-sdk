@@ -1,9 +1,9 @@
 import os
 
-from dq0.sdk.data.metadata.node.node import Node
-from dq0.sdk.data.metadata.node.node_factory import NodeFactory
 from dq0.sdk.data.metadata.specification.specification import Specification
 from dq0.sdk.data.metadata.specification.specification_factory import SpecificationFactory
+from dq0.sdk.data.metadata.structure.node.node import Node
+from dq0.sdk.data.metadata.structure.node.node_factory import NodeFactory
 
 import yaml
 

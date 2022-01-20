@@ -1,11 +1,11 @@
-from dq0.sdk.data.metadata.attribute.attribute import Attribute
-from dq0.sdk.data.metadata.attribute.attribute_type import AttributeType
-from dq0.sdk.data.metadata.explanation import Explanation
-from dq0.sdk.data.metadata.merge_exception import MergeException
-from dq0.sdk.data.metadata.permissions.action import Action
-from dq0.sdk.data.metadata.permissions.permissions import Permissions
-from dq0.sdk.data.metadata.utils.list_utils import ListUtils
-from dq0.sdk.data.metadata.utils.str_utils import StrUtils
+from dq0.sdk.data.metadata.structure.attribute.attribute import Attribute
+from dq0.sdk.data.metadata.structure.attribute.attribute_type import AttributeType
+from dq0.sdk.data.metadata.structure.explanation import Explanation
+from dq0.sdk.data.metadata.structure.merge_exception import MergeException
+from dq0.sdk.data.metadata.structure.permissions.action import Action
+from dq0.sdk.data.metadata.structure.permissions.permissions import Permissions
+from dq0.sdk.data.metadata.structure.utils.list_utils import ListUtils
+from dq0.sdk.data.metadata.structure.utils.str_utils import StrUtils
 
 
 class AttributeList(Attribute):
