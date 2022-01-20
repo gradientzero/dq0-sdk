@@ -36,8 +36,8 @@ class Interface(Entity):
     def __iter__(self):
         return InterfaceIterator(interface=self)
 
-    def to_dict(self, request_uuids=set()):
-        return self.get_metadata().to_dict(request_uuids=request_uuids) if self.get_metadata() is not None else None
+    def to_dict(self, request_uuids=set(), full=True):
+        return self.get_metadata().to_dict(request_uuids=request_uuids, full=full) if self.get_metadata() is not None else None
 
     def get_metadata(self):
         return self._metadata

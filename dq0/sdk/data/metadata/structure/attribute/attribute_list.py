@@ -47,14 +47,12 @@ class AttributeList(Attribute):
         copied_attribute.set_explicit_list_element(is_explicit_list_element=self.is_explicit_list_element())
         return copied_attribute
 
-    def to_dict(self, request_uuids=set()):
-        super_dict = super().to_dict(request_uuids=request_uuids)
-        if super_dict is None:
-            return None
-        self_dict = {tmp_key: tmp_value for tmp_key, tmp_value in [
-            ('value', ListUtils.list_map_to_dict(self.get_value(), request_uuids=request_uuids)),
-        ] if tmp_value is not None}
-        return {**super_dict, **self_dict}
+    def to_dict(self, request_uuids=set(), full=True):
+        if full:
+            value = ListUtils.list_map_to_dict(self.get_value(), request_uuids=request_uuids)
+        else:
+            value = ListUtils.merge_list_of_dicts(list_of_dicts=ListUtils.list_map_to_dict(self.get_value(), request_uuids=request_uuids, full=False))
+        return super().to_dict(value=value, request_uuids=request_uuids, full=full)
 
     def to_list(self, request_uuids=set()):
         if not Permissions.is_allowed_with(permissions=self.permissions, action=Action.READ, request_uuids=request_uuids):

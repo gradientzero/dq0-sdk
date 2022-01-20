@@ -76,8 +76,8 @@ class Entity:
     def __iter__(self):
         return EntityIterator(entity=self)
 
-    def to_dict(self, request_uuids=set()):
-        return self.get_node().to_dict(request_uuids=request_uuids) if self.get_node() is not None else None
+    def to_dict(self, request_uuids=set(), full=True):
+        return self.get_node().to_dict(request_uuids=request_uuids, full=full) if self.get_node() is not None else None
 
     def get_role_uuids(self):
         return self._role_uuids

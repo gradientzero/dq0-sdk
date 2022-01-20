@@ -65,10 +65,6 @@ def show_metadata_build():
     # the final metadata
     step = output_metadata(m_interface=m_interface, request_uuids=request_uuids, step=step)
 
-    connector_dict = connector.to_dict(request_uuids=None)
-
-    print(f"Connector dict: {connector_dict}")
-
     # STEP 5
     # continue until the first column
     m_column = m_dataset.database().schema(name='test_schema').table(name='test_table').column(name='test_column_a')

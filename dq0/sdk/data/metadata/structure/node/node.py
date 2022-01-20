@@ -194,7 +194,18 @@ class Node:
         copied_node._list_index = self._list_index
         return copied_node
 
-    def to_dict(self, request_uuids=set()):
+    def to_dict_simple(self, request_uuids=set()):
+        if not Permissions.is_allowed_with(permissions=self._permissions, action=Action.READ, request_uuids=request_uuids):
+            return None
+        index_string = f"_{self._list_index}" if -1 < self._list_index else ''
+        key = StrUtils.str_from(object=self._type_name, quoted=False) + index_string
+        internal_dict = {tmp_key: tmp_value for tmp_key, tmp_value in [
+            ('attributes', ListUtils.merge_list_of_dicts(list_of_dicts=ListUtils.list_map_to_dict(self._attributes, request_uuids=request_uuids, full=False))),
+            ('child_nodes', ListUtils.merge_list_of_dicts(list_of_dicts=ListUtils.list_map_to_dict(self._child_nodes, request_uuids=request_uuids, full=False)))
+        ] if tmp_value is not None}
+        return {key: internal_dict}
+
+    def to_dict_full(self, request_uuids=set()):
         if not Permissions.is_allowed_with(permissions=self._permissions, action=Action.READ, request_uuids=request_uuids):
             return None
         return {tmp_key: tmp_value for tmp_key, tmp_value in [
@@ -203,6 +214,11 @@ class Node:
             ('child_nodes', ListUtils.list_map_to_dict(self._child_nodes, request_uuids=request_uuids)),
             ('permissions', self._permissions.to_dict() if self._permissions is not None else None),
         ] if tmp_value is not None}
+
+    def to_dict(self, request_uuids=set(), full=True):
+        if full:
+            return self.to_dict_full(request_uuids=request_uuids)
+        return self.to_dict_simple(request_uuids=request_uuids)
 
     def is_merge_compatible_with(self, other, explanation=None):
         if not isinstance(other, Node):

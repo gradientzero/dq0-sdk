@@ -43,14 +43,8 @@ class AttributeBoolean(Attribute):
         copied_attribute.set_explicit_list_element(is_explicit_list_element=self.is_explicit_list_element())
         return copied_attribute
 
-    def to_dict(self, request_uuids=set()):
-        super_dict = super().to_dict(request_uuids=request_uuids)
-        if super_dict is None:
-            return None
-        self_dict = {tmp_key: tmp_value for tmp_key, tmp_value in [
-            ('value', self.get_value()),
-        ] if tmp_value is not None}
-        return {**super_dict, **self_dict}
+    def to_dict(self, request_uuids=set(), full=True):
+        return super().to_dict(value=self.get_value(), request_uuids=request_uuids, full=full)
 
     def is_mergeable_with(self, other, overwrite_value=False, overwrite_permissions=False, request_uuids=set(), explanation=None):
         if not super().is_mergeable_with(other=other, overwrite_value=overwrite_value, overwrite_permissions=overwrite_permissions,
