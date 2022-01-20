@@ -1,7 +1,9 @@
+from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
+from dq0.sdk.data.metadata.specification.json_schema.attribute import Attribute as JsonSchemaAttribute
+from dq0.sdk.data.metadata.specification.json_schema.attributes_group import AttributesGroup as JsonSchemaAttributesGroup
 from dq0.sdk.data.metadata.structure.attribute.attribute import Attribute
 from dq0.sdk.data.metadata.structure.attribute.attribute_list import AttributeList
 from dq0.sdk.data.metadata.structure.attribute.attribute_type import AttributeType
-from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
 
 
 class ConnectorPostgreSQL:
@@ -43,3 +45,49 @@ class ConnectorPostgreSQL:
         type_name_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'type_name'] if attributes is not None else []
         if type_name_attributes[0].get_value() != 'postgresql':
             raise Exception(f"postgresql connector type_name value {type_name_attributes[0].get_value()} does not match 'postgresql'")
+
+    @staticmethod
+    def json_schema():
+        return JsonSchemaAttributesGroup.json_schema(
+            key='connector',
+            group_name='connector postgresql',
+            description="The 'connector postgresql' attributes group.",
+            additional_description="Requires 'type name' attribute.",
+            contains=JsonSchemaAttribute.json_schema(
+                key='type_name', attribute_name='type name', description="This item ensures that the 'type name' attribute is present.",
+                type_name=AttributeType.TYPE_NAME_STRING),
+            attributes=[
+                JsonSchemaAttribute.json_schema(
+                    key='host',
+                    attribute_name='host',
+                    description="The 'host' attribute specifies the hostname of the server running the postgresql database.",
+                    type_name=AttributeType.TYPE_NAME_STRING
+                ),
+                JsonSchemaAttribute.json_schema(
+                    key='password',
+                    attribute_name='password',
+                    description="The 'password' attribute specifies the password to log into the postgresql server.",
+                    type_name=AttributeType.TYPE_NAME_STRING
+                ),
+                JsonSchemaAttribute.json_schema(
+                    key='port',
+                    attribute_name='port',
+                    description="The 'port' attribute specifies the port number, where to connect to the postgresql server.",
+                    type_name=AttributeType.TYPE_NAME_INT,
+                    additional_value=""""minimum": 1,
+"maximum": 65535"""
+                ),
+                JsonSchemaAttribute.json_schema(
+                    key='type_name',
+                    attribute_name='type name',
+                    description="The 'type name' attribute specifies the type of connector. In this case it is a 'postgresql' connector.",
+                    type_name=AttributeType.TYPE_NAME_STRING,
+                    additional_value="\"const\": \"postgresql\""
+                ),
+                JsonSchemaAttribute.json_schema(
+                    key='username',
+                    attribute_name='username',
+                    description="The 'username' attribute specifies the username to log into the postgresql server.",
+                    type_name=AttributeType.TYPE_NAME_STRING
+                )
+            ])

@@ -4,7 +4,7 @@ from dq0.sdk.data.metadata.structure.attribute.attribute_type import AttributeTy
 
 class AttributesGroup:
     @staticmethod
-    def json_schema(key, group_name, description, contains=None, attributes=None):
+    def json_schema(key, group_name, description, additional_description=None, contains=None, attributes=None):
         contains_json = ''
         if contains is not None:
             contains_json = "\n\"contains\": " + f"{contains},"
@@ -23,7 +23,8 @@ class AttributesGroup:
     {attribute_items}
   ]
 }},"""
-        value_additional = f""""minItems": 1,{contains_json}{items_json}
+        additional_value = f""""minItems": 1,{contains_json}{items_json}
 "uniqueItemProperties": [ "key" ]"""
         return Attribute.json_schema(key=key, attribute_name=f"{group_name} group", description=description,
-                                     type_name=AttributeType.TYPE_NAME_LIST, value_additional=value_additional)
+                                     type_name=AttributeType.TYPE_NAME_LIST, additional_value=additional_value,
+                                     additional_description=additional_description)

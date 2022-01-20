@@ -1,8 +1,9 @@
+from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
+from dq0.sdk.data.metadata.specification.json_schema.attribute import Attribute as JsonSchemaAttribute
+from dq0.sdk.data.metadata.specification.json_schema.attributes_group import AttributesGroup as JsonSchemaAttributesGroup
 from dq0.sdk.data.metadata.structure.attribute.attribute import Attribute
 from dq0.sdk.data.metadata.structure.attribute.attribute_list import AttributeList
 from dq0.sdk.data.metadata.structure.attribute.attribute_type import AttributeType
-from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
-from dq0.sdk.data.metadata.specification.json_schema.utils import Utils as JsonSchemaUtils
 
 
 class ConnectorCSV:
@@ -77,295 +78,118 @@ class ConnectorCSV:
                     raise Exception("na_values may not have none keys")
 
     @staticmethod
-    def type_name_json_schema():
-        attribute_permissions_json_schema = JsonSchemaUtils.attribute_permissions_json_schema().replace('\n', "\n    ")
-        return f"""{{
-  "title": "Type Name",
-  "description": "The type name specifies which kind of connector is used and which attributes are defined.",
-  "type": "object",
-  "properties": {{
-    "type_name": {{
-      "title": "Type Name",
-      "description": "The type name attribute is of type 'string'.",
-      "type": "string",
-      "const": "string"
-    }},
-    "key": {{
-      "title": "Key",
-      "description": "This attribute's key is 'type_name'.",
-      "type": "string",
-      "const": "type_name"
-    }},
-    "value": {{
-      "title": "Value",
-      "description": "The type name attribute for this connector is 'csv'.",
-      "type": "string",
-      "const": "csv"
-    }},
-    "permissions": {attribute_permissions_json_schema}
-  }},
-  "required": [ "type_name", "key", "value" ],
-  "additionalProperties": false
-}}"""
-
-    @staticmethod
-    def header_columns_json_schema():
-        attribute_permissions_json_schema = JsonSchemaUtils.attribute_permissions_json_schema()
-        attribute_permissions_json_schema_outer = attribute_permissions_json_schema.replace('\n', "\n    ")
-        attribute_permissions_json_schema_inner = attribute_permissions_json_schema.replace('\n', "\n          ")
-        return f"""{{
-  "title": "Header Columns",
-  "description": "List of column names specifying the header to use with the CSV file.",
-  "type": "object",
-  "properties": {{
-    "type_name": {{
-      "title": "Type Name",
-      "description": "The type name attribute is of type 'list'.",
-      "type": "string",
-      "const": "list"
-    }},
-    "key": {{
-      "title": "Key",
-      "description": "This attribute's key is 'header_columns'.",
-      "type": "string",
-      "const": "header_columns"
-    }},
-    "value": {{
-      "title": "Value",
-      "description": "The actual list of column names.",
-      "type": "array",
-      "items": {{
-        "title": "Header Column",
-        "description": "Single header column name.",
-        "type": "object",
-        "properties": {{
-          "type_name": {{
-            "title": "Type Name",
-            "description": "A column name is of type 'string'.",
-            "type": "string",
-            "const": "string"
-          }},
-          "key": {{
-            "title": "Key",
-            "description": "This attribute's key must be 'null'.",
-            "type": "null"
-          }},
-          "value": {{
-            "title": "Value",
-            "description": "A column name.",
-            "type": "string"
-          }},
-          "permissions": {attribute_permissions_json_schema_inner}
-        }},
-        "required": [ "type_name", "key", "value" ],
-        "additionalProperties": false
-      }}
-    }},
-    "permissions": {attribute_permissions_json_schema_outer}
-  }},
-  "required": [ "type_name", "key", "value" ],
-  "additionalProperties": false
-}}"""
-
-    @staticmethod
-    def header_row_single_json_schema():
-        attribute_permissions_json_schema = JsonSchemaUtils.attribute_permissions_json_schema().replace('\n', "\n      ")
-        return f"""{{
-  "title": "Header Row",
-  "description": "Row indexe(s) specifying the header row(s) in the CSV file.",
-  "type": "object",
-  "properties": {{
-    "type_name": {{
-      "title": "Type Name",
-      "description": "The header row attribute is of type 'list'.",
-      "type": "string",
-      "const": "int"
-    }},
-    "key": {{
-      "title": "Key",
-      "description": "This attribute's key is 'header_row'.",
-      "type": "string",
-      "const": "header_row"
-    }},
-    "value": {{
-      "title": "Value",
-      "description": "Single header row index.",
-      "type": "int",
-      "minimum": 0
-    }},
-    "permissions": {attribute_permissions_json_schema}
-  }},
-  "required": [ "type_name", "key", "value" ],
-  "additionalProperties": false
-}}"""
-
-    @staticmethod
-    def header_row_list_json_schema():
-        attribute_permissions_json_schema = JsonSchemaUtils.attribute_permissions_json_schema()
-        attribute_permissions_json_schema_outer = attribute_permissions_json_schema.replace('\n', "\n    ")
-        attribute_permissions_json_schema_inner = attribute_permissions_json_schema.replace('\n', "\n          ")
-        return f"""{{
-  "title": "Header Row",
-  "description": "Row indexe(s) specifying the header row(s) in the CSV file.",
-  "type": "object",
-  "properties": {{
-    "type_name": {{
-      "title": "Type Name",
-      "description": "The header row attribute is of type 'list'.",
-      "type": "string",
-      "const": "list"
-    }},
-    "key": {{
-      "title": "Key",
-      "description": "This attribute's key is 'header_row'.",
-      "type": "string",
-      "const": "header_row"
-    }},
-    "value": {{
-      "title": "Value",
-      "description": "List of header row indexes.",
-      "type": "array",
-      "items": {{
-        "title": "Header Row Index",
-        "description": "Single header row index.",
-        "type": "object",
-        "properties": {{
-          "type_name": {{
-            "title": "Type Name",
-            "description": "A header row index is of type 'int'.",
-            "type": "string",
-            "const": "int"
-          }},
-          "key": {{
-            "title": "Key",
-            "description": "This attribute's key must be 'null'.",
-            "type": "null"
-          }},
-          "value": {{
-            "title": "Value",
-            "description": "A header row index.",
-            "type": "int",
-            "minimum": 0
-          }},
-          "permissions": {attribute_permissions_json_schema_inner}
-        }},
-        "required": [ "type_name", "key", "value" ],
-        "additionalProperties": false
-      }}
-    }},
-    "permissions": {attribute_permissions_json_schema_outer}
-  }},
-  "required": [ "type_name", "key", "value" ],
-  "additionalProperties": false
-}}"""
-
-    @staticmethod
-    def index_col_json_schema():
-        index_col_list_json_schema = ConnectorCSV.index_col_list_json_schema().replace('\n', "\n        ")
-        attribute_permissions_json_schema = JsonSchemaUtils.attribute_permissions_json_schema().replace('\n', "\n    ")
-        return f"""{{
-  "title": "Index Col",
-  "description": "Column indexe(s) or name(s) specifying the index column(s) in the CSV file.",
-  "type": "object",
-  "properties": {{
-    "type_name": {{
-      "title": "Type Name",
-      "description": "The col index attribute is of type 'list'.",
-      "type": "string",
-      "const": "list"
-    }},
-    "key": {{
-      "title": "Key",
-      "description": "This attribute's key is 'header_row'.",
-      "type": "string",
-      "const": "header_row"
-    }},
-    "value": {{
-      "oneOf": [
-        {{
-          "title": "Value",
-          "description": "Single header row index.",
-          "type": "int",
-          "minimum": 0
-        }},
-        {index_col_list_json_schema}
-      ]
-    }},
-    "permissions": {attribute_permissions_json_schema}
-  }},
-  "required": [ "type_name", "key", "value" ],
-  "additionalProperties": false
-}}"""
-
-    @staticmethod
     def json_schema():
-        indent = "          "
-        decimal_json_schema = JsonSchemaUtils.attribute_json_schema(
-            type_name=AttributeType.TYPE_NAME_STRING, key='decimal', title='Decimal',
-            description="Character to recognize as decimal point when reading the CSV file.").replace('\n', "\n" + indent)
-        sep_json_schema = JsonSchemaUtils.attribute_json_schema(
-            type_name=AttributeType.TYPE_NAME_STRING, key='sep', title='Sep',
-            description="Delimiter to use when reading the CSV file.").replace('\n', "\n" + indent)
-        uri_json_schema = JsonSchemaUtils.attribute_json_schema(
-            type_name=AttributeType.TYPE_NAME_STRING, key='uri', title='URI',
-            description="The URI pointing to the CSV file (usually the filepath).").replace('\n', "\n" + indent)
-        skipinitialspace_json_schema = JsonSchemaUtils.attribute_json_schema(
-            type_name=AttributeType.TYPE_NAME_BOOLEAN, key='skipinitialspace', title='Skip Initial Space',
-            description="Whether to skip spaces after the delimiter.").replace('\n', "\n" + indent)
-        use_original_header_json_schema = JsonSchemaUtils.attribute_json_schema(
-            type_name=AttributeType.TYPE_NAME_BOOLEAN, key='use_original_header', title='Use Original Header',
-            description="Whether to use the header from the CSV file.").replace('\n', "\n" + indent)
-        type_name_json_schema = ConnectorCSV.type_name_json_schema()
-        type_name_json_schema_inner = type_name_json_schema.replace('\n', "\n" + indent)
-        type_name_json_schema_outer = type_name_json_schema.replace('\n', "\n      ")
-        header_columns_json_schema = ConnectorCSV.header_columns_json_schema().replace('\n', "\n" + indent)
-        header_row_single_json_schema = ConnectorCSV.header_row_single_json_schema().replace('\n', "\n" + indent)
-        header_row_list_json_schema = ConnectorCSV.header_row_list_json_schema().replace('\n', "\n" + indent)
-        index_col_json_schema = ConnectorCSV.index_col_json_schema().replace('\n', "\n" + indent)
-        na_values_json_schema = ConnectorCSV.na_values_json_schema().replace('\n', "\n" + indent)
-        attribute_permissions_json_schema = JsonSchemaUtils.attribute_permissions_json_schema().replace('\n', "\n    ")
-        return f"""{{
-  "title": "Connector CSV",
-  "description": "This connector defines the CSV file connection of its database.",
-  "type": "object",
-  "properties": {{
-    "type_name": {{
-      "title": "Type Name",
-      "description": "The type name of each attribute group is 'list'.",
-      "type": "string",
-      "const": "list"
-    }},
-    "key": {{
-      "title": "Key",
-      "description": "This attribute group's key is 'connector'.",
-      "type": "string",
-      "const": "connector"
-    }},
-    "value": {{
-      "title": "Value",
-      "description": "Each attribute group has a specific non-empty list of attributes as value.",
-      "type": "array",
-      "minItems": 1,
-      "contains": {type_name_json_schema_outer},
-      "items": {{
-        "oneOf": [
-          {decimal_json_schema},
-          {header_columns_json_schema},
-          {header_row_single_json_schema},
-          {header_row_list_json_schema},
-          {index_col_json_schema},
-          {na_values_json_schema},
-          {sep_json_schema},
-          {skipinitialspace_json_schema},
-          {type_name_json_schema_inner},
-          {uri_json_schema},
-          {use_original_header_json_schema}
-        ]
-      }},
-      "uniqueItemProperties": [ "key" ]
-    }},
-    "permissions": {attribute_permissions_json_schema}
-  }},
-  "required": [ "type_name", "key", "value" ],
-  "additionalProperties": false
-}}"""
+        return JsonSchemaAttributesGroup.json_schema(
+            key='connector',
+            group_name='connector csv',
+            description="The 'connector csv' attributes group.",
+            additional_description="Requires 'type name' attribute.",
+            contains=JsonSchemaAttribute.json_schema(
+                key='type_name', attribute_name='type name', description="This item ensures that the 'type name' attribute is present.",
+                type_name=AttributeType.TYPE_NAME_STRING),
+            attributes=[
+                JsonSchemaAttribute.json_schema(
+                    key='decimal',
+                    attribute_name='decimal',
+                    description="The 'decimal' attribute specifies the decimal separator used in the CSV file.",
+                    type_name=AttributeType.TYPE_NAME_STRING
+                ),
+                JsonSchemaAttribute.no_key_list(
+                    key='header_columns',
+                    attribute_name="header columns",
+                    description="The 'header columns' attribute specifies a list of columns names present in the CSV file.",
+                    item_attribute_name="header column",
+                    item_description="A single 'header column' item in the 'header columns' list of column names.",
+                    item_type_name=AttributeType.TYPE_NAME_STRING
+                ),
+                JsonSchemaAttribute.json_schema(
+                    key='header_row',
+                    attribute_name="header row",
+                    description="The 'header row' attribute identifies a single row index or a list of indexes for rows that contain header information. "
+                        "This is the single row index version.",
+                    type_name=AttributeType.TYPE_NAME_INT,
+                    additional_value="\"minimum\": 0"
+                ),
+                JsonSchemaAttribute.no_key_list(
+                    key='header_row',
+                    attribute_name="header row",
+                    description="The 'header row' attribute identifies a single row index or a list of indexes for rows that contain header information. "
+                                "This is the row index list version.",
+                    item_attribute_name="header row index",
+                    item_description="A single 'header row index' item in the 'header row' list of row indexes.",
+                    item_type_name=AttributeType.TYPE_NAME_INT,
+                    item_additional_value="\"minimum\": 0"
+                ),
+                JsonSchemaAttribute.json_schema(
+                    key='index_col',
+                    attribute_name="index col",
+                    description="The 'index col' attribute identifies a single column index/name or a list of column indexes/names for columns that contain "
+                                "indexes. This is the single column index version.",
+                    type_name=AttributeType.TYPE_NAME_INT,
+                    additional_value="\"minimum\": 0"
+                ),
+                JsonSchemaAttribute.json_schema(
+                    key='index_col',
+                    attribute_name='index col',
+                    description="The 'index col' attribute identifies a single column index/name or a list of column indexes/names for columns that contain "
+                                "indexes. This is the single column name version.",
+                    type_name=AttributeType.TYPE_NAME_STRING
+                ),
+                JsonSchemaAttribute.no_key_list(
+                    key='index_col',
+                    attribute_name="index col",
+                    description="The 'index col' attribute identifies a single column index/name or a list of column indexes/names for columns that contain "
+                                "indexes. This is the column index list version.",
+                    item_attribute_name="index col index",
+                    item_description="A single 'index col index' item in the 'index col' list of column indexes.",
+                    item_type_name=AttributeType.TYPE_NAME_INT,
+                    item_additional_value="\"minimum\": 0"
+                ),
+                JsonSchemaAttribute.no_key_list(
+                    key='index_col',
+                    attribute_name="index col",
+                    description="The 'index col' attribute identifies a single column index/name or a list of column indexes/names for columns that contain "
+                                "indexes. This is the column name list version.",
+                    item_attribute_name="index col index",
+                    item_description="A single 'index col index' item in the 'index col' list of column names.",
+                    item_type_name=AttributeType.TYPE_NAME_STRING
+                ),
+                JsonSchemaAttribute.any_key_value_list(
+                    key='na_values',
+                    attribute_name="na values",
+                    description="The 'na values' attribute consists of a list of attributes that define na values for specific columns in the CSV file.",
+                    item_attribute_name='na value',
+                    item_description="A single 'na value' for a specific column."
+                ),
+                JsonSchemaAttribute.json_schema(
+                    key='sep',
+                    attribute_name='sep',
+                    description="The 'sep' attribute specifies the field delimiter used in the CSV file.",
+                    type_name=AttributeType.TYPE_NAME_STRING
+                ),
+                JsonSchemaAttribute.json_schema(
+                    key='skipinitialspace',
+                    attribute_name="skip initial space",
+                    description="The 'skip initial space' attribute specifies whether to skip space after the field delimiter 'sep'.",
+                    type_name=AttributeType.TYPE_NAME_BOOLEAN
+                ),
+                JsonSchemaAttribute.json_schema(
+                    key='type_name',
+                    attribute_name="type name",
+                    description="The 'type name' attribute specifies the type of connector. In this case it is a 'csv' connector.",
+                    type_name=AttributeType.TYPE_NAME_STRING,
+                    additional_value="\"const\": \"csv\""
+                ),
+                JsonSchemaAttribute.json_schema(
+                    key='uri',
+                    attribute_name='uri',
+                    description="The 'uri' attribute specifies the URI pointing to the CSV file (e.g. a filepath).",
+                    type_name=AttributeType.TYPE_NAME_STRING
+                ),
+                JsonSchemaAttribute.json_schema(
+                    key='use_original_header',
+                    attribute_name="use original header",
+                    description="The 'use original header' attribute specifies whether to use the original header inside the CSV file.",
+                    type_name=AttributeType.TYPE_NAME_BOOLEAN
+                )
+            ])

@@ -2,7 +2,7 @@ class Permissions:
     @staticmethod
     def permissions_property(key, operation):
         return f""""{key}": {{
-  "description": "List of user/role uuids allowed to perform '{operation}' operations.",
+  "description": "Set of user/role uuids allowed to perform '{operation}' operations.",
   "type": "object",
   "patternProperties": {{
     "^([0-9a-f]{{8}}-[0-9a-f]{{4}}-[0-9a-f]{{4}}-[0-9a-f]{{4}}-[0-9a-f]{{12}})+$": {{ "type": "null" }}

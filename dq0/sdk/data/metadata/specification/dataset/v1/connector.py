@@ -1,9 +1,9 @@
-from dq0.sdk.data.metadata.structure.attribute.attribute import Attribute
-from dq0.sdk.data.metadata.structure.attribute.attribute_string import AttributeString
-from dq0.sdk.data.metadata.structure.attribute.attribute_type import AttributeType
 from dq0.sdk.data.metadata.specification.dataset.v1.connector_csv import ConnectorCSV
 from dq0.sdk.data.metadata.specification.dataset.v1.connector_postgresql import ConnectorPostgreSQL
 from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
+from dq0.sdk.data.metadata.structure.attribute.attribute import Attribute
+from dq0.sdk.data.metadata.structure.attribute.attribute_string import AttributeString
+from dq0.sdk.data.metadata.structure.attribute.attribute_type import AttributeType
 
 
 class Connector:
@@ -36,15 +36,3 @@ class Connector:
             return ConnectorPostgreSQL.verify(attribute=attribute, role_uuids=role_uuids)
         else:
             raise Exception(f"unknown connector type_name {attribute_type_name.get_value()}")
-
-    @staticmethod
-    def json_schema():
-        indent = "    "
-        connector_csv_json_schema = ConnectorCSV.json_schema().replace('\n', "\n" + indent)
-        connector_postgresql_json_schema = ConnectorPostgreSQL.json_schema().replace('\n', "\n" + indent)
-        return f"""{{
-  "oneOf": [
-    {connector_csv_json_schema},
-    {connector_postgresql_json_schema}
-  ]
-}}"""

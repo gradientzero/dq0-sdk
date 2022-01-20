@@ -20,7 +20,7 @@ class Node:
                 key='name', attribute_name='name', description="This item ensures that the 'name' attribute is present.",
                 type_name=AttributeType.TYPE_NAME_STRING)).replace("\n", "\n  ")
         return f""""attributes": {{
-  "description": "List of attribute groups of a '{node_type_name}' node. The 'data' group is mandatory.",
+  "description": "List of attribute groups of a '{node_type_name}' node. Requires 'data' attributes group with 'name' attribute.",
   "type": "array",
   "minItems": 1,
   "contains": {contains_json},
@@ -96,7 +96,7 @@ class Node:
 
     @staticmethod
     def privacy_level_attribute(node_type_name):
-        value_additional = """"minimum": 0,
+        additional_value = """"minimum": 0,
 "maximum": 2"""
         return Attribute.json_schema(
             key='privacy_level',
@@ -105,7 +105,7 @@ class Node:
                 "A child node's setting of 'privacy level' will take precedence for the respective child node. "
                 "Allowed values are [0, 1, 2].",
             type_name=AttributeType.TYPE_NAME_INT,
-            value_additional=value_additional)
+            additional_value=additional_value)
 
     @staticmethod
     def differential_privacy_attributes_group(attributes):

@@ -106,4 +106,4 @@ class Dataset:
                 JsonSchemaNode.privacy_level_attribute(node_type_name=NodeType.TYPE_NAME_DATASET)
             ])
         ]
-        return JsonSchemaNode.json_schema(NodeType.TYPE_NAME_DATASET, attributes_groups=attributes_groups, child_node_json_schema="\"Database.json_schema()\"")
+        return JsonSchemaNode.json_schema(NodeType.TYPE_NAME_DATASET, attributes_groups=attributes_groups, child_node_json_schema=Database.json_schema())

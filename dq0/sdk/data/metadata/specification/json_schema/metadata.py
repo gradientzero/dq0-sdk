@@ -15,7 +15,6 @@ class Metadata:
     "attribute_permissions": {attribute_permissions},
     "node_permissions": {node_permissions}
   }},
-  "title": "Metadata",
   "description": "A DQ0 metadata object",
   "type": "object",
   "properties": {{
