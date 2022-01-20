@@ -1,8 +1,7 @@
 class Permissions:
     @staticmethod
-    def permissions_property(key, title, operation):
+    def permissions_property(key, operation):
         return f""""{key}": {{
-  "title": "{title}",
   "description": "List of user/role uuids allowed to perform '{operation}' operations.",
   "type": "object",
   "patternProperties": {{
@@ -21,7 +20,6 @@ class Permissions:
             if index < len(properties) - 1:
                 permissions_properties += ','
         return f"""{{
-  "title": "Permissions",
   "description": "Permissions, governing access to its '{owner}' owner object.",
   "oneOf": [
     {{

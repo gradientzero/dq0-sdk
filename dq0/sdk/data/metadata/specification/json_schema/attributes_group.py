@@ -1,10 +1,10 @@
-from dq0.sdk.data.metadata.attribute.attribute_type import AttributeType
 from dq0.sdk.data.metadata.specification.json_schema.attribute import Attribute
+from dq0.sdk.data.metadata.structure.attribute.attribute_type import AttributeType
 
 
 class AttributesGroup:
     @staticmethod
-    def json_schema(key, title, group_name, description, contains=None, attributes=None):
+    def json_schema(key, group_name, description, contains=None, attributes=None):
         contains_json = ''
         if contains is not None:
             contains_json = "\n\"contains\": " + f"{contains},"
@@ -22,10 +22,8 @@ class AttributesGroup:
   "oneOf": [
     {attribute_items}
   ]
-}},
-"""
+}},"""
         value_additional = f""""minItems": 1,{contains_json}{items_json}
-"uniqueItemProperties": [ "key" ]
-"""
-        return Attribute.json_schema(key=key, title=title, attribute_name=f"{group_name} group", description=description,
+"uniqueItemProperties": [ "key" ]"""
+        return Attribute.json_schema(key=key, attribute_name=f"{group_name} group", description=description,
                                      type_name=AttributeType.TYPE_NAME_LIST, value_additional=value_additional)
