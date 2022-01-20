@@ -22,6 +22,9 @@ class AttributesGroup:
             if key != attribute_list.get_key():
                 raise Exception(f"keys do not match: {key} != {attribute_list.get_key()}")
 
+    def to_dict(self, request_uuids=set()):
+        return self._attribute_list.to_dict(request_uuids=request_uuids) if self._attribute_list is not None else None
+
     def get_entity(self):
         return self._entity
 
