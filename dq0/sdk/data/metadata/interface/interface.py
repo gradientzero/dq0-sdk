@@ -89,3 +89,6 @@ class Interface(Entity):
 
     def set_child_name(self, old_name, new_name):
         pass
+
+    def apply_defaults_and_verify(self, specifications=None):
+        return Interface(metadata=self._metadata.apply_defaults_and_verify(specifications=specifications), role_uuids=self.get_role_uuids())

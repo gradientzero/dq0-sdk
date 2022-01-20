@@ -4,7 +4,7 @@ from dq0.sdk.data.metadata.node.node import Node
 from dq0.sdk.data.metadata.node.node_type import NodeType
 from dq0.sdk.data.metadata.specification.dataset.v1.database import Database
 from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
-from dq0.sdk.data.metadata.specification.json.utils import Utils as JsonUtils
+from dq0.sdk.data.metadata.specification.json_schema.utils import Utils as JsonSchemaUtils
 
 
 class Dataset:
@@ -88,7 +88,7 @@ class Dataset:
 
     @staticmethod
     def tags_json_schema():
-        attribute_permissions_json_schema = JsonUtils.attribute_permissions_json_schema()
+        attribute_permissions_json_schema = JsonSchemaUtils.attribute_permissions_json_schema()
         attribute_permissions_json_schema_inner = attribute_permissions_json_schema.replace('\n', "\n          ")
         attribute_permissions_json_schema_outer = attribute_permissions_json_schema.replace('\n', "\n    ")
         return f"""{{
@@ -149,19 +149,19 @@ class Dataset:
     @staticmethod
     def data_json_schema():
         indent = "          "
-        description_json_schema = JsonUtils.attribute_json_schema(
+        description_json_schema = JsonSchemaUtils.attribute_json_schema(
             type_name=AttributeType.TYPE_NAME_STRING, key='description', title='Description',
             description="The description of the defined dataset.").replace('\n', "\n" + indent)
-        metadata_is_public_json_schema = JsonUtils.attribute_json_schema(
+        metadata_is_public_json_schema = JsonSchemaUtils.attribute_json_schema(
             type_name=AttributeType.TYPE_NAME_BOOLEAN, key='metadata_is_public', title="Metadata is Public",
             description="Whether the provided metadata in this file is visible to all users.").replace('\n', "\n" + indent)
-        name_json_schema = JsonUtils.attribute_json_schema(
+        name_json_schema = JsonSchemaUtils.attribute_json_schema(
             type_name=AttributeType.TYPE_NAME_STRING, key='name', title='Name',
             description="The name of the defined dataset.")
         name_json_schema_outer = name_json_schema.replace('\n', "\n      ")
         name_json_schema_inner = name_json_schema.replace('\n', "\n" + indent)
         tags_json_schema = Dataset.tags_json_schema().replace('\n', "\n" + indent)
-        attribute_permissions_json_schema = JsonUtils.attribute_permissions_json_schema().replace('\n', "\n    ")
+        attribute_permissions_json_schema = JsonSchemaUtils.attribute_permissions_json_schema().replace('\n', "\n    ")
         return f"""{{
   "title": "Data",
   "description": "The data attributes group. Contains general attributes of the outer data object.",
@@ -203,7 +203,7 @@ class Dataset:
 
     @staticmethod
     def privacy_level_json_schema():
-        attribute_permissions_json_schema = JsonUtils.attribute_permissions_json_schema().replace('\n', "\n    ")
+        attribute_permissions_json_schema = JsonSchemaUtils.attribute_permissions_json_schema().replace('\n', "\n    ")
         return f"""{{
   "title": "Privacy Level",
   "description": "The privacy level determines the amount of data privacy protection.",
@@ -238,7 +238,7 @@ class Dataset:
     def differential_privacy_json_schema():
         indent = "          "
         privacy_level_json_schema = Dataset.privacy_level_json_schema().replace('\n', "\n" + indent)
-        attribute_permissions_json_schema = JsonUtils.attribute_permissions_json_schema().replace('\n', "\n    ")
+        attribute_permissions_json_schema = JsonSchemaUtils.attribute_permissions_json_schema().replace('\n', "\n    ")
         return f"""{{
   "title": "Differential Privacy",
   "description": "The differential privacy attributes group. Contains attributes pertaining differentially private data protection mechanisms.",
@@ -282,7 +282,7 @@ class Dataset:
         data_json_schema_inner = data_json_schema.replace('\n', "\n" + indent)
         differential_privacy_json_schema = Dataset.differential_privacy_json_schema().replace('\n', "\n" + indent)
         database_json_schema = Database.json_schema().replace('\n', "\n      ")
-        node_permissions_json_schema = JsonUtils.node_permissions_json_schema().replace('\n', "\n    ")
+        node_permissions_json_schema = JsonSchemaUtils.node_permissions_json_schema().replace('\n', "\n    ")
         return f"""{{
   "title": "Dataset",
   "description": "The main dataset node in the metadata structure.",

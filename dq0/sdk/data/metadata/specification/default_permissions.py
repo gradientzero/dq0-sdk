@@ -1,5 +1,6 @@
 from dq0.sdk.data.metadata.permissions.action import Action
 from dq0.sdk.data.metadata.permissions.permissions import Permissions
+from dq0.sdk.data.metadata.specification.json_schema.permissions import Permissions as JsonSchemaPermissions
 
 
 class DefaultPermissions:
@@ -56,6 +57,15 @@ class DefaultPermissions:
         })
 
     @staticmethod
+    def json_schema_node_permissions():
+        return JsonSchemaPermissions.json_schema(owner='node', properties=[
+            JsonSchemaPermissions.permissions_property(key=Action.READ, title='Read', operation="read node"),
+            JsonSchemaPermissions.permissions_property(key=Action.WRITE_ATTRIBUTES, title="Write Attributes", operation="write node attributes"),
+            JsonSchemaPermissions.permissions_property(key=Action.WRITE_CHILD_NODES, title="Write Child Nodes", operation="write node child nodes"),
+            JsonSchemaPermissions.permissions_property(key=Action.WRITE_PERMISSIONS, title="Write Permissions", operation="write node permissions"),
+        ])
+
+    @staticmethod
     def shared_attribute(role_uuids=None):
         return Permissions(permissions={
             Action.READ: DefaultPermissions.select_uuids(role_uuids=role_uuids, role_names={DefaultPermissions.OWNER_NAME, DefaultPermissions.USER_NAME}),
@@ -79,3 +89,11 @@ class DefaultPermissions:
             Action.WRITE_VALUE: DefaultPermissions.select_uuids(role_uuids=role_uuids, role_names={DefaultPermissions.OWNER_NAME,
                                                                                                    DefaultPermissions.USER_NAME}),
         })
+
+    @staticmethod
+    def json_schema_attribute_permissions():
+        return JsonSchemaPermissions.json_schema(owner='attribute', properties=[
+            JsonSchemaPermissions.permissions_property(key=Action.READ, title='Read', operation="read attribute"),
+            JsonSchemaPermissions.permissions_property(key=Action.WRITE_PERMISSIONS, title="Write Permissions", operation="write attribute permissions"),
+            JsonSchemaPermissions.permissions_property(key=Action.WRITE_VALUE, title="Write Value", operation="write attribute value"),
+        ])

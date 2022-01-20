@@ -1,10 +1,10 @@
 from dq0.sdk.data.metadata.specification.dataset.v1.dataset import Dataset
 
 
-class MetadataSchema:
+class Metadata:
     @staticmethod
     def json_schema():
-        dataset_json_schema = Dataset.json_schema().replace('\n', "\n        ")
+        dataset = Dataset.json_schema().replace('\n', "\n        ")
         return f"""{{
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://dq0.io/metadata.schema.json",
@@ -23,7 +23,7 @@ class MetadataSchema:
           "type": "string",
           "const": "full"
         }},
-        "node": {dataset_json_schema},
+        "node": {dataset},
         "specification": {{
           "title": "Specification",
           "description": "The specification to validate the dataset metadata against.",
