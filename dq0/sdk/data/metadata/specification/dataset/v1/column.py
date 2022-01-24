@@ -203,10 +203,14 @@ class Column:
                     ],
                     additional_description=" Requires a 'data_type_name' attribute."
                 ),
-                JsonSchemaAttributesGroup.differential_privacy(
+                JsonSchemaAttributesGroup.private_sql(
                     attributes=[
-                        JsonSchemaAttribute.privacy_level(
-                            node_type_name=NodeType.TYPE_NAME_COLUMN
+                        JsonSchemaAttribute.json_schema(
+                            key='selectable',
+                            attribute_name='selectable',
+                            description="The 'selectable' attribute. Specifies whether a selection may happen "
+                                f"for the '{NodeType.TYPE_NAME_COLUMN}'.",
+                            type_name=AttributeType.TYPE_NAME_BOOLEAN
                         )
                     ]
                 )
