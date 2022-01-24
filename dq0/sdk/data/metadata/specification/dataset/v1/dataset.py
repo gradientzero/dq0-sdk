@@ -1,6 +1,7 @@
 from dq0.sdk.data.metadata.specification.dataset.v1.database import Database
 from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
 from dq0.sdk.data.metadata.specification.json_schema.attribute import Attribute as JsonSchemaAttribute
+from dq0.sdk.data.metadata.specification.json_schema.attributes_group import AttributesGroup as JsonSchemaAttributesGroup
 from dq0.sdk.data.metadata.specification.json_schema.node import Node as JsonSchemaNode
 from dq0.sdk.data.metadata.structure.attribute.attribute import Attribute
 from dq0.sdk.data.metadata.structure.attribute.attribute_type import AttributeType
@@ -89,21 +90,37 @@ class Dataset:
 
     @staticmethod
     def json_schema():
-        attributes_groups = [
-            JsonSchemaNode.data_attributes_group(attributes=[
-                JsonSchemaNode.description_attribute(node_type_name=NodeType.TYPE_NAME_DATASET),
-                JsonSchemaNode.metadata_is_public_attribute(node_type_name=NodeType.TYPE_NAME_DATASET),
-                JsonSchemaNode.name_attribute(node_type_name=NodeType.TYPE_NAME_DATASET),
-                JsonSchemaAttribute.no_key_list(
-                    key='tags',
-                    attribute_name='tags',
-                    description="The 'tags' attribute. A list of 'tag' values attached to the 'dataset'.",
-                    item_attribute_name='tag',
-                    item_description="A 'tag' attribute. Represents a single 'tag' value attached to the 'dataset'.",
-                    item_type_name=AttributeType.TYPE_NAME_STRING)
-            ]),
-            JsonSchemaNode.differential_privacy_attributes_group(attributes=[
-                JsonSchemaNode.privacy_level_attribute(node_type_name=NodeType.TYPE_NAME_DATASET)
-            ])
-        ]
-        return JsonSchemaNode.json_schema(NodeType.TYPE_NAME_DATASET, attributes_groups=attributes_groups, child_node_json_schema=Database.json_schema())
+        return JsonSchemaNode.json_schema(
+            NodeType.TYPE_NAME_DATASET,
+            attributes_groups=[
+                JsonSchemaAttributesGroup.data(
+                    attributes=[
+                        JsonSchemaAttribute.description(
+                            node_type_name=NodeType.TYPE_NAME_DATASET
+                        ),
+                        JsonSchemaAttribute.metadata_is_public(
+                            node_type_name=NodeType.TYPE_NAME_DATASET
+                        ),
+                        JsonSchemaAttribute.name(
+                            node_type_name=NodeType.TYPE_NAME_DATASET
+                        ),
+                        JsonSchemaAttribute.no_key_list(
+                            key='tags',
+                            attribute_name='tags',
+                            description="The 'tags' attribute. A list of 'tag' values attached to the 'dataset'.",
+                            item_attribute_name='tag',
+                            item_description="A 'tag' attribute. Represents a single 'tag' value attached to the 'dataset'.",
+                            item_type_name=AttributeType.TYPE_NAME_STRING
+                        )
+                    ]
+                ),
+                JsonSchemaAttributesGroup.differential_privacy(
+                    attributes=[
+                        JsonSchemaAttribute.privacy_level(
+                            node_type_name=NodeType.TYPE_NAME_DATASET
+                        )
+                    ]
+                )
+            ],
+            child_node_json_schema=Database.json_schema()
+        )

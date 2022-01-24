@@ -1,9 +1,12 @@
+from dq0.sdk.data.metadata.specification.dataset.v1.table import Table
+from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
+from dq0.sdk.data.metadata.specification.json_schema.attribute import Attribute as JsonSchemaAttribute
+from dq0.sdk.data.metadata.specification.json_schema.attributes_group import AttributesGroup as JsonSchemaAttributesGroup
+from dq0.sdk.data.metadata.specification.json_schema.node import Node as JsonSchemaNode
 from dq0.sdk.data.metadata.structure.attribute.attribute import Attribute
 from dq0.sdk.data.metadata.structure.attribute.attribute_type import AttributeType
 from dq0.sdk.data.metadata.structure.node.node import Node
 from dq0.sdk.data.metadata.structure.node.node_type import NodeType
-from dq0.sdk.data.metadata.specification.dataset.v1.table import Table
-from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
 
 
 class Schema:
@@ -77,3 +80,32 @@ class Schema:
                 names.add(name_attribute.get_value())
         if len(names) != len(child_nodes):
             raise Exception(f"names {names} are not enough for each of the {len(child_nodes)} child nodes to have a unique name")
+
+    @staticmethod
+    def json_schema():
+        return JsonSchemaNode.json_schema(
+            NodeType.TYPE_NAME_SCHEMA,
+            attributes_groups=[
+                JsonSchemaAttributesGroup.data(
+                    attributes=[
+                        JsonSchemaAttribute.description(
+                            node_type_name=NodeType.TYPE_NAME_SCHEMA
+                        ),
+                        JsonSchemaAttribute.metadata_is_public(
+                            node_type_name=NodeType.TYPE_NAME_SCHEMA
+                        ),
+                        JsonSchemaAttribute.name(
+                            node_type_name=NodeType.TYPE_NAME_SCHEMA
+                        )
+                    ]
+                ),
+                JsonSchemaAttributesGroup.differential_privacy(
+                    attributes=[
+                        JsonSchemaAttribute.privacy_level(
+                            node_type_name=NodeType.TYPE_NAME_SCHEMA
+                        )
+                    ]
+                )
+            ],
+            child_node_json_schema=Table.json_schema()
+        )

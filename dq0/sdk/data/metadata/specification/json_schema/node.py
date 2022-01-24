@@ -1,7 +1,5 @@
-from dq0.sdk.data.metadata.specification.json_schema.attribute import Attribute
 from dq0.sdk.data.metadata.specification.json_schema.attributes_group import AttributesGroup
 from dq0.sdk.data.metadata.specification.json_schema.utils import Utils as JsonSchemaUtils
-from dq0.sdk.data.metadata.structure.attribute.attribute_type import AttributeType
 
 
 class Node:
@@ -60,64 +58,3 @@ class Node:
   "required": [ "type_name", "attributes" ],
   "additionalProperties": false
 }}"""
-
-    @staticmethod
-    def description_attribute(node_type_name):
-        return Attribute.json_schema(
-            key='description',
-            attribute_name='description',
-            description=f"The 'description' attribute. Describes the '{node_type_name}'.",
-            type_name=AttributeType.TYPE_NAME_STRING)
-
-    @staticmethod
-    def metadata_is_public_attribute(node_type_name):
-        return Attribute.json_schema(
-            key='metadata_is_public',
-            attribute_name='metadata is public',
-            description=f"The 'metadata is public' attribute. Specifies whether the '{node_type_name}' metadata is public.",
-            type_name=AttributeType.TYPE_NAME_BOOLEAN)
-
-    @staticmethod
-    def name_attribute(node_type_name):
-        return Attribute.json_schema(
-            key='name',
-            attribute_name='name',
-            description=f"The 'name' attribute. Mandatory and required to be unique among all elements of type '{node_type_name}'.",
-            type_name=AttributeType.TYPE_NAME_STRING
-        )
-
-    @staticmethod
-    def data_attributes_group(attributes):
-        return AttributesGroup.json_schema(
-            key='data',
-            group_name='data',
-            description="The 'data' attributes group. This group is required.",
-            additional_description="Requires a 'name' attribute.",
-            contains=Attribute.json_schema(
-                key='name',
-                attribute_name='name',
-                description="This item ensures that the 'name' attribute is present.",
-                type_name=AttributeType.TYPE_NAME_STRING
-            ),
-            attributes=attributes)
-
-    @staticmethod
-    def privacy_level_attribute(node_type_name):
-        additional_value = """"minimum": 0,
-"maximum": 2"""
-        return Attribute.json_schema(
-            key='privacy_level',
-            attribute_name='privacy level',
-            description=f"The 'privacy level' attribute. Sets the level of privacy protection for '{node_type_name}'. "
-                "A child node's setting of 'privacy level' will take precedence for the respective child node. "
-                "Allowed values are [0, 1, 2].",
-            type_name=AttributeType.TYPE_NAME_INT,
-            additional_value=additional_value)
-
-    @staticmethod
-    def differential_privacy_attributes_group(attributes):
-        return AttributesGroup.json_schema(
-            key='differential_privacy',
-            group_name='differential privacy',
-            description="The 'differential privacy' attributes group.",
-            attributes=attributes)

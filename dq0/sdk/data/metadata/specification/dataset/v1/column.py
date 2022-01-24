@@ -1,4 +1,12 @@
+from dq0.sdk.data.metadata.specification.dataset.v1.column_boolean import ColumnBoolean
+from dq0.sdk.data.metadata.specification.dataset.v1.column_datetime import ColumnDatetime
+from dq0.sdk.data.metadata.specification.dataset.v1.column_float import ColumnFloat
+from dq0.sdk.data.metadata.specification.dataset.v1.column_int import ColumnInt
+from dq0.sdk.data.metadata.specification.dataset.v1.column_string import ColumnString
 from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
+from dq0.sdk.data.metadata.specification.json_schema.attribute import Attribute as JsonSchemaAttribute
+from dq0.sdk.data.metadata.specification.json_schema.attributes_group import AttributesGroup as JsonSchemaAttributesGroup
+from dq0.sdk.data.metadata.specification.json_schema.node import Node as JsonSchemaNode
 from dq0.sdk.data.metadata.structure.attribute.attribute import Attribute
 from dq0.sdk.data.metadata.structure.attribute.attribute_type import AttributeType
 from dq0.sdk.data.metadata.structure.node.node import Node
@@ -135,300 +143,72 @@ class Column:
         if data_type_name is None:
             raise Exception("attribute data_type_name is missing in column")
         if data_type_name == 'boolean':
-            Column.verify_attributes_boolean(attributes=attributes, role_uuids=role_uuids)
+            ColumnBoolean.verify_attributes(attributes=attributes, role_uuids=role_uuids)
         elif data_type_name == 'datetime':
-            Column.verify_attributes_datetime(attributes=attributes, role_uuids=role_uuids)
+            ColumnDatetime.verify_attributes(attributes=attributes, role_uuids=role_uuids)
         elif data_type_name == 'float':
-            Column.verify_attributes_float(attributes=attributes, role_uuids=role_uuids)
+            ColumnFloat.verify_attributes(attributes=attributes, role_uuids=role_uuids)
         elif data_type_name == 'int':
-            Column.verify_attributes_int(attributes=attributes, role_uuids=role_uuids)
+            ColumnInt.verify_attributes(attributes=attributes, role_uuids=role_uuids)
         elif data_type_name == 'string':
-            Column.verify_attributes_string(attributes=attributes, role_uuids=role_uuids)
+            ColumnString.verify_attributes(attributes=attributes, role_uuids=role_uuids)
         else:
             raise Exception(f"unknown data_type_name {data_type_name}")
-
-    @staticmethod
-    def verify_attributes_boolean(attributes, role_uuids=None):
-        owner_attribute = DefaultPermissions.owner_attribute(role_uuids=role_uuids)
-        shared_attribute = DefaultPermissions.shared_attribute(role_uuids=role_uuids)
-        analyst_attribute = DefaultPermissions.analyst_attribute(role_uuids=role_uuids)
-        Attribute.check_list(attribute_list=attributes, check_data={
-            'data': ([AttributeType.TYPE_NAME_LIST], shared_attribute),
-            'private_sql': ([AttributeType.TYPE_NAME_LIST], owner_attribute),
-            'private_synthesis': ([AttributeType.TYPE_NAME_LIST], owner_attribute),
-            'machine_learning': ([AttributeType.TYPE_NAME_LIST], shared_attribute),
-        }, required_keys={'data'})
-        data_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'data'] if attributes is not None else []
-        if 0 < len(data_attributes):
-            Attribute.check_list(attribute_list=data_attributes[0].get_value(), check_data={
-                'data_type_name': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
-                'description': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
-                'metadata_is_public': ([AttributeType.TYPE_NAME_BOOLEAN], shared_attribute),
-                'name': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
-                'selectable': ([AttributeType.TYPE_NAME_BOOLEAN], shared_attribute),
-            }, required_keys={'data_type_name', 'name'})
-        private_sql_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'private_sql'] if attributes is not None else []
-        if 0 < len(private_sql_attributes):
-            Attribute.check_list(attribute_list=private_sql_attributes[0].get_value(), check_data={
-                'private_id': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
-            })
-        private_synthesis_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'private_synthesis'] \
-            if attributes is not None else []
-        if 0 < len(private_synthesis_attributes):
-            Attribute.check_list(attribute_list=private_synthesis_attributes[0].get_value(), check_data={
-                'synthesizable': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
-            })
-        machine_learning_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'machine_learning'] \
-            if attributes is not None else []
-        if 0 < len(machine_learning_attributes):
-            Attribute.check_list(attribute_list=machine_learning_attributes[0].get_value(), check_data={
-                'is_feature': ([AttributeType.TYPE_NAME_BOOLEAN], analyst_attribute),
-                'is_target': ([AttributeType.TYPE_NAME_BOOLEAN], analyst_attribute),
-            })
-
-    @staticmethod
-    def verify_attributes_datetime(attributes, role_uuids=None):
-        owner_attribute = DefaultPermissions.owner_attribute(role_uuids=role_uuids)
-        shared_attribute = DefaultPermissions.shared_attribute(role_uuids=role_uuids)
-        analyst_attribute = DefaultPermissions.analyst_attribute(role_uuids=role_uuids)
-        Attribute.check_list(attribute_list=attributes, check_data={
-            'data': ([AttributeType.TYPE_NAME_LIST], shared_attribute),
-            'private_sql': ([AttributeType.TYPE_NAME_LIST], owner_attribute),
-            'private_sql_and_synthesis': ([AttributeType.TYPE_NAME_LIST], owner_attribute),
-            'private_synthesis': ([AttributeType.TYPE_NAME_LIST], owner_attribute),
-            'machine_learning': ([AttributeType.TYPE_NAME_LIST], shared_attribute),
-        }, required_keys={'data'})
-        data_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'data'] if attributes is not None else []
-        if 0 < len(data_attributes):
-            Attribute.check_list(attribute_list=data_attributes[0].get_value(), check_data={
-                'data_type_name': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
-                'description': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
-                'metadata_is_public': ([AttributeType.TYPE_NAME_BOOLEAN], shared_attribute),
-                'name': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
-                'selectable': ([AttributeType.TYPE_NAME_BOOLEAN], shared_attribute),
-            }, required_keys={'data_type_name', 'name'})
-        private_sql_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'private_sql'] if attributes is not None else []
-        if 0 < len(private_sql_attributes):
-            Attribute.check_list(attribute_list=private_sql_attributes[0].get_value(), check_data={
-                'allowed_values': ([AttributeType.TYPE_NAME_LIST], owner_attribute),
-                'auto_bounds_prob': ([AttributeType.TYPE_NAME_FLOAT], owner_attribute),
-                'auto_lower': ([AttributeType.TYPE_NAME_DATETIME], owner_attribute),
-                'auto_upper': ([AttributeType.TYPE_NAME_DATETIME], owner_attribute),
-                'private_id': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
-                'use_auto_bounds': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
-            })
-            allowed_values_attributes = [
-                tmp_attribute for tmp_attribute in private_sql_attributes[0].get_value() if tmp_attribute.get_key() == 'allowed_values'] \
-                if private_sql_attributes[0].get_value() is not None else []
-            if 0 < len(allowed_values_attributes):
-                Attribute.check_list(attribute_list=allowed_values_attributes[0].get_value(), check_data={
-                    None: ([AttributeType.TYPE_NAME_DATETIME], owner_attribute),
-                })
-        private_sql_and_synthesis_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'private_sql_and_synthesis'] \
-            if attributes is not None else []
-        if 0 < len(private_sql_and_synthesis_attributes):
-            Attribute.check_list(attribute_list=private_sql_and_synthesis_attributes[0].get_value(), check_data={
-                'bounded': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
-                'cardinality': ([AttributeType.TYPE_NAME_INT], owner_attribute),
-                'lower': ([AttributeType.TYPE_NAME_DATETIME], owner_attribute),
-                'upper': ([AttributeType.TYPE_NAME_DATETIME], owner_attribute),
-            })
-        private_synthesis_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'private_synthesis'] \
-            if attributes is not None else []
-        if 0 < len(private_synthesis_attributes):
-            Attribute.check_list(attribute_list=private_synthesis_attributes[0].get_value(), check_data={
-                'synthesizable': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
-            })
-        machine_learning_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'machine_learning'] \
-            if attributes is not None else []
-        if 0 < len(machine_learning_attributes):
-            Attribute.check_list(attribute_list=machine_learning_attributes[0].get_value(), check_data={
-                'is_feature': ([AttributeType.TYPE_NAME_BOOLEAN], analyst_attribute),
-                'is_target': ([AttributeType.TYPE_NAME_BOOLEAN], analyst_attribute),
-            })
-
-    @staticmethod
-    def verify_attributes_float(attributes, role_uuids=None):
-        owner_attribute = DefaultPermissions.owner_attribute(role_uuids=role_uuids)
-        shared_attribute = DefaultPermissions.shared_attribute(role_uuids=role_uuids)
-        analyst_attribute = DefaultPermissions.analyst_attribute(role_uuids=role_uuids)
-        Attribute.check_list(attribute_list=attributes, check_data={
-            'data': ([AttributeType.TYPE_NAME_LIST], shared_attribute),
-            'private_sql': ([AttributeType.TYPE_NAME_LIST], owner_attribute),
-            'private_sql_and_synthesis': ([AttributeType.TYPE_NAME_LIST], owner_attribute),
-            'private_synthesis': ([AttributeType.TYPE_NAME_LIST], owner_attribute),
-            'machine_learning': ([AttributeType.TYPE_NAME_LIST], shared_attribute),
-        }, required_keys={'data'})
-        data_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'data'] if attributes is not None else []
-        if 0 < len(data_attributes):
-            Attribute.check_list(attribute_list=data_attributes[0].get_value(), check_data={
-                'data_type_name': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
-                'description': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
-                'metadata_is_public': ([AttributeType.TYPE_NAME_BOOLEAN], shared_attribute),
-                'name': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
-                'selectable': ([AttributeType.TYPE_NAME_BOOLEAN], shared_attribute),
-            }, required_keys={'data_type_name', 'name'})
-        private_sql_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'private_sql'] if attributes is not None else []
-        if 0 < len(private_sql_attributes):
-            Attribute.check_list(attribute_list=private_sql_attributes[0].get_value(), check_data={
-                'allowed_values': ([AttributeType.TYPE_NAME_LIST], owner_attribute),
-                'auto_bounds_prob': ([AttributeType.TYPE_NAME_FLOAT], owner_attribute),
-                'auto_lower': ([AttributeType.TYPE_NAME_FLOAT], owner_attribute),
-                'auto_upper': ([AttributeType.TYPE_NAME_FLOAT], owner_attribute),
-                'private_id': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
-                'use_auto_bounds': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
-            })
-            allowed_values_attributes = [
-                tmp_attribute for tmp_attribute in private_sql_attributes[0].get_value() if tmp_attribute.get_key() == 'allowed_values'] \
-                if private_sql_attributes[0].get_value() is not None else []
-            if 0 < len(allowed_values_attributes):
-                Attribute.check_list(attribute_list=allowed_values_attributes[0].get_value(), check_data={
-                    None: ([AttributeType.TYPE_NAME_FLOAT], owner_attribute),
-                })
-        private_sql_and_synthesis_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'private_sql_and_synthesis'] \
-            if attributes is not None else []
-        if 0 < len(private_sql_and_synthesis_attributes):
-            Attribute.check_list(attribute_list=private_sql_and_synthesis_attributes[0].get_value(), check_data={
-                'bounded': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
-                'cardinality': ([AttributeType.TYPE_NAME_INT], owner_attribute),
-                'lower': ([AttributeType.TYPE_NAME_FLOAT], owner_attribute),
-                'upper': ([AttributeType.TYPE_NAME_FLOAT], owner_attribute),
-            })
-        private_synthesis_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'private_synthesis'] \
-            if attributes is not None else []
-        if 0 < len(private_synthesis_attributes):
-            Attribute.check_list(attribute_list=private_synthesis_attributes[0].get_value(), check_data={
-                'discrete': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
-                'min_step': ([AttributeType.TYPE_NAME_FLOAT], owner_attribute),
-                'synthesizable': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
-            })
-        machine_learning_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'machine_learning'] \
-            if attributes is not None else []
-        if 0 < len(machine_learning_attributes):
-            Attribute.check_list(attribute_list=machine_learning_attributes[0].get_value(), check_data={
-                'is_feature': ([AttributeType.TYPE_NAME_BOOLEAN], analyst_attribute),
-                'is_target': ([AttributeType.TYPE_NAME_BOOLEAN], analyst_attribute),
-            })
-
-    @staticmethod
-    def verify_attributes_int(attributes, role_uuids=None):
-        owner_attribute = DefaultPermissions.owner_attribute(role_uuids=role_uuids)
-        shared_attribute = DefaultPermissions.shared_attribute(role_uuids=role_uuids)
-        analyst_attribute = DefaultPermissions.analyst_attribute(role_uuids=role_uuids)
-        Attribute.check_list(attribute_list=attributes, check_data={
-            'data': ([AttributeType.TYPE_NAME_LIST], shared_attribute),
-            'private_sql': ([AttributeType.TYPE_NAME_LIST], owner_attribute),
-            'private_sql_and_synthesis': ([AttributeType.TYPE_NAME_LIST], owner_attribute),
-            'private_synthesis': ([AttributeType.TYPE_NAME_LIST], owner_attribute),
-            'machine_learning': ([AttributeType.TYPE_NAME_LIST], shared_attribute),
-        }, required_keys={'data'})
-        data_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'data'] if attributes is not None else []
-        if 0 < len(data_attributes):
-            Attribute.check_list(attribute_list=data_attributes[0].get_value(), check_data={
-                'data_type_name': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
-                'description': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
-                'metadata_is_public': ([AttributeType.TYPE_NAME_BOOLEAN], shared_attribute),
-                'name': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
-                'selectable': ([AttributeType.TYPE_NAME_BOOLEAN], shared_attribute),
-            }, required_keys={'data_type_name', 'name'})
-        private_sql_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'differential_privacy_sql'] \
-            if attributes is not None else []
-        if 0 < len(private_sql_attributes):
-            Attribute.check_list(attribute_list=private_sql_attributes[0].get_value(), check_data={
-                'allowed_values': ([AttributeType.TYPE_NAME_LIST], owner_attribute),
-                'auto_bounds_prob': ([AttributeType.TYPE_NAME_FLOAT], owner_attribute),
-                'auto_lower': ([AttributeType.TYPE_NAME_INT], owner_attribute),
-                'auto_upper': ([AttributeType.TYPE_NAME_INT], owner_attribute),
-                'private_id': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
-                'use_auto_bounds': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
-            })
-            allowed_values_attributes = [
-                tmp_attribute for tmp_attribute in private_sql_attributes[0].get_value() if tmp_attribute.get_key() == 'allowed_values'] \
-                if private_sql_attributes[0].get_value() is not None else []
-            if 0 < len(allowed_values_attributes):
-                Attribute.check_list(attribute_list=allowed_values_attributes[0].get_value(), check_data={
-                    None: ([AttributeType.TYPE_NAME_INT], owner_attribute),
-                })
-        private_sql_and_synthesis_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'private_sql_and_synthesis'] \
-            if attributes is not None else []
-        if 0 < len(private_sql_and_synthesis_attributes):
-            Attribute.check_list(attribute_list=private_sql_and_synthesis_attributes[0].get_value(), check_data={
-                'bounded': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
-                'cardinality': ([AttributeType.TYPE_NAME_INT], owner_attribute),
-                'lower': ([AttributeType.TYPE_NAME_INT], owner_attribute),
-                'upper': ([AttributeType.TYPE_NAME_INT], owner_attribute),
-            })
-        private_synthesis_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'private_synthesis'] \
-            if attributes is not None else []
-        if 0 < len(private_synthesis_attributes):
-            Attribute.check_list(attribute_list=private_synthesis_attributes[0].get_value(), check_data={
-                'min_step': ([AttributeType.TYPE_NAME_INT], owner_attribute),
-                'synthesizable': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
-            })
-        machine_learning_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'machine_learning'] \
-            if attributes is not None else []
-        if 0 < len(machine_learning_attributes):
-            Attribute.check_list(attribute_list=machine_learning_attributes[0].get_value(), check_data={
-                'is_feature': ([AttributeType.TYPE_NAME_BOOLEAN], analyst_attribute),
-                'is_target': ([AttributeType.TYPE_NAME_BOOLEAN], analyst_attribute),
-            })
-
-    @staticmethod
-    def verify_attributes_string(attributes, role_uuids=None):
-        owner_attribute = DefaultPermissions.owner_attribute(role_uuids=role_uuids)
-        shared_attribute = DefaultPermissions.shared_attribute(role_uuids=role_uuids)
-        analyst_attribute = DefaultPermissions.analyst_attribute(role_uuids=role_uuids)
-        Attribute.check_list(attribute_list=attributes, check_data={
-            'data': ([AttributeType.TYPE_NAME_LIST], shared_attribute),
-            'private_sql': ([AttributeType.TYPE_NAME_LIST], owner_attribute),
-            'private_sql_and_synthesis': ([AttributeType.TYPE_NAME_LIST], owner_attribute),
-            'private_synthesis': ([AttributeType.TYPE_NAME_LIST], owner_attribute),
-            'machine_learning': ([AttributeType.TYPE_NAME_LIST], shared_attribute),
-        }, required_keys={'data'})
-        data_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'data'] if attributes is not None else []
-        if 0 < len(data_attributes):
-            Attribute.check_list(attribute_list=data_attributes[0].get_value(), check_data={
-                'data_type_name': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
-                'description': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
-                'metadata_is_public': ([AttributeType.TYPE_NAME_BOOLEAN], shared_attribute),
-                'name': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
-                'selectable': ([AttributeType.TYPE_NAME_BOOLEAN], shared_attribute),
-            }, required_keys={'data_type_name', 'name'})
-        private_sql_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'private_sql'] if attributes is not None else []
-        if 0 < len(private_sql_attributes):
-            Attribute.check_list(attribute_list=private_sql_attributes[0].get_value(), check_data={
-                'allowed_values': ([AttributeType.TYPE_NAME_LIST], owner_attribute),
-                'mask': ([AttributeType.TYPE_NAME_STRING], owner_attribute),
-                'private_id': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
-            })
-            allowed_values_attributes = [
-                tmp_attribute for tmp_attribute in private_sql_attributes[0].get_value() if tmp_attribute.get_key() == 'allowed_values'] \
-                if private_sql_attributes[0].get_value() is not None else []
-            if 0 < len(allowed_values_attributes):
-                Attribute.check_list(attribute_list=allowed_values_attributes[0].get_value(), check_data={
-                    None: ([AttributeType.TYPE_NAME_STRING], owner_attribute),
-                })
-        private_sql_and_synthesis_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'private_sql_and_synthesis'] \
-            if attributes is not None else []
-        if 0 < len(private_sql_and_synthesis_attributes):
-            Attribute.check_list(attribute_list=private_sql_and_synthesis_attributes[0].get_value(), check_data={
-                'cardinality': ([AttributeType.TYPE_NAME_INT], owner_attribute),
-            })
-        private_synthesis_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'private_synthesis'] \
-            if attributes is not None else []
-        if 0 < len(private_synthesis_attributes):
-            Attribute.check_list(attribute_list=private_synthesis_attributes[0].get_value(), check_data={
-                'synthesizable': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
-            })
-        machine_learning_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'machine_learning'] \
-            if attributes is not None else []
-        if 0 < len(machine_learning_attributes):
-            Attribute.check_list(attribute_list=machine_learning_attributes[0].get_value(), check_data={
-                'is_feature': ([AttributeType.TYPE_NAME_BOOLEAN], analyst_attribute),
-                'is_target': ([AttributeType.TYPE_NAME_BOOLEAN], analyst_attribute),
-            })
 
     @staticmethod
     def verify_child_nodes(child_nodes, role_uuids=None):
         if len(child_nodes) != 0:
             raise Exception("column cannot have child nodes")
+
+    @staticmethod
+    def json_schema():
+        return JsonSchemaNode.json_schema(
+            NodeType.TYPE_NAME_COLUMN,
+            attributes_groups=[
+                JsonSchemaAttributesGroup.data(
+                    attributes=[
+                        JsonSchemaAttribute.json_schema(
+                            key='data_type_name',
+                            attribute_name='data type name',
+                            description="The 'data type name' attribute. Specifies the name of the data type "
+                                f"for the '{NodeType.TYPE_NAME_COLUMN}'.",
+                            type_name=AttributeType.TYPE_NAME_STRING,
+                            additional_value=f"\"enum\": [ \"{AttributeType.TYPE_NAME_BOOLEAN}\", \"{AttributeType.TYPE_NAME_DATETIME}\", "
+                                f"\"{AttributeType.TYPE_NAME_FLOAT}\", \"{AttributeType.TYPE_NAME_INT}\", \"{AttributeType.TYPE_NAME_STRING}\" ]"
+                        ),
+                        JsonSchemaAttribute.description(
+                            node_type_name=NodeType.TYPE_NAME_COLUMN
+                        ),
+                        JsonSchemaAttribute.metadata_is_public(
+                            node_type_name=NodeType.TYPE_NAME_COLUMN
+                        ),
+                        JsonSchemaAttribute.name(
+                            node_type_name=NodeType.TYPE_NAME_COLUMN
+                        ),
+                        JsonSchemaAttribute.json_schema(
+                            key='selectable',
+                            attribute_name='selectable',
+                            description="The 'selectable' attribute. Specifies whether a selection may happen "
+                                f"for the '{NodeType.TYPE_NAME_COLUMN}'.",
+                            type_name=AttributeType.TYPE_NAME_BOOLEAN
+                        )
+                    ],
+                    additional_contains=[
+                        JsonSchemaAttribute.json_schema(
+                            key='data_type_name',
+                            attribute_name='data type name',
+                            description="This item ensures that the 'data_type_name' attribute is present.",
+                            type_name=AttributeType.TYPE_NAME_STRING
+                        )
+                    ],
+                    additional_description=" Requires a 'data_type_name' attribute."
+                ),
+                JsonSchemaAttributesGroup.differential_privacy(
+                    attributes=[
+                        JsonSchemaAttribute.privacy_level(
+                            node_type_name=NodeType.TYPE_NAME_COLUMN
+                        )
+                    ]
+                )
+            ]
+        )

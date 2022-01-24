@@ -3,6 +3,8 @@ from dq0.sdk.data.metadata.specification.dataset.v1.connector_csv import Connect
 from dq0.sdk.data.metadata.specification.dataset.v1.connector_postgresql import ConnectorPostgreSQL
 from dq0.sdk.data.metadata.specification.dataset.v1.schema import Schema
 from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
+from dq0.sdk.data.metadata.specification.json_schema.attribute import Attribute as JsonSchemaAttribute
+from dq0.sdk.data.metadata.specification.json_schema.attributes_group import AttributesGroup as JsonSchemaAttributesGroup
 from dq0.sdk.data.metadata.specification.json_schema.node import Node as JsonSchemaNode
 from dq0.sdk.data.metadata.structure.attribute.attribute import Attribute
 from dq0.sdk.data.metadata.structure.attribute.attribute_type import AttributeType
@@ -92,17 +94,28 @@ class Database:
         return JsonSchemaNode.json_schema(
             NodeType.TYPE_NAME_DATABASE,
             attributes_groups=[
-                JsonSchemaNode.data_attributes_group(attributes=[
-                    JsonSchemaNode.description_attribute(node_type_name=NodeType.TYPE_NAME_DATABASE),
-                    JsonSchemaNode.metadata_is_public_attribute(node_type_name=NodeType.TYPE_NAME_DATABASE),
-                    JsonSchemaNode.name_attribute(node_type_name=NodeType.TYPE_NAME_DATABASE)
-                ]),
-                JsonSchemaNode.differential_privacy_attributes_group(attributes=[
-                    JsonSchemaNode.privacy_level_attribute(node_type_name=NodeType.TYPE_NAME_DATABASE)
-                ]),
+                JsonSchemaAttributesGroup.data(
+                    attributes=[
+                        JsonSchemaAttribute.description(
+                            node_type_name=NodeType.TYPE_NAME_DATABASE
+                        ),
+                        JsonSchemaAttribute.metadata_is_public(
+                            node_type_name=NodeType.TYPE_NAME_DATABASE
+                        ),
+                        JsonSchemaAttribute.name(
+                            node_type_name=NodeType.TYPE_NAME_DATABASE
+                        )
+                    ]
+                ),
+                JsonSchemaAttributesGroup.differential_privacy(
+                    attributes=[
+                        JsonSchemaAttribute.privacy_level(
+                            node_type_name=NodeType.TYPE_NAME_DATABASE
+                        )
+                    ]
+                ),
                 ConnectorCSV.json_schema(),
                 ConnectorPostgreSQL.json_schema()
             ],
-            child_node_json_schema="{ \"type\": \"object\" }"
-            # child_node_json_schema=Schema.json_schema()
+            child_node_json_schema=Schema.json_schema()
         )

@@ -1,9 +1,12 @@
+from dq0.sdk.data.metadata.specification.dataset.v1.column import Column
+from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
+from dq0.sdk.data.metadata.specification.json_schema.attribute import Attribute as JsonSchemaAttribute
+from dq0.sdk.data.metadata.specification.json_schema.attributes_group import AttributesGroup as JsonSchemaAttributesGroup
+from dq0.sdk.data.metadata.specification.json_schema.node import Node as JsonSchemaNode
 from dq0.sdk.data.metadata.structure.attribute.attribute import Attribute
 from dq0.sdk.data.metadata.structure.attribute.attribute_type import AttributeType
 from dq0.sdk.data.metadata.structure.node.node import Node
 from dq0.sdk.data.metadata.structure.node.node_type import NodeType
-from dq0.sdk.data.metadata.specification.dataset.v1.column import Column
-from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
 
 
 class Table:
@@ -105,3 +108,136 @@ class Table:
                 names.add(name_attribute.get_value())
         if len(names) != len(child_nodes):
             raise Exception(f"names {names} are not enough for each of the {len(child_nodes)} child nodes to have a unique name")
+
+    @staticmethod
+    def json_schema():
+        return JsonSchemaNode.json_schema(
+            NodeType.TYPE_NAME_TABLE,
+            attributes_groups=[
+                JsonSchemaAttributesGroup.data(
+                    attributes=[
+                        JsonSchemaAttribute.description(
+                            node_type_name=NodeType.TYPE_NAME_TABLE
+                        ),
+                        JsonSchemaAttribute.metadata_is_public(
+                            node_type_name=NodeType.TYPE_NAME_TABLE
+                        ),
+                        JsonSchemaAttribute.name(
+                            node_type_name=NodeType.TYPE_NAME_TABLE
+                        ),
+                        JsonSchemaAttribute.json_schema(
+                            key='rows',
+                            attribute_name='rows',
+                            description="The 'rows' attribute. Specifies the number of rows "
+                                f"in the '{NodeType.TYPE_NAME_TABLE}'.",
+                            type_name=AttributeType.TYPE_NAME_INT,
+                            additional_value="\"minimum\": 0"
+                        )
+                    ]
+                ),
+                JsonSchemaAttributesGroup.differential_privacy(
+                    attributes=[
+                        JsonSchemaAttribute.json_schema(
+                            key='budget_delta',
+                            attribute_name='budget delta',
+                            description="The 'budget delta' attribute. Specifies the delta privacy budget "
+                                f"for the '{NodeType.TYPE_NAME_TABLE}'.",
+                            type_name=AttributeType.TYPE_NAME_FLOAT,
+                            additional_value="\"minimum\": 0.0"
+                        ),
+                        JsonSchemaAttribute.json_schema(
+                            key='budget_epsilon',
+                            attribute_name='budget epsilon',
+                            description="The 'budget epsilon' attribute. Specifies the epsilon privacy budget "
+                                f"for the '{NodeType.TYPE_NAME_TABLE}'.",
+                            type_name=AttributeType.TYPE_NAME_FLOAT,
+                            additional_value="\"minimum\": 0.0"
+                        ),
+                        JsonSchemaAttribute.json_schema(
+                            key='privacy_column',
+                            attribute_name='privacy column',
+                            description="The 'privacy column' attribute. Specifies the column name of the privacy column "
+                                f"for the '{NodeType.TYPE_NAME_TABLE}'.",
+                            type_name=AttributeType.TYPE_NAME_STRING
+                        ),
+                        JsonSchemaAttribute.privacy_level(
+                            node_type_name=NodeType.TYPE_NAME_TABLE
+                        )
+                    ]
+                ),
+                JsonSchemaAttributesGroup.private_sql(
+                    attributes=[
+                        JsonSchemaAttribute.json_schema(
+                            key='censor_dims',
+                            attribute_name='censor dims',
+                            description="The 'censor dims' attribute. Specifies whether SQL queries will censor dimensions "
+                                f"on the '{NodeType.TYPE_NAME_TABLE}'.",
+                            type_name=AttributeType.TYPE_NAME_BOOLEAN
+                        ),
+                        JsonSchemaAttribute.json_schema(
+                            key='clamp_columns',
+                            attribute_name='clamp columns',
+                            description="The 'clamp columns' attribute. Specifies whether SQL queries will clamp column values "
+                                f"on the '{NodeType.TYPE_NAME_TABLE}'.",
+                            type_name=AttributeType.TYPE_NAME_BOOLEAN
+                        ),
+                        JsonSchemaAttribute.json_schema(
+                            key='clamp_counts',
+                            attribute_name='clamp counts',
+                            description="The 'clamp counts' attribute. Specifies whether SQL queries will clamp counting results "
+                                f"on the '{NodeType.TYPE_NAME_TABLE}'.",
+                            type_name=AttributeType.TYPE_NAME_BOOLEAN
+                        ),
+                        JsonSchemaAttribute.json_schema(
+                            key='max_ids',
+                            attribute_name='max ids',
+                            description="The 'max ids' attribute. Specifies whether SQL queries will limit the number of ids "
+                                f"on the '{NodeType.TYPE_NAME_TABLE}'.",
+                            type_name=AttributeType.TYPE_NAME_INT,
+                            additional_value="\"minimum\": 0"
+                        ),
+                        JsonSchemaAttribute.json_schema(
+                            key='row_privacy',
+                            attribute_name='row privacy',
+                            description="The 'row privacy' attribute. Specifies whether SQL queries will use per row privacy "
+                                f"on the '{NodeType.TYPE_NAME_TABLE}'.",
+                            type_name=AttributeType.TYPE_NAME_BOOLEAN
+                        ),
+                        JsonSchemaAttribute.json_schema(
+                            key='sample_max_ids',
+                            attribute_name='sample max ids',
+                            description="The 'sample max ids' attribute. Specifies whether SQL queries will sample the max amount of ids "
+                                f"on the '{NodeType.TYPE_NAME_TABLE}'.",
+                            type_name=AttributeType.TYPE_NAME_BOOLEAN
+                        ),
+                        JsonSchemaAttribute.json_schema(
+                            key='tau',
+                            attribute_name='tau',
+                            description="The 'tau' attribute. Specifies the tau budget of Google Differential Privacy "
+                                f"on the '{NodeType.TYPE_NAME_TABLE}'.",
+                            type_name=AttributeType.TYPE_NAME_FLOAT,
+                            additional_value="\"minimum\": 0.0"
+                        ),
+                        JsonSchemaAttribute.json_schema(
+                            key='use_dpsu',
+                            attribute_name='use dpsu',
+                            description="The 'use dpsu' attribute. Specifies whether SQL queries will use the dpsu option "
+                                f"on the '{NodeType.TYPE_NAME_TABLE}'.",
+                            type_name=AttributeType.TYPE_NAME_BOOLEAN
+                        )
+                    ]
+                ),
+                JsonSchemaAttributesGroup.private_synthesis(
+                    attributes=[
+                        JsonSchemaAttribute.json_schema(
+                            key='synth_allowed',
+                            attribute_name='synth_allowed',
+                            description="The 'synth_allowed' attribute. Specifies whether private synthetic data generation is allowed "
+                                f"on the '{NodeType.TYPE_NAME_TABLE}'.",
+                            type_name=AttributeType.TYPE_NAME_BOOLEAN
+                        )
+                    ]
+                )
+            ],
+            child_node_json_schema=Column.json_schema()
+        )
