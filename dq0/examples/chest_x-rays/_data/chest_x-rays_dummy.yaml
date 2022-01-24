@@ -1,0 +1,12 @@
+description: ' Dataset described in the paper:
+
+Badawi, A.; Elgazzar, K. Detecting Coronavirus from Chest X-rays Using 
+Transfer Learning. COVID 2021, 1, 403-415. 
+https://doi.org/10.3390/covid1010034
+
+'
+name: chest_xrays
+privacy_column: ''
+schema:
+  connection: ../dq0-sdk/dq0/examples/chest_x-rays/_data/chest_x-rays_dummy.csv
+type: CSV

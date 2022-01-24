@@ -29,3 +29,6 @@ imbalanced-learn==0.7.0
 pyyaml==5.4.1
 six==1.15.0
 diffprivlib==0.4.1
+Augmentor==0.2.9
+opencv-python==4.5.5.62
+imutils==0.5.4
