@@ -28,8 +28,8 @@ class PostgreSQL(SQL):
     """
 
     def __init__(self, meta_database):
-        database = meta_database.data().name if isinstance(meta_database.data().name, str) else ''
-        meta_connector = meta_database.connector()
+        database = meta_database.data.name if isinstance(meta_database.data.name, str) else ''
+        meta_connector = meta_database.connector
         if meta_connector.type_name != 'postrgresql':
             raise Exception(f"type_name {meta_connector.type_name} does not match postgresql")
         host = meta_connector.host if isinstance(meta_connector.host, str) else ''

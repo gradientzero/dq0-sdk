@@ -186,7 +186,7 @@ class Metadata:
         ] if tmp_value is not None}
 
     def to_yaml(self, request_uuids=set()):
-        return yaml.dump(self.to_dict(request_uuids=request_uuids))
+        return yaml.dump(self.to_dict(request_uuids=request_uuids), sort_keys=False)
 
     def to_yaml_file(self, filename, request_uuids=set()):
         yaml_content = self.to_yaml(request_uuids=request_uuids)
