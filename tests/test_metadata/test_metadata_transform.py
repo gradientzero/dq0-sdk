@@ -37,6 +37,12 @@ def test_metadata_transform():
           value: 'tag1'
         - type_name: 'string'
           value: 'tag2'
+    - type_name: 'list'
+      key: 'differential_privacy'
+      value:
+      - type_name: 'int'
+        key: 'privacy_level'
+        value: 2
     child_nodes:
     - type_name: 'database'
       attributes:

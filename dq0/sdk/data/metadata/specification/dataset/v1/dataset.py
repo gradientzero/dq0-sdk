@@ -54,7 +54,7 @@ class Dataset:
         Attribute.check_list(attribute_list=attributes, check_data={
             'data': ([AttributeType.TYPE_NAME_LIST], shared_attribute),
             'differential_privacy': ([AttributeType.TYPE_NAME_LIST], owner_attribute),
-        }, required_keys={'data'})
+        }, required_keys={'data', 'differential_privacy'})
         data_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'data'] if attributes is not None else []
         if 0 < len(data_attributes):
             Attribute.check_list(attribute_list=data_attributes[0].get_value(), check_data={
@@ -74,7 +74,7 @@ class Dataset:
         if 0 < len(differential_privacy_attributes):
             Attribute.check_list(attribute_list=differential_privacy_attributes[0].get_value(), check_data={
                 'privacy_level': ([AttributeType.TYPE_NAME_INT], owner_attribute),
-            })
+            }, required_keys={'privacy_level'})
 
     @staticmethod
     def verify_child_nodes(child_nodes, role_uuids=None):

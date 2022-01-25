@@ -49,12 +49,14 @@ class DefaultPermissions:
 
     @staticmethod
     def shared_node(role_uuids=None):
-        return Permissions(permissions={
-            Action.READ: DefaultPermissions.select_uuids(role_uuids=role_uuids, role_names={DefaultPermissions.OWNER_NAME, DefaultPermissions.USER_NAME}),
-            Action.WRITE_ATTRIBUTES: DefaultPermissions.select_uuids(role_uuids=role_uuids, role_names={DefaultPermissions.OWNER_NAME}),
-            Action.WRITE_CHILD_NODES: DefaultPermissions.select_uuids(role_uuids=role_uuids, role_names={DefaultPermissions.OWNER_NAME}),
-            Action.WRITE_PERMISSIONS: DefaultPermissions.select_uuids(role_uuids=role_uuids, role_names={DefaultPermissions.OWNER_NAME}),
-        })
+        permissions = {action: permission for (action, permission) in [
+            (Action.READ, DefaultPermissions.select_uuids(role_uuids=role_uuids, role_names={DefaultPermissions.OWNER_NAME, DefaultPermissions.USER_NAME})),
+            (Action.WRITE_ATTRIBUTES, DefaultPermissions.select_uuids(role_uuids=role_uuids, role_names={DefaultPermissions.OWNER_NAME})),
+            (Action.WRITE_CHILD_NODES, DefaultPermissions.select_uuids(role_uuids=role_uuids, role_names={DefaultPermissions.OWNER_NAME})),
+            (Action.WRITE_PERMISSIONS, DefaultPermissions.select_uuids(role_uuids=role_uuids, role_names={DefaultPermissions.OWNER_NAME})),
+        ] if permission is not None
+        }
+        return Permissions(permissions=permissions) if len(permissions) != 0 else None
 
     @staticmethod
     def json_schema_node_permissions():
@@ -67,28 +69,34 @@ class DefaultPermissions:
 
     @staticmethod
     def shared_attribute(role_uuids=None):
-        return Permissions(permissions={
-            Action.READ: DefaultPermissions.select_uuids(role_uuids=role_uuids, role_names={DefaultPermissions.OWNER_NAME, DefaultPermissions.USER_NAME}),
-            Action.WRITE_PERMISSIONS: DefaultPermissions.select_uuids(role_uuids=role_uuids, role_names={DefaultPermissions.OWNER_NAME}),
-            Action.WRITE_VALUE: DefaultPermissions.select_uuids(role_uuids=role_uuids, role_names={DefaultPermissions.OWNER_NAME}),
-        })
+        permissions = {action: permission for (action, permission) in [
+            (Action.READ, DefaultPermissions.select_uuids(role_uuids=role_uuids, role_names={DefaultPermissions.OWNER_NAME, DefaultPermissions.USER_NAME})),
+            (Action.WRITE_PERMISSIONS, DefaultPermissions.select_uuids(role_uuids=role_uuids, role_names={DefaultPermissions.OWNER_NAME})),
+            (Action.WRITE_VALUE, DefaultPermissions.select_uuids(role_uuids=role_uuids, role_names={DefaultPermissions.OWNER_NAME})),
+        ] if permission is not None
+        }
+        return Permissions(permissions=permissions) if len(permissions) != 0 else None
 
     @staticmethod
     def owner_attribute(role_uuids=None):
-        return Permissions(permissions={
-            Action.READ: DefaultPermissions.select_uuids(role_uuids=role_uuids, role_names={DefaultPermissions.OWNER_NAME}),
-            Action.WRITE_PERMISSIONS: DefaultPermissions.select_uuids(role_uuids=role_uuids, role_names={DefaultPermissions.OWNER_NAME}),
-            Action.WRITE_VALUE: DefaultPermissions.select_uuids(role_uuids=role_uuids, role_names={DefaultPermissions.OWNER_NAME}),
-        })
+        permissions = {action: permission for (action, permission) in [
+            (Action.READ, DefaultPermissions.select_uuids(role_uuids=role_uuids, role_names={DefaultPermissions.OWNER_NAME})),
+            (Action.WRITE_PERMISSIONS, DefaultPermissions.select_uuids(role_uuids=role_uuids, role_names={DefaultPermissions.OWNER_NAME})),
+            (Action.WRITE_VALUE, DefaultPermissions.select_uuids(role_uuids=role_uuids, role_names={DefaultPermissions.OWNER_NAME})),
+        ] if permission is not None
+        }
+        return Permissions(permissions=permissions) if len(permissions) != 0 else None
 
     @staticmethod
     def analyst_attribute(role_uuids=None):
-        return Permissions(permissions={
-            Action.READ: DefaultPermissions.select_uuids(role_uuids=role_uuids, role_names={DefaultPermissions.OWNER_NAME, DefaultPermissions.USER_NAME}),
-            Action.WRITE_PERMISSIONS: DefaultPermissions.select_uuids(role_uuids=role_uuids, role_names={DefaultPermissions.OWNER_NAME}),
-            Action.WRITE_VALUE: DefaultPermissions.select_uuids(role_uuids=role_uuids, role_names={DefaultPermissions.OWNER_NAME,
-                                                                                                   DefaultPermissions.USER_NAME}),
-        })
+        permissions = {action: permission for (action, permission) in [
+            (Action.READ, DefaultPermissions.select_uuids(role_uuids=role_uuids, role_names={DefaultPermissions.OWNER_NAME, DefaultPermissions.USER_NAME})),
+            (Action.WRITE_PERMISSIONS, DefaultPermissions.select_uuids(role_uuids=role_uuids, role_names={DefaultPermissions.OWNER_NAME})),
+            (Action.WRITE_VALUE, DefaultPermissions.select_uuids(role_uuids=role_uuids, role_names={DefaultPermissions.OWNER_NAME,
+                                                                                                    DefaultPermissions.USER_NAME})),
+        ] if permission is not None
+        }
+        return Permissions(permissions=permissions) if len(permissions) != 0 else None
 
     @staticmethod
     def json_schema_attribute_permissions():

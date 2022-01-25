@@ -9,22 +9,34 @@ class FilterSmartNoise(Filter):
                 'data': {
                     'name': None,
                 },
+                'differential_privacy': {
+                    'privacy_level': None,
+                }
             },
             'database': {
                 'connector': None,
                 'data': {
                     'name': None,
                 },
+                'differential_privacy': {
+                    'privacy_level': None,
+                }
             },
             'schema': {
                 'data': {
                     'name': None,
                 },
+                'differential_privacy': {
+                    'privacy_level': None,
+                }
             },
             'table': {
                 'data': {
                     'name': None,
                     'rows': None,
+                },
+                'differential_privacy': {
+                    'privacy_level': None,
                 },
                 'private_sql': {
                     'censor_dims': None,

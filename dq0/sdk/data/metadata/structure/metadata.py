@@ -138,8 +138,6 @@ class Metadata:
             raise Exception(f"node is not of type Node, is of type {type(node)} instead")
         if isinstance(specification, Specification):
             self._specifications[root_key] = specification
-        if root_key in self._specifications:
-            self._specifications[root_key].verify(node=node)
         self._nodes[root_key] = node
 
     def delete_node(self, root_key):

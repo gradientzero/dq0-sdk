@@ -1,14 +1,17 @@
+from pprint import pformat
+
 from dq0.sdk.data.metadata.interface.interface import Interface
 from dq0.sdk.data.metadata.specification.dataset.v1.specification_v1 import SpecificationV1 as DatasetSpecificationV1
 from dq0.sdk.data.metadata.structure.metadata import Metadata
 
 
-def output_metadata(m_interface, request_uuids, step):
+def output_metadata(m_interface, request_uuids, step, full=False):
     step += 1
+    out_object = pformat(m_interface.to_dict(request_uuids=request_uuids, full=full)) if full else m_interface.__str__(request_uuids=request_uuids)
     print("-------------------------------------------------------------------------------------\n"
           f"Metadata after step {step}:" "\n"
           "----------------------\n"
-          f"{m_interface.__str__(request_uuids=request_uuids)}" "\n"
+          f"{out_object}" "\n"
           "-------------------------------------------------------------------------------------")
     return step
 
@@ -66,7 +69,7 @@ def test_metadata_build():
     # set the csv's uri=filepath and you have created a useful minimal metadata
     connector.uri = '../dq0-sdk/dq0/examples/census/_data/adult_with_rand_names.csv'
 
-    # the final metadata
+    # the resulting metadata
     assert metadata.get_node(root_key='dataset').get_child_node(index=0).get_attribute(key='connector').get_attribute(
         key='uri').get_value() == '../dq0-sdk/dq0/examples/census/_data/adult_with_rand_names.csv'
     step = output_metadata(m_interface=m_interface, request_uuids=request_uuids, step=step)
@@ -130,10 +133,28 @@ def test_metadata_build():
     connector.username = 'db_user'
     connector.password = 'super_secret_dp_password_that_noone_may_ever_even_imagine'
 
-    # again, a useful final metadata.
+    # again, a useful metadata.
     assert metadata.get_node(root_key='dataset').get_child_node(index=0).get_attribute(key='connector').get_attribute(
         key='password').get_value() == 'super_secret_dp_password_that_noone_may_ever_even_imagine'
     step = output_metadata(m_interface=m_interface, request_uuids=request_uuids, step=step)
+
+    # STEP 10
+    # to produce a valid metadata dataset requires not only a name but also a privacy level.
+    m_interface.dataset().differential_privacy.privacy_level = 2
+
+    # this is now a valid metadata
+    step = output_metadata(m_interface=m_interface, request_uuids=request_uuids, step=step)
+
+    # STEP 11
+    # to prove validity we use the appropriate functionality
+    m_interface = m_interface.apply_defaults_and_verify()
+
+    # note, that m_interface is a different object after this operation.
+    step = output_metadata(m_interface=m_interface, request_uuids=request_uuids, step=step)
+
+    # STEP 12
+    # to see all the default permissions, we print the full format
+    step = output_metadata(m_interface=m_interface, request_uuids=request_uuids, step=step, full=True)
 
     # finish test
     print("\nTEST SUCCESSFUL!")

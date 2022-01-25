@@ -11,6 +11,9 @@ class FilterMachineLearning(Filter):
                     'name': None,
                     'tags': None,
                 },
+                'differential_privacy': {
+                    'privacy_level': None,
+                },
             },
             'database': {
                 'connector': None,
@@ -18,11 +21,17 @@ class FilterMachineLearning(Filter):
                     'description': None,
                     'name': None,
                 },
+                'differential_privacy': {
+                    'privacy_level': None,
+                },
             },
             'schema': {
                 'data': {
                     'description': None,
                     'name': None,
+                },
+                'differential_privacy': {
+                    'privacy_level': None,
                 },
             },
             'table': {
@@ -33,6 +42,7 @@ class FilterMachineLearning(Filter):
                 'differential_privacy': {
                     'budget_delta': None,
                     'budget_epsilon': None,
+                    'privacy_level': None,
                 },
             },
             'column': {
@@ -45,6 +55,6 @@ class FilterMachineLearning(Filter):
                     'is_feature': None,
                     'is_target': None,
                 },
-            }
+            },
         }
         return Filter.filter(node=node, retain_nodes=None, retain_attributes=retain_attributes)
