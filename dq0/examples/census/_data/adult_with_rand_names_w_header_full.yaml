@@ -150,7 +150,7 @@ meta_dataset:
                 value: 0
               - type_name: 'int'
                 key: 'upper'
-                value: 0
+                value: 1
             - type_name: 'list'
               key: 'private_synthesis'
               value:
