@@ -72,7 +72,7 @@ def load_dataset_info_from_yaml(metadata, columns_list):
     - column type
 
     Args:
-        metadata (dq0.sdk.data.metadata.Metadata): Metadata object with info
+        metadata (dq0.sdk.data.metadata.structure.metadata): Metadata object with info
             about the dataset.
         columns_list (list): ORDERED list of column names. The order of
             columns names must match the order of columns in the data table.

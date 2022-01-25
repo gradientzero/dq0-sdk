@@ -57,7 +57,7 @@ class Model(Project):
 
             with TemporaryDirectory() as temp_dir:
                 # store model in flavor format (binary)
-                path_to_model_file = os.path.join(temp_dir, 'model_file')
+                path_to_model_file = os.path.join(temp_dir, 'model_file.h5')
 
                 # use class method save to store model to file
                 self.save(path=path_to_model_file)
@@ -101,7 +101,7 @@ class Model(Project):
         # write to file and use with Model.load() to load model
         if model_binary_data is not None:
             with TemporaryDirectory() as temp_dir:
-                path_to_model_file = os.path.join(temp_dir, 'model_file')
+                path_to_model_file = os.path.join(temp_dir, 'model_file.h5')
 
                 # write binary data to temporary file
                 binary_file = open(path_to_model_file, "wb")

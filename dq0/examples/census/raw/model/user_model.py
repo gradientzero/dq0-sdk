@@ -56,7 +56,7 @@ class UserModel(NeuralNetworkClassification):
         """
         from sklearn.model_selection import train_test_split
 
-        # dq0.sdk.data.metadata.Metadata object with info about the dataset
+        # dq0.sdk.data.metadata.structure.metadata object with info about the dataset
         metadata = kwargs.get('metadata', None)
 
         # columns
@@ -301,7 +301,7 @@ class UserModel(NeuralNetworkClassification):
         Use `self.data_source.read()` to read the attached data.
 
         Args:
-            metadata (dq0.sdk.data.metadata.Metadata): Metadata object with info
+            metadata (dq0.sdk.data.metadata.structure.metadata): Metadata object with info
                 about the dataset.
 
         Returns:
