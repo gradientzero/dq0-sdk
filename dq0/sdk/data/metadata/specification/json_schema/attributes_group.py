@@ -14,7 +14,7 @@ class AttributesGroup:
                     contains_json += f"\"contains\": {indented_contains}"
                     if index < len(contains) - 1:
                         contains_json += ",\n    "
-                contains_json += "\n  }\n]"
+                contains_json += "\n  }\n],"
             else:
                 contains_json = "\n\"contains\": " + f"{contains},"
         items_json = ''
