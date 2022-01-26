@@ -12,6 +12,12 @@ meta_dataset:
       - type_name: 'string'
         key: 'name'
         value: 'adult'
+    - type_name: 'list'
+      key: 'differential_privacy'
+      value:
+        - type_name: 'int'
+          key: 'privacy_level'
+          value: 2
     child_nodes:
     - type_name: 'database'
       attributes:
@@ -30,4 +36,22 @@ meta_dataset:
         - type_name: 'string'
           key: 'name'
           value: 'adult database'
+      child_nodes:
+        - type_name: 'schema'
+          attributes:
+            - type_name: 'list'
+              key: 'data'
+              value:
+                - type_name: 'string'
+                  key: 'name'
+                  value: 'ACI Schema'
+          child_nodes:
+            - type_name: 'table'
+              attributes:
+                - type_name: 'list'
+                  key: 'data'
+                  value:
+                    - type_name: 'string'
+                      key: 'name'
+                      value: 'ACI Table'
   specification: 'dataset_v1'
