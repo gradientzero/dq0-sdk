@@ -4,9 +4,6 @@ from dq0.sdk.data.metadata.specification.dataset.v1.column_float import ColumnFl
 from dq0.sdk.data.metadata.specification.dataset.v1.column_int import ColumnInt
 from dq0.sdk.data.metadata.specification.dataset.v1.column_string import ColumnString
 from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
-from dq0.sdk.data.metadata.specification.json_schema.attribute import Attribute as JsonSchemaAttribute
-from dq0.sdk.data.metadata.specification.json_schema.attributes_group import AttributesGroup as JsonSchemaAttributesGroup
-from dq0.sdk.data.metadata.specification.json_schema.node import Node as JsonSchemaNode
 from dq0.sdk.data.metadata.structure.attribute.attribute import Attribute
 from dq0.sdk.data.metadata.structure.attribute.attribute_type import AttributeType
 from dq0.sdk.data.metadata.structure.node.node import Node
@@ -162,57 +159,17 @@ class Column:
 
     @staticmethod
     def json_schema():
-        return JsonSchemaNode.json_schema(
-            NodeType.TYPE_NAME_COLUMN,
-            attributes_groups=[
-                JsonSchemaAttributesGroup.data(
-                    attributes=[
-                        JsonSchemaAttribute.json_schema(
-                            key='data_type_name',
-                            attribute_name='data type name',
-                            description="The 'data type name' attribute. Specifies the name of the data type "
-                                f"for the '{NodeType.TYPE_NAME_COLUMN}'.",
-                            type_name=AttributeType.TYPE_NAME_STRING,
-                            additional_value=f"\"enum\": [ \"{AttributeType.TYPE_NAME_BOOLEAN}\", \"{AttributeType.TYPE_NAME_DATETIME}\", "
-                                f"\"{AttributeType.TYPE_NAME_FLOAT}\", \"{AttributeType.TYPE_NAME_INT}\", \"{AttributeType.TYPE_NAME_STRING}\" ]"
-                        ),
-                        JsonSchemaAttribute.description(
-                            node_type_name=NodeType.TYPE_NAME_COLUMN
-                        ),
-                        JsonSchemaAttribute.metadata_is_public(
-                            node_type_name=NodeType.TYPE_NAME_COLUMN
-                        ),
-                        JsonSchemaAttribute.name(
-                            node_type_name=NodeType.TYPE_NAME_COLUMN
-                        ),
-                        JsonSchemaAttribute.json_schema(
-                            key='selectable',
-                            attribute_name='selectable',
-                            description="The 'selectable' attribute. Specifies whether a selection may happen "
-                                f"for the '{NodeType.TYPE_NAME_COLUMN}'.",
-                            type_name=AttributeType.TYPE_NAME_BOOLEAN
-                        )
-                    ],
-                    additional_contains=[
-                        JsonSchemaAttribute.json_schema(
-                            key='data_type_name',
-                            attribute_name='data type name',
-                            description="This item ensures that the 'data_type_name' attribute is present.",
-                            type_name=AttributeType.TYPE_NAME_STRING
-                        )
-                    ],
-                    additional_description=" Requires a 'data_type_name' attribute."
-                ),
-                JsonSchemaAttributesGroup.private_sql(
-                    attributes=[
-                        JsonSchemaAttribute.json_schema(
-                            key='selectable',
-                            attribute_name='selectable',
-                            description="The 'selectable' attribute. Specifies whether a selection may happen "
-                                f"for the '{NodeType.TYPE_NAME_COLUMN}'.",
-                            type_name=AttributeType.TYPE_NAME_BOOLEAN
-                        )
-                    ]
-                )
-            ]
-        )
+        column_boolean = ColumnBoolean.json_schema().replace('\n', "\n    ")
+        column_datetime = ColumnDatetime.json_schema().replace('\n', "\n    ")
+        column_float = ColumnFloat.json_schema().replace('\n', "\n    ")
+        column_int = ColumnInt.json_schema().replace('\n', "\n    ")
+        column_string = ColumnString.json_schema().replace('\n', "\n    ")
+        return f"""{{
+  "oneOf": [
+    {column_boolean},
+    {column_datetime},
+    {column_float},
+    {column_int},
+    {column_string}
+  ]
+}}"""

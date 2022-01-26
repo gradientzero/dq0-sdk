@@ -107,9 +107,9 @@ class Dataset:
                         JsonSchemaAttribute.no_key_list(
                             key='tags',
                             attribute_name='tags',
-                            description="The 'tags' attribute. A list of 'tag' values attached to the 'dataset'.",
+                            description=f"The 'tags' attribute. A list of 'tag' values attached to the '{NodeType.TYPE_NAME_DATASET}'.",
                             item_attribute_name='tag',
-                            item_description="A 'tag' attribute. Represents a single 'tag' value attached to the 'dataset'.",
+                            item_description=f"A 'tag' attribute. Represents a single 'tag' value attached to the '{NodeType.TYPE_NAME_DATASET}'.",
                             item_type_name=AttributeType.TYPE_NAME_STRING
                         )
                     ]
@@ -119,8 +119,19 @@ class Dataset:
                         JsonSchemaAttribute.privacy_level(
                             node_type_name=NodeType.TYPE_NAME_DATASET
                         )
-                    ]
+                    ],
+                    contains=JsonSchemaAttribute.json_schema(
+                        key='privacy_level',
+                        attribute_name="privacy level",
+                        description="This item ensures that the 'privacy level' attribute is present.",
+                        type_name=AttributeType.TYPE_NAME_INT
+                    )
                 )
             ],
+            attributes_groups_additional_contains=JsonSchemaAttributesGroup.json_schema(
+                key='differential_privacy',
+                group_name="differential privacy",
+                description="This item ensures, that the 'differential privacy' attributes group is present."
+            ),
             child_node_json_schema=Database.json_schema()
         )

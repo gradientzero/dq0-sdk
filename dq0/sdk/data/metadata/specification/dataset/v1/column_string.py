@@ -1,6 +1,11 @@
 from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
+from dq0.sdk.data.metadata.specification.json_schema.attribute import Attribute as JsonSchemaAttribute
+from dq0.sdk.data.metadata.specification.json_schema.attributes_group import AttributesGroup as JsonSchemaAttributesGroup
+from dq0.sdk.data.metadata.specification.json_schema.column import Column as JsonSchemaColumn
+from dq0.sdk.data.metadata.specification.json_schema.node import Node as JsonSchemaNode
 from dq0.sdk.data.metadata.structure.attribute.attribute import Attribute
 from dq0.sdk.data.metadata.structure.attribute.attribute_type import AttributeType
+from dq0.sdk.data.metadata.structure.node.node_type import NodeType
 
 
 class ColumnString:
@@ -58,3 +63,57 @@ class ColumnString:
                 'is_feature': ([AttributeType.TYPE_NAME_BOOLEAN], analyst_attribute),
                 'is_target': ([AttributeType.TYPE_NAME_BOOLEAN], analyst_attribute),
             })
+
+    @staticmethod
+    def json_schema():
+        return JsonSchemaNode.json_schema(
+            NodeType.TYPE_NAME_COLUMN,
+            attributes_groups=[
+                JsonSchemaColumn.data(data_type_name=AttributeType.TYPE_NAME_STRING),
+                JsonSchemaAttributesGroup.private_sql(
+                    attributes=[
+                        JsonSchemaAttribute.no_key_list(
+                            key='allowed_values',
+                            attribute_name="allowed values",
+                            description=f"The 'allowed values' attribute. A list of allowed values for the '{NodeType.TYPE_NAME_COLUMN}'.",
+                            item_attribute_name='allowed_value',
+                            item_description=f"An 'allowed value' attribute. Represents a single allowed value for the '{NodeType.TYPE_NAME_COLUMN}'.",
+                            item_type_name=AttributeType.TYPE_NAME_STRING
+                        ),
+                        JsonSchemaAttribute.json_schema(
+                            key='mask',
+                            attribute_name='mask',
+                            description=f"The 'mask' attribute. Specifies a mask for the '{NodeType.TYPE_NAME_COLUMN}'.",
+                            type_name=AttributeType.TYPE_NAME_STRING
+                        ),
+                        JsonSchemaAttribute.json_schema(
+                            key='private_id',
+                            attribute_name="private id",
+                            description=f"The 'private id' attribute. Specifies whether this '{NodeType.TYPE_NAME_COLUMN}' is a private id.",
+                            type_name=AttributeType.TYPE_NAME_BOOLEAN
+                        )
+                    ]
+                ),
+                JsonSchemaAttributesGroup.private_sql_and_synthesis(
+                    attributes=[
+                        JsonSchemaAttribute.json_schema(
+                            key='cardinality',
+                            attribute_name='cardinality',
+                            description=f"The 'cardinality' attribute. Specifies the cardinality for the '{NodeType.TYPE_NAME_COLUMN}'.",
+                            type_name=AttributeType.TYPE_NAME_INT
+                        )
+                    ]
+                ),
+                JsonSchemaAttributesGroup.private_synthesis(
+                    attributes=[
+                        JsonSchemaAttribute.json_schema(
+                            key='synthesizable',
+                            attribute_name='synthesizable',
+                            description=f"The 'synthesizable' attribute. Specifies whether this '{NodeType.TYPE_NAME_COLUMN}' is synthesizable.",
+                            type_name=AttributeType.TYPE_NAME_BOOLEAN
+                        )
+                    ]
+                ),
+                JsonSchemaColumn.machine_learning()
+            ]
+        )

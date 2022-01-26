@@ -58,18 +58,19 @@ class AttributesGroup:
             attributes=attributes)
 
     @staticmethod
-    def differential_privacy(attributes):
+    def differential_privacy(attributes, contains=None):
         return AttributesGroup.json_schema(
             key='differential_privacy',
-            group_name='differential privacy',
+            group_name="differential privacy",
             description="The 'differential privacy' attributes group.",
-            attributes=attributes)
+            attributes=attributes,
+            contains=contains)
 
     @staticmethod
     def private_sql(attributes):
         return AttributesGroup.json_schema(
             key='private_sql',
-            group_name='private sql',
+            group_name="private sql",
             description="The 'private sql' attributes group.",
             attributes=attributes)
 
@@ -77,7 +78,7 @@ class AttributesGroup:
     def private_sql_and_synthesis(attributes):
         return AttributesGroup.json_schema(
             key='private_sql_and_synthesis',
-            group_name='private sql and synthesis',
+            group_name="private sql and synthesis",
             description="The 'private sql and synthesis' attributes group.",
             attributes=attributes)
 
@@ -85,6 +86,14 @@ class AttributesGroup:
     def private_synthesis(attributes):
         return AttributesGroup.json_schema(
             key='private_synthesis',
-            group_name='private synthesis',
+            group_name="private synthesis",
             description="The 'private synthesis' attributes group.",
+            attributes=attributes)
+
+    @staticmethod
+    def machine_learning(attributes):
+        return AttributesGroup.json_schema(
+            key='machine_learning',
+            group_name="machine learning",
+            description="The 'machine learning' attributes group.",
             attributes=attributes)
