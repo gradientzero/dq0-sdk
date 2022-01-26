@@ -51,6 +51,12 @@ def test_cnn_and_data_setup():
       - type_name: 'string'
         key: 'name'
         value: 'cifar_ds'
+    - type_name: 'list'
+      key: 'differential_privacy'
+      value:
+      - type_name: 'int'
+        key: 'privacy_level'
+        value: 0
     child_nodes:
     - type_name: 'database'
       attributes:
