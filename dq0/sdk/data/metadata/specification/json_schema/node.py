@@ -4,7 +4,7 @@ from dq0.sdk.data.metadata.specification.json_schema.utils import Utils as JsonS
 
 class Node:
     @staticmethod
-    def attributes_property(node_type_name, attributes_groups, additional_contains):
+    def attributes_property(node_type_name, attributes_groups, additional_contains=None, additional_description=None):
         attributes_groups_items = ''
         for index, attributes_group in enumerate(attributes_groups):
             if 0 < index:
@@ -28,7 +28,8 @@ class Node:
           contains_json = contains_json.replace('\n', "\n  ")
           contains_json = '  ' + contains_json
         return f""""attributes": {{
-  "description": "List of attribute groups of a '{node_type_name}' node. Requires 'data' attributes group.",
+  "description": "List of attribute groups of a '{node_type_name}' node. Requires 'data' attributes group.{
+      ' ' + additional_description if additional_description is not None else ''}",
   "type": "array",
   "minItems": 1,
 {contains_json},
@@ -51,10 +52,12 @@ class Node:
 }}"""
 
     @staticmethod
-    def json_schema(type_name, attributes_groups, attributes_groups_additional_contains=None, child_node_json_schema=None):
+    def json_schema(type_name, attributes_groups, attributes_groups_additional_contains=None, attributes_groups_additional_description=None,
+                    child_node_json_schema=None):
         type_name_property = JsonSchemaUtils.type_name_property(object_name=type_name, object_type='node', type_name=type_name).replace('\n', "\n    ")
         attributes_property = Node.attributes_property(node_type_name=type_name, attributes_groups=attributes_groups,
-                                                       additional_contains=attributes_groups_additional_contains).replace('\n', "\n    ")
+                                                       additional_contains=attributes_groups_additional_contains,
+                                                       additional_description=attributes_groups_additional_description).replace('\n', "\n    ")
         child_nodes_property = ''
         if child_node_json_schema is not None:
             child_nodes_property = ",\n    " + Node.child_nodes_property(node_type_name=type_name, child_node_json=child_node_json_schema).replace(

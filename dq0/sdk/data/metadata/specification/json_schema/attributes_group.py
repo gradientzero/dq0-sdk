@@ -58,12 +58,13 @@ class AttributesGroup:
             attributes=attributes)
 
     @staticmethod
-    def differential_privacy(attributes, contains=None):
+    def differential_privacy(attributes, contains=None, additional_description=None):
         return AttributesGroup.json_schema(
             key='differential_privacy',
             group_name="differential privacy",
             description="The 'differential privacy' attributes group.",
             attributes=attributes,
+            additional_description=additional_description,
             contains=contains)
 
     @staticmethod

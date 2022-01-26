@@ -125,7 +125,8 @@ class Dataset:
                         attribute_name="privacy level",
                         description="This item ensures that the 'privacy level' attribute is present.",
                         type_name=AttributeType.TYPE_NAME_INT
-                    )
+                    ),
+                    additional_description="Requires a 'privacy_level' attribute."
                 )
             ],
             attributes_groups_additional_contains=JsonSchemaAttributesGroup.json_schema(
@@ -133,5 +134,6 @@ class Dataset:
                 group_name="differential privacy",
                 description="This item ensures, that the 'differential privacy' attributes group is present."
             ),
+            attributes_groups_additional_description="Requires 'differential_privacy' attributes group.",
             child_node_json_schema=Database.json_schema()
         )
