@@ -12,6 +12,8 @@ class DummyUtils:
       attributes:
         'data':
           'name': 'dummy_ds'
+        'differential_privacy':
+          'privacy_level': 0
       child_nodes:
         database:
           attributes:

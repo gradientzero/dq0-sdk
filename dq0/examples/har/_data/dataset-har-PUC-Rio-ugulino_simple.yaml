@@ -6,6 +6,8 @@ meta_dataset:
         'data':
           'description': "https://github.com/fbarth/humanActivityRecognition"
           'name': "Human Activity Recognition"
+        'differential_privacy':
+          'privacy_level': 2
       child_nodes:
         database:
           attributes:

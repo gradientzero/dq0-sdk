@@ -13,6 +13,7 @@ import yaml
 name = "Human Activity Recognition"
 short_name = 'HAR'
 description = 'https://github.com/fbarth/humanActivityRecognition'
+privacy_level = 2
 connection = '../dq0-sdk/dq0/examples/har/_data/dataset-har-PUC-Rio-ugulino.csv'
 
 df = pd.read_csv(
@@ -28,22 +29,35 @@ meta_d = {'meta_dataset': {
     'format': 'full',
     'node': {
         'type_name': 'dataset',
-        'attributes': [{
-            'type_name': 'list',
-            'key': 'data',
-            'value': [
-                {
-                    'type_name': 'string',
-                    'key': 'description',
-                    'value': description,
-                },
-                {
-                    'type_name': 'string',
-                    'key': 'name',
-                    'value': name,
-                },
-            ],
-        }],
+        'attributes': [
+            {
+                'type_name': 'list',
+                'key': 'data',
+                'value': [
+                    {
+                        'type_name': 'string',
+                        'key': 'description',
+                        'value': description,
+                    },
+                    {
+                        'type_name': 'string',
+                        'key': 'name',
+                        'value': name,
+                    },
+                ],
+            },
+            {
+                'type_name': 'list',
+                'key': 'differential_privacy',
+                'value': [
+                    {
+                        'type_name': 'int',
+                        'key': 'privacy_level',
+                        'value': privacy_level,
+                    },
+                ],
+            },
+        ],
         'child_nodes': [
             {
                 'type_name': 'database',

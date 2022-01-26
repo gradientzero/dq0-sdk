@@ -6,6 +6,8 @@ meta_dataset:
         'data':
           'description': "labelled images from https://www.cs.toronto.edu/~kriz/cifar.html"
           'name': 'CIFAR10'
+        'differential_privacy':
+          'privacy_level': 2
       child_nodes:
         database:
           attributes:

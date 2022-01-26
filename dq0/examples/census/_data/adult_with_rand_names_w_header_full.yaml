@@ -15,9 +15,9 @@ meta_dataset:
     - type_name: 'list'
       key: 'differential_privacy'
       value:
-        - type_name: 'int'
-          key: 'privacy_level'
-          value: 2
+      - type_name: 'int'
+        key: 'privacy_level'
+        value: 2
     child_nodes:
     - type_name: 'database'
       attributes:

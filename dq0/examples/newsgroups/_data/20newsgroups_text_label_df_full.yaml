@@ -11,6 +11,12 @@ meta_dataset:
       - key: name
         type_name: string
         value: newsgroups
+    - type_name: 'list'
+      key: 'differential_privacy'
+      value:
+      - type_name: 'int'
+        key: 'privacy_level'
+        value: 2
     child_nodes:
     - attributes:
       - key: connector

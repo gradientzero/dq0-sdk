@@ -6,6 +6,8 @@ meta_dataset:
         'data':
           'description': "some description"
           'name': 'adult'
+        'differential_privacy':
+          'privacy_level': 2
       child_nodes:
         database:
           attributes:

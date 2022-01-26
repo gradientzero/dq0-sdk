@@ -16,6 +16,7 @@ label_cols = ['charges']
 name = 'medical_insurance'
 short_name = 'm_i'
 description = 'description'
+privacy_level = 2
 connection = '../dq0-sdk/dq0/examples/medical_insurance/_data/datasets_13720_18513_insurance.csv'
 
 df = pd.read_csv(
@@ -45,7 +46,18 @@ meta_d = {'meta_dataset': {
                         'value': name,
                     },
                 ],
-            }
+            },
+            {
+                'type_name': 'list',
+                'key': 'differential_privacy',
+                'value': [
+                    {
+                        'type_name': 'int',
+                        'key': 'privacy_level',
+                        'value': privacy_level,
+                    },
+                ],
+            },
         ],
         'child_nodes': [
             {

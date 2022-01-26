@@ -48,6 +48,7 @@ description = 'This data was extracted from the 1994 Census bureau ' \
               '((AAGE>16) && (AGI>100) && (AFNLWGT>1) && (HRSWK>0)). The ' \
               'prediction task is to determine whether a person makes over ' \
               '$50K a year.'
+privacy_level = 2
 connection = '../dq0-sdk/dq0/examples/census/_data/adult_with_rand_names' \
              '.csv'
 
@@ -78,6 +79,17 @@ meta_d = {'meta_dataset': {
                         'type_name': 'string',
                         'key': 'name',
                         'value': name,
+                    },
+                ],
+            },
+            {
+                'type_name': 'list',
+                'key': 'differential_privacy',
+                'value': [
+                    {
+                        'type_name': 'int',
+                        'key': 'privacy_level',
+                        'value': privacy_level,
                     },
                 ],
             },

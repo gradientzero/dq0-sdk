@@ -13,6 +13,7 @@ import yaml
 name = 'Purchase-10'
 short_name = 'P10'
 description = '600 binary features, y = label, taken from shokri and jayaraman'
+privacy_level = 2
 connection = '../dq0-sdk/dq0/examples/purchase_10_600/_data/purchase_10_600_target_dataset.csv'
 
 df = pd.read_csv(
@@ -42,7 +43,18 @@ meta_d = {'meta_dataset': {
                         'value': name,
                     },
                 ],
-            }
+            },
+            {
+                'type_name': 'list',
+                'key': 'differential_privacy',
+                'value': [
+                    {
+                        'type_name': 'int',
+                        'key': 'privacy_level',
+                        'value': privacy_level,
+                    },
+                ],
+            },
         ],
         'child_nodes': [
             {

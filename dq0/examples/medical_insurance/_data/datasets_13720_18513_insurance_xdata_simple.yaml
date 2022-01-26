@@ -6,6 +6,8 @@ meta_dataset:
         'data':
           'description': 'description'
           'name': 'medical_insurance'
+        'differential_privacy':
+          'privacy_level': 2
       child_nodes:
         database:
           attributes:
