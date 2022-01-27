@@ -27,7 +27,7 @@ meta_dataset:
                   attributes:
                     'data':
                       'name': "ACI database"
-                      'rows': 51925
+                      'rows': 48841
                     'differential_privacy':
                       'privacy_column': 'fnlwgt'
                   child_nodes:
@@ -39,32 +39,32 @@ meta_dataset:
                         'machine_learning':
                           'is_feature': true
                         'private_sql_and_synthesis':
-                          'lower': 20
-                          'upper': 61
+                          'lower': 17
+                          'upper': 120
                         'private_synthesis':
                           'synthesizable': true
                     column_1:
                       attributes:
                         'data':
-                          'data_type_name': 'int'
+                          'data_type_name': 'float'
                           'name': 'capital-gain'
                         'machine_learning':
                           'is_feature': true
                         'private_sql_and_synthesis':
-                          'lower': 0
-                          'upper': 4064
+                          'lower': 0.0
+                          'upper': 15000.0
                         'private_synthesis':
                           'synthesizable': true
                     column_2:
                       attributes:
                         'data':
-                          'data_type_name': 'int'
+                          'data_type_name': 'float'
                           'name': 'capital-loss'
                         'machine_learning':
                           'is_feature': true
                         'private_sql_and_synthesis':
                           'lower': 0
-                          'upper': 0
+                          'upper': 4500.0
                         'private_synthesis':
                           'synthesizable': true
                     column_3:
@@ -77,19 +77,21 @@ meta_dataset:
                         'private_sql_and_synthesis':
                           'cardinality': 16
                         'private_synthesis':
-                          'synthesizable': true
+                          'synthesizable': false
                     column_4:
                       attributes:
                         'data':
-                          'data_type_name': 'int'
+                          'data_type_name': 'string'
                           'name': 'education-num'
                         'machine_learning':
                           'is_feature': true
-                        'private_sql_and_synthesis':
-                          'lower': 6
-                          'upper': 14
+                        # 'private_sql_and_synthesis':
+                        #   'lower': 6
+                        #   'upper': 14
                         'private_synthesis':
-                          'synthesizable': true
+                          'synthesizable': false
+                        'private_sql_and_synthesis':
+                          'cardinality': 16
                     column_5:
                       attributes:
                         'data':
@@ -100,19 +102,20 @@ meta_dataset:
                         'private_sql_and_synthesis':
                           'cardinality': 3298
                         'private_synthesis':
-                          'synthesizable': true
+                          'synthesizable': false
                     column_6:
                       attributes:
                         'data':
-                          'data_type_name': 'int'
+                          'data_type_name': 'string'
                           'name': 'fnlwgt'
                         'machine_learning':
                           'is_feature': true
                         'private_sql_and_synthesis':
-                          'lower': 45868
-                          'upper': 349148
+                          # 'lower': 45868
+                          # 'upper': 349148
+                          'cardinality': 28521
                         'private_synthesis':
-                          'synthesizable': true
+                          'synthesizable': false
                     column_7:
                       attributes:
                         'data':
@@ -121,8 +124,8 @@ meta_dataset:
                         'machine_learning':
                           'is_feature': true
                         'private_sql_and_synthesis':
-                          'lower': 21
-                          'upper': 55
+                          'lower': 0
+                          'upper': 90
                         'private_synthesis':
                           'synthesizable': true
                     column_8:
@@ -146,7 +149,7 @@ meta_dataset:
                         'private_sql_and_synthesis':
                           'cardinality': 18144
                         'private_synthesis':
-                          'synthesizable': true
+                          'synthesizable': false
                     column_10:
                       attributes:
                         'data':
