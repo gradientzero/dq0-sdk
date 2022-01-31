@@ -1,6 +1,8 @@
 
 import os
 import random
+import shutil
+from time import time
 
 import Augmentor
 
@@ -14,20 +16,41 @@ import numpy as np
 
 from sklearn.model_selection import train_test_split
 
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
+# import tensorflow.compat.v1 as tf
 
-
-debugging = True
-
+debugging = False
+data_path = '/home/paolo/DQ0/RUN_LOCALLY/healthcare_use_case/data/'
+path_to_preproc_folder = data_path + 'output/preproc_images/'
+input_images_type= 'preprocessed' # 'raw', 'preprocessed'
 
 class UserModel_mockup:
 
     def setup_data(self):
 
-        data_path = '/Users/paolo/Documents/tasks_at_G0/DQ0/use_cases' \
-                    '/UC1 - utility loss/data/'
-
         self.image_classes = ['NORMAL', 'PNEUMONIA', 'COVID']
+
+        dataset, labels = self._get_images(input_images_type)
+
+        # convert integer-valued labels to one-hot encoding
+        labels = tf.keras.utils.to_categorical(labels)
+
+        # or, equivalently, use sklearn
+        # from sklearn.preprocessing import OneHotEncoder
+        # onehot_encoder = OneHotEncoder(sparse=False)
+        # labels = onehot_encoder.fit_transform(labels.reshape(-1, 1))
+
+        (self.X_train, self.X_test, self.Y_train, self.Y_test) = train_test_split(
+            dataset, labels, test_size=0.20, stratify=labels)
+        (self.X_train, self.X_val, self.Y_train, self.Y_val) = train_test_split(
+            self.X_train, self.Y_train, test_size=0.20) # stratify=self.Y_train)
+
+    def _get_images(self, input_images_type='raw'):
+ 
+        if input_images_type.lower() == 'raw':
+            input_images_folder = data_path + 'input/COVID-ChestXray-15k-dataset/'
+        elif input_images_type.lower() == 'preprocessed':
+            input_images_folder = path_to_preproc_folder
 
         # file_names_per_class = [os.listdir(
         # data_path + 'input/COVID-ChestXray-15k-dataset/' + image_class)
@@ -35,35 +58,38 @@ class UserModel_mockup:
         #
         # recursively list path to images based on a root directory
         # see: https://github.com/PyImageSearch/imutils
-        image_paths_per_class = [list(paths.list_images(
-            data_path + 'input/COVID-ChestXray-15k-dataset/' +
+        image_paths_per_class = [list(paths.list_images(input_images_folder + 
             image_class)) for image_class in self.image_classes]
         # list of three lists, one per class. Each of the three list contains a
         # list of files and folders.
 
+        for c in range(len(image_paths_per_class)):
+            print(len(image_paths_per_class[c]))
+
         if debugging:
+            # use smaller dataset
             for c in range(len(image_paths_per_class)):
                 image_paths_per_class[c] = image_paths_per_class[c][:50]
             for c in range(len(image_paths_per_class)):
                 print(len(image_paths_per_class[c]))
 
-        _visual_check(image_paths_per_class, self.image_classes)
+        if debugging:
+            _visual_check(image_paths_per_class, self.image_classes)
 
-        dataset, labels = self._preprocess_images(image_paths_per_class,
-                                                  data_path=data_path)
-        # dataset is a np array of 3-dims np arrays (since RGB images)
-        # labels is a 1-dims np array
+        if input_images_type.lower() == 'raw':
+            dataset, labels = self._preprocess_images(image_paths_per_class)
+            # dataset is a np array of 3-dims np arrays (since RGB images)
+            # labels is a 1-dims np array
+        elif input_images_type.lower() == 'preprocessed':
+            dataset, labels = self._load_preprocessed_images(image_paths_per_class)
+            # dataset is a np array of 3-dims np arrays (since RGB images)
+            # labels is a 1-dims np array
+    
+        return dataset, labels
 
-        # convert integer-valued labels to one-hot encoding
-        labels = tf.keras.utils.to_categorical(labels)
-
-        (self.X_train, self.X_test, self.Y_train, self.Y_test) = train_test_split(
-            dataset, labels, test_size=0.20, stratify=labels)
-        (self.X_train, self.X_val, self.Y_train, self.Y_val) = train_test_split(
-            self.X_train, self.Y_train, test_size=0.20)
-
-    def _preprocess_images(self, image_paths_per_class,
-                           save_preproc_images=True, data_path='./data/'):
+    def _preprocess_images(self, image_paths_per_class, save_preproc_images=True):
+                           
+        t0 = time()
         class_label = 0
         for image_paths_list in image_paths_per_class:
             class_images, class_labels = _load_and_resize_images(
@@ -76,11 +102,41 @@ class UserModel_mockup:
                 labels = np.concatenate((labels, class_labels), axis=0)
             class_label += 1
 
+        print_human_readable_elapsed_time_value(
+        elapsed_cpu_time_sec=time() - t0,
+        s_tmp='\nImage preprocessing took')    
+
         if save_preproc_images:
+
+            empty_folder(path_to_preproc_folder)
+         
             _save_preprocessed_images(
                 dataset, labels, self.image_classes,
-                path_to_folder=data_path + 'output/preproc_images/'
+                path_to_folder=path_to_preproc_folder
             )
+
+        dataset = np.array(dataset) / 255
+
+        return dataset, labels
+
+    def _load_preprocessed_images(self, image_paths_per_class):
+                           
+        t0 = time()
+        class_label = 0
+        for image_paths_list in image_paths_per_class:
+            class_images, class_labels = _load_and_resize_images(
+                image_paths_list, label=class_label)
+            if class_label == 0:
+                dataset = class_images
+                labels = class_labels
+            else:
+                dataset = np.concatenate((dataset, class_images), axis=0)
+                labels = np.concatenate((labels, class_labels), axis=0)
+            class_label += 1
+
+        print_human_readable_elapsed_time_value(
+        elapsed_cpu_time_sec=time() - t0,
+        s_tmp='\nPreprocessed images loading took')    
 
         dataset = np.array(dataset) / 255
 
@@ -97,8 +153,11 @@ class UserModel_mockup:
         for layer in self.baseModel.layers:
             layer.trainable = False
 
+        # print model specification after freezing the params (transfer learning)
+        self.model.summary()
+
         learning_rate = 1e-3
-        self.epochs = 2  # 15    TODO restore 15!!!
+        self.epochs = 15 if not debugging else 2
         self.optimizer = tf.keras.optimizers.Adam(
             learning_rate=learning_rate, decay=learning_rate / self.epochs)
         self.batch_size = 8
@@ -127,8 +186,6 @@ class UserModel_mockup:
         self.model = tf.keras.models.Model(inputs=self.baseModel.input,
                                            outputs=head_model)
 
-        self.model.summary()
-
 
 def _visual_check(image_paths_per_class, image_classes):
 
@@ -144,7 +201,13 @@ def _visual_check(image_paths_per_class, image_classes):
             plt.axis(False)
         fig.suptitle(
             image_classes[c].lower().capitalize() + ' x-ray images')
-        plt.show()
+        if debugging:
+            plt.show()
+        else:
+            fig.savefig(data_path + 'output/' + 
+            (image_classes[c].lower().capitalize() + ' x-ray images').replace(
+            ' ', '_') + '.png')
+
 
 
 def _images_augmentation(path_to_data, num_of_samples=580):
@@ -211,7 +274,7 @@ def _save_preprocessed_images(dataset, labels, image_classes,
             raise RuntimeError('Failure in saving image ' + path_to_file)
 
 
-def _train_network_TBD(model):
+def _train_network(model):
 
     model.model.compile(loss=model.loss, optimizer=model.optimizer,
                         metrics=model.metrics)
@@ -219,15 +282,21 @@ def _train_network_TBD(model):
     callbacks = [
         tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=8),
         tf.keras.callbacks.ModelCheckpoint(
-            filepath='../../../../../use_cases/UC1 - utility loss/best_model.h5', monitor='val_loss',
+            filepath='/home/paolo/DQ0/RUN_LOCALLY/healthcare_use_case/data/output/best_model.h5', monitor='val_loss',
             save_best_only=True)
     ]
+
+    t0 = time()
 
     # train the head of the network
     H = model.model.fit(model.X_train, model.Y_train,
                         validation_data=(model.X_val, model.Y_val),
                         batch_size=model.batch_size, epochs=model.epochs,
                         callbacks=callbacks)
+
+    print_human_readable_elapsed_time_value(
+        elapsed_cpu_time_sec=time() - t0,
+        s_tmp='\nModel training took')   
 
     acc = H.history['accuracy']
     loss = H.history['loss']
@@ -247,15 +316,18 @@ def _train_network_TBD(model):
         plt.legend(leg)
         plt.xlabel('epochs')
 
-    plt.figure(figsize=(15, 5))
+    fig = plt.figure(figsize=(15, 5))
     plt.subplot(1, 2, 1)
     plot(epochs, acc, val_acc, leg1, title1)
     plt.subplot(1, 2, 2)
     plot(epochs, loss, val_loss, leg2, title2)
-    plt.show()
+    if debugging:
+        plt.show()
+    else:
+        fig.savefig(data_path + 'output/training.png')
 
 
-def _test_trained_model_TBD(model):
+def _test_trained_model(model):
 
     from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, \
         classification_report
@@ -286,41 +358,45 @@ def _test_trained_model_TBD(model):
                                   display_labels=model.image_classes)
     disp.plot(cmap=plt.cm.Blues, ax=ax)
     ax.set_title("Confusion matrix")
-    plt.show()
+    if debugging:
+        plt.show()
+    else:
+        fig.savefig(data_path + 'output/confusion_matrix.png')
+    
 
-    total = sum(sum(cm))
-    acc = (cm[0, 0] + cm[1, 1]) / total
-    sensitivity = cm[0, 0] / (cm[0, 0] + cm[0, 1])
-    specificity = cm[1, 1] / (cm[1, 0] + cm[1, 1])
-    print("accuracy: {:.4f}".format(acc))
-    print("sensitivity: {:.4f}".format(sensitivity))
-    print("specificity: {:.4f}".format(specificity))
+    # total = sum(sum(cm))
+    # acc = (cm[0, 0] + cm[1, 1]) / total
+    # sensitivity = cm[0, 0] / (cm[0, 0] + cm[0, 1])
+    # specificity = cm[1, 1] / (cm[1, 0] + cm[1, 1])
+    # print("accuracy: {:.4f}".format(acc))
+    # print("sensitivity: {:.4f}".format(sensitivity))
+    # print("specificity: {:.4f}".format(specificity))
 
     num_test_inst = len(integer_pred_labels)
     indexes = np.arange(len(integer_pred_labels))
-    acc_pred_indeces = indexes[integer_pred_labels == integer_test_labels]
-    inacc_pred_indeces = indexes[integer_pred_labels != integer_test_labels]
-    num_acc_preds = len(acc_pred_indeces)
+    acc_pred_indexes = indexes[integer_pred_labels == integer_test_labels]
+    inacc_pred_indexes = indexes[integer_pred_labels != integer_test_labels]
+    num_acc_preds = len(acc_pred_indexes)
 
     print('Num test instances:', num_test_inst,
           '\nnum accurate predictions:', num_acc_preds,
           '\tnum inaccurate predictions: ', num_test_inst - num_acc_preds)
     print('Accuracy:', round(num_acc_preds / num_test_inst * 100, 3), '%')
 
-    _gimme_a_glimpse_of_the_preds(model, acc_pred_indeces, inacc_pred_indeces,
+    _gimme_a_glimpse_of_the_preds(model, acc_pred_indexes, inacc_pred_indexes,
                                   integer_pred_labels, integer_test_labels)
 
 
-def _gimme_a_glimpse_of_the_preds(model, acc_pred_indeces, inacc_pred_indeces,
+def _gimme_a_glimpse_of_the_preds(model, acc_pred_indexes, inacc_pred_indexes,
                                   integer_pred_labels, integer_test_labels,
                                   num_samples=9):
 
-    for title, indeces in {
-        'accurate predictions': acc_pred_indeces,
-        'inaccurate predictions': inacc_pred_indeces
+    for title, indexes in {
+        'accurate predictions': acc_pred_indexes,
+        'inaccurate predictions': inacc_pred_indexes
     }.items():
 
-        imidx = random.sample(list(indeces), k=num_samples)
+        imidx = random.sample(list(indexes), k=num_samples)
 
         ncols = 3
         nrows = int(np.ceil(num_samples / ncols))
@@ -340,7 +416,53 @@ def _gimme_a_glimpse_of_the_preds(model, acc_pred_indeces, inacc_pred_indeces,
                 )
             )
 
-        plt.show()
+        if debugging:
+            plt.show()
+        else:
+            fig.savefig(data_path + 'output/glimpse_of_' + title.replace(' ', '_') + '.png')
+
+
+def print_human_readable_elapsed_time_value(elapsed_cpu_time_sec, s_tmp):
+    """Print elapsed time in human readable format."""
+    if elapsed_cpu_time_sec >= (60 * 60 * 24):
+        elapsed_cpu_time = round(elapsed_cpu_time_sec / (60 * 60 * 24), 2)
+        time_measure = 'day'
+    elif elapsed_cpu_time_sec >= (60 * 60):
+        elapsed_cpu_time = round(elapsed_cpu_time_sec / (60 * 60), 2)
+        time_measure = 'hour'
+    elif elapsed_cpu_time_sec >= 60:
+        elapsed_cpu_time = round(elapsed_cpu_time_sec / 60.0)
+        time_measure = 'minute'
+    elif elapsed_cpu_time_sec >= 1:
+        elapsed_cpu_time = round(elapsed_cpu_time_sec)
+        time_measure = 'sec'
+    elif elapsed_cpu_time_sec >= 1e-3:
+        elapsed_cpu_time = round(elapsed_cpu_time_sec * 1e3)
+        time_measure = 'millisec'
+    elif elapsed_cpu_time_sec >= 1e-6:
+        elapsed_cpu_time = round(elapsed_cpu_time_sec * 1e6)
+        time_measure = 'microsec'
+    elif elapsed_cpu_time_sec >= 1e-9:
+        elapsed_cpu_time = round(elapsed_cpu_time_sec * 1e9)
+        time_measure = 'nanosec'
+    else:
+        elapsed_cpu_time = elapsed_cpu_time_sec
+        time_measure = 'less than one nanosec'
+
+    if elapsed_cpu_time > 1:
+        time_measure += 's'
+
+    if time_measure != 'less than one nanosec':
+        print(s_tmp + ' {:.2f}'.format(elapsed_cpu_time) + ' ' + time_measure)
+    else:
+        print(s_tmp + ' ' + time_measure)
+
+
+def empty_folder(path_folder_tbr):
+    """Empties or creates the given folder."""
+    if os.path.exists(path_folder_tbr):
+        shutil.rmtree(path_folder_tbr)
+    os.makedirs(path_folder_tbr)
 
 
 seed = 2
@@ -348,30 +470,44 @@ seed = 2
 # get Tensorflow version (first number only)
 tf_version = int(tf.__version__.split('.')[0])
 
-print(tf_version)
+
+print('\n\nTf version:', tf_version, '\n')
+
 
 np.random.seed(seed)
 
 os.environ["PYTHONHASHSEED"] = str(seed)
 
-# if tf_version == 1:
-#     # tf.set_random_seed(seed)  deprecated
-#     tf.compat.v1.set_random_seed(seed)
-# elif tf_version > 1:
-#     tf.random.set_seed(seed)
+if tf_version == 1:
+    # tf.set_random_seed(seed)  deprecated
+    tf.compat.v1.set_random_seed(seed)
+elif tf_version > 1:
+    tf.random.set_seed(seed)
 
-tf.compat.v1.set_random_seed(seed)
+# tf.compat.v1.set_random_seed(seed)
 
 # sp.random.seed(seed)
 random.seed(seed)
 
-print('\n\nPRNG seeded with value ', seed, '\n')
+print('\n\nPRNG seeded with value', seed, '\n')
+
+# Verify that TensorFlow can detect the GPU by running:
+#    import tensorflow as tf
+#    tf.config.list_physical_devices("GPU")
+# If things went smoothly, you should have an output similar to:
+#    [PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')]
+print("\n\nNum GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
+
 
 u = UserModel_mockup()
 u.setup_data()
 
 u.setup_model()
 
-# debugging. TODO remove
-_train_network_TBD(u)
-_test_trained_model_TBD(u)
+_train_network(u)
+_test_trained_model(u)
+
+
+
+
+
