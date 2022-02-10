@@ -1,5 +1,9 @@
 ## Changelog
 
+### 1.2.0 (2022-02-10)
+- [#99](https://github.com/gradientzero/dq0-sdk/pull/99) DQ0-1121: Adapt changes to meta data in dq0-sdk (@susdorf, @reinhardmunz, @domvie)
+- [#101](https://github.com/gradientzero/dq0-sdk/pull/101) merge into develop from master@1.1.4 (@susdorf, @clincolnoz, @actions)
+
 ### 1.1.4 (2021-11-17)
 - [#96](https://github.com/gradientzero/dq0-sdk/pull/96) DQ0-1076: cleaned up demo's and renamed metadata to match the corresponding csv filename (@clincolnoz)
 - [#95](https://github.com/gradientzero/dq0-sdk/pull/95) bug fix header_row for dq0-sql (@clincolnoz)

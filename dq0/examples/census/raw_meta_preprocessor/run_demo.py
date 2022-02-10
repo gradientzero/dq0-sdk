@@ -9,9 +9,10 @@ All rights reserved
 
 import os
 
-import dq0.sdk
 from dq0.examples.census.raw_meta_preprocessor.model.user_model import UserModel
-from dq0.sdk.data.metadata import Metadata
+from dq0.sdk.data.metadata.interface.interface import Interface
+from dq0.sdk.data.metadata.structure.metadata import Metadata
+from dq0.sdk.data.text.csv import CSV
 from dq0.sdk.data.utils import util
 
 
@@ -23,15 +24,13 @@ if __name__ == '__main__':
     util.initialize_rnd_numbers_generators_state()
 
     # path to metadata
-    path = '../_data/adult_with_rand_names.yaml'
+    path = '../_data/adult_with_rand_names_regular_simple.yaml'
     filepath = os.path.join(os.path.dirname(
         os.path.abspath(__file__)), path)
 
     # init input data source
-    metadata = Metadata(filepath)
-    data_source = dq0.sdk.data.text.CSV(
-        next(iter(metadata.schemas.values())).connection,
-        metadata.to_metadata_ml())
+    m_interface = Interface(metadata=Metadata.from_yaml_file(filename=filepath))
+    data_source = CSV(m_interface.dataset().database())
 
     # create model
     model = UserModel()

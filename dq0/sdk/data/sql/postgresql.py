@@ -27,13 +27,26 @@ class PostgreSQL(SQL):
         connection_string (:obj:`str`): The postgresql connection string.
     """
 
-    def __init__(self, connection_string):
+    def __init__(self, meta_database):
+        database = meta_database.data.name if isinstance(meta_database.data.name, str) else ''
+        meta_connector = meta_database.connector
+        if meta_connector.type_name != 'postgresql':
+            raise Exception(f"type_name {meta_connector.type_name} does not match postgresql")
+        host = meta_connector.host if isinstance(meta_connector.host, str) else ''
+        password = meta_connector.password if isinstance(meta_connector.password, str) else ''
+        port = f"{meta_connector.port}" if isinstance(meta_connector.port, int) else ''
+        username = meta_connector.username if isinstance(meta_connector.username, str) else ''
+        if len(username) == 0:
+            password = ''
+        if len(host) == 0:
+            raise Exception("host not provided")
+        password_sep = ':' if 0 < len(password) else ''
+        user_sep = '@' if 0 < len(username) else ''
+        port_sep = ':' if 0 < len(port) else ''
+        database_sep = '/' if 0 < len(database) else ''
+        connection_string = f"postgresql+psycopg2://{username}{password_sep}{password}{user_sep}{host}{port_sep}{port}{database_sep}{database}"
         super().__init__(connection_string)
         self.type = 'postgresql'
-        try:
-            connection_string.index('postgresql+psycopg2://')
-        except ValueError:
-            connection_string = 'postgresql+psycopg2://{}'.format(connection_string)
         self.engine = sqlalchemy.create_engine(connection_string)
 
     def execute(self, query, **kwargs):

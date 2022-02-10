@@ -14,8 +14,10 @@ All rights reserved
 import os
 import pickle
 
-import dq0.sdk
 from dq0.examples.cifar.model.user_model import UserModel
+from dq0.sdk.data.metadata.interface.interface import Interface
+from dq0.sdk.data.metadata.structure.metadata import Metadata
+from dq0.sdk.data.text.csv import CSV
 from dq0.sdk.data.utils import util
 
 import pytest
@@ -38,8 +40,47 @@ def test_cnn_and_data_setup():
     filepath = os.path.join(os.path.dirname(
         os.path.abspath(__file__)), path)
 
+    yaml_content = f'''meta_dataset:
+  format: 'full'
+  node:
+    type_name: 'dataset'
+    attributes:
+    - type_name: 'list'
+      key: 'data'
+      value:
+      - type_name: 'string'
+        key: 'name'
+        value: 'cifar_ds'
+    - type_name: 'list'
+      key: 'differential_privacy'
+      value:
+      - type_name: 'int'
+        key: 'privacy_level'
+        value: 0
+    child_nodes:
+    - type_name: 'database'
+      attributes:
+      - type_name: 'list'
+        key: 'connector'
+        value:
+        - type_name: 'string'
+          key: 'type_name'
+          value: 'csv'
+        - type_name: 'string'
+          key: 'uri'
+          value: '{filepath}'
+      - type_name: 'list'
+        key: 'data'
+        value:
+        - type_name: 'string'
+          key: 'name'
+          value: 'cifar_db'
+  specification: 'dataset_v1'
+'''
+    m_interface = Interface(metadata=Metadata.from_yaml(yaml_content=yaml_content))
+
     # init input data source
-    data_source = dq0.sdk.data.text.CSV(filepath)
+    data_source = CSV(m_interface.dataset().database())
 
     # create model
     model = UserModel()

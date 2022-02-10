@@ -130,7 +130,7 @@ if __name__ == '__main__':
 
     parser.add_argument('--data-path', required=False,
                         type=str, dest='data_path',
-                        default='/Users/wolfganggross/code/data/X_ray_pneumonia/chest_xray/')
+                        default='/Users/munz/Repositories/gradientzero/data/X_ray_pneumonia/chest_xray/')
 
     args, _ = parser.parse_known_args()
 

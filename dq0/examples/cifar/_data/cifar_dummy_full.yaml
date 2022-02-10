@@ -1,0 +1,63 @@
+meta_dataset:
+  format: 'full'
+  node:
+    type_name: 'dataset'
+    attributes:
+    - type_name: 'list'
+      key: 'data'
+      value:
+      - type_name: 'string'
+        key: 'description'
+        value: "labelled images from https://www.cs.toronto.edu/~kriz/cifar.html"
+      - type_name: 'string'
+        key: 'name'
+        value: 'CIFAR10'
+    - type_name: 'list'
+      key: 'differential_privacy'
+      value:
+      - type_name: 'int'
+        key: 'privacy_level'
+        value: 2
+    child_nodes:
+    - type_name: 'database'
+      attributes:
+      - type_name: 'list'
+        key: 'connector'
+        value:
+        - type_name: 'string'
+          key: 'type_name'
+          value: 'csv'
+        - type_name: 'string'
+          key: 'uri'
+          value: "../dq0-sdk/dq0/examples/cifar/_data/cifar_dummy.csv"
+      - type_name: 'list'
+        key: 'data'
+        value:
+        - type_name: 'string'
+          key: 'name'
+          value: "C10 database"
+      child_nodes:
+      - type_name: 'schema'
+        attributes:
+        - type_name: 'list'
+          key: 'data'
+          value:
+          - type_name: 'string'
+            key: 'name'
+            value: "C10 schema"
+        child_nodes:
+        - type_name: 'table'
+          attributes:
+          - type_name: 'list'
+            key: 'data'
+            value:
+            - type_name: 'string'
+              key: 'name'
+              value: "C10 table"
+          - type_name: 'list'
+            key: 'differential_privacy'
+            value:
+            - type_name: 'string'
+              key: 'privacy_column'
+              value: ''
+  specification: 'dataset_v1'

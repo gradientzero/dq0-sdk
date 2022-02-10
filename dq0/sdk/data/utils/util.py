@@ -72,7 +72,7 @@ def load_dataset_info_from_yaml(metadata, columns_list):
     - column type
 
     Args:
-        metadata (dq0.sdk.data.metadata.Metadata): Metadata object with info
+        metadata (dq0.sdk.data.metadata.structure.metadata): Metadata object with info
             about the dataset.
         columns_list (list): ORDERED list of column names. The order of
             columns names must match the order of columns in the data table.
@@ -81,29 +81,35 @@ def load_dataset_info_from_yaml(metadata, columns_list):
 
     """
 
-    # from dq0.sdk.data.metadata import Metadata  # noqa: E402, I202, I100
-    # metadata = Metadata(filename=path_to_yaml_data_file)
+    from dq0.sdk.data.metadata.interface.interface import Interface
+    m_interface = Interface(metadata=metadata)
 
-    if len(metadata.schemas.keys()) > 1:
-        logger.fatal('Only one DB schema is handled!')
+    if 1 < len(m_interface.dataset()):
+        logger.fatal('Only one database is handled!')
         return 1
-
-    schema = list(metadata.schemas.values())[0]
-
-    if len(schema.tables.keys()) > 1:
+    if 1 < len(m_interface.dataset().database()):
+        logger.fatal('Only one schema is handled!')
+        return 1
+    if 1 < len(m_interface.dataset().database().schema()):
         logger.fatal('Only one table is handled!')
         return 1
 
-    table = list(schema.tables.values())[0]
+    m_table = m_interface.dataset().database().schema().table()
 
     categorical_features_list = []
     quantitative_features_list = []
     for col_name in columns_list:
-        col_obj = table.columns[col_name]
-        # assert col_name == col_obj.name
-        if col_obj.type == 'string':
+        m_column = m_table.column(name=col_name)
+        if m_column is None:
+            logger.fatal(f"column {col_name} missing from metadata")
+            return 1
+        data_type_name = m_column.data.data_type_name
+        if data_type_name is None:
+            logger.fatal(f"data_type_name of column {col_name} missing from metadata")
+            return 1
+        if data_type_name == 'string':
             categorical_features_list.append(col_name)
-        else:  # if col_obj.type == 'int' or col_obj.type == 'float':
+        else:
             quantitative_features_list.append(col_name)
 
     return categorical_features_list, quantitative_features_list

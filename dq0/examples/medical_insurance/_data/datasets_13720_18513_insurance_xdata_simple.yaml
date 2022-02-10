@@ -1,0 +1,91 @@
+meta_dataset:
+  format: simple
+  node:
+    dataset:
+      attributes:
+        'data':
+          'description': 'description'
+          'name': 'medical_insurance'
+        'differential_privacy':
+          'privacy_level': 2
+      child_nodes:
+        database:
+          attributes:
+            'connector':
+              'header_row': 0
+              'type_name': 'csv'
+              'uri': "../dq0-sdk/dq0/examples/medical_insurance/_data/datasets_13720_18513_insurance_xdata.csv"
+            'data':
+              'name': 'm_i database'
+          child_nodes:
+            schema:
+              attributes:
+                'data':
+                  'name': 'm_i schema'
+              child_nodes:
+                table:
+                  attributes:
+                    'data':
+                      'name': 'm_i table'
+                      'rows': 1421
+                    'differential_privacy':
+                      'privacy_column': ''
+                  child_nodes:
+                    column_0:
+                      attributes:
+                        'data':
+                          'data_type_name': 'int'
+                          'name': 'age'
+                        'private_sql_and_synthesis':
+                          'lower': 19
+                          'upper': 61
+                        'private_synthesis':
+                          'synthesizable': true
+                    column_1:
+                      attributes:
+                        'data':
+                          'data_type_name': 'float'
+                          'name': 'bmi'
+                        'private_sql_and_synthesis':
+                          'lower': 21.47
+                          'upper': 40.95445627319398
+                        'private_synthesis':
+                          'synthesizable': true
+                    column_2:
+                      attributes:
+                        'data':
+                          'data_type_name': 'int'
+                          'name': 'children'
+                        'private_sql_and_synthesis':
+                          'lower': 0
+                          'upper': 3
+                        'private_synthesis':
+                          'synthesizable': true
+                    column_3:
+                      attributes:
+                        'data':
+                          'data_type_name': 'string'
+                          'name': 'region'
+                        'private_sql_and_synthesis':
+                          'cardinality': 4
+                        'private_synthesis':
+                          'synthesizable': true
+                    column_4:
+                      attributes:
+                        'data':
+                          'data_type_name': 'string'
+                          'name': 'sex'
+                        'private_sql_and_synthesis':
+                          'cardinality': 2
+                        'private_synthesis':
+                          'synthesizable': true
+                    column_5:
+                      attributes:
+                        'data':
+                          'data_type_name': 'string'
+                          'name': 'smoker'
+                        'private_sql_and_synthesis':
+                          'cardinality': 2
+                        'private_synthesis':
+                          'synthesizable': true
+  specification: 'dataset_v1'
