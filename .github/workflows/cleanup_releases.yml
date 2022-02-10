@@ -1,0 +1,21 @@
+# Removes all but the latest 3 GitHub Releases from this repo.
+
+name: Cleanup Releases
+
+# Controls when the workflow will run
+on:
+  release:
+    types: [created]
+
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Delete Package Versions
+      uses: dev-drprasad/delete-older-releases@v0.2.0
+      with:
+        keep_latest: 3
+      env:
+        GITHUB_TOKEN: ${{ secrets.DQ0_PERSONAL_ACCESS_TOKEN_FROM_GRADIENT0_GITHUB_USER }}
