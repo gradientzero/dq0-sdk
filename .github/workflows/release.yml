@@ -20,7 +20,7 @@ on:
         required: true
       target_tag: 
         description: 'Which version (tag) to assign to this release'
-        default: '1.0.9.0'
+        default: '1.0.0'
         required: true
 jobs:
 
