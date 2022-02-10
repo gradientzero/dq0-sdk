@@ -1,0 +1,555 @@
+meta_dataset:
+  format: 'full'
+  node:
+    type_name: 'dataset'
+    attributes:
+    - type_name: 'list'
+      key: 'data'
+      value:
+      - type_name: 'string'
+        key: 'description'
+        value: "https://github.com/fbarth/humanActivityRecognition"
+      - type_name: 'string'
+        key: 'name'
+        value: "Human Activity Recognition"
+    - type_name: 'list'
+      key: 'differential_privacy'
+      value:
+      - type_name: 'int'
+        key: 'privacy_level'
+        value: 2
+    child_nodes:
+    - type_name: 'database'
+      attributes:
+      - type_name: 'list'
+        key: 'connector'
+        value:
+        - type_name: 'int'
+          key: 'header_row'
+          value: 0
+        - type_name: 'string'
+          key: 'type_name'
+          value: 'csv'
+        - type_name: 'string'
+          key: 'uri'
+          value: "../dq0-sdk/dq0/examples/har/_data/dataset-har-PUC-Rio-ugulino.csv"
+      - type_name: 'list'
+        key: 'data'
+        value:
+        - type_name: 'string'
+          key: 'name'
+          value: "HAR database"
+      child_nodes:
+      - type_name: 'schema'
+        attributes:
+        - type_name: 'list'
+          key: 'data'
+          value:
+          - type_name: 'string'
+            key: 'name'
+            value: "HAR schema"
+        child_nodes:
+        - type_name: 'table'
+          attributes:
+          - type_name: 'list'
+            key: 'data'
+            value:
+            - type_name: 'string'
+              key: 'name'
+              value: "HAR schema"
+            - type_name: 'int'
+              key: 'rows'
+              value: 156288
+          - type_name: 'list'
+            key: 'differential_privacy'
+            value:
+            - type_name: 'string'
+              key: 'privacy_column'
+              value: ''
+          child_nodes:
+          - type_name: 'column'
+            attributes:
+            - type_name: 'list'
+              key: 'data'
+              value:
+              - type_name: 'string'
+                key: 'data_type_name'
+                value: 'int'
+              - type_name: 'string'
+                key: 'name'
+                value: 'age'
+            - type_name: 'list'
+              key: 'private_sql_and_synthesis'
+              value:
+              - type_name: 'int'
+                key: 'lower'
+                value: 28
+              - type_name: 'int'
+                key: 'upper'
+                value: 75
+            - type_name: 'list'
+              key: 'private_synthesis'
+              value:
+              - type_name: 'boolean'
+                key: 'synthesizable'
+                value: true
+          - type_name: 'column'
+            attributes:
+            - type_name: 'list'
+              key: 'data'
+              value:
+              - type_name: 'string'
+                key: 'data_type_name'
+                value: 'float'
+              - type_name: 'string'
+                key: 'name'
+                value: 'body_mass_index'
+            - type_name: 'list'
+              key: 'private_sql_and_synthesis'
+              value:
+              - type_name: 'float'
+                key: 'lower'
+                value: 22.0
+              - type_name: 'float'
+                key: 'upper'
+                value: 28.6
+            - type_name: 'list'
+              key: 'private_synthesis'
+              value:
+              - type_name: 'boolean'
+                key: 'synthesizable'
+                value: true
+          - type_name: 'column'
+            attributes:
+            - type_name: 'list'
+              key: 'data'
+              value:
+              - type_name: 'string'
+                key: 'data_type_name'
+                value: 'string'
+              - type_name: 'string'
+                key: 'name'
+                value: 'class'
+            - type_name: 'list'
+              key: 'private_sql_and_synthesis'
+              value:
+              - type_name: 'int'
+                key: 'cardinality'
+                value: 5
+            - type_name: 'list'
+              key: 'private_synthesis'
+              value:
+              - type_name: 'boolean'
+                key: 'synthesizable'
+                value: true
+          - type_name: 'column'
+            attributes:
+            - type_name: 'list'
+              key: 'data'
+              value:
+              - type_name: 'string'
+                key: 'data_type_name'
+                value: 'string'
+              - type_name: 'string'
+                key: 'name'
+                value: 'gender'
+            - type_name: 'list'
+              key: 'private_sql_and_synthesis'
+              value:
+              - type_name: 'int'
+                key: 'cardinality'
+                value: 2
+            - type_name: 'list'
+              key: 'private_synthesis'
+              value:
+              - type_name: 'boolean'
+                key: 'synthesizable'
+                value: true
+          - type_name: 'column'
+            attributes:
+            - type_name: 'list'
+              key: 'data'
+              value:
+              - type_name: 'string'
+                key: 'data_type_name'
+                value: 'float'
+              - type_name: 'string'
+                key: 'name'
+                value: 'how_tall_in_meters'
+            - type_name: 'list'
+              key: 'private_sql_and_synthesis'
+              value:
+              - type_name: 'float'
+                key: 'lower'
+                value: 1.58
+              - type_name: 'float'
+                key: 'upper'
+                value: 1.71
+            - type_name: 'list'
+              key: 'private_synthesis'
+              value:
+              - type_name: 'boolean'
+                key: 'synthesizable'
+                value: true
+          - type_name: 'column'
+            attributes:
+            - type_name: 'list'
+              key: 'data'
+              value:
+              - type_name: 'string'
+                key: 'data_type_name'
+                value: 'string'
+              - type_name: 'string'
+                key: 'name'
+                value: 'user'
+            - type_name: 'list'
+              key: 'private_sql_and_synthesis'
+              value:
+              - type_name: 'int'
+                key: 'cardinality'
+                value: 4
+            - type_name: 'list'
+              key: 'private_synthesis'
+              value:
+              - type_name: 'boolean'
+                key: 'synthesizable'
+                value: true
+          - type_name: 'column'
+            attributes:
+            - type_name: 'list'
+              key: 'data'
+              value:
+              - type_name: 'string'
+                key: 'data_type_name'
+                value: 'int'
+              - type_name: 'string'
+                key: 'name'
+                value: 'weight'
+            - type_name: 'list'
+              key: 'private_sql_and_synthesis'
+              value:
+              - type_name: 'int'
+                key: 'lower'
+                value: 55
+              - type_name: 'int'
+                key: 'upper'
+                value: 83
+            - type_name: 'list'
+              key: 'private_synthesis'
+              value:
+              - type_name: 'boolean'
+                key: 'synthesizable'
+                value: true
+          - type_name: 'column'
+            attributes:
+            - type_name: 'list'
+              key: 'data'
+              value:
+              - type_name: 'string'
+                key: 'data_type_name'
+                value: 'int'
+              - type_name: 'string'
+                key: 'name'
+                value: 'x1'
+            - type_name: 'list'
+              key: 'private_sql_and_synthesis'
+              value:
+              - type_name: 'int'
+                key: 'lower'
+                value: -25
+              - type_name: 'int'
+                key: 'upper'
+                value: 6
+            - type_name: 'list'
+              key: 'private_synthesis'
+              value:
+              - type_name: 'boolean'
+                key: 'synthesizable'
+                value: true
+          - type_name: 'column'
+            attributes:
+            - type_name: 'list'
+              key: 'data'
+              value:
+              - type_name: 'string'
+                key: 'data_type_name'
+                value: 'int'
+              - type_name: 'string'
+                key: 'name'
+                value: 'x2'
+            - type_name: 'list'
+              key: 'private_sql_and_synthesis'
+              value:
+              - type_name: 'int'
+                key: 'lower'
+                value: -491
+              - type_name: 'int'
+                key: 'upper'
+                value: 16
+            - type_name: 'list'
+              key: 'private_synthesis'
+              value:
+              - type_name: 'boolean'
+                key: 'synthesizable'
+                value: true
+          - type_name: 'column'
+            attributes:
+            - type_name: 'list'
+              key: 'data'
+              value:
+              - type_name: 'string'
+                key: 'data_type_name'
+                value: 'int'
+              - type_name: 'string'
+                key: 'name'
+                value: 'x3'
+            - type_name: 'list'
+              key: 'private_sql_and_synthesis'
+              value:
+              - type_name: 'int'
+                key: 'lower'
+                value: -62
+              - type_name: 'int'
+                key: 'upper'
+                value: 65
+            - type_name: 'list'
+              key: 'private_synthesis'
+              value:
+              - type_name: 'boolean'
+                key: 'synthesizable'
+                value: true
+          - type_name: 'column'
+            attributes:
+            - type_name: 'list'
+              key: 'data'
+              value:
+              - type_name: 'string'
+                key: 'data_type_name'
+                value: 'int'
+              - type_name: 'string'
+                key: 'name'
+                value: 'x4'
+            - type_name: 'list'
+              key: 'private_sql_and_synthesis'
+              value:
+              - type_name: 'int'
+                key: 'lower'
+                value: -219
+              - type_name: 'int'
+                key: 'upper'
+                value: -96
+            - type_name: 'list'
+              key: 'private_synthesis'
+              value:
+              - type_name: 'boolean'
+                key: 'synthesizable'
+                value: true
+          - type_name: 'column'
+            attributes:
+            - type_name: 'list'
+              key: 'data'
+              value:
+              - type_name: 'string'
+                key: 'data_type_name'
+                value: 'int'
+              - type_name: 'string'
+                key: 'name'
+                value: 'y1'
+            - type_name: 'list'
+              key: 'private_sql_and_synthesis'
+              value:
+              - type_name: 'int'
+                key: 'lower'
+                value: 40
+              - type_name: 'int'
+                key: 'upper'
+                value: 112
+            - type_name: 'list'
+              key: 'private_synthesis'
+              value:
+              - type_name: 'boolean'
+                key: 'synthesizable'
+                value: true
+          - type_name: 'column'
+            attributes:
+            - type_name: 'list'
+              key: 'data'
+              value:
+              - type_name: 'string'
+                key: 'data_type_name'
+                value: 'int'
+              - type_name: 'string'
+                key: 'name'
+                value: 'y2'
+            - type_name: 'list'
+              key: 'private_sql_and_synthesis'
+              value:
+              - type_name: 'int'
+                key: 'lower'
+                value: -514
+              - type_name: 'int'
+                key: 'upper'
+                value: 94
+            - type_name: 'list'
+              key: 'private_synthesis'
+              value:
+              - type_name: 'boolean'
+                key: 'synthesizable'
+                value: true
+          - type_name: 'column'
+            attributes:
+            - type_name: 'list'
+              key: 'data'
+              value:
+              - type_name: 'string'
+                key: 'data_type_name'
+                value: 'int'
+              - type_name: 'string'
+                key: 'name'
+                value: 'y3'
+            - type_name: 'list'
+              key: 'private_sql_and_synthesis'
+              value:
+              - type_name: 'int'
+                key: 'lower'
+                value: 61
+              - type_name: 'int'
+                key: 'upper'
+                value: 157
+            - type_name: 'list'
+              key: 'private_synthesis'
+              value:
+              - type_name: 'boolean'
+                key: 'synthesizable'
+                value: true
+          - type_name: 'column'
+            attributes:
+            - type_name: 'list'
+              key: 'data'
+              value:
+              - type_name: 'string'
+                key: 'data_type_name'
+                value: 'int'
+              - type_name: 'string'
+                key: 'name'
+                value: 'y4'
+            - type_name: 'list'
+              key: 'private_sql_and_synthesis'
+              value:
+              - type_name: 'int'
+                key: 'lower'
+                value: -126
+              - type_name: 'int'
+                key: 'upper'
+                value: -71
+            - type_name: 'list'
+              key: 'private_synthesis'
+              value:
+              - type_name: 'boolean'
+                key: 'synthesizable'
+                value: true
+          - type_name: 'column'
+            attributes:
+            - type_name: 'list'
+              key: 'data'
+              value:
+              - type_name: 'string'
+                key: 'data_type_name'
+                value: 'int'
+              - type_name: 'string'
+                key: 'name'
+                value: 'z1'
+            - type_name: 'list'
+              key: 'private_sql_and_synthesis'
+              value:
+              - type_name: 'int'
+                key: 'lower'
+                value: -150
+              - type_name: 'int'
+                key: 'upper'
+                value: -23
+            - type_name: 'list'
+              key: 'private_synthesis'
+              value:
+              - type_name: 'boolean'
+                key: 'synthesizable'
+                value: true
+          - type_name: 'column'
+            attributes:
+            - type_name: 'list'
+              key: 'data'
+              value:
+              - type_name: 'string'
+                key: 'data_type_name'
+                value: 'int'
+              - type_name: 'string'
+                key: 'name'
+                value: 'z2'
+            - type_name: 'list'
+              key: 'private_sql_and_synthesis'
+              value:
+              - type_name: 'int'
+                key: 'lower'
+                value: -614
+              - type_name: 'int'
+                key: 'upper'
+                value: -18
+            - type_name: 'list'
+              key: 'private_synthesis'
+              value:
+              - type_name: 'boolean'
+                key: 'synthesizable'
+                value: true
+          - type_name: 'column'
+            attributes:
+            - type_name: 'list'
+              key: 'data'
+              value:
+              - type_name: 'string'
+                key: 'data_type_name'
+                value: 'int'
+              - type_name: 'string'
+                key: 'name'
+                value: 'z3'
+            - type_name: 'list'
+              key: 'private_sql_and_synthesis'
+              value:
+              - type_name: 'int'
+                key: 'lower'
+                value: -126
+              - type_name: 'int'
+                key: 'upper'
+                value: -66
+            - type_name: 'list'
+              key: 'private_synthesis'
+              value:
+              - type_name: 'boolean'
+                key: 'synthesizable'
+                value: true
+          - type_name: 'column'
+            attributes:
+            - type_name: 'list'
+              key: 'data'
+              value:
+              - type_name: 'string'
+                key: 'data_type_name'
+                value: 'int'
+              - type_name: 'string'
+                key: 'name'
+                value: 'z4'
+            - type_name: 'list'
+              key: 'private_sql_and_synthesis'
+              value:
+              - type_name: 'int'
+                key: 'lower'
+                value: -174
+              - type_name: 'int'
+                key: 'upper'
+                value: -141
+            - type_name: 'list'
+              key: 'private_synthesis'
+              value:
+              - type_name: 'boolean'
+                key: 'synthesizable'
+                value: true
+  specification: 'dataset_v1'

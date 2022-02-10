@@ -6,36 +6,36 @@ Helper function to create data source instance based on a given type.
 Copyright 2020, Gradient Zero
 All rights reserved
 """
-import dq0.sdk.data as data
+from dq0.sdk.data import binary, image, sql, text
 
 
 data_source_classes = {
-    'excel': data.binary.excel.Excel,
-    'feather': data.binary.feather.Feather,
-    'hdf5': data.binary.hdf5.HDF5,
-    'odf': data.binary.odf.ODF,
-    'orc': data.binary.orc.ORC,
-    'parquet': data.binary.parquet.Parquet,
-    'sas': data.binary.sas.SAS,
-    'spss': data.binary.spss.SPSS,
-    'stata': data.binary.stata.Stata,
-    'image': data.image.Image,
-    'bigquery': data.sql.big_query.BigQuery,
-    'drill': data.sql.drill.Drill,
-    'mssql': data.sql.mssql.MSSQL,
-    'mysql': data.sql.mysql.MySQL,
-    'oracle': data.sql.oracle.Oracle,
-    'postgresql': data.sql.postgresql.PostgreSQL,
-    'redshift': data.sql.redshift.Redshift,
-    'saphana': data.sql.sap_hana.SAPHana,
-    'snowflake': data.sql.snowflake.Snowflake,
-    'sqlite': data.sql.sqlite.SQLite,
-    'csv': data.text.csv.CSV,
-    'json': data.text.json.JSON
+    'excel': binary.excel.Excel,
+    'feather': binary.feather.Feather,
+    'hdf5': binary.hdf5.HDF5,
+    'odf': binary.odf.ODF,
+    'orc': binary.orc.ORC,
+    'parquet': binary.parquet.Parquet,
+    'sas': binary.sas.SAS,
+    'spss': binary.spss.SPSS,
+    'stata': binary.stata.Stata,
+    'image': image.Image,
+    'bigquery': sql.big_query.BigQuery,
+    'drill': sql.drill.Drill,
+    'mssql': sql.mssql.MSSQL,
+    'mysql': sql.mysql.MySQL,
+    'oracle': sql.oracle.Oracle,
+    'postgresql': sql.postgresql.PostgreSQL,
+    'redshift': sql.redshift.Redshift,
+    'saphana': sql.sap_hana.SAPHana,
+    'snowflake': sql.snowflake.Snowflake,
+    'sqlite': sql.sqlite.SQLite,
+    'csv': text.csv.CSV,
+    'json': text.json.JSON
 }
 
 
-def create_from_type(type, *args):
+def create_from_meta(meta_database):
     """Returns a matching data source instance based on the given type
     or None if no data source class for this type was found.
 
@@ -46,17 +46,19 @@ def create_from_type(type, *args):
     Returns:
         initialized data source class.
     """
-    if not isinstance(type, str) or type == '':
+    type_name = meta_database.connector.type_name
+
+    if not isinstance(type_name, str) or type_name == '':
         raise ValueError('type must be string!')
 
-    type = type.lower()
-    type = type.replace(' ', '')
-    type = type.replace('-', '')
-    type = type.replace('_', '')
+    type_name = type_name.lower()
+    type_name = type_name.replace(' ', '')
+    type_name = type_name.replace('-', '')
+    type_name = type_name.replace('_', '')
 
-    if type not in data_source_classes.keys():
-        raise ValueError('type {} not found in available types {}'.format(type, ', '.join(data_source_classes.keys())))
+    if type_name not in data_source_classes.keys():
+        raise ValueError(f"type_name {type_name} not found in available types {data_source_classes.keys()}")
 
-    data_class = data_source_classes[type]
+    data_class = data_source_classes[type_name]
 
-    return data_class(*args)
+    return data_class(meta_database)

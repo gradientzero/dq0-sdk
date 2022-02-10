@@ -39,7 +39,7 @@ class LinearSVC(ClassifierMixin, Estimator):
 
 class NuSVC(ClassifierMixin, Estimator):
 
-    def __init__(self, *, nu=0.5, kernel='rbf', degree=3, gamma='scale', coef0=0.0, shrinking=True, probability=False, tol=0.001, cache_size=200,
+    def __init__(self, *, nu=0.47, kernel='rbf', degree=3, gamma='scale', coef0=0.0, shrinking=True, probability=False, tol=0.001, cache_size=200,
                  class_weight=None, verbose=False, max_iter=- 1, decision_function_shape='ovr', break_ties=False, random_state=None, **kwargs):
         super().__init__(**kwargs)
         self.model_type = 'SVMEstimatorClassifier'

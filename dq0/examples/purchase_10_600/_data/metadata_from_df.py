@@ -1,7 +1,7 @@
 """Auto populate dq0 metadata from CSV"""
 import os
 
-from dq0.sdk.data.metadata.metadata import Metadata
+from dq0.sdk.data.metadata.structure.metadata import Metadata
 
 import numpy as np
 
@@ -11,9 +11,10 @@ import yaml
 
 
 name = 'Purchase-10'
+short_name = 'P10'
 description = '600 binary features, y = label, taken from shokri and jayaraman'
-type_ = 'CSV'
-connection = './dq0/examples/purchase_10_600/_data/purchase_10_600_target_dataset.csv'
+privacy_level = 2
+connection = '../dq0-sdk/dq0/examples/purchase_10_600/_data/purchase_10_600_target_dataset.csv'
 
 df = pd.read_csv(
     connection)
@@ -22,20 +23,132 @@ n_rows = int(n_rows + np.random.randint(-int(0.1 * n_rows), int(0.1 * n_rows), 1
 # print(type(n_rows))
 
 # create yaml
-meta_d = {}
-meta_d['name'] = name
-meta_d['description'] = description
-meta_d['type'] = type_
-meta_d['privacy_column'] = ''
+meta_d = {'meta_dataset': {
+    'format': 'full',
+    'node': {
+        'type_name': 'dataset',
+        'attributes': [
+            {
+                'type_name': 'list',
+                'key': 'data',
+                'value': [
+                    {
+                        'type_name': 'string',
+                        'key': 'description',
+                        'value': description,
+                    },
+                    {
+                        'type_name': 'string',
+                        'key': 'name',
+                        'value': name,
+                    },
+                ],
+            },
+            {
+                'type_name': 'list',
+                'key': 'differential_privacy',
+                'value': [
+                    {
+                        'type_name': 'int',
+                        'key': 'privacy_level',
+                        'value': privacy_level,
+                    },
+                ],
+            },
+        ],
+        'child_nodes': [
+            {
+                'type_name': 'database',
+                'attributes': [
+                    {
+                        'type_name': 'list',
+                        'key': 'connector',
+                        'value': [
+                            {
+                                'type_name': 'string',
+                                'key': 'type_name',
+                                'value': 'csv',
+                            },
+                            {
+                                'type_name': 'string',
+                                'key': 'uri',
+                                'value': connection,
+                            },
+                        ],
+                    },
+                    {
+                        'type_name': 'list',
+                        'key': 'data',
+                        'value': [
+                            {
+                                'type_name': 'string',
+                                'key': 'name',
+                                'value': short_name + " database",
+                            },
+                        ],
+                    }
+                ],
+                'child_nodes': [
+                    {
+                        'type_name': 'schema',
+                        'attributes': [
+                            {
+                                'type_name': 'list',
+                                'key': 'data',
+                                'value': [
+                                    {
+                                        'type_name': 'string',
+                                        'key': 'name',
+                                        'value': short_name + " schema",
+                                    },
+                                ],
+                            }
+                        ],
+                        'child_nodes': [
+                            {
+                                'type_name': 'table',
+                                'attributes': [
+                                    {
+                                        'type_name': 'list',
+                                        'key': 'data',
+                                        'value': [
+                                            {
+                                                'type_name': 'string',
+                                                'key': 'name',
+                                                'value': short_name + " table",
+                                            },
+                                            {
+                                                'type_name': 'int',
+                                                'key': 'rows',
+                                                'value': n_rows,
+                                            },
+                                        ],
+                                    },
+                                    {
+                                        'type_name': 'list',
+                                        'key': 'differential_privacy',
+                                        'value': [
+                                            {
+                                                'type_name': 'string',
+                                                'key': 'privacy_column',
+                                                'value': '',
+                                            },
+                                        ],
+                                    },
+                                ],
+                                'child_nodes': [],
+                            },
+                        ],
+                    },
+                ],
+            },
+        ],
+    },
+    'specification': 'dataset_v1',
+}}
 
-schema = meta_d['schema'] = {}
-schema['connection'] = '../dq0-sdk/' + connection[2:]
-
-table = schema['table'] = {}
-table['rows'] = n_rows
 # add columns
 for c in df.columns:
-    column = table[c] = {}
     dtype_ = df[c].dtype
     card = None
     lower = None
@@ -52,19 +165,65 @@ for c in df.columns:
         lower = float(df[c].quantile(np.random.uniform(0.05, 0.10, 1)))
         upper = float(df[c].quantile(np.random.uniform(0.9, 0.95, 1)))
 
-    column['type'] = dtype_
-    column['synthesizable'] = True
-    if card is not None:
-        column['cardinality'] = card
-    if lower is not None:
-        column['lower'] = lower
-    if upper is not None:
-        column['upper'] = upper
+    meta_d['meta_dataset']['node']['child_nodes'][0]['child_nodes'][0]['child_nodes'][0]['child_nodes'].append({
+        'type_name': 'column',
+        'attributes': [
+            {
+                'type_name': 'list',
+                'key': 'data',
+                'value': [
+                    {
+                        'type_name': 'string',
+                        'key': 'data_type_name',
+                        'value': dtype_,
+                    },
+                    {
+                        'type_name': 'string',
+                        'key': 'name',
+                        'value': c,
+                    },
+                ],
+            },
+            {
+                'type_name': 'list',
+                'key': 'private_sql_and_synthesis',
+                'value': [
+                    {
+                        'type_name': 'int',
+                        'key': 'cardinality',
+                        'value': card,
+                    },
+                ] if card is not None else [
+                    {
+                        'type_name': dtype_,
+                        'key': 'lower',
+                        'value': lower,
+                    },
+                    {
+                        'type_name': dtype_,
+                        'key': 'upper',
+                        'value': upper,
+                    },
+                ],
+            },
+            {
+                'type_name': 'list',
+                'key': 'private_synthesis',
+                'value': [
+                    {
+                        'type_name': 'boolean',
+                        'key': 'synthesizable',
+                        'value': True,
+                    },
+                ],
+            },
+        ],
+    })
 
 meta_yaml = yaml.dump(meta_d)
-print(meta_yaml)
+meta_dq0 = Metadata.from_yaml(yaml_content=meta_yaml)
+print(f"Internal full: {meta_dq0.to_yaml(request_uuids=None)}")
+print(f"Outputted yaml file content: {meta_yaml}")
 
-meta_dq0 = Metadata(yaml=meta_yaml)
-
-with open(os.path.join(os.path.split(connection)[0], 'purchase_10_600_target_dataset.yaml'), 'w') as f:
+with open(os.path.join(os.path.split(connection)[0], 'purchase_10_600_target_dataset_generated_full.yaml'), 'w') as f:
     yaml.dump(meta_d, f)

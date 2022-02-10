@@ -9,8 +9,9 @@ All rights reserved
 
 import os
 
-import dq0.sdk
 from dq0.examples.purchase_100_600.bayesian.model.user_model import UserModel
+from dq0.sdk.data.metadata.structure.utils.dummy_utils import DummyUtils
+from dq0.sdk.data.text.csv import CSV
 from dq0.sdk.data.utils import util
 
 
@@ -27,7 +28,7 @@ if __name__ == '__main__':
         os.path.abspath(__file__)), path)
 
     # init input data source
-    data_source = dq0.sdk.data.text.CSV(filepath)
+    data_source = CSV(DummyUtils.dummy_meta_database_for_csv(filepath=filepath))
 
     # create model
     model = UserModel()

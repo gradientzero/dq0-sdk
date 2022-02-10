@@ -1,0 +1,257 @@
+meta_dataset:
+  format: simple
+  node:
+    dataset:
+      attributes:
+        'data':
+          'description': "This data was extracted from the 1994 Census bureau database by Ronny Kohavi and Barry Becker (Data Mining and Visualization, Silicon Graphics). A set of reasonably clean records was extracted using the following conditions: ((AAGE>16) && (AGI>100) && (AFNLWGT>1) && (HRSWK>0)). The prediction task is to determine whether a person makes over $50K a year."
+          'name': "Adult Census Income"
+        'differential_privacy':
+          'privacy_level': 2
+      child_nodes:
+        database:
+          attributes:
+            'connector':
+              'header_columns':
+              - 'lastname'
+              - 'firstname'
+              - 'age'
+              - 'workclass'
+              - 'fnlwgt'
+              - 'education'
+              - 'education-num'
+              - 'marital-status'
+              - 'occupation'
+              - 'relationship'
+              - 'race'
+              - 'sex'
+              - 'capital-gain'
+              - 'capital-loss'
+              - 'hours-per-week'
+              - 'native-country'
+              - 'income'
+              'na_values':
+                'capital-gain': 99999
+                'capital-loss': 99999
+                'hours-per-week': 99
+                'native-country': '?'
+                'occupation': '?'
+                'workclass': '?'
+              'skipinitialspace': true
+              'type_name': 'csv'
+              'uri': "../dq0-sdk/dq0/examples/census/_data/adult_with_rand_names.csv"
+              'use_original_header': true
+            'data':
+              'name': "ACI database"
+          child_nodes:
+            schema:
+              attributes:
+                'data':
+                  'name': "ACI schema"
+              child_nodes:
+                table:
+                  attributes:
+                    'data':
+                      'rows': 48841
+                      'name': "ACI table"
+                    'differential_privacy':
+                      'privacy_column': 'fnlwgt'
+                  child_nodes:
+                    column_0:
+                      attributes:
+                        'data':
+                          'data_type_name': 'int'
+                          'name': 'age'
+                        'machine_learning':
+                          'is_feature': true
+                        'private_sql_and_synthesis':
+                          'lower': 17
+                          'upper': 120
+                        'private_synthesis':
+                          'synthesizable': true
+                    column_1:
+                      attributes:
+                        'data':
+                          'data_type_name': 'float'
+                          'name': 'capital-gain'
+                        'machine_learning':
+                          'is_feature': true
+                        'private_sql_and_synthesis':
+                          'lower': 0.0
+                          'upper': 15000.0
+                        'private_synthesis':
+                          'synthesizable': true
+                    column_2:
+                      attributes:
+                        'data':
+                          'data_type_name': 'float'
+                          'name': 'capital-loss'
+                        'machine_learning':
+                          'is_feature': true
+                        'private_sql_and_synthesis':
+                          'lower': 0.0
+                          'upper': 4500.0
+                        'private_synthesis':
+                          'synthesizable': true
+                    column_3:
+                      attributes:
+                        'data':
+                          'data_type_name': 'string'
+                          'name': 'education'
+                        'machine_learning':
+                          'is_feature': true
+                        'private_sql_and_synthesis':
+                          'cardinality': 16
+                        'private_synthesis':
+                          'synthesizable': false
+                    column_4:
+                      attributes:
+                        'data':
+                          'data_type_name': 'string'
+                          'name': 'education-num'
+                        'machine_learning':
+                          'is_feature': true
+                        # 'private_sql_and_synthesis':
+                        #   'lower': 6
+                        #   'upper': 14
+                        'private_sql_and_synthesis':
+                          'cardinality': 16
+                        'private_synthesis':
+                          'synthesizable': true
+                    column_5:
+                      attributes:
+                        'data':
+                          'data_type_name': 'string'
+                          'name': 'firstname'
+                        'machine_learning':
+                          'is_feature': true
+                        'private_sql_and_synthesis':
+                          'cardinality': 3298
+                        'private_synthesis':
+                          'synthesizable': false
+                    column_6:
+                      attributes:
+                        'data':
+                          'data_type_name': 'string'
+                          'name': 'fnlwgt'
+                        'machine_learning':
+                          'is_feature': true
+                        # 'private_sql_and_synthesis':
+                        #   'lower': 39824
+                        #   'upper': 334679
+                        'private_sql_and_synthesis':
+                          'cardinality': 28521
+                        'private_synthesis':
+                          'synthesizable': false
+                    column_7:
+                      attributes:
+                        'data':
+                          'data_type_name': 'int'
+                          'name': 'hours-per-week'
+                        'machine_learning':
+                          'is_feature': true
+                        'private_sql_and_synthesis':
+                          'lower': 0
+                          'upper': 90
+                        'private_synthesis':
+                          'synthesizable': true
+                    column_8:
+                      attributes:
+                        'data':
+                          'data_type_name': 'string'
+                          'name': 'income'
+                        'machine_learning':
+                          'is_target': true
+                        'private_sql_and_synthesis':
+                          'cardinality': 2
+                        'private_synthesis':
+                          'synthesizable': true
+                    column_9:
+                      attributes:
+                        'data':
+                          'data_type_name': 'string'
+                          'name': 'lastname'
+                        'machine_learning':
+                          'is_feature': true
+                        'private_sql_and_synthesis':
+                          'cardinality': 18144
+                        'private_synthesis':
+                          'synthesizable': false
+                    column_10:
+                      attributes:
+                        'data':
+                          'data_type_name': 'string'
+                          'name': 'marital-status'
+                        'machine_learning':
+                          'is_feature': true
+                        'private_sql_and_synthesis':
+                          'cardinality': 7
+                        'private_synthesis':
+                          'synthesizable': true
+                    column_11:
+                      attributes:
+                        'data':
+                          'data_type_name': 'string'
+                          'name': 'native-country'
+                        'machine_learning':
+                          'is_feature': true
+                        'private_sql_and_synthesis':
+                          'cardinality': 42
+                        'private_synthesis':
+                          'synthesizable': true
+                    column_12:
+                      attributes:
+                        'data':
+                          'data_type_name': 'string'
+                          'name': 'occupation'
+                        'machine_learning':
+                          'is_feature': true
+                        'private_sql_and_synthesis':
+                          'cardinality': 15
+                        'private_synthesis':
+                          'synthesizable': true
+                    column_13:
+                      attributes:
+                        'data':
+                          'data_type_name': 'string'
+                          'name': 'race'
+                        'machine_learning':
+                          'is_feature': true
+                        'private_sql_and_synthesis':
+                          'cardinality': 5
+                        'private_synthesis':
+                          'synthesizable': true
+                    column_14:
+                      attributes:
+                        'data':
+                          'data_type_name': 'string'
+                          'name': 'relationship'
+                        'machine_learning':
+                          'is_feature': true
+                        'private_sql_and_synthesis':
+                          'cardinality': 6
+                        'private_synthesis':
+                          'synthesizable': true
+                    column_15:
+                      attributes:
+                        'data':
+                          'data_type_name': 'string'
+                          'name': 'sex'
+                        'machine_learning':
+                          'is_feature': true
+                        'private_sql_and_synthesis':
+                          'cardinality': 2
+                        'private_synthesis':
+                          'synthesizable': true
+                    column_16:
+                      attributes:
+                        'data':
+                          'data_type_name': 'string'
+                          'name': 'workclass'
+                        'machine_learning':
+                          'is_feature': true
+                        'private_sql_and_synthesis':
+                          'cardinality': 9
+                        'private_synthesis':
+                          'synthesizable': true
+  specification: 'dataset_v1'
