@@ -63,7 +63,7 @@ meta_dataset:
                         'machine_learning':
                           'is_feature': true
                         'private_sql_and_synthesis':
-                          'lower': 0
+                          'lower': 0.0
                           'upper': 4500.0
                         'private_synthesis':
                           'synthesizable': true
