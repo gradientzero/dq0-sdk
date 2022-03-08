@@ -1,5 +1,6 @@
 meta_dataset:
   format: 'full'
+  specification: 'dataset_v1'
   node:
     type_name: 'dataset'
     attributes:
@@ -584,4 +585,3 @@ meta_dataset:
               - type_name: 'boolean'
                 key: 'synthesizable'
                 value: true
-  specification: 'dataset_v1'

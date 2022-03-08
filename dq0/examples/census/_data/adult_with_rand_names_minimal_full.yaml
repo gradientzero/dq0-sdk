@@ -1,5 +1,6 @@
 meta_dataset:
   format: 'full'
+  specification: 'dataset_v1'
   node:
     type_name: 'dataset'
     attributes:
@@ -29,7 +30,7 @@ meta_dataset:
           value: 'csv'
         - type_name: 'string'
           key: 'uri'
-          value: "/Users/wolfganggross/code/dq0-sdk/dq0/examples/census/_data/adult_with_rand_names.csv"
+          value: "../dq0-sdk/dq0/examples/census/_data/adult_with_rand_names.csv"
       - type_name: 'list'
         key: 'data'
         value:
@@ -54,4 +55,3 @@ meta_dataset:
                     - type_name: 'string'
                       key: 'name'
                       value: 'ACI Table'
-  specification: 'dataset_v1'

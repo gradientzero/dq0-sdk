@@ -1,5 +1,6 @@
 meta_dataset:
   format: 'full'
+  specification: 'dataset_v1'
   node:
     type_name: 'dataset'
     attributes:
@@ -328,15 +329,6 @@ meta_dataset:
               - type_name: 'boolean'
                 key: 'is_feature'
                 value: true
-            # - type_name: 'list'
-            #   key: 'private_sql_and_synthesis'
-            #   value:
-            #   - type_name: 'int'
-            #     key: 'lower'
-            #     value: 39824
-            #   - type_name: 'int'
-            #     key: 'upper'
-            #     value: 334679
             - type_name: 'list'
               key: 'private_synthesis'
               value:
@@ -642,4 +634,3 @@ meta_dataset:
               - type_name: 'boolean'
                 key: 'synthesizable'
                 value: true
-  specification: 'dataset_v1'

@@ -1,5 +1,6 @@
 meta_dataset:
   format: simple
+  specification: 'dataset_v1'
   node:
     dataset:
       attributes:
@@ -85,9 +86,6 @@ meta_dataset:
                           'name': 'education-num'
                         'machine_learning':
                           'is_feature': true
-                        # 'private_sql_and_synthesis':
-                        #   'lower': 6
-                        #   'upper': 14
                         'private_synthesis':
                           'synthesizable': false
                         'private_sql_and_synthesis':
@@ -111,8 +109,6 @@ meta_dataset:
                         'machine_learning':
                           'is_feature': true
                         'private_sql_and_synthesis':
-                          # 'lower': 45868
-                          # 'upper': 349148
                           'cardinality': 28521
                         'private_synthesis':
                           'synthesizable': false
@@ -227,4 +223,3 @@ meta_dataset:
                           'cardinality': 9
                         'private_synthesis':
                           'synthesizable': true
-  specification: 'dataset_v1'
