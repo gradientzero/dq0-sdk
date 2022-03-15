@@ -41,7 +41,7 @@ class ConnectorPostgreSQL:
             'port': ([AttributeType.TYPE_NAME_INT], owner_attribute),
             'type_name': ([AttributeType.TYPE_NAME_STRING], DefaultPermissions.shared_attribute(role_uuids=role_uuids)),
             'username': ([AttributeType.TYPE_NAME_STRING], owner_attribute),
-        }, required_keys={'type_name'})
+        }, required_keys={'host', 'type_name'})
         type_name_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'type_name'] if attributes is not None else []
         if type_name_attributes[0].get_value() != 'postgresql':
             raise Exception(f"postgresql connector type_name value {type_name_attributes[0].get_value()} does not match 'postgresql'")
@@ -52,10 +52,17 @@ class ConnectorPostgreSQL:
             key='connector',
             group_name='connector postgresql',
             description="The 'connector postgresql' attributes group.",
-            additional_description="Requires 'type_name' attribute.",
-            contains=JsonSchemaAttribute.json_schema(
-                key='type_name', attribute_name="type name", description="This item ensures that the 'type_name' attribute is present.",
-                type_name=AttributeType.TYPE_NAME_STRING),
+            additional_description="Requires 'host' and 'type_name' attributes.",
+            contains=[
+                JsonSchemaAttribute.json_schema(
+                    key='host', attribute_name="host", description="This item ensures that the 'host' attribute is present.",
+                    type_name=AttributeType.TYPE_NAME_STRING
+                ),
+                JsonSchemaAttribute.json_schema(
+                    key='type_name', attribute_name="type name", description="This item ensures that the 'type_name' attribute is present.",
+                    type_name=AttributeType.TYPE_NAME_STRING
+                )
+            ],
             attributes=[
                 JsonSchemaAttribute.json_schema(
                     key='host',

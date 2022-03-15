@@ -1,8 +1,10 @@
-from dq0.sdk.data.metadata.interface.dataset.entity import Entity
 from dq0.sdk.data.metadata.interface.dataset.v1.dataset.dataset import Dataset
+from dq0.sdk.data.metadata.interface.entity import Entity
 from dq0.sdk.data.metadata.interface.interface_iterator import InterfaceIterator
-from dq0.sdk.data.metadata.specification.dataset.v1.specification_v1 import SpecificationV1
+from dq0.sdk.data.metadata.interface.run.v1.run.run import Run
+from dq0.sdk.data.metadata.specification.dataset.v1.specification_v1 import SpecificationV1 as DatasetSpecificationV1
 from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
+from dq0.sdk.data.metadata.specification.run.v1.specification_v1 import SpecificationV1 as RunSpecificationV1
 from dq0.sdk.data.metadata.structure.metadata import Metadata
 from dq0.sdk.data.metadata.structure.node.node import Node
 from dq0.sdk.data.metadata.structure.node.node_type import NodeType
@@ -42,26 +44,6 @@ class Interface(Entity):
     def get_metadata(self):
         return self._metadata
 
-    def dataset(self, name=None):
-        node = self._metadata.get_node(root_key='dataset')
-        if name is None:
-            if node is None:
-                raise Exception("get without name may only work for existing dataset node")
-            name = Entity.name_of(node=node)
-        if 'dataset' not in self._entities:
-            specification = self._metadata.get_specification(root_key='dataset')
-            if isinstance(specification, SpecificationV1):
-                self._entities['dataset'] = Dataset(name=name, parent=self,
-                                                    permissions=DefaultPermissions.shared_node(role_uuids=self.get_role_uuids()),
-                                                    data_permissions=DefaultPermissions.shared_attribute(role_uuids=self.get_role_uuids()),
-                                                    name_permissions=DefaultPermissions.shared_attribute(role_uuids=self.get_role_uuids()),
-                                                    role_uuids=self.get_role_uuids(), node=node)
-            else:
-                raise Exception("no interface for specified version available")
-        if name != self._entities['dataset'].get_name():
-            raise Exception(f"name mismatch: {name} != {self._entities['dataset'].get_name()}")
-        return self._entities['dataset']
-
     def create(self):
         pass
 
@@ -92,3 +74,43 @@ class Interface(Entity):
 
     def apply_defaults_and_verify(self, specifications=None):
         return Interface(metadata=self._metadata.apply_defaults_and_verify(specifications=specifications), role_uuids=self.get_role_uuids())
+
+    def dataset(self, name=None):
+        node = self._metadata.get_node(root_key='dataset')
+        if name is None:
+            if node is None:
+                raise Exception("get without name may only work for existing dataset node")
+            name = Entity.name_of(node=node)
+        if 'dataset' not in self._entities:
+            specification = self._metadata.get_specification(root_key='dataset')
+            if isinstance(specification, DatasetSpecificationV1):
+                self._entities['dataset'] = Dataset(name=name, parent=self,
+                                                    permissions=DefaultPermissions.shared_node(role_uuids=self.get_role_uuids()),
+                                                    data_permissions=DefaultPermissions.shared_attribute(role_uuids=self.get_role_uuids()),
+                                                    name_permissions=DefaultPermissions.shared_attribute(role_uuids=self.get_role_uuids()),
+                                                    role_uuids=self.get_role_uuids(), node=node)
+            else:
+                raise Exception("no interface for specified version available")
+        if name != self._entities['dataset'].get_name():
+            raise Exception(f"name mismatch: {name} != {self._entities['dataset'].get_name()}")
+        return self._entities['dataset']
+
+    def run(self, name=None):
+        node = self._metadata.get_node(root_key='run')
+        if name is None:
+            if node is None:
+                raise Exception("get without name may only work for existing run node")
+            name = Entity.name_of(node=node)
+        if 'run' not in self._entities:
+            specification = self._metadata.get_specification(root_key='run')
+            if isinstance(specification, RunSpecificationV1):
+                self._entities['run'] = Run(name=name, parent=self,
+                                            permissions=DefaultPermissions.analyst_node(role_uuids=self.get_role_uuids()),
+                                            data_permissions=DefaultPermissions.analyst_attribute(role_uuids=self.get_role_uuids()),
+                                            name_permissions=DefaultPermissions.analyst_attribute(role_uuids=self.get_role_uuids()),
+                                            role_uuids=self.get_role_uuids(), node=node)
+            else:
+                raise Exception("no interface for specified version available")
+        if name != self._entities['run'].get_name():
+            raise Exception(f"name mismatch: {name} != {self._entities['run'].get_name()}")
+        return self._entities['run']

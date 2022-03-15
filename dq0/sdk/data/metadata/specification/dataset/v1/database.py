@@ -1,10 +1,12 @@
 from dq0.sdk.data.metadata.specification.dataset.v1.connector import Connector
 from dq0.sdk.data.metadata.specification.dataset.v1.connector_csv import ConnectorCSV
+from dq0.sdk.data.metadata.specification.dataset.v1.connector_mysql import ConnectorMySQL
 from dq0.sdk.data.metadata.specification.dataset.v1.connector_postgresql import ConnectorPostgreSQL
+from dq0.sdk.data.metadata.specification.dataset.v1.connector_sqlite import ConnectorSQLite
 from dq0.sdk.data.metadata.specification.dataset.v1.schema import Schema
 from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
-from dq0.sdk.data.metadata.specification.json_schema.attribute import Attribute as JsonSchemaAttribute
-from dq0.sdk.data.metadata.specification.json_schema.attributes_group import AttributesGroup as JsonSchemaAttributesGroup
+from dq0.sdk.data.metadata.specification.json_schema.dataset.attribute import Attribute as JsonSchemaDatasetAttribute
+from dq0.sdk.data.metadata.specification.json_schema.dataset.attributes_group import AttributesGroup as JsonSchemaDatasetAttributesGroup
 from dq0.sdk.data.metadata.specification.json_schema.node import Node as JsonSchemaNode
 from dq0.sdk.data.metadata.structure.attribute.attribute import Attribute
 from dq0.sdk.data.metadata.structure.attribute.attribute_type import AttributeType
@@ -94,28 +96,30 @@ class Database:
         return JsonSchemaNode.json_schema(
             NodeType.TYPE_NAME_DATABASE,
             attributes_groups=[
-                JsonSchemaAttributesGroup.data(
+                JsonSchemaDatasetAttributesGroup.data(
                     attributes=[
-                        JsonSchemaAttribute.description(
+                        JsonSchemaDatasetAttribute.description(
                             node_type_name=NodeType.TYPE_NAME_DATABASE
                         ),
-                        JsonSchemaAttribute.metadata_is_public(
+                        JsonSchemaDatasetAttribute.metadata_is_public(
                             node_type_name=NodeType.TYPE_NAME_DATABASE
                         ),
-                        JsonSchemaAttribute.name(
+                        JsonSchemaDatasetAttribute.name(
                             node_type_name=NodeType.TYPE_NAME_DATABASE
                         )
                     ]
                 ),
-                JsonSchemaAttributesGroup.differential_privacy(
+                JsonSchemaDatasetAttributesGroup.differential_privacy(
                     attributes=[
-                        JsonSchemaAttribute.privacy_level(
+                        JsonSchemaDatasetAttribute.privacy_level(
                             node_type_name=NodeType.TYPE_NAME_DATABASE
                         )
                     ]
                 ),
                 ConnectorCSV.json_schema(),
-                ConnectorPostgreSQL.json_schema()
+                ConnectorMySQL.json_schema(),
+                ConnectorPostgreSQL.json_schema(),
+                ConnectorSQLite.json_schema()
             ],
             child_node_json_schema=Schema.json_schema()
         )

@@ -59,6 +59,19 @@ class DefaultPermissions:
         return Permissions(permissions=permissions) if len(permissions) != 0 else None
 
     @staticmethod
+    def analyst_node(role_uuids=None):
+        permissions = {action: permission for (action, permission) in [
+            (Action.READ, DefaultPermissions.select_uuids(role_uuids=role_uuids, role_names={DefaultPermissions.OWNER_NAME, DefaultPermissions.USER_NAME})),
+            (Action.WRITE_ATTRIBUTES, DefaultPermissions.select_uuids(role_uuids=role_uuids, role_names={DefaultPermissions.OWNER_NAME,
+                                                                                                         DefaultPermissions.USER_NAME})),
+            (Action.WRITE_CHILD_NODES, DefaultPermissions.select_uuids(role_uuids=role_uuids, role_names={DefaultPermissions.OWNER_NAME,
+                                                                                                          DefaultPermissions.USER_NAME})),
+            (Action.WRITE_PERMISSIONS, DefaultPermissions.select_uuids(role_uuids=role_uuids, role_names={DefaultPermissions.OWNER_NAME})),
+        ] if permission is not None
+        }
+        return Permissions(permissions=permissions) if len(permissions) != 0 else None
+
+    @staticmethod
     def json_schema_node_permissions():
         return JsonSchemaPermissions.json_schema(owner='node', properties=[
             JsonSchemaPermissions.permissions_property(key=Action.READ, operation="read node"),

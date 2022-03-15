@@ -1,9 +1,9 @@
-from dq0.sdk.data.metadata.interface.dataset.entity import Entity
 from dq0.sdk.data.metadata.interface.dataset.v1.column.column import Column
 from dq0.sdk.data.metadata.interface.dataset.v1.table.attributes_table_data import AttributesTableData
 from dq0.sdk.data.metadata.interface.dataset.v1.table.attributes_table_differential_privacy import AttributesTableDifferentialPrivacy
 from dq0.sdk.data.metadata.interface.dataset.v1.table.attributes_table_private_sql import AttributesTablePrivateSql
 from dq0.sdk.data.metadata.interface.dataset.v1.table.attributes_table_private_synthesis import AttributesTablePrivateSynthesis
+from dq0.sdk.data.metadata.interface.entity import Entity
 from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
 from dq0.sdk.data.metadata.structure.node.node_type import NodeType
 

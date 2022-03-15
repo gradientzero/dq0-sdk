@@ -1,7 +1,7 @@
 from dq0.sdk.data.metadata.specification.dataset.v1.table import Table
 from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
-from dq0.sdk.data.metadata.specification.json_schema.attribute import Attribute as JsonSchemaAttribute
-from dq0.sdk.data.metadata.specification.json_schema.attributes_group import AttributesGroup as JsonSchemaAttributesGroup
+from dq0.sdk.data.metadata.specification.json_schema.dataset.attribute import Attribute as JsonSchemaDatasetAttribute
+from dq0.sdk.data.metadata.specification.json_schema.dataset.attributes_group import AttributesGroup as JsonSchemaDatasetAttributesGroup
 from dq0.sdk.data.metadata.specification.json_schema.node import Node as JsonSchemaNode
 from dq0.sdk.data.metadata.structure.attribute.attribute import Attribute
 from dq0.sdk.data.metadata.structure.attribute.attribute_type import AttributeType
@@ -86,22 +86,22 @@ class Schema:
         return JsonSchemaNode.json_schema(
             NodeType.TYPE_NAME_SCHEMA,
             attributes_groups=[
-                JsonSchemaAttributesGroup.data(
+                JsonSchemaDatasetAttributesGroup.data(
                     attributes=[
-                        JsonSchemaAttribute.description(
+                        JsonSchemaDatasetAttribute.description(
                             node_type_name=NodeType.TYPE_NAME_SCHEMA
                         ),
-                        JsonSchemaAttribute.metadata_is_public(
+                        JsonSchemaDatasetAttribute.metadata_is_public(
                             node_type_name=NodeType.TYPE_NAME_SCHEMA
                         ),
-                        JsonSchemaAttribute.name(
+                        JsonSchemaDatasetAttribute.name(
                             node_type_name=NodeType.TYPE_NAME_SCHEMA
                         )
                     ]
                 ),
-                JsonSchemaAttributesGroup.differential_privacy(
+                JsonSchemaDatasetAttributesGroup.differential_privacy(
                     attributes=[
-                        JsonSchemaAttribute.privacy_level(
+                        JsonSchemaDatasetAttribute.privacy_level(
                             node_type_name=NodeType.TYPE_NAME_SCHEMA
                         )
                     ]

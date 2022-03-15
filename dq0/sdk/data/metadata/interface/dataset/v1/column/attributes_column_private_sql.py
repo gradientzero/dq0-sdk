@@ -1,5 +1,5 @@
-from dq0.sdk.data.metadata.interface.dataset.attribute_utils import AttributeUtils
-from dq0.sdk.data.metadata.interface.dataset.attributes_group import AttributesGroup
+from dq0.sdk.data.metadata.interface.attribute_utils import AttributeUtils
+from dq0.sdk.data.metadata.interface.attributes_group import AttributesGroup
 from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
 from dq0.sdk.data.metadata.structure.attribute.attribute_type import AttributeType
 

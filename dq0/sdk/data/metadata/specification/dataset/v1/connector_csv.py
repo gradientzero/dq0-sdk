@@ -46,7 +46,7 @@ class ConnectorCSV:
             'type_name': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
             'uri': ([AttributeType.TYPE_NAME_STRING], shared_attribute),
             'use_original_header': ([AttributeType.TYPE_NAME_BOOLEAN], shared_attribute),
-        }, required_keys={'type_name'})
+        }, required_keys={'type_name', 'uri'})
         type_name_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'type_name'] if attributes is not None else []
         if type_name_attributes[0].get_value() != 'csv':
             raise Exception(f"csv connector type_name value {type_name_attributes[0].get_value()} does not match 'csv'")
@@ -83,10 +83,17 @@ class ConnectorCSV:
             key='connector',
             group_name='connector csv',
             description="The 'connector csv' attributes group.",
-            additional_description="Requires 'type_name' attribute.",
-            contains=JsonSchemaAttribute.json_schema(
-                key='type_name', attribute_name="type name", description="This item ensures that the 'type_name' attribute is present.",
-                type_name=AttributeType.TYPE_NAME_STRING),
+            additional_description="Requires 'type_name' and 'uri' attributes.",
+            contains=[
+                JsonSchemaAttribute.json_schema(
+                    key='type_name', attribute_name="type name", description="This item ensures that the 'type_name' attribute is present.",
+                    type_name=AttributeType.TYPE_NAME_STRING
+                ),
+                JsonSchemaAttribute.json_schema(
+                    key='uri', attribute_name="uri", description="This item ensures that the 'uri' attribute is present.",
+                    type_name=AttributeType.TYPE_NAME_STRING
+                )
+            ],
             attributes=[
                 JsonSchemaAttribute.json_schema(
                     key='decimal',
