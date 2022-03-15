@@ -7,6 +7,18 @@ import sqlalchemy
 
 class PostgreSQL(SQL):
     @staticmethod
+    def postgresql_from(meta_database):
+        meta_connector = meta_database.connector
+        if meta_connector.type_name != 'postgresql':
+            raise ValueError(f"type_name={meta_connector.type_name} != postgresql")
+        username = meta_connector.username if meta_connector.username is not None else ''
+        password = meta_connector.password if meta_connector.password is not None else ''
+        host = meta_connector.host if meta_connector.host is not None else ''
+        port = meta_connector.port if meta_connector.port is not None else ''
+        database = meta_database.data.name if meta_database.data.name is not None else ''
+        return PostgreSQL(username=username, password=password, host=host, port=port, database=database)
+
+    @staticmethod
     def connection_uri(username='', password='', host='', port='', database=''):
         if len(username) == 0:
             password = ''

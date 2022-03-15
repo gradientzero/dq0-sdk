@@ -7,6 +7,19 @@ import sqlalchemy
 
 class MySQL(SQL):
     @staticmethod
+    def mysql_from(meta_database):
+        meta_connector = meta_database.connector
+        if meta_connector.type_name != 'mysql':
+            raise ValueError(f"type_name={meta_connector.type_name} != mysql")
+        username = meta_connector.username if meta_connector.username is not None else ''
+        password = meta_connector.password if meta_connector.password is not None else ''
+        host = meta_connector.host if meta_connector.host is not None else ''
+        port = meta_connector.port if meta_connector.port is not None else ''
+        database = meta_database.data.name if meta_database.data.name is not None else ''
+        charset = meta_connector.charset if meta_connector.charset is not None else ''
+        return MySQL(username=username, password=password, host=host, port=port, database=database, charset=charset)
+
+    @staticmethod
     def connection_uri(username='', password='', host='', port='', database='', charset=''):
         if len(username) == 0:
             password = ''

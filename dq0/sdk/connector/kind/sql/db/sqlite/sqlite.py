@@ -9,6 +9,13 @@ import sqlalchemy
 
 class SQLite(SQL):
     @staticmethod
+    def sqlite_from(meta_connector):
+        if meta_connector.type_name != 'sqlite':
+            raise ValueError(f"type_name={meta_connector.type_name} != sqlite")
+        uri = meta_connector.uri if meta_connector.uri is not None else ''
+        return SQLite(filepath=uri)
+
+    @staticmethod
     def connection_uri(filepath):
         absolute_path = filepath.resolve()
         return f"sqlite:///{absolute_path}"
