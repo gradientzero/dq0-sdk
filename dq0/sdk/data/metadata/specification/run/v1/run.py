@@ -3,6 +3,7 @@ from dq0.sdk.data.metadata.specification.json_schema.attributes_group import Att
 from dq0.sdk.data.metadata.specification.json_schema.node import Node as JsonSchemaNode
 from dq0.sdk.data.metadata.specification.json_schema.run.attribute import Attribute as JsonSchemaRunAttribute
 from dq0.sdk.data.metadata.specification.json_schema.run.attributes_group import AttributesGroup as JsonSchemaRunAttributesGroup
+from dq0.sdk.data.metadata.specification.run.v1.sql import Sql
 from dq0.sdk.data.metadata.structure.attribute.attribute import Attribute
 from dq0.sdk.data.metadata.structure.attribute.attribute_type import AttributeType
 from dq0.sdk.data.metadata.structure.node.node import Node
@@ -51,23 +52,7 @@ class Run:
         sql_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'sql'] \
             if attributes is not None else []
         if 0 < len(sql_attributes):
-            Attribute.check_list(attribute_list=sql_attributes[0].get_value(), check_data={
-                'query_string': ([AttributeType.TYPE_NAME_STRING], analyst_attribute),
-                'query_processor': ([AttributeType.TYPE_NAME_LIST], analyst_attribute),
-                'result_processor': ([AttributeType.TYPE_NAME_LIST], analyst_attribute),
-            }, required_keys={'query_string'})
-        query_processor_attributes = [tmp_attribute for tmp_attribute in sql_attributes if tmp_attribute.get_key() == 'query_processor'] \
-            if sql_attributes is not None else []
-        if 0 < len(query_processor_attributes):
-            Attribute.check_list(attribute_list=query_processor_attributes[0].get_value(), check_data={
-                'type_name': ([AttributeType.TYPE_NAME_STRING], analyst_attribute),
-            }, required_keys={'type_name'})
-        result_processor_attributes = [tmp_attribute for tmp_attribute in sql_attributes if tmp_attribute.get_key() == 'result_processor'] \
-            if sql_attributes is not None else []
-        if 0 < len(result_processor_attributes):
-            Attribute.check_list(attribute_list=result_processor_attributes[0].get_value(), check_data={
-                'type_name': ([AttributeType.TYPE_NAME_STRING], analyst_attribute),
-            }, required_keys={'type_name'})
+            Sql.verify(attribute=sql_attributes[0], role_uuids=role_uuids)
 
     @staticmethod
     def json_schema():
@@ -97,25 +82,7 @@ class Run:
                         )
                     ]
                 ),
-                JsonSchemaRunAttributesGroup.sql(
-                    attributes=[
-                        JsonSchemaRunAttribute.query_string(),
-                        JsonSchemaRunAttributesGroup.query_processor(
-                            attributes=[
-                                JsonSchemaRunAttribute.processor_type_name(
-                                    group_type_name='query_processor'
-                                )
-                            ]
-                        ),
-                        JsonSchemaRunAttributesGroup.result_processor(
-                            attributes=[
-                                JsonSchemaRunAttribute.processor_type_name(
-                                    group_type_name='result_processor'
-                                )
-                            ]
-                        )
-                    ]
-                )
+                Sql.json_schema()
             ],
             attributes_groups_additional_contains=JsonSchemaAttributesGroup.json_schema(
                 key='sql',

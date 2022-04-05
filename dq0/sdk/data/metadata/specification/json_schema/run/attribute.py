@@ -40,10 +40,11 @@ class Attribute:
         )
 
     @staticmethod
-    def processor_type_name(group_type_name):
+    def processor_type_name(group_name, additional_value):
         return JsonSchemaAttribute.json_schema(
             key='type_name',
             attribute_name='type name',
-            description=f"The 'type name' attribute. Specifies the type of '{group_type_name}' and is mandatory.",
-            type_name=AttributeType.TYPE_NAME_STRING
+            description=f"The 'type name' attribute. Specifies the type of '{group_name}' and is mandatory.",
+            type_name=AttributeType.TYPE_NAME_STRING,
+            additional_value=additional_value
         )

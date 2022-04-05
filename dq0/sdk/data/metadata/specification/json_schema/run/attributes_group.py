@@ -40,38 +40,38 @@ class AttributesGroup:
             key='sql',
             group_name='sql',
             description="The 'sql' attributes group.",
-            additional_description="Requires the 'query string' attribute.",
+            additional_description="Requires the 'query_string' attribute.",
             contains=contains,
             attributes=attributes)
 
     @staticmethod
     def query_processor(attributes):
         contains = JsonSchemaAttribute.json_schema(
-            key='processor_type_name',
-            attribute_name='processor type name',
-            description="This item ensures that the 'processor_type_name' attribute is present.",
+            key='type_name',
+            attribute_name='type name',
+            description="This item ensures that the 'type_name' attribute is present.",
             type_name=AttributeType.TYPE_NAME_STRING
         )
         return JsonSchemaAttributesGroup.json_schema(
             key='query_processor',
             group_name='query processor',
             description="The 'query processor' attributes group.",
-            additional_description="Requires the 'processor type name' attribute.",
+            additional_description="Requires the 'type_name' attribute.",
             contains=contains,
             attributes=attributes)
 
     @staticmethod
     def result_processor(attributes):
         contains = JsonSchemaAttribute.json_schema(
-            key='processor_type_name',
-            attribute_name='processor type name',
-            description="This item ensures that the 'processor_type_name' attribute is present.",
+            key='type_name',
+            attribute_name='type name',
+            description="This item ensures that the 'type_name' attribute is present.",
             type_name=AttributeType.TYPE_NAME_STRING
         )
         return JsonSchemaAttributesGroup.json_schema(
             key='result_processor',
             group_name='result processor',
             description="The 'result processor' attributes group.",
-            additional_description="Requires the 'processor type name' attribute.",
+            additional_description="Requires the 'type_name' attribute.",
             contains=contains,
             attributes=attributes)

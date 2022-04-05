@@ -10,6 +10,10 @@ class AttributesRunSQLQueryProcessor(AttributesGroup):
                          entity=attributes_run_sql,
                          attribute_list=attribute_list)
 
+    def type_names_check(self, type_names):
+        if self.type_name not in type_names:
+            raise Exception(f"access forbidden, typename mismatch: {self.type_name} not in {type_names}")
+
     # type_name
     @property
     def type_name(self):
@@ -17,6 +21,8 @@ class AttributesRunSQLQueryProcessor(AttributesGroup):
 
     @type_name.setter
     def type_name(self, new_type_name):
+        if self.type_name is not None:
+            raise Exception(f"type_name {self.type_name} may not be modified")
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_STRING,
                                  key='type_name',
                                  value=new_type_name,
