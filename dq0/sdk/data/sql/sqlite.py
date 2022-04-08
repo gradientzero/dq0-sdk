@@ -27,7 +27,12 @@ class SQLite(SQL):
         connection_string (:obj:`str`): The sqlite connection string.
     """
 
-    def __init__(self, connection_string):
+    def __init__(self, meta_database):
+        meta_connector = meta_database.connector
+        if meta_connector.type_name != 'sqlite':
+            raise Exception(f"type_name {meta_connector.type_name} does not match sqlite")
+        uri = meta_connector.uri if isinstance(meta_connector.uri, str) else ''
+        connection_string = f"sqlite:///{uri}"
         super().__init__(connection_string)
         self.type = 'sqlite'
         self.engine = sqlalchemy.create_engine(connection_string)
