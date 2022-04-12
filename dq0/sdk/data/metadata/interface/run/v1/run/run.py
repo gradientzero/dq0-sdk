@@ -1,5 +1,6 @@
 from dq0.sdk.data.metadata.interface.entity import Entity
 from dq0.sdk.data.metadata.interface.run.v1.run.attributes_run_data import AttributesRunData
+from dq0.sdk.data.metadata.interface.run.v1.run.attributes_run_logging import AttributesRunLogging
 from dq0.sdk.data.metadata.interface.run.v1.run.attributes_run_sql import AttributesRunSQL
 from dq0.sdk.data.metadata.structure.attribute.attribute_list import AttributeList
 from dq0.sdk.data.metadata.structure.node.node import Node
@@ -28,6 +29,8 @@ class Run(Entity):
     def create_attributes_group(self, key, attribute_list=None):
         if key == 'data':
             return AttributesRunData(run=self, attribute_list=attribute_list)
+        elif key == 'logging':
+            return AttributesRunLogging(run=self, attribute_list=attribute_list)
         elif key == 'sql':
             if self.get_type_name() is None:
                 raise Exception("cannot access sql without type_name being set")
@@ -49,6 +52,19 @@ class Run(Entity):
     @data.deleter
     def data(self):
         super().get_attribute_group(key='data').delete()
+
+    # logging
+    @property
+    def logging(self):
+        return super().get_attribute_group(key='logging')
+
+    @logging.setter
+    def logging(self, _):
+        raise Exception("logging attribute group may not be set")
+
+    @logging.deleter
+    def logging(self):
+        super().get_attribute_group(key='logging').delete()
 
     # sql
     @property

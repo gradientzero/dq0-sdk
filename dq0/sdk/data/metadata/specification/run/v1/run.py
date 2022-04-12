@@ -39,6 +39,7 @@ class Run:
         analyst_attribute = DefaultPermissions.analyst_attribute(role_uuids=role_uuids)
         Attribute.check_list(attribute_list=attributes, check_data={
             'data': ([AttributeType.TYPE_NAME_LIST], analyst_attribute),
+            'logging': ([AttributeType.TYPE_NAME_LIST], analyst_attribute),
             'sql': ([AttributeType.TYPE_NAME_LIST], analyst_attribute),
         }, required_keys={'data'})
         data_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'data'] \
@@ -49,6 +50,16 @@ class Run:
                 'name': ([AttributeType.TYPE_NAME_STRING], analyst_attribute),
                 'type_name': ([AttributeType.TYPE_NAME_STRING], analyst_attribute),
             }, required_keys={'name', 'type_name'})
+        logging_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'logging'] \
+            if attributes is not None else []
+        if 0 < len(logging_attributes):
+            Attribute.check_list(attribute_list=logging_attributes[0].get_value(), check_data={
+                'log_key_string': ([AttributeType.TYPE_NAME_STRING], analyst_attribute),
+                'tracker_output_path': ([AttributeType.TYPE_NAME_STRING], analyst_attribute),
+                'tracker_type': ([AttributeType.TYPE_NAME_STRING], analyst_attribute),
+                'tracker_group_uuid': ([AttributeType.TYPE_NAME_STRING], analyst_attribute),
+                'tracker_run_uuid': ([AttributeType.TYPE_NAME_STRING], analyst_attribute),
+            }, required_keys={'log_key_string', 'tracker_output_path', 'tracker_type'})
         sql_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'sql'] \
             if attributes is not None else []
         if 0 < len(sql_attributes):
@@ -82,6 +93,7 @@ class Run:
                         )
                     ]
                 ),
+                JsonSchemaRunAttributesGroup.logging(),
                 Sql.json_schema()
             ],
             attributes_groups_additional_contains=JsonSchemaAttributesGroup.json_schema(
