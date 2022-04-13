@@ -90,8 +90,8 @@ class AttributesGroup:
                 self._attribute_list = None
 
     def add_attribute(self, attribute):
-        attribute = self.get_attribute(key=attribute.get_key())
-        if attribute is not None:
+        internal_attribute = self.get_attribute(key=attribute.get_key())
+        if internal_attribute is not None:
             raise Exception(f"attribute {attribute.get_key()} is already set and cannot be modified")
         if self._attribute_list is None:
             attribute_list = AttributeList(key=self.get_key(), value=[], permissions=self._permissions)

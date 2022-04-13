@@ -53,18 +53,24 @@ class Interface(Entity):
     def add_child_node(self, child_node):
         if not isinstance(child_node, Node):
             raise Exception(f"child_node is not of type Node, is of type {type(child_node)} instead")
-        if child_node.get_type_name() != NodeType.TYPE_NAME_DATASET:
-            raise Exception(f"child_node.get_type_name() mismatch: {child_node.get_type_name()} != {NodeType.TYPE_NAME_DATASET}")
-        self._metadata.set_node(root_key='dataset', node=child_node)
+        child_node_type_name = child_node.get_type_name()
+        if child_node_type_name == NodeType.TYPE_NAME_DATASET:
+            self._metadata.set_node(root_key=NodeType.TYPE_NAME_DATASET, node=child_node)
+        elif child_node_type_name == NodeType.TYPE_NAME_RUN:
+            self._metadata.set_node(root_key=NodeType.TYPE_NAME_RUN, node=child_node)
+        else:
+            raise Exception(f"unknown child_node_type_name={child_node_type_name}, must be one of [{NodeType.TYPE_NAME_DATASET}, {NodeType.TYPE_NAME_RUN}]")
 
-    def remove_child_node(self, name):
-        if self._metadata.get_node(root_key='dataset') is None:
+    def remove_child_node(self, type_name, name):
+        if self._metadata.get_node(root_key=NodeType.TYPE_NAME_DATASET) is None and self._metadata.get_node(root_key=NodeType.TYPE_NAME_RUN) is None:
             return
-        self._metadata.delete_node(root_key='dataset')
-        if self._entities['dataset'] is not None:
-            if name != self._entities['dataset'].get_name():
-                raise Exception(f"name mismatch: {name} != {self._entities['dataset'].get_name()}")
-            self._entities['dataset'].wipe()
+        if type_name not in [NodeType.TYPE_NAME_DATASET, NodeType.TYPE_NAME_RUN]:
+            raise ValueError(f"unknown type_name={type_name}, must be one of [{NodeType.TYPE_NAME_DATASET}, {NodeType.TYPE_NAME_RUN}]")
+        self._metadata.delete_node(root_key=type_name)
+        if self._entities[type_name] is not None:
+            if name != self._entities[type_name].get_name():
+                raise Exception(f"name mismatch: {name} != {self._entities[type_name].get_name()}")
+            self._entities[type_name].wipe()
 
     def set_name(self, old_name, new_name):
         pass
@@ -75,42 +81,46 @@ class Interface(Entity):
     def apply_defaults_and_verify(self, specifications=None):
         return Interface(metadata=self._metadata.apply_defaults_and_verify(specifications=specifications), role_uuids=self.get_role_uuids())
 
-    def dataset(self, name=None):
-        node = self._metadata.get_node(root_key='dataset')
+    def dataset(self, name=None, specification=None):
+        node = self._metadata.get_node(root_key=NodeType.TYPE_NAME_DATASET)
         if name is None:
             if node is None:
                 raise Exception("get without name may only work for existing dataset node")
             name = Entity.name_of(node=node)
-        if 'dataset' not in self._entities:
-            specification = self._metadata.get_specification(root_key='dataset')
-            if isinstance(specification, DatasetSpecificationV1):
-                self._entities['dataset'] = Dataset(name=name, parent=self,
-                                                    permissions=DefaultPermissions.shared_node(role_uuids=self.get_role_uuids()),
-                                                    data_permissions=DefaultPermissions.shared_attribute(role_uuids=self.get_role_uuids()),
-                                                    name_permissions=DefaultPermissions.shared_attribute(role_uuids=self.get_role_uuids()),
-                                                    role_uuids=self.get_role_uuids(), node=node)
+        if NodeType.TYPE_NAME_DATASET not in self._entities:
+            internal_specification = self._metadata.get_specification(root_key=NodeType.TYPE_NAME_DATASET)
+            if internal_specification is None and specification is not None:
+                internal_specification = specification
+            if isinstance(internal_specification, DatasetSpecificationV1):
+                self._entities[NodeType.TYPE_NAME_DATASET] = Dataset(name=name, parent=self,
+                                                                     permissions=DefaultPermissions.shared_node(role_uuids=self.get_role_uuids()),
+                                                                     data_permissions=DefaultPermissions.shared_attribute(role_uuids=self.get_role_uuids()),
+                                                                     name_permissions=DefaultPermissions.shared_attribute(role_uuids=self.get_role_uuids()),
+                                                                     role_uuids=self.get_role_uuids(), node=node)
             else:
-                raise Exception("no interface for specified version available")
-        if name != self._entities['dataset'].get_name():
-            raise Exception(f"name mismatch: {name} != {self._entities['dataset'].get_name()}")
-        return self._entities['dataset']
+                raise Exception(f"no interface for specified version={internal_specification} available")
+        if name != self._entities[NodeType.TYPE_NAME_DATASET].get_name():
+            raise Exception(f"name mismatch: {name} != {self._entities[NodeType.TYPE_NAME_DATASET].get_name()}")
+        return self._entities[NodeType.TYPE_NAME_DATASET]
 
-    def run(self, name=None):
-        node = self._metadata.get_node(root_key='run')
+    def run(self, name=None, specification=None):
+        node = self._metadata.get_node(root_key=NodeType.TYPE_NAME_RUN)
         if name is None:
             if node is None:
                 raise Exception("get without name may only work for existing run node")
             name = Entity.name_of(node=node)
-        if 'run' not in self._entities:
-            specification = self._metadata.get_specification(root_key='run')
-            if isinstance(specification, RunSpecificationV1):
-                self._entities['run'] = Run(name=name, parent=self,
-                                            permissions=DefaultPermissions.analyst_node(role_uuids=self.get_role_uuids()),
-                                            data_permissions=DefaultPermissions.analyst_attribute(role_uuids=self.get_role_uuids()),
-                                            name_permissions=DefaultPermissions.analyst_attribute(role_uuids=self.get_role_uuids()),
-                                            role_uuids=self.get_role_uuids(), node=node)
+        if NodeType.TYPE_NAME_RUN not in self._entities:
+            internal_specification = self._metadata.get_specification(root_key=NodeType.TYPE_NAME_RUN)
+            if internal_specification is None and specification is not None:
+                internal_specification = specification
+            if isinstance(internal_specification, RunSpecificationV1):
+                self._entities[NodeType.TYPE_NAME_RUN] = Run(name=name, parent=self,
+                                                             permissions=DefaultPermissions.analyst_node(role_uuids=self.get_role_uuids()),
+                                                             data_permissions=DefaultPermissions.analyst_attribute(role_uuids=self.get_role_uuids()),
+                                                             name_permissions=DefaultPermissions.analyst_attribute(role_uuids=self.get_role_uuids()),
+                                                             role_uuids=self.get_role_uuids(), node=node)
             else:
-                raise Exception("no interface for specified version available")
-        if name != self._entities['run'].get_name():
-            raise Exception(f"name mismatch: {name} != {self._entities['run'].get_name()}")
-        return self._entities['run']
+                raise Exception(f"no interface for specified version={internal_specification} available")
+        if name != self._entities[NodeType.TYPE_NAME_RUN].get_name():
+            raise Exception(f"name mismatch: {name} != {self._entities[NodeType.TYPE_NAME_RUN].get_name()}")
+        return self._entities[NodeType.TYPE_NAME_RUN]

@@ -14,9 +14,9 @@ class AttributesGroup:
                 type_name=AttributeType.TYPE_NAME_STRING
             ),
             JsonSchemaAttribute.json_schema(
-                key='run_type_name',
-                attribute_name='run type name',
-                description="This item ensures that the 'run_type_name' attribute is present.",
+                key='type_name',
+                attribute_name='type name',
+                description="This item ensures that the 'type_name' attribute is present.",
                 type_name=AttributeType.TYPE_NAME_STRING
             )
         ]
