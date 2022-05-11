@@ -51,6 +51,11 @@ BIG_QUERY = ['']
 with open('requirements-big_query.txt') as f:
     BIG_QUERY = [line for line in f.read().splitlines() if line and not line.startswith('#')]
 
+# Extras requirements (elastic_search)
+ELASTIC_SEARCH = ['']
+with open('requirements-elastic_search.txt') as f:
+    ELASTIC_SEARCH = [line for line in f.read().splitlines() if line and not line.startswith('#')]
+
 # Extras requirements (snowflake)
 SNOWFLAKE = ['']
 with open('requirements-snowflake.txt') as f:
@@ -58,6 +63,7 @@ with open('requirements-snowflake.txt') as f:
 
 EXTRA_REQUIRE = {
     "big_query" : BIG_QUERY,
+    "elastic_search" : ELASTIC_SEARCH,
     "snowflake" : SNOWFLAKE,
 }
 
