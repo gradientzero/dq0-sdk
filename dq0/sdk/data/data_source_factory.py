@@ -6,7 +6,7 @@ Helper function to create data source instance based on a given type.
 Copyright 2020, Gradient Zero
 All rights reserved
 """
-from dq0.sdk.data import binary, image, sql, text
+from dq0.sdk.data import binary, clients, image, sql, text
 
 
 data_source_classes = {
@@ -19,6 +19,7 @@ data_source_classes = {
     'sas': binary.sas.SAS,
     'spss': binary.spss.SPSS,
     'stata': binary.stata.Stata,
+    'elasticsearch': clients.elastic_search.ElasticSearch,
     'image': image.Image,
     'bigquery': sql.big_query.BigQuery,
     'drill': sql.drill.Drill,

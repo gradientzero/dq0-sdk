@@ -18,6 +18,11 @@ pip install -r requirements.txt
 pip install -r requirements-dev.txt
 ```
 
+Additional dependencies can be installed, too:
+```bash
+pip install -r requirements-elastic_search.txt
+```
+
 Helper to resolve dependency conflicts:
 ```bash
 # pip install pipdeptree
@@ -53,6 +58,7 @@ python -m pytest -c /dev/null tests/test_dummies.py::test_slow
 
 Use autopep8 to auto format code:
 ```bash
+# pip install autopep8==1.5.5
 python -m autopep8 --in-place --aggressive --aggressive -r dq0
 ```
 
@@ -94,3 +100,11 @@ Production / binary installation TBD
 python setup.py sdist bdist_wheel
 ```
 it will create at least two files in "dist".
+
+## Helpers
+
+Remove pycache folders and generated .pyc files
+```bash
+# on BSD (macOS & Linux)
+find . -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete
+```
