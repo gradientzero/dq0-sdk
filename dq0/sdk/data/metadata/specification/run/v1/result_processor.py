@@ -1,4 +1,5 @@
 from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
+from dq0.sdk.data.metadata.specification.run.v1.result_processor_classic_dp import ResultProcessorClassicDP
 from dq0.sdk.data.metadata.specification.run.v1.result_processor_dummy import ResultProcessorDummy
 from dq0.sdk.data.metadata.specification.run.v1.result_processor_opendp import ResultProcessorOpenDP
 from dq0.sdk.data.metadata.structure.attribute.attribute import Attribute
@@ -19,5 +20,7 @@ class ResultProcessor:
             return ResultProcessorDummy.verify(attribute=attribute, role_uuids=role_uuids)
         elif attribute_type_name.get_value() == 'opendp':
             return ResultProcessorOpenDP.verify(attribute=attribute, role_uuids=role_uuids)
+        elif attribute_type_name.get_value() == 'classic_dp':
+            return ResultProcessorClassicDP.verify(attribute=attribute, role_uuids=role_uuids)
         else:
             raise Exception(f"unknown result processor type_name {attribute_type_name.get_value()}")

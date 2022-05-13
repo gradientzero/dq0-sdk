@@ -2,9 +2,11 @@ from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermi
 from dq0.sdk.data.metadata.specification.json_schema.run.attribute import Attribute as JsonSchemaRunAttribute
 from dq0.sdk.data.metadata.specification.json_schema.run.attributes_group import AttributesGroup as JsonSchemaRunAttributesGroup
 from dq0.sdk.data.metadata.specification.run.v1.query_processor import QueryProcessor
+from dq0.sdk.data.metadata.specification.run.v1.query_processor_classic_dp import QueryProcessorClassicDP
 from dq0.sdk.data.metadata.specification.run.v1.query_processor_dummy import QueryProcessorDummy
 from dq0.sdk.data.metadata.specification.run.v1.query_processor_opendp import QueryProcessorOpenDP
 from dq0.sdk.data.metadata.specification.run.v1.result_processor import ResultProcessor
+from dq0.sdk.data.metadata.specification.run.v1.result_processor_classic_dp import ResultProcessorClassicDP
 from dq0.sdk.data.metadata.specification.run.v1.result_processor_dummy import ResultProcessorDummy
 from dq0.sdk.data.metadata.specification.run.v1.result_processor_opendp import ResultProcessorOpenDP
 from dq0.sdk.data.metadata.structure.attribute.attribute import Attribute
@@ -41,8 +43,10 @@ class Sql:
         return JsonSchemaRunAttributesGroup.sql(
             attributes=[
                 JsonSchemaRunAttribute.query_string(),
+                QueryProcessorClassicDP.json_schema(),
                 QueryProcessorDummy.json_schema(),
                 QueryProcessorOpenDP.json_schema(),
+                ResultProcessorClassicDP.json_schema(),
                 ResultProcessorDummy.json_schema(),
                 ResultProcessorOpenDP.json_schema()
             ]

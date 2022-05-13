@@ -55,6 +55,7 @@ class ColumnFloat:
                 'cardinality': ([AttributeType.TYPE_NAME_INT], owner_attribute),
                 'lower': ([AttributeType.TYPE_NAME_FLOAT], owner_attribute),
                 'upper': ([AttributeType.TYPE_NAME_FLOAT], owner_attribute),
+                'carries_null': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
             })
         private_synthesis_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'private_synthesis'] \
             if attributes is not None else []
@@ -149,6 +150,12 @@ class ColumnFloat:
                             attribute_name='upper',
                             description=f"The 'upper' attribute. Specifies the upper bound for the '{NodeType.TYPE_NAME_COLUMN}'.",
                             type_name=AttributeType.TYPE_NAME_FLOAT
+                        ),
+                        JsonSchemaAttribute.json_schema(
+                            key='carries_null',
+                            attribute_name="carries null",
+                            description=f"The 'carries null' attribute. Specifies whether this '{NodeType.TYPE_NAME_COLUMN}' may contain null values.",
+                            type_name=AttributeType.TYPE_NAME_BOOLEAN
                         )
                     ]
                 ),

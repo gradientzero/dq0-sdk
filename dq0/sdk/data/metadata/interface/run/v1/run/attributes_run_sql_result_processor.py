@@ -40,12 +40,12 @@ class AttributesRunSQLResultProcessor(AttributesGroup):
     # epsilon
     @property
     def epsilon(self):
-        self.type_names_check(type_names={'opendp'})
+        self.type_names_check(type_names={'opendp', 'classic_dp'})
         return self.get_attribute_value(key='epsilon')
 
     @epsilon.setter
     def epsilon(self, new_epsilon):
-        self.type_names_check(type_names={'opendp'})
+        self.type_names_check(type_names={'opendp', 'classic_dp'})
         self.set_attribute_value(type_name=AttributeType.TYPE_NAME_FLOAT,
                                  key='epsilon',
                                  value=new_epsilon,
@@ -53,7 +53,7 @@ class AttributesRunSQLResultProcessor(AttributesGroup):
 
     @epsilon.deleter
     def epsilon(self):
-        self.type_names_check(type_names={'opendp'})
+        self.type_names_check(type_names={'opendp', 'classic_dp'})
         self.delete_attribute(key='epsilon')
 
     # delta

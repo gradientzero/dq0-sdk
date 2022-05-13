@@ -34,6 +34,12 @@ class ColumnBoolean:
             Attribute.check_list(attribute_list=private_sql_attributes[0].get_value(), check_data={
                 'private_id': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
             })
+        private_sql_and_synthesis_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'private_sql_and_synthesis'] \
+            if attributes is not None else []
+        if 0 < len(private_sql_and_synthesis_attributes):
+            Attribute.check_list(attribute_list=private_sql_and_synthesis_attributes[0].get_value(), check_data={
+                'carries_null': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
+            })
         private_synthesis_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'private_synthesis'] \
             if attributes is not None else []
         if 0 < len(private_synthesis_attributes):
@@ -60,6 +66,16 @@ class ColumnBoolean:
                             key='private_id',
                             attribute_name="private id",
                             description=f"The 'private id' attribute. Specifies whether this '{NodeType.TYPE_NAME_COLUMN}' is a private id.",
+                            type_name=AttributeType.TYPE_NAME_BOOLEAN
+                        )
+                    ]
+                ),
+                JsonSchemaAttributesGroup.private_sql_and_synthesis(
+                    attributes=[
+                        JsonSchemaAttribute.json_schema(
+                            key='carries_null',
+                            attribute_name="carries null",
+                            description=f"The 'carries null' attribute. Specifies whether this '{NodeType.TYPE_NAME_COLUMN}' may contain null values.",
                             type_name=AttributeType.TYPE_NAME_BOOLEAN
                         )
                     ]

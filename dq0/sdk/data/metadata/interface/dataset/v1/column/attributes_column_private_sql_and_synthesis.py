@@ -85,3 +85,19 @@ class AttributesColumnPrivateSqlAndSynthesis(AttributesGroup):
     @upper.deleter
     def upper(self):
         self.delete_attribute(key='upper')
+
+    # carries_null
+    @property
+    def carries_null(self):
+        return self.get_attribute_value(key='carries_null')
+
+    @carries_null.setter
+    def carries_null(self, new_carries_null):
+        self.set_attribute_value(type_name=AttributeType.TYPE_NAME_BOOLEAN,
+                                 key='carries_null',
+                                 value=new_carries_null,
+                                 permissions=DefaultPermissions.owner_attribute(role_uuids=self.get_role_uuids()))
+
+    @carries_null.deleter
+    def carries_null(self):
+        self.delete_attribute(key='carries_null')
