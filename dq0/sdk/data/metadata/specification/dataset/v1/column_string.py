@@ -1,7 +1,7 @@
 from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
 from dq0.sdk.data.metadata.specification.json_schema.attribute import Attribute as JsonSchemaAttribute
-from dq0.sdk.data.metadata.specification.json_schema.attributes_group import AttributesGroup as JsonSchemaAttributesGroup
-from dq0.sdk.data.metadata.specification.json_schema.column import Column as JsonSchemaColumn
+from dq0.sdk.data.metadata.specification.json_schema.dataset.attributes_group import AttributesGroup as JsonSchemaAttributesGroup
+from dq0.sdk.data.metadata.specification.json_schema.dataset.column import Column as JsonSchemaColumn
 from dq0.sdk.data.metadata.specification.json_schema.node import Node as JsonSchemaNode
 from dq0.sdk.data.metadata.structure.attribute.attribute import Attribute
 from dq0.sdk.data.metadata.structure.attribute.attribute_type import AttributeType
@@ -49,6 +49,7 @@ class ColumnString:
         if 0 < len(private_sql_and_synthesis_attributes):
             Attribute.check_list(attribute_list=private_sql_and_synthesis_attributes[0].get_value(), check_data={
                 'cardinality': ([AttributeType.TYPE_NAME_INT], owner_attribute),
+                'carries_null': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
             })
         private_synthesis_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'private_synthesis'] \
             if attributes is not None else []
@@ -101,6 +102,12 @@ class ColumnString:
                             attribute_name='cardinality',
                             description=f"The 'cardinality' attribute. Specifies the cardinality for the '{NodeType.TYPE_NAME_COLUMN}'.",
                             type_name=AttributeType.TYPE_NAME_INT
+                        ),
+                        JsonSchemaAttribute.json_schema(
+                            key='carries_null',
+                            attribute_name="carries null",
+                            description=f"The 'carries null' attribute. Specifies whether this '{NodeType.TYPE_NAME_COLUMN}' may contain null values.",
+                            type_name=AttributeType.TYPE_NAME_BOOLEAN
                         )
                     ]
                 ),

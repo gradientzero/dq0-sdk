@@ -1,5 +1,6 @@
-from dq0.sdk.data.metadata.specification.json_schema.attribute import Attribute
-from dq0.sdk.data.metadata.specification.json_schema.attributes_group import AttributesGroup
+from dq0.sdk.data.metadata.specification.json_schema.attribute import Attribute as JsonSchemaAttribute
+from dq0.sdk.data.metadata.specification.json_schema.dataset.attribute import Attribute as JsonSchemaDatasetAttribute
+from dq0.sdk.data.metadata.specification.json_schema.dataset.attributes_group import AttributesGroup as JsonSchemaDatasetAttributesGroup
 from dq0.sdk.data.metadata.structure.attribute.attribute_type import AttributeType
 from dq0.sdk.data.metadata.structure.node.node_type import NodeType
 
@@ -7,9 +8,9 @@ from dq0.sdk.data.metadata.structure.node.node_type import NodeType
 class Column:
     @staticmethod
     def data(data_type_name):
-        return AttributesGroup.data(
+        return JsonSchemaDatasetAttributesGroup.data(
             attributes=[
-                Attribute.json_schema(
+                JsonSchemaAttribute.json_schema(
                     key='data_type_name',
                     attribute_name='data type name',
                     description="The 'data type name' attribute. Specifies the name of the data type "
@@ -17,10 +18,10 @@ class Column:
                     type_name=AttributeType.TYPE_NAME_STRING,
                     additional_value=f"\"const\": \"{data_type_name}\""
                 ),
-                Attribute.description(node_type_name=NodeType.TYPE_NAME_COLUMN),
-                Attribute.metadata_is_public(node_type_name=NodeType.TYPE_NAME_COLUMN),
-                Attribute.name(node_type_name=NodeType.TYPE_NAME_COLUMN),
-                Attribute.json_schema(
+                JsonSchemaDatasetAttribute.description(node_type_name=NodeType.TYPE_NAME_COLUMN),
+                JsonSchemaDatasetAttribute.metadata_is_public(node_type_name=NodeType.TYPE_NAME_COLUMN),
+                JsonSchemaDatasetAttribute.name(node_type_name=NodeType.TYPE_NAME_COLUMN),
+                JsonSchemaAttribute.json_schema(
                     key='selectable',
                     attribute_name='selectable',
                     description="The 'selectable' attribute. Specifies whether a selection may happen "
@@ -29,7 +30,7 @@ class Column:
                 )
             ],
             additional_contains=[
-                Attribute.json_schema(
+                JsonSchemaAttribute.json_schema(
                     key='data_type_name',
                     attribute_name='data type name',
                     description="This item ensures that the 'data_type_name' attribute is present.",
@@ -41,15 +42,15 @@ class Column:
 
     @staticmethod
     def machine_learning():
-        return AttributesGroup.machine_learning(
+        return JsonSchemaDatasetAttributesGroup.machine_learning(
             attributes=[
-                Attribute.json_schema(
+                JsonSchemaAttribute.json_schema(
                     key='is_feature',
                     attribute_name="is feature",
                     description=f"The 'is feature' attribute. Specifies whether this '{NodeType.TYPE_NAME_COLUMN}' is a feature.",
                     type_name=AttributeType.TYPE_NAME_BOOLEAN
                 ),
-                Attribute.json_schema(
+                JsonSchemaAttribute.json_schema(
                     key='is_target',
                     attribute_name="is target",
                     description=f"The 'is target' attribute. Specifies whether this '{NodeType.TYPE_NAME_COLUMN}' is a target.",

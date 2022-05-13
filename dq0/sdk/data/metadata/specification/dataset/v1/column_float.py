@@ -1,7 +1,7 @@
 from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
 from dq0.sdk.data.metadata.specification.json_schema.attribute import Attribute as JsonSchemaAttribute
-from dq0.sdk.data.metadata.specification.json_schema.attributes_group import AttributesGroup as JsonSchemaAttributesGroup
-from dq0.sdk.data.metadata.specification.json_schema.column import Column as JsonSchemaColumn
+from dq0.sdk.data.metadata.specification.json_schema.dataset.attributes_group import AttributesGroup as JsonSchemaAttributesGroup
+from dq0.sdk.data.metadata.specification.json_schema.dataset.column import Column as JsonSchemaColumn
 from dq0.sdk.data.metadata.specification.json_schema.node import Node as JsonSchemaNode
 from dq0.sdk.data.metadata.structure.attribute.attribute import Attribute
 from dq0.sdk.data.metadata.structure.attribute.attribute_type import AttributeType
@@ -55,6 +55,7 @@ class ColumnFloat:
                 'cardinality': ([AttributeType.TYPE_NAME_INT], owner_attribute),
                 'lower': ([AttributeType.TYPE_NAME_FLOAT], owner_attribute),
                 'upper': ([AttributeType.TYPE_NAME_FLOAT], owner_attribute),
+                'carries_null': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
             })
         private_synthesis_attributes = [tmp_attribute for tmp_attribute in attributes if tmp_attribute.get_key() == 'private_synthesis'] \
             if attributes is not None else []
@@ -149,6 +150,12 @@ class ColumnFloat:
                             attribute_name='upper',
                             description=f"The 'upper' attribute. Specifies the upper bound for the '{NodeType.TYPE_NAME_COLUMN}'.",
                             type_name=AttributeType.TYPE_NAME_FLOAT
+                        ),
+                        JsonSchemaAttribute.json_schema(
+                            key='carries_null',
+                            attribute_name="carries null",
+                            description=f"The 'carries null' attribute. Specifies whether this '{NodeType.TYPE_NAME_COLUMN}' may contain null values.",
+                            type_name=AttributeType.TYPE_NAME_BOOLEAN
                         )
                     ]
                 ),

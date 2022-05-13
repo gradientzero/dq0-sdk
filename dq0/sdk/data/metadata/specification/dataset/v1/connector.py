@@ -1,5 +1,7 @@
 from dq0.sdk.data.metadata.specification.dataset.v1.connector_csv import ConnectorCSV
+from dq0.sdk.data.metadata.specification.dataset.v1.connector_mysql import ConnectorMySQL
 from dq0.sdk.data.metadata.specification.dataset.v1.connector_postgresql import ConnectorPostgreSQL
+from dq0.sdk.data.metadata.specification.dataset.v1.connector_sqlite import ConnectorSQLite
 from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
 from dq0.sdk.data.metadata.structure.attribute.attribute import Attribute
 from dq0.sdk.data.metadata.structure.attribute.attribute_string import AttributeString
@@ -17,8 +19,12 @@ class Connector:
             raise Exception(f"attribute type_name is not of type AttributeString, is of type {type(attribute_type_name)} instead")
         if attribute_type_name.get_value() == 'csv':
             return ConnectorCSV.apply_defaults(attribute=attribute, role_uuids=role_uuids)
+        elif attribute_type_name.get_value() == 'mysql':
+            return ConnectorMySQL.apply_defaults(attribute=attribute, role_uuids=role_uuids)
         elif attribute_type_name.get_value() == 'postgresql':
             return ConnectorPostgreSQL.apply_defaults(attribute=attribute, role_uuids=role_uuids)
+        elif attribute_type_name.get_value() == 'sqlite':
+            return ConnectorSQLite.apply_defaults(attribute=attribute, role_uuids=role_uuids)
         else:
             raise Exception(f"unknown connector type_name {attribute_type_name.get_value()}")
 
@@ -32,7 +38,11 @@ class Connector:
             raise Exception(f"attribute type_name is not of type AttributeString, is of type {type(attribute_type_name)} instead")
         if attribute_type_name.get_value() == 'csv':
             return ConnectorCSV.verify(attribute=attribute, role_uuids=role_uuids)
+        elif attribute_type_name.get_value() == 'mysql':
+            return ConnectorMySQL.verify(attribute=attribute, role_uuids=role_uuids)
         elif attribute_type_name.get_value() == 'postgresql':
             return ConnectorPostgreSQL.verify(attribute=attribute, role_uuids=role_uuids)
+        elif attribute_type_name.get_value() == 'sqlite':
+            return ConnectorSQLite.verify(attribute=attribute, role_uuids=role_uuids)
         else:
             raise Exception(f"unknown connector type_name {attribute_type_name.get_value()}")

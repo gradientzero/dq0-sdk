@@ -94,6 +94,7 @@ class Column:
             Attribute.check_list(attribute_list=private_sql_and_synthesis_attributes[0].get_value(), check_data={
                 'bounded': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
                 'cardinality': ([AttributeType.TYPE_NAME_INT], owner_attribute),
+                'carries_null': ([AttributeType.TYPE_NAME_BOOLEAN], owner_attribute),
                 'lower': ([AttributeType.TYPE_NAME_DATETIME, AttributeType.TYPE_NAME_FLOAT, AttributeType.TYPE_NAME_INT], owner_attribute),
                 'upper': ([AttributeType.TYPE_NAME_DATETIME, AttributeType.TYPE_NAME_FLOAT, AttributeType.TYPE_NAME_INT], owner_attribute),
             })

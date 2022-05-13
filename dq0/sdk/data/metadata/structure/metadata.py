@@ -9,7 +9,7 @@ import yaml
 
 
 class Metadata:
-    ROOT_KEYS = {'dataset'}
+    ROOT_KEYS = {'dataset', 'run'}
 
     @staticmethod
     def from_yaml_file(filename, role_uuids=None):

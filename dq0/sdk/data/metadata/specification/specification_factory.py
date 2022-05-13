@@ -1,5 +1,7 @@
-from dq0.sdk.data.metadata.specification.dataset.specification_version import SpecificationVersion
+from dq0.sdk.data.metadata.specification.dataset.specification_version import SpecificationVersion as DatasetSpecificationVersion
 from dq0.sdk.data.metadata.specification.dataset.v1.specification_v1 import SpecificationV1 as DatasetSpecificationV1
+from dq0.sdk.data.metadata.specification.run.specification_version import SpecificationVersion as RunSpecificationVersion
+from dq0.sdk.data.metadata.specification.run.v1.specification_v1 import SpecificationV1 as RunSpecificationV1
 from dq0.sdk.data.metadata.structure.node.node_type import NodeType
 
 
@@ -19,11 +21,18 @@ class SpecificationFactory:
     def from_type_and_version(node_type_name, version, role_uuids=None):
         if not NodeType.is_valid_type_name(type_name=node_type_name):
             raise Exception(f"node_type_name {node_type_name} is invalid")
-        if not SpecificationVersion.is_valid_version(version=version):
-            raise Exception(f"version {version} is invalid")
         if node_type_name == NodeType.TYPE_NAME_DATASET:
-            if version == SpecificationVersion.VERSION_V1:
+            if not DatasetSpecificationVersion.is_valid_version(version=version):
+                raise Exception(f"version {version} is invalid")
+            if version == DatasetSpecificationVersion.VERSION_V1:
                 return DatasetSpecificationV1(role_uuids=role_uuids)
+            else:
+                raise Exception(f"unknown version {version}")
+        if node_type_name == NodeType.TYPE_NAME_RUN:
+            if not RunSpecificationVersion.is_valid_version(version=version):
+                raise Exception(f"version {version} is invalid")
+            if version == RunSpecificationVersion.VERSION_V1:
+                return RunSpecificationV1(role_uuids=role_uuids)
             else:
                 raise Exception(f"unknown version {version}")
         else:

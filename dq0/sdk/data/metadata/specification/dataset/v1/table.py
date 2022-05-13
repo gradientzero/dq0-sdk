@@ -1,7 +1,8 @@
 from dq0.sdk.data.metadata.specification.dataset.v1.column import Column
 from dq0.sdk.data.metadata.specification.default_permissions import DefaultPermissions
 from dq0.sdk.data.metadata.specification.json_schema.attribute import Attribute as JsonSchemaAttribute
-from dq0.sdk.data.metadata.specification.json_schema.attributes_group import AttributesGroup as JsonSchemaAttributesGroup
+from dq0.sdk.data.metadata.specification.json_schema.dataset.attribute import Attribute as JsonSchemaDatasetAttribute
+from dq0.sdk.data.metadata.specification.json_schema.dataset.attributes_group import AttributesGroup as JsonSchemaDatasetAttributesGroup
 from dq0.sdk.data.metadata.specification.json_schema.node import Node as JsonSchemaNode
 from dq0.sdk.data.metadata.structure.attribute.attribute import Attribute
 from dq0.sdk.data.metadata.structure.attribute.attribute_type import AttributeType
@@ -114,15 +115,15 @@ class Table:
         return JsonSchemaNode.json_schema(
             NodeType.TYPE_NAME_TABLE,
             attributes_groups=[
-                JsonSchemaAttributesGroup.data(
+                JsonSchemaDatasetAttributesGroup.data(
                     attributes=[
-                        JsonSchemaAttribute.description(
+                        JsonSchemaDatasetAttribute.description(
                             node_type_name=NodeType.TYPE_NAME_TABLE
                         ),
-                        JsonSchemaAttribute.metadata_is_public(
+                        JsonSchemaDatasetAttribute.metadata_is_public(
                             node_type_name=NodeType.TYPE_NAME_TABLE
                         ),
-                        JsonSchemaAttribute.name(
+                        JsonSchemaDatasetAttribute.name(
                             node_type_name=NodeType.TYPE_NAME_TABLE
                         ),
                         JsonSchemaAttribute.json_schema(
@@ -135,7 +136,7 @@ class Table:
                         )
                     ]
                 ),
-                JsonSchemaAttributesGroup.differential_privacy(
+                JsonSchemaDatasetAttributesGroup.differential_privacy(
                     attributes=[
                         JsonSchemaAttribute.json_schema(
                             key='budget_delta',
@@ -160,12 +161,12 @@ class Table:
                                 f"for the '{NodeType.TYPE_NAME_TABLE}'.",
                             type_name=AttributeType.TYPE_NAME_STRING
                         ),
-                        JsonSchemaAttribute.privacy_level(
+                        JsonSchemaDatasetAttribute.privacy_level(
                             node_type_name=NodeType.TYPE_NAME_TABLE
                         )
                     ]
                 ),
-                JsonSchemaAttributesGroup.private_sql(
+                JsonSchemaDatasetAttributesGroup.private_sql(
                     attributes=[
                         JsonSchemaAttribute.json_schema(
                             key='censor_dims',
@@ -227,7 +228,7 @@ class Table:
                         )
                     ]
                 ),
-                JsonSchemaAttributesGroup.private_synthesis(
+                JsonSchemaDatasetAttributesGroup.private_synthesis(
                     attributes=[
                         JsonSchemaAttribute.json_schema(
                             key='synth_allowed',

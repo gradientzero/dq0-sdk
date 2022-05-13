@@ -1,5 +1,6 @@
 meta_dataset:
   format: simple
+  specification: 'dataset_v1'
   node:
     dataset:
       attributes:
@@ -230,4 +231,3 @@ meta_dataset:
                           'cardinality': 9
                         'private_synthesis':
                           'synthesizable': true
-  specification: 'dataset_v1'
