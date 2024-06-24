@@ -128,7 +128,7 @@ class Runner(ABC):
         """
         response = self.project.client.post(route, uuid=uuid)
         checkSDKResponse(response)
-        print(response['message'])
+        print(response)
 
     def wait_for_completion(self, verbose=False):
         """Loops until the state reflects the end of the run.

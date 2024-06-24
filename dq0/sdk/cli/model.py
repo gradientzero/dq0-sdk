@@ -126,7 +126,7 @@ class Model:
         response = self.project.client.post(
             routes.model.predict, uuid=self.model_uuid, data=data)
         checkSDKResponse(response)
-        print(response['message'])
+        print(response)
         try:
             job_uuid = response['message'].split(' ')[-1]
         except Exception:
